@@ -12,6 +12,7 @@ matplotlib = "^3.5.3"
 Sphinx = { version = "4.2.0", optional = true }
 sphinx-rtd-theme = { version = "1.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
+nbsphinx = { version = "0.8.9", optional = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -23,7 +24,7 @@ bandit = "^1.7.4"
 safety = "^2.1.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon", "nbsphinx"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
