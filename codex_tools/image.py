@@ -2,8 +2,8 @@ from typing import Union
 
 import numpy as np
 import xarray as xr
-from skimage.measure import regionprops_table
 from matplotlib.colors import LinearSegmentedColormap
+from skimage.measure import regionprops_table
 
 from .constants import Dims, Layers
 
@@ -61,7 +61,7 @@ class ImageAccessor:
         )
 
         if clip:
-            x = np.clip(x, 0, 1)
+            norm = np.clip(norm, 0, 1)
 
         return norm
 

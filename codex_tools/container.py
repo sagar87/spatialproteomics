@@ -2,7 +2,6 @@ from typing import Union
 
 import numpy as np
 import xarray as xr
-from scipy.ndimage.measurements import center_of_mass
 
 from .constants import Dims, Layers
 

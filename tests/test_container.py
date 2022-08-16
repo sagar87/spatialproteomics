@@ -1,5 +1,3 @@
-import os
-
 import pytest
 import xarray as xr
 
@@ -41,12 +39,11 @@ def test_load_data_proper_input_one_channel_input(data_dic):
     assert Layers.SEGMENTATION in dataset
 
 
-# @FILES
 def test_load_data_assertions(data_dic):
 
     # tests if assertion is raised if
     with pytest.raises(AssertionError, match="Length of channel_coords must match"):
-        dataset = load_image_data(
+        load_image_data(
             data_dic["input"],
             [
                 "Hoechst",
@@ -60,7 +57,7 @@ def test_load_data_assertions(data_dic):
 def test_load_data_wrong_inputs_segmentation_mask_dim_error(data_dic):
     # tests if assertion is raied
     with pytest.raises(AssertionError, match="The shape of segmentation mask"):
-        dataset = load_image_data(
+        load_image_data(
             data_dic["input"],
             ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
             data_dic["segmentation"][:300, :300],
