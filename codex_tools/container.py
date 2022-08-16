@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 import numpy as np
 import xarray as xr
@@ -12,17 +12,25 @@ def hello_world(test):
 
 def load_image_data(
     image: np.ndarray,
-    channel_coords: Union[str, list],
+    channel_coords: Union[str, List[str]],
     segmentaton_mask: Union[None, np.ndarray] = None,
 ):
-    """
-    Creates a image container.
+    """Creates a image container.
 
-    Parameters:
+    Creates an Xarray dataset with images, segmentation, and
+    coordinate fields.
+
+    Parameters
+    ----------
     image : np.ndarray
         np.ndarray with image.shape = (n, x, y)
-    channel_coords:
+    channel_coords: str | List[str]
+        list with the names for each channel
 
+    Returns
+    -------
+    xr.Dataset
+        An X-array dataset with all fields.
     """
     if type(channel_coords) is str:
         channel_coords = [channel_coords]

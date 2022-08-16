@@ -6,6 +6,13 @@
 Welcome to Codex-Tools's documentation!
 =======================================
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   notebooks/Example 1
+
 .. automodule:: codex_tools
     :members:
 
