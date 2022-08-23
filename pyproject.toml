@@ -1,5 +1,8 @@
 [tool.poetry]
 name = "spatial-data"
+packages = [
+    { include = "spatial_data" },
+]
 version = "0.1.0"
 description = ""
 authors = ["Harald Vohringer"]
