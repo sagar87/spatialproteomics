@@ -1,9 +1,9 @@
-.. Codex-Tools documentation master file, created by
+.. Spatial-data documentation master file, created by
    sphinx-quickstart on Tue Aug 16 14:14:34 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Codex-Tools's documentation!
+Welcome to Spatial-data's documentation!
 =======================================
 
 
@@ -13,7 +13,7 @@ Welcome to Codex-Tools's documentation!
 
    notebooks/Example 1
 
-.. automodule:: codex_tools
+.. automodule:: spatial_data
     :members:
 
 
