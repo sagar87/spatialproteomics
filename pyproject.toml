@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "spatial-data"
+name = "spat-data"
 packages = [
     { include = "spatial_data" },
 ]

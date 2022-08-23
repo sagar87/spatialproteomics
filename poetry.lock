@@ -539,7 +539,7 @@ python-versions = "*"
 
 [[package]]
 name = "nbclient"
-version = "0.6.6"
+version = "0.6.7"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
 category = "main"
 optional = true
@@ -552,8 +552,8 @@ nest-asyncio = "*"
 traitlets = ">=5.2.2"
 
 [package.extras]
-test = ["xmltodict", "twine (>=1.11.0)", "testpath", "setuptools (>=60.0)", "pytest-cov (>=2.6.1)", "pytest-asyncio", "pytest (>=4.1)", "pre-commit", "pip (>=18.1)", "mypy", "ipywidgets (<8.0.0)", "ipython (<8.0.0)", "ipykernel", "flake8", "check-manifest", "black"]
-sphinx = ["sphinx-book-theme", "Sphinx (>=1.7)", "myst-parser", "moto", "mock", "autodoc-traits"]
+sphinx = ["autodoc-traits", "mock", "moto", "myst-parser", "Sphinx (>=1.7)", "sphinx-book-theme"]
+test = ["black", "check-manifest", "flake8", "ipykernel", "ipython", "ipywidgets", "mypy", "nbconvert", "pip (>=18.1)", "pre-commit", "pytest (>=4.1)", "pytest-asyncio", "pytest-cov (>=2.6.1)", "setuptools (>=60.0)", "testpath", "twine (>=1.11.0)", "xmltodict"]
 
 [[package]]
 name = "nbconvert"
