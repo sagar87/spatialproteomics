@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Codex-Tools"
+project = "Spatial-Data"
 copyright = "2022, Harald Vohringer"
 author = "Harald Vohringer"
 

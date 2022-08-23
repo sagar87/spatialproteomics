@@ -4,7 +4,7 @@ from distutils import dir_util
 import pytest
 from skimage.io import imread
 
-from codex_tools.container import load_image_data
+from spatial_data.container import load_image_data
 
 
 @pytest.fixture(scope="session")

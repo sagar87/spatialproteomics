@@ -1,8 +1,8 @@
 import pytest
 import xarray as xr
 
-from codex_tools.constants import Layers
-from codex_tools.container import load_image_data
+from spatial_data.constants import Layers
+from spatial_data.container import load_image_data
 
 
 def test_load_data_proper_five_channel_input(data_dic):
