@@ -2,40 +2,46 @@ class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"
     COORDINATES = "_coordinates"
+    LABELS = "_labels"
     DATA = "_data"
+    PLOT = "_plot"
+    OBS = "_obs"
 
 
 class Dims(object):
-    IMAGE = ["channels", "x", "y"]
-    COLORED_IMAGE = ["channels", "x", "y", "rgba"]
-    SEGMENTATION = ["x", "y"]
-    COORDINATES = ["cell_idx", "coords"]
-    DATA = ["cell_idx", "channels"]
-
-
-class Image(object):
-    CHANNEL = "channel"
-    X = "x"
-    Y = "y"
-
-
-class ColoredImage(object):
-    CHANNEL = "channel"
+    CHANNELS = "channels"
     X = "x"
     Y = "y"
     RGBA = "rgba"
+    CELLS = "cells"
+    COORDINATES = "coordinates"
+    LABELS = "labels"
+    FEATURES = "features"
+    PROPS = "props"
+
+    IMAGE = ["channels", "x", "y"]
+    COLORED_IMAGE = ["channels", "x", "y", "rgba"]
+    SEGMENTATION = ["x", "y"]
+    # COORDINATES = ["cell_idx", "coords"]
+    DATA = ["cell_idx", "channels"]
 
 
-class Segmentation(object):
-    X = "x"
-    Y = "y"
+class Attrs(object):
+    IMAGE_COLORS = "image_colors"
+    LABEL_COLORS = "label_colors"
+    LABEL_NAMES = "label_names"
 
 
-IMAGE = "_image"
-SEGMENTATION = "_segmentation"
-CHANNEL = "channel"
-XDIM = "x"
-YDIM = "y"
+class Props(object):
+    COLOR = "_color"
+    NAME = "_name"
+
+
+class Features(object):
+    LABELS = "_labels"
+    ORIGINAL_LABELS = "_original_labels"
+    X = "_x"
+    Y = "_y"
 
 
 COLORS = [

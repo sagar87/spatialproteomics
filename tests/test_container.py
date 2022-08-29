@@ -13,17 +13,34 @@ def test_load_data_proper_five_channel_input(data_dic):
 
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
-    assert Layers.SEGMENTATION in dataset
+    assert Layers.SEGMENTATION not in dataset
+    assert Layers.LABELS not in dataset
+    assert Layers.OBS not in dataset
 
     dataset = load_image_data(
         data_dic["input"],
         ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
-        segmentaton_mask=data_dic["segmentation"],
+        segmentation=data_dic["segmentation"],
     )
 
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
     assert Layers.SEGMENTATION in dataset
+    assert Layers.LABELS not in dataset
+    assert Layers.OBS in dataset
+
+    # dataset = load_image_data(
+    #     data_dic["input"],
+    #     ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
+    #     segmentation=data_dic["segmentation"],
+    #     labels=data_dic["labels"],
+    # )
+
+    # assert type(dataset) is xr.Dataset
+    # assert Layers.IMAGE in dataset
+    # assert Layers.SEGMENTATION in dataset
+    # assert Layers.OBS in dataset
+    # assert Layers.LABELS in dataset
 
 
 def test_load_data_proper_input_one_channel_input(data_dic):
@@ -31,11 +48,12 @@ def test_load_data_proper_input_one_channel_input(data_dic):
     dataset = load_image_data(
         data_dic["input"][0],
         "Hoechst",
-        segmentaton_mask=data_dic["segmentation"],
+        data_dic["segmentation"],
     )
 
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
+    assert Layers.SEGMENTATION in dataset
     assert Layers.SEGMENTATION in dataset
 
 

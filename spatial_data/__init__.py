@@ -1,19 +1,18 @@
+from .constants import Dims, Features, Layers, Props
 from .container import load_image_data
-from .image import ImageAccessor, colorize, normalize
-from .segmentation import (
-    SegmentationAccessor,
-    generate_cmap,
-    label_segmentation_mask,
-    render_label,
-)
+from .im import ImageAccessor  # , colorize, normalize
+from .la import LabelAccessor
+from .pl import PlotAccessor
+from .se import SegmentationAccessor
 
 __all__ = [
     "load_image_data",
-    "normalize",
-    "colorize",
-    "generate_cmap",
-    "render_label",
     "ImageAccessor",
-    "label_segmentation_mask",
+    "LabelAccessor",
+    "PlotAccessor",
     "SegmentationAccessor",
+    "Layers",
+    "Dims",
+    "Features",
+    "Props",
 ]
