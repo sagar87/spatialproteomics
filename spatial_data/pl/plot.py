@@ -1,3 +1,5 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -9,10 +11,34 @@ from ..constants import Attrs, Dims, Features, Layers, Props
 
 @xr.register_dataset_accessor("pl")
 class PlotAccessor:
+    """Adds plotting functions to the image container."""
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
+    def _graph_overlay(self, ax=None):
+        graph = self._obj.se.get_graph()
+        x = self._obj[Layers.OBS].loc[:, Dims.X].values
+        y = self._obj[Layers.OBS].loc[:, Dims.Y].values
+        ax.triplot(
+            x,
+            y,
+            graph.simplices,
+            color="white",
+        )
+
+        # unique_labels = np.unique(ds[Layers.LABELS].values)
+
+        # for label in unique_labels:
+        #     label_bool = (ds[Layers.LABELS].values == label).squeeze()
+        #     x = ds[Layers.OBS].loc[label_bool].loc[:, Dims.X].values
+        #     y = ds[Layers.OBS].loc[label_bool].loc[:, Dims.Y].values
+        #     ax.scatter(
+        #         x, y, color=ds[Layers.LABELS].attrs[Attrs.LABEL_COLORS][label]
+        #     )
+
     def _get_bounds(self):
+        """Returns X/Y bounds of the dataset."""
         xmin = self._obj.coords[Dims.X].values[0]
         ymin = self._obj.coords[Dims.Y].values[0]
         xmax = self._obj.coords[Dims.X].values[-1]
@@ -20,13 +46,71 @@ class PlotAccessor:
 
         return [xmin, xmax, ymin, ymax]
 
+    def _legend_background(self):
+        """Returns legend handles for the background."""
+        color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                label=ch,
+                markerfacecolor=c,
+                markersize=15,
+            )
+            for ch, c in color_dict.items()
+        ]
+        return elements
+
+    def _legend_labels(self):
+        """Returns legend handles for the labels."""
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+        names_dict = self._obj.la._label_to_dict(Props.NAME)
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                label=names_dict[i],
+                markerfacecolor=color_dict[i],
+                markersize=15,
+            )
+            for i in sorted(color_dict)
+            if i in self._obj.coords[Dims.LABELS]
+        ]
+
+        return elements
+
     def annotate(
         self,
-        ax=None,
         highlight: list = [],
         text_kwargs: dict = {"color": "w", "fontsize": 12},
         highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
-    ):
+        ax=None,
+    ) -> xr.Dataset:
+        """Annotates cells with their respective number.
+
+        Parameters
+        ----------
+        highlight: List[int]
+            A list with cell ids which are highlighted in the plot.
+        text_kwargs: dict
+            Keyword arguments that are passed to matplotlib's text function.
+        hightlight_kwargs: dict
+            Similar to text_kwargs but specifically for the cell ids that are
+            passed via highlight.
+        ax: matplotlib.Axes
+            Matplotlib axis.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+        """
         if ax is None:
             ax = plt.gca()
         for cell in self._obj.coords[Dims.CELLS]:
@@ -90,12 +174,30 @@ class PlotAccessor:
 
     def add_box(
         self,
-        xlim=[2800, 3200],
-        ylim=[1500, 2000],
+        xlim: List[int] = [2800, 3200],
+        ylim: List[int] = [1500, 2000],
         color: str = "w",
         linewidth: float = 2,
         ax=None,
     ):
+        """Adds a box to the current plot.
+
+        Parameters
+        ----------
+        xlim: List[int]
+            The x-bounds of the box [xstart, xstop].
+        ylim: List[int]
+            The y-bounds of the box [ymin, ymax].
+        ax: matplotlib.axes
+            Matplotlib axis to plot on (default: None)
+
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+        """
+
         if ax is None:
             ax = plt.gca()
 
@@ -110,7 +212,18 @@ class PlotAccessor:
         return self._obj
 
     def bar(self, ax=None):
-        """Plots a bar plot present labels."""
+        """Plots a bar plot present labels.
+
+        Parameters
+        ----------
+        ax: matplotlib.axes
+            Matplotlib axis to plot on.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+        """
         if ax is None:
             ax = plt.gca()
 
@@ -136,6 +249,25 @@ class PlotAccessor:
         legend_kwargs: dict = {"framealpha": 1},
         ax=None,
     ):
+        """Plots the image.
+
+        Meant to be used in conjunction with im.colorize and la.render_label.
+        See examples.
+
+        Parameters
+        ----------
+        legend_background: bool
+            Show the label of the colorized image.
+        legend_label: bool
+            Show the labels.
+        ax: matplotlib.axes
+            Matplotlib axis to plot on.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+        """
         if Layers.PLOT not in self._obj:
             logger.warning("No plot defined yet.")
             channel = str(self._obj.coords[Dims.CHANNELS].values[0])
@@ -165,85 +297,3 @@ class PlotAccessor:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj
-
-    def _legend_background(self):
-        color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
-
-        elements = [
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                color="w",
-                label=ch,
-                markerfacecolor=c,
-                markersize=15,
-            )
-            for ch, c in color_dict.items()
-        ]
-        return elements
-
-    def _legend_labels(self):
-
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        names_dict = self._obj.la._label_to_dict(Props.NAME)
-
-        elements = [
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                color="w",
-                label=names_dict[i],
-                markerfacecolor=color_dict[i],
-                markersize=15,
-            )
-            for i in sorted(color_dict)
-            if i in self._obj.coords[Dims.LABELS]
-        ]
-
-        return elements
-
-    def plot(
-        self,
-        legend_image=False,
-        legend_labels=False,
-        ax=None,
-        legend_fontsize=None,
-        legend_alpha=1.0,
-        annotate=False,
-        highlight=[],
-        show_graph=False,
-    ):
-        if Layers.PLOT not in self._obj:
-            logger.warning("No plot defined yet.")
-            channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-            ds = self._obj.im[channel].im.colorize(colors=["white"])
-        else:
-            ds = self._obj
-
-        if ax is None:
-            ax = plt.gca()
-
-        ax.imshow(ds[Layers.PLOT].values, origin="lower")
-
-        if show_graph:
-            graph = ds.se.get_graph()
-            x = ds[Layers.OBS].loc[:, Dims.X].values
-            y = ds[Layers.OBS].loc[:, Dims.Y].values
-            ax.triplot(
-                x,
-                y,
-                graph.simplices,
-                color="white",
-            )
-
-            unique_labels = np.unique(ds[Layers.LABELS].values)
-
-            for label in unique_labels:
-                label_bool = (ds[Layers.LABELS].values == label).squeeze()
-                x = ds[Layers.OBS].loc[label_bool].loc[:, Dims.X].values
-                y = ds[Layers.OBS].loc[label_bool].loc[:, Dims.Y].values
-                ax.scatter(
-                    x, y, color=ds[Layers.LABELS].attrs[Attrs.LABEL_COLORS][label]
-                )

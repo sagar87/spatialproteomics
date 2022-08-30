@@ -1,5 +1,8 @@
 # Spatial-data
 
+.. image:: https://badge.fury.io/py/spat-data.svg
+    :target: https://badge.fury.io/py/spat-data
+
 Spatial data is a light weight wrapper around `xarray` with the intention to factilitate the data exploration and analysis of highly multiplexed immunohistochemistry data.
 
 ## Principles
