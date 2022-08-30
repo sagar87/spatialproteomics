@@ -12,6 +12,14 @@ class PlotAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
+    def _get_bounds(self):
+        xmin = self._obj.coords[Dims.X].values[0]
+        ymin = self._obj.coords[Dims.Y].values[0]
+        xmax = self._obj.coords[Dims.X].values[-1]
+        ymax = self._obj.coords[Dims.Y].values[-1]
+
+        return [xmin, xmax, ymin, ymax]
+
     def annotate(
         self,
         ax=None,
@@ -30,6 +38,76 @@ class PlotAccessor:
 
         return self._obj
 
+    def scatter(self, size: float = 0.001, ax=None):
+        """Plots a scatter plot of labels"""
+        if ax is None:
+            ax = plt.gca()
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+        names_dict = self._obj.la._label_to_dict(Props.NAME)
+        label_dict = self._obj.la._cells_to_label()
+
+        for k, v in label_dict.items():
+            label_subset = self._obj.la[k]
+            obs_layer = label_subset[Layers.OBS]
+            x = obs_layer.loc[
+                :,
+                Features.X,
+            ].values
+            y = obs_layer.loc[
+                :,
+                Features.Y,
+            ].values
+            ax.scatter(x, y, s=size, c=color_dict[k])
+
+        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin, xmax])
+        # scatter_plot(sub, cell_types, axes[r, c], s=size)
+
+        return self._obj
+
+    def add_box(
+        self,
+        xlim=[2800, 3200],
+        ylim=[1500, 2000],
+        color: str = "w",
+        linewidth: float = 2,
+        ax=None,
+    ):
+        if ax is None:
+            ax = plt.gca()
+        
+        # unpack data
+        xmin, xmax = xlim
+        ymin, ymax = ylim
+
+        ax.hlines(xmin=xmin, xmax=xmax, y=ymin, color=color, linewidth=linewidth)
+        ax.hlines(xmin=xmin, xmax=xmax, y=ymax, color=color, linewidth=linewidth)
+        ax.vlines(ymin=ymin, ymax=ymax, x=xmin, color=color, linewidth=linewidth)
+        ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
+        return self._obj
+
+    def bar(self, ax=None):
+        """Plots a bar plot present labels."""
+        if ax is None:
+            ax = plt.gca()
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+        names_dict = self._obj.la._label_to_dict(Props.NAME)
+
+        obs_layer = self._obj[Layers.OBS]
+        label_array = obs_layer.loc[:, Features.LABELS].values
+        x, y = np.unique(label_array, return_counts=True)
+
+        ax.bar(x, y, color=[color_dict[i] for i in x])
+        ax.set_xticks(x)
+        ax.set_xticklabels([names_dict[i] for i in x], rotation=90)
+        ax.set_ylabel("Label Frequency")
+        ax.set_xlabel("Label")
+
+        return self._obj
+
     def imshow(
         self,
         legend_background: bool = False,
@@ -45,18 +123,13 @@ class PlotAccessor:
         if ax is None:
             ax = plt.gca()
 
-        xmin = self._obj.coords[Dims.X].values[0]
-        ymin = self._obj.coords[Dims.Y].values[0]
-        xmax = self._obj.coords[Dims.X].values[-1]
-        ymax = self._obj.coords[Dims.Y].values[-1]
-
-        print(xmin, xmax, ymin, ymax)
+        bounds = self._obj.pl._get_bounds()
 
         ax.imshow(
             self._obj[Layers.PLOT].values,
             origin="lower",
             interpolation="none",
-            extent=[xmin, xmax, ymin, ymax],
+            extent=bounds,
         )
 
         legend = []

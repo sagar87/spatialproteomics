@@ -92,6 +92,7 @@ class LabelAccessor:
         return label_dict
 
     def _cells_to_label(self, relabel: bool = False):
+        """Returns a dictionary that maps each label to a list of cells."""
         label_dict = {
             label.item(): self._obj.la._filter_cells_by_label(label.item())
             for label in self._obj.coords[Dims.LABELS]
@@ -268,7 +269,7 @@ class LabelAccessor:
             )
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
-            attrs = self._obj[Layers.PLOT].attrs
+            attrs = {}
             rendered = _render_label(
                 mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode
             )
