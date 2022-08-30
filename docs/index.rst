@@ -11,16 +11,12 @@ Welcome to Spatial-data's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials:
    notebooks/Example 1
-
-
-API
-===
-.. automodule:: spatial_data.im
-    :members:
-
-.. automodule:: spatial_data.pl
-    :members:
 
 
 Indices and tables

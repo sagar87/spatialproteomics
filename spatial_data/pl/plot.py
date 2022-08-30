@@ -38,11 +38,20 @@ class PlotAccessor:
 
         return self._obj
 
-    def scatter(self, size: float = 0.001, ax=None) -> xr.Dataset:
+    def scatter(
+        self,
+        legend_label=False,
+        size: float = 0.001,
+        alpha: float = 0.9,
+        ax=None,
+        legend_kwargs: dict = {"framealpha": 1},
+    ) -> xr.Dataset:
         """Plots a scatter plot of labels
 
         Parameters
         ----------
+        legend_label: bool
+            Plots the legend of the labels.
         size: float
             Size of the dots.
         ax: matplotlib.axes
@@ -52,8 +61,7 @@ class PlotAccessor:
         Returns
         -------
         xr.Dataset
-            The image container with the colorized image stored in Layers.PLOT.
-
+            The image container.
         """
         if ax is None:
             ax = plt.gca()
@@ -65,20 +73,18 @@ class PlotAccessor:
         for k, v in label_dict.items():
             label_subset = self._obj.la[k]
             obs_layer = label_subset[Layers.OBS]
-            x = obs_layer.loc[
-                :,
-                Features.X,
-            ].values
-            y = obs_layer.loc[
-                :,
-                Features.Y,
-            ].values
-            ax.scatter(x, y, s=size, c=color_dict[k])
+            x = obs_layer.loc[:, Features.X]
+            y = obs_layer.loc[:, Features.Y]
+            ax.scatter(x.values, y.values, s=size, c=color_dict[k], alpha=alpha)
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
         # scatter_plot(sub, cell_types, axes[r, c], s=size)
+
+        if legend_label:
+            legend = self._obj.pl._legend_labels()
+            ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj
 
