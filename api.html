@@ -156,7 +156,118 @@
 <section id="the-pl-accessor">
 <h2>The <code class="code docutils literal notranslate"><span class="pre">pl</span></code> accessor<a class="headerlink" href="#the-pl-accessor" title="Permalink to this headline"></a></h2>
 <p>The plotting accessor provides several plotting functions.</p>
-<span class="target" id="module-spatial_data.pl.plot"></span></section>
+<span class="target" id="module-spatial_data.pl.plot"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.pl.plot.</span></span><span class="sig-name descname"><span class="pre">PlotAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Adds plotting functions to the image container.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.add_box">
+<span class="sig-name descname"><span class="pre">add_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[2800,</span> <span class="pre">3200]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[1500,</span> <span class="pre">2000]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.add_box" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a box to the current plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xlim</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The x-bounds of the box [xstart, xstop].</p></li>
+<li><p><strong>ylim</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The y-bounds of the box [ymin, ymax].</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em>) – Matplotlib axis to plot on (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.annotate">
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">highlight</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">12}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">16,</span> <span class="pre">'fontweight':</span> <span class="pre">'bold'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.annotate" title="Permalink to this definition"></a></dt>
+<dd><p>Annotates cells with their respective number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>highlight</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – A list with cell ids which are highlighted in the plot.</p></li>
+<li><p><strong>text_kwargs</strong> (<em>dict</em>) – Keyword arguments that are passed to matplotlib’s text function.</p></li>
+<li><p><strong>hightlight_kwargs</strong> (<em>dict</em>) – Similar to text_kwargs but specifically for the cell ids that are
+passed via highlight.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.Axes</em>) – Matplotlib axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.bar">
+<span class="sig-name descname"><span class="pre">bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.bar" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a bar plot present labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes</em>) – Matplotlib axis to plot on.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.imshow">
+<span class="sig-name descname"><span class="pre">imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">legend_background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.imshow" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the image.</p>
+<p>Meant to be used in conjunction with im.colorize and la.render_label.
+See examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>legend_background</strong> (<em>bool</em>) – Show the label of the colorized image.</p></li>
+<li><p><strong>legend_label</strong> (<em>bool</em>) – Show the labels.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em>) – Matplotlib axis to plot on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.scatter">
+<span class="sig-name descname"><span class="pre">scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.scatter" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a scatter plot of labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>legend_label</strong> (<em>bool</em>) – Plots the legend of the labels.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the dots.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em>) – Matplotlib axis to plot on (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
