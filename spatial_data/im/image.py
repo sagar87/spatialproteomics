@@ -10,14 +10,13 @@ from .transforms import _colorize, _normalize
 
 @xr.register_dataset_accessor("im")
 class ImageAccessor:
-    """The image accessor enables fast indexing and preprocesses image.data
-    """
+    """The image accessor enables fast indexing and preprocesses image.data"""
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
     def __getitem__(self, indices):
-        """Subsets the image container.
-        """
+        """Subsets the image container."""
         num_cells = self._obj.dims[Dims.CELLS]
 
         # argument handling
