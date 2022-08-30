@@ -61,18 +61,21 @@ class ImageAccessor:
                     x_slice = indices[1]
                     y_slice = indices[2]
 
-        x_start = 0 if x_slice.start is None else x_slice.start
-        y_start = 0 if y_slice.start is None else y_slice.start
-        x_stop = -1 if x_slice.stop is None else x_slice.stop
-        y_stop = -1 if y_slice.stop is None else y_slice.stop
+        xdim = self._obj.coords[Dims.X]
+        ydim = self._obj.coords[Dims.Y]
+
+        x_start = xdim[0] if x_slice.start is None else x_slice.start
+        y_start = ydim[0] if y_slice.start is None else y_slice.start
+        x_stop = xdim[-1] if x_slice.stop is None else x_slice.stop
+        y_stop = ydim[-1] if y_slice.stop is None else y_slice.stop
 
         coords = self._obj[Layers.OBS]
 
         cells = (
-            (coords.loc[:, Features.X] >= self._obj.coords[Dims.X][x_start])
-            & (coords.loc[:, Features.X] <= self._obj.coords[Dims.X][x_stop])
-            & (coords.loc[:, Features.Y] >= self._obj.coords[Dims.Y][y_start])
-            & (coords.loc[:, Features.Y] <= self._obj.coords[Dims.Y][y_stop])
+            (coords.loc[:, Features.X] >= x_start)
+            & (coords.loc[:, Features.X] <= x_stop)
+            & (coords.loc[:, Features.Y] >= y_start)
+            & (coords.loc[:, Features.Y] <= y_stop)
         ).values
 
         ds = self._obj.sel(
