@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Importing data to CODEX tools" href="notebooks/Example%201.html" />
     <link rel="prev" title="Welcome to Spatial-data’s documentation!" href="index.html" /> 
 </head>
 
@@ -44,6 +45,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#the-pl-accessor">The <code class="code docutils literal notranslate"><span class="pre">pl</span></code> accessor</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Example%201.html">Importing data to CODEX tools</a></li>
 </ul>
 
         </div>
@@ -99,11 +104,59 @@
 <section id="the-im-accessor">
 <h2>The <code class="code docutils literal notranslate"><span class="pre">im</span></code> accessor<a class="headerlink" href="#the-im-accessor" title="Permalink to this headline"></a></h2>
 <p>The image accessor enables to easily subset the image container.</p>
-<span class="target" id="module-spatial_data.im"></span></section>
+<span class="target" id="module-spatial_data.im.image"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatial_data.im.image.ImageAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.im.image.</span></span><span class="sig-name descname"><span class="pre">ImageAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.im.image.ImageAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>The image accessor enables fast indexing and preprocesses image.data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.im.image.ImageAccessor.add_channel">
+<span class="sig-name descname"><span class="pre">add_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.im.image.ImageAccessor.add_channel" title="Permalink to this definition"></a></dt>
+<dd><p>Adds channel(s) to an existing image container.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.im.image.ImageAccessor.colorize">
+<span class="sig-name descname"><span class="pre">colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">['C0',</span> <span class="pre">'C1',</span> <span class="pre">'C2',</span> <span class="pre">'C3']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.im.image.ImageAccessor.colorize" title="Permalink to this definition"></a></dt>
+<dd><p>Colorizes a stack of images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colors</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of strings that denote the color of each channel.</p></li>
+<li><p><strong>background</strong> (<em>float</em>) – Background color of the colorized image.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – Normalizes the image prior to colorizing it.</p></li>
+<li><p><strong>merge</strong> (<em>True</em>) – Merge the channel dimension.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container with the colorized image stored in Layers.PLOT.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.im.image.ImageAccessor.normalize">
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.im.image.ImageAccessor.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a percentile normalisation on each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The image container with the colorized image stored in Layers.PLOT.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="the-pl-accessor">
 <h2>The <code class="code docutils literal notranslate"><span class="pre">pl</span></code> accessor<a class="headerlink" href="#the-pl-accessor" title="Permalink to this headline"></a></h2>
 <p>The plotting accessor provides several plotting functions.</p>
-<span class="target" id="module-spatial_data.pl"></span></section>
+<span class="target" id="module-spatial_data.pl.plot"></span></section>
 </section>
 
 
@@ -111,6 +164,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Spatial-data’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/Example%201.html" class="btn btn-neutral float-right" title="Importing data to CODEX tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
