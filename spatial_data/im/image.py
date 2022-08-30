@@ -123,7 +123,13 @@ class ImageAccessor:
         return xr.merge([self._obj, da])
 
     def normalize(self):
-        """ """
+        """Performs a percentile normalisation on each channel.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container with the colorized image stored in Layers.PLOT.
+        """
         image_layer = self._obj[Layers.IMAGE]
         normed = xr.DataArray(
             _normalize(image_layer.values),
@@ -140,7 +146,27 @@ class ImageAccessor:
         background: str = "black",
         normalize: bool = True,
         merge=True,
-    ):
+    ) -> xr.Dataset:
+        """Colorizes a stack of images.
+
+        Parameters
+        ----------
+        colors: List[str]
+            A list of strings that denote the color of each channel.
+        background: float
+            Background color of the colorized image.
+        normalize: bool
+            Normalizes the image prior to colorizing it.
+        merge: True
+            Merge the channel dimension.
+
+
+        Returns
+        -------
+        xr.Dataset
+            The image container with the colorized image stored in Layers.PLOT.
+        """
+
         image_layer = self._obj[Layers.IMAGE]
         colored = _colorize(
             image_layer.values,

@@ -38,8 +38,23 @@ class PlotAccessor:
 
         return self._obj
 
-    def scatter(self, size: float = 0.001, ax=None):
-        """Plots a scatter plot of labels"""
+    def scatter(self, size: float = 0.001, ax=None) -> xr.Dataset:
+        """Plots a scatter plot of labels
+
+        Parameters
+        ----------
+        size: float
+            Size of the dots.
+        ax: matplotlib.axes
+            Matplotlib axis to plot on (default: None)
+
+
+        Returns
+        -------
+        xr.Dataset
+            The image container with the colorized image stored in Layers.PLOT.
+
+        """
         if ax is None:
             ax = plt.gca()
 
