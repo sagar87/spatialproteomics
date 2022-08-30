@@ -13,7 +13,13 @@ Welcome to Spatial-data's documentation!
 
    notebooks/Example 1
 
-.. automodule:: spatial_data
+
+API
+===
+.. automodule:: spatial_data.im
+    :members:
+
+.. automodule:: spatial_data.pl
     :members:
 
 
