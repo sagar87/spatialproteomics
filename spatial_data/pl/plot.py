@@ -44,7 +44,7 @@ class PlotAccessor:
             ax = plt.gca()
 
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        names_dict = self._obj.la._label_to_dict(Props.NAME)
+        # names_dict = self._obj.la._label_to_dict(Props.NAME)
         label_dict = self._obj.la._cells_to_label()
 
         for k, v in label_dict.items():
@@ -77,7 +77,7 @@ class PlotAccessor:
     ):
         if ax is None:
             ax = plt.gca()
-        
+
         # unpack data
         xmin, xmax = xlim
         ymin, ymax = ylim
