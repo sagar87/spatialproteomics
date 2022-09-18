@@ -5,7 +5,7 @@
 Spatial data is a light weight wrapper around `xarray` with the intention to factilitate the data exploration and analysis of highly multiplexed immunohistochemistry data.
 
 <p align="center" width="100%">
-    <img width="33%" src="docs/preview.png">
+    <img width="50%" src="docs/preview.png">
 </p>
 
 ## Principles
@@ -21,6 +21,7 @@ To install `spatial-data` first create `Python 3.8` environment and install the 
 pip install spat-data
 ```
 
+and check the documentation for further information https://sagar87.github.io/spatial-data/.
 
 
 

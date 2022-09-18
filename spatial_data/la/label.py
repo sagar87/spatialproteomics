@@ -48,7 +48,9 @@ def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.
     return labeled_segmentation
 
 
-def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=0, mode="inner"):
+def _render_label(
+    mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"
+):
     colored_mask = cmap_mask(mask)
 
     mask_bool = mask > 0
@@ -148,6 +150,38 @@ class LabelAccessor:
         cells = self._obj.la._filter_cells_by_label(sel)
         return self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
 
+    def deselect(self, indices):
+        # REFACTOR
+        if type(indices) is slice:
+            l_start = indices.start if indices.start is not None else 1
+            l_stop = (
+                indices.stop
+                if indices.stop is not None
+                else self._obj.dims[Dims.LABELS]
+            )
+            sel = [i for i in range(l_start, l_stop)]
+        elif type(indices) is list:
+            all_int = all([type(i) is int for i in indices])
+            assert all_int, "All label indices must be integers."
+            sel = indices
+
+        elif type(indices) is tuple:
+            indices = list(indices)
+            all_int = all([type(i) is int for i in indices])
+            assert all_int, "All label indices must be integers."
+            sel = indices
+        else:
+            assert (
+                type(indices) is int
+            ), "Label must be provided as slices, lists, tuple or int."
+
+            sel = [indices]
+
+        total_labels = self._obj.dims[Dims.LABELS] + 1
+        inv_sel = [i for i in range(1, total_labels) if i not in sel]
+        cells = self._obj.la._filter_cells_by_label(inv_sel)
+        return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
+
     def add_labels(
         self,
         df: pd.DataFrame,
@@ -244,13 +278,18 @@ class LabelAccessor:
     def set_label_color(self, label, color):
         self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
 
-    def render_label(self, alpha=0.2, alpha_boundary=0, mode="inner"):
+    def render_label(
+        self, alpha=0, alpha_boundary=1, mode="inner", override_color=None
+    ):
         assert (
             Layers.LABELS in self._obj
         ), "Add labels via the add_labels function first."
 
         # TODO: Attribute class in constants.py
         color_dict = self._label_to_dict(Props.COLOR, relabel=True)
+        if override_color is not None:
+            color_dict = {k: override_color for k in color_dict.keys()}
+
         cmap = _get_listed_colormap(color_dict)
 
         cells_dict = self._cells_to_label(relabel=True)

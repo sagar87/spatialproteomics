@@ -1,12 +1,14 @@
-from typing import List
+from typing import List, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
+from .spectra import format_annotation_df, plot_expression_spectra
 
 
 @xr.register_dataset_accessor("pl")
@@ -50,18 +52,7 @@ class PlotAccessor:
         """Returns legend handles for the background."""
         color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
 
-        elements = [
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                color="w",
-                label=ch,
-                markerfacecolor=c,
-                markersize=15,
-            )
-            for ch, c in color_dict.items()
-        ]
+        elements = [Patch(facecolor=c, label=ch) for ch, c in color_dict.items()]
         return elements
 
     def _legend_labels(self):
@@ -90,6 +81,7 @@ class PlotAccessor:
         highlight: list = [],
         text_kwargs: dict = {"color": "w", "fontsize": 12},
         highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
+        bbox: Union[List, None] = None,
         ax=None,
     ) -> xr.Dataset:
         """Annotates cells with their respective number.
@@ -113,7 +105,17 @@ class PlotAccessor:
         """
         if ax is None:
             ax = plt.gca()
-        for cell in self._obj.coords[Dims.CELLS]:
+
+        if bbox is None:
+            cells = self._obj.coords[Dims.CELLS]
+        else:
+            assert (
+                len(bbox) == 4
+            ), "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
+            sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
+            cells = sub.coords[Dims.CELLS]
+
+        for cell in cells:
             x, y = self._obj[Layers.OBS].loc[cell, [Features.X, Features.Y]].values
             if cell in highlight:
                 ax.text(x, y, s=f"{cell}", **highlight_kwargs)
@@ -174,8 +176,8 @@ class PlotAccessor:
 
     def add_box(
         self,
-        xlim: List[int] = [2800, 3200],
-        ylim: List[int] = [1500, 2000],
+        xlim: List[int],
+        ylim: List[int],
         color: str = "w",
         linewidth: float = 2,
         ax=None,
@@ -211,7 +213,7 @@ class PlotAccessor:
         ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
         return self._obj
 
-    def bar(self, ax=None):
+    def bar(self, ax=None, bar_kwargs: dict = {}):
         """Plots a bar plot present labels.
 
         Parameters
@@ -234,13 +236,39 @@ class PlotAccessor:
         label_array = obs_layer.loc[:, Features.LABELS].values
         x, y = np.unique(label_array, return_counts=True)
 
-        ax.bar(x, y, color=[color_dict[i] for i in x])
+        ax.bar(x, y, color=[color_dict[i] for i in x], **bar_kwargs)
         ax.set_xticks(x)
         ax.set_xticklabels([names_dict[i] for i in x], rotation=90)
         ax.set_ylabel("Label Frequency")
         ax.set_xlabel("Label")
 
         return self._obj
+
+    def pie(
+        self,
+        wedgeprops={"linewidth": 7, "edgecolor": "white"},
+        circle_radius=0.2,
+        labels=True,
+        ax=None,
+    ):
+        if ax is None:
+            ax = plt.gca()
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+        names_dict = self._obj.la._label_to_dict(Props.NAME)
+
+        obs_layer = self._obj[Layers.OBS]
+        label_array = obs_layer.loc[:, Features.LABELS].values
+        x, y = np.unique(label_array, return_counts=True)
+
+        ax.pie(
+            y,
+            labels=[names_dict[i] for i in x] if labels else None,
+            colors=[color_dict[i] for i in x],
+            wedgeprops=wedgeprops,
+        )
+        my_circle = plt.Circle((0, 0), circle_radius, color="white")
+        ax.add_artist(my_circle)
 
     def imshow(
         self,
@@ -295,5 +323,50 @@ class PlotAccessor:
 
         if legend_background or legend_label:
             ax.legend(handles=legend, **legend_kwargs)
+
+        return self._obj
+
+    def spectra(self, cells: Union[List[int], int], ax=None):
+        if type(cells) is int:
+            cells = [cells]
+
+        da = self._obj.se.quantify_cells(cells)
+        num_cells = len(cells)
+
+        if ax is isinstance(ax, np.ndarray):
+            assert (
+                np.prod(ax.shape) >= num_cells
+            ), "Must provide at least one axis for each cell to plot."
+
+        return da
+
+    def spectra_with_annotation(
+        self,
+        cells: Union[List[int], None] = None,
+        format_df=None,
+        plot_kwargs: dict = {
+            "width": 12,
+            "height": 2,
+            "hspace": 1.0,
+            "wspace": 0.0001,
+            "xticks": True,
+        },
+    ):
+        """
+        Plots the spectra of cells.
+        """
+
+        if cells is None:
+            cells = self._obj.coords[Dims.CELLS].values.tolist()
+
+        da = self._obj.se.quantify_cells(cells)
+        annot = format_annotation_df(format_df, da)
+
+        plot_expression_spectra(
+            da.values,
+            annot,
+            titles=[f"{i}" for i in da.coords[Dims.CELLS]],
+            **plot_kwargs,
+        )
 
         return self._obj

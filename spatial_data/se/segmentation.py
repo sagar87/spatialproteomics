@@ -1,22 +1,24 @@
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import xarray as xr
-from matplotlib.colors import ListedColormap
 from scipy.spatial import Delaunay
 from skimage.measure import regionprops_table
 from tqdm import tqdm
 
-from ..constants import Attrs, Dims, Features, Layers
-from .helper import label_segmentation_mask, render_label, sum_intensity
+from ..constants import Dims, Features, Layers
+from .helper import sum_intensity
 
 # from matplotlib.colors import LinearSegmentedColormap,
 PROPS_DICT = {"centroid-1": Features.X, "centroid-0": Features.Y}
 
 
-def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray) -> np.ndarray:
+def _remove_unlabeled_cells(
+    segmentation: np.ndarray, cells: np.ndarray, copy: bool = True
+) -> np.ndarray:
     """Removes all cells from the segmentation that are not in cells."""
+    if copy:
+        segmentation = segmentation.copy()
     bool_mask = ~np.isin(segmentation, cells)
     segmentation[bool_mask] = 0
 
@@ -25,6 +27,8 @@ def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray) -> np.n
 
 @xr.register_dataset_accessor("se")
 class SegmentationAccessor:
+    """Handles everything that relates to the provided segmentation."""
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
@@ -128,7 +132,13 @@ class SegmentationAccessor:
         )
         return da
 
-    def quantify(self, channels: Union[str, list] = "all", func=sum_intensity):
+    def quantify(
+        self,
+        channels: Union[str, list] = "all",
+        segmentation: Union[np.ndarray, None] = None,
+        func=sum_intensity,
+        batch=True,
+    ):
         """
         Adds channel(s) to an existing image container.
         """
@@ -136,21 +146,36 @@ class SegmentationAccessor:
         measurements = []
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
-        i = 0
-        pbar = tqdm(all_channels)
-        for channel in pbar:
-            pbar.set_description(f"Processing {channel}")
+        if segmentation is None:
+            segmentation = self._obj[Layers.SEGMENTATION].values
+
+        if batch:
+            image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
             props = regionprops_table(
-                self._obj[Layers.SEGMENTATION].values,
-                intensity_image=self._obj[Layers.IMAGE].loc[channel].values,
-                extra_properties=(func,),
+                segmentation, intensity_image=image, extra_properties=(func,)
             )
+            cell_idx = props.pop("label")
+            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+                if k.startswith(func.__name__):
+                    # print(k)
+                    measurements.append(props[k])
+            # return props
+        else:
+            i = 0
+            pbar = tqdm(all_channels)
+            for channel in pbar:
+                pbar.set_description(f"Processing {channel}")
+                props = regionprops_table(
+                    segmentation,
+                    intensity_image=self._obj[Layers.IMAGE].loc[channel].values,
+                    extra_properties=(func,),
+                )
 
-            if i == 0:
-                cell_idx = props["label"]
+                if i == 0:
+                    cell_idx = props["label"]
 
-            measurements.append(props[func.__name__])
-            i += 1
+                measurements.append(props[func.__name__])
+                i += 1
 
         ds = xr.DataArray(
             np.stack(measurements, -1),
@@ -160,80 +185,13 @@ class SegmentationAccessor:
 
         return ds
 
+    def quantify_cells(self, cells: list):
+        segmentation_layer = self._obj[Layers.SEGMENTATION]
+        segmentation_mask = _remove_unlabeled_cells(segmentation_layer.values, cells)
+        return self._obj.se.quantify(segmentation=segmentation_mask)
+
     def get_graph(self, graph_type="Delaunuay"):
         if graph_type == "Delaunuay":
             tri = Delaunay(self._obj[Layers.OBS].values)
 
         return tri
-
-    def render_labels(self, alpha=0.2, alpha_boundary=0, mode="inner"):
-        assert (
-            Layers.LABELS in self._obj
-        ), "Add labels via the add_labels function first."
-        ds = self._obj
-        # TODO: Attribute class in constants.py
-        color_dict = self._obj[Layers.LABELS].attrs[Attrs.LABEL_COLORS]
-        sorted_labels = sorted(color_dict.keys())
-
-        # TODO: This needs to be refactored
-        cmap = ListedColormap(
-            ["black"] + [color_dict[k] for k in sorted_labels], N=len(sorted_labels)
-        )
-
-        mask = self.get_labeled_segmentation()
-
-        if Layers.PLOT in self._obj:
-            rendered = render_label(
-                mask,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            attrs = self._obj[Layers.PLOT].attrs
-            ds = ds.drop_vars(Layers.PLOT)
-        else:
-            rendered = render_label(
-                mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode
-            )
-            attrs = {}
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            attrs=attrs,
-            name=Layers.PLOT,
-        )
-
-        return xr.merge([ds, da])
-
-    def get_labeled_segmentation(
-        self,
-        labels: Union[None, pd.DataFrame] = None,
-        cell_col: str = "cell",
-        label_col: str = "label",
-        src_layer: str = "_labels",
-        dst_layer: str = "_labeled_segmentation",
-    ) -> np.ndarray:
-        if labels is None:
-            labels = pd.DataFrame(
-                {
-                    cell_col: self._obj.coords[Dims.CELLS].values,
-                    label_col: self._obj[Layers.LABELS].values.squeeze(),
-                }
-            )
-
-        mask = label_segmentation_mask(
-            self._obj[Layers.SEGMENTATION].values,
-            labels,
-            cell_col=cell_col,
-            label_col=label_col,
-        )
-
-        return mask
