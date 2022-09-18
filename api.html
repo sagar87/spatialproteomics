@@ -41,8 +41,10 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#the-im-accessor">The <code class="code docutils literal notranslate"><span class="pre">im</span></code> accessor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#the-pl-accessor">The <code class="code docutils literal notranslate"><span class="pre">pl</span></code> accessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-image-im-accessor">The image (<code class="code docutils literal notranslate"><span class="pre">im</span></code>) accessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-plot-pl-accessor">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-label-la-accessor">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-segmentation-se-accessor">The segmentation (<code class="code docutils literal notranslate"><span class="pre">se</span></code>) accessor</a></li>
 </ul>
 </li>
 </ul>
@@ -101,8 +103,8 @@
 </style>
 <section id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h1>
-<section id="the-im-accessor">
-<h2>The <code class="code docutils literal notranslate"><span class="pre">im</span></code> accessor<a class="headerlink" href="#the-im-accessor" title="Permalink to this headline"></a></h2>
+<section id="the-image-im-accessor">
+<h2>The image (<code class="code docutils literal notranslate"><span class="pre">im</span></code>) accessor<a class="headerlink" href="#the-image-im-accessor" title="Permalink to this headline"></a></h2>
 <p>The image accessor enables to easily subset the image container.</p>
 <span class="target" id="module-spatial_data.im.image"></span><dl class="py class">
 <dt class="sig sig-object py" id="spatial_data.im.image.ImageAccessor">
@@ -153,8 +155,8 @@
 </dd></dl>
 
 </section>
-<section id="the-pl-accessor">
-<h2>The <code class="code docutils literal notranslate"><span class="pre">pl</span></code> accessor<a class="headerlink" href="#the-pl-accessor" title="Permalink to this headline"></a></h2>
+<section id="the-plot-pl-accessor">
+<h2>The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor<a class="headerlink" href="#the-plot-pl-accessor" title="Permalink to this headline"></a></h2>
 <p>The plotting accessor provides several plotting functions.</p>
 <span class="target" id="module-spatial_data.pl.plot"></span><dl class="py class">
 <dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor">
@@ -162,7 +164,7 @@
 <dd><p>Adds plotting functions to the image container.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.add_box">
-<span class="sig-name descname"><span class="pre">add_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[2800,</span> <span class="pre">3200]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[1500,</span> <span class="pre">2000]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.add_box" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.add_box" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a box to the current plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -183,7 +185,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.annotate">
-<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">highlight</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">12}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">16,</span> <span class="pre">'fontweight':</span> <span class="pre">'bold'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.annotate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">highlight</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">12}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">16,</span> <span class="pre">'fontweight':</span> <span class="pre">'bold'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.annotate" title="Permalink to this definition"></a></dt>
 <dd><p>Annotates cells with their respective number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -206,7 +208,7 @@ passed via highlight.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.bar">
-<span class="sig-name descname"><span class="pre">bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.bar" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.bar" title="Permalink to this definition"></a></dt>
 <dd><p>Plots a bar plot present labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -263,6 +265,59 @@ See examples.</p>
 <dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">
+<span class="sig-name descname"><span class="pre">spectra_with_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'height':</span> <span class="pre">2,</span> <span class="pre">'hspace':</span> <span class="pre">1.0,</span> <span class="pre">'width':</span> <span class="pre">12,</span> <span class="pre">'wspace':</span> <span class="pre">0.0001,</span> <span class="pre">'xticks':</span> <span class="pre">True}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the spectra of cells.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-label-la-accessor">
+<h2>The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor<a class="headerlink" href="#the-label-la-accessor" title="Permalink to this headline"></a></h2>
+<p>The label accesor enables to subset the labels of the dataset and define associated meta data.</p>
+<span class="target" id="module-spatial_data.la.label"></span></section>
+<section id="the-segmentation-se-accessor">
+<h2>The segmentation (<code class="code docutils literal notranslate"><span class="pre">se</span></code>) accessor<a class="headerlink" href="#the-segmentation-se-accessor" title="Permalink to this headline"></a></h2>
+<p>The segmentation accessor contains methods that interrogate with the segmentaton mask.</p>
+<span class="target" id="module-spatial_data.se.segmentation"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.se.segmentation.</span></span><span class="sig-name descname"><span class="pre">SegmentationAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Handles everything that relates to the provided segmentation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.add_segmentation">
+<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a segmentation mask (_segmentation) and an obs (_obs) field to the xarray dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>segmentation</strong> (<em>np.ndarray</em>) – A segmentation mask, i.e. a np.ndarray with image.shape = (n, x, y),
+that indicates the location of each cell.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em>) – If true the segmentation mask is copied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The amended xarray.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.get_coordinates">
+<span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.get_coordinates" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.quantify">
+<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
+<dd><p>Adds channel(s) to an existing image container.</p>
 </dd></dl>
 
 </dd></dl>
