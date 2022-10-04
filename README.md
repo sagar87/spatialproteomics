@@ -24,6 +24,11 @@ pip install spat-data
 and check the documentation for further information https://sagar87.github.io/spatial-data/.
 
 
+## History
 
+## 0.2.0
+
+* `.im` selector accepts arguments in form of `[channel, xmin:xmax]`
+* `.im` selector does not break when `Dims.CELLS` is not present
 
 

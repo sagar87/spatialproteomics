@@ -17,7 +17,8 @@ class ImageAccessor:
 
     def __getitem__(self, indices):
         """Subsets the image container."""
-        num_cells = self._obj.dims[Dims.CELLS]
+        if Dims.CELLS in self._obj.dims:
+            num_cells = self._obj.dims[Dims.CELLS]
 
         # argument handling
         if type(indices) is str:
@@ -48,6 +49,17 @@ class ImageAccessor:
                     c_slice = slice(None)
                     x_slice = indices[0]
                     y_slice = indices[1]
+                elif (type(indices[0]) is str) & (type(indices[1]) is slice):
+                    # Handles arguments in form of im['Hoechst', 500:1000]
+                    c_slice = [indices[0]]
+                    x_slice = indices[1]
+                    y_slice = slice(None)
+                elif (type(indices[0]) is list) & (type(indices[1]) is slice):
+                    c_slice = indices[0]
+                    x_slice = indices[1]
+                    y_slice = slice(None)
+                else:
+                    raise AssertionError("Some error in handling the input arguments")
 
             elif len(indices) == 3:
                 if type(indices[0]) is str:
@@ -69,27 +81,29 @@ class ImageAccessor:
         x_stop = xdim[-1] if x_slice.stop is None else x_slice.stop
         y_stop = ydim[-1] if y_slice.stop is None else y_slice.stop
 
-        coords = self._obj[Layers.OBS]
+        selection = {
+            Dims.CHANNELS: c_slice,
+            Dims.X: x_slice,
+            Dims.Y: y_slice,
+        }
 
-        cells = (
-            (coords.loc[:, Features.X] >= x_start)
-            & (coords.loc[:, Features.X] <= x_stop)
-            & (coords.loc[:, Features.Y] >= y_start)
-            & (coords.loc[:, Features.Y] <= y_stop)
-        ).values
+        if Dims.CELLS in self._obj.dims:
+            coords = self._obj[Layers.OBS]
+            cells = (
+                (coords.loc[:, Features.X] >= x_start)
+                & (coords.loc[:, Features.X] <= x_stop)
+                & (coords.loc[:, Features.Y] >= y_start)
+                & (coords.loc[:, Features.Y] <= y_stop)
+            ).values
 
-        ds = self._obj.sel(
-            {
-                Dims.CHANNELS: c_slice,
-                Dims.X: x_slice,
-                Dims.Y: y_slice,
-                Dims.CELLS: cells,
-            }
-        )
+            selection[Dims.CELLS] = cells
 
-        lost_cells = num_cells - ds.dims[Dims.CELLS]
+        ds = self._obj.sel(selection)
 
-        if lost_cells > 0:
+        if Dims.CELLS in self._obj.dims:
+            lost_cells = num_cells - ds.dims[Dims.CELLS]
+
+        if Dims.CELLS in self._obj.dims and lost_cells > 0:
             logger.warning(f"Dropped {lost_cells} cells.")
 
         return ds
