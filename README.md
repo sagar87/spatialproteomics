@@ -31,6 +31,8 @@ and check the documentation for further information https://sagar87.github.io/sp
 
 * Updated data import tutorial.
 * Updated RTD theme to make it wider.
+* Added slicing tutorial.
+* Added plotting tutorial.
 
 ## 0.2.1
 
