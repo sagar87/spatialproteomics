@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slicing spatial data &mdash; Spatial-Data 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Importing data and saving data" href="Example%201.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Spatial-Data
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Slicing spatial data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Slicing-channels-and-x,-y-coordinates">Slicing channels and x, y coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Slicing-labels">Slicing labels</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Spatial-Data</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Slicing spatial data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Slicing.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Slicing-spatial-data">
+<h1>Slicing spatial data<a class="headerlink" href="#Slicing-spatial-data" title="Permalink to this headline"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+import xarray as xr
+xr.set_options(display_style=&#39;text&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.core.options.set_options at 0x7efee81970d0&gt;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
+sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
+import spatial_data
+</pre></div>
+</div>
+</div>
+<p>One of the key features of <code class="docutils literal notranslate"><span class="pre">spatial_data</span></code> is the ability to slice our image data quickly and intuitively. We start by loading our spatial data <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../../small_image.zarr&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/voehring/.local/lib/python3.8/site-packages/xarray/backends/plugins.py:117: RuntimeWarning: &#39;scipy&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+</pre></div></div>
+</div>
+<section id="Slicing-channels-and-x,-y-coordinates">
+<h2>Slicing channels and x, y coordinates<a class="headerlink" href="#Slicing-channels-and-x,-y-coordinates" title="Permalink to this headline"></a></h2>
+<p>To slice specific channels of the image we simply use <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor together with the familiar bracket <code class="docutils literal notranslate"><span class="pre">[]</span></code> indexing.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[&#39;CD4&#39;]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 1, y: 500, x: 500, labels: 12, props: 2,
+                    cells: 3380, features: 4)
+Coordinates:
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * channels       (channels) &lt;U7 &#x27;CD4&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 1462 172 35 153 ... 3073 1449 973
+    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+</div>
+<p>We can also select multiple channels by simply passing a list to the <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor. As we will see later, this makes visualising image overlays easy.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[[&#39;CD4&#39;, &#39;CD8&#39;]]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 2, y: 500, x: 500, labels: 12, props: 2,
+                    cells: 3380, features: 4)
+Coordinates:
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * channels       (channels) &lt;U7 &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 1462 172 35 153 133 ... 95 86 61 9 11
+    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor also understands <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates. When <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates are sliced, we get ridd of all cells that do not belong to the respective image slice.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[50:150, 50:150]
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 3251 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 5, y: 101, x: 101, labels: 12, props: 2,
+                    cells: 129, features: 4)
+Coordinates:
+  * cells          (cells) int64 373 775 847 941 ... 185592 189294 189428 218634
+  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
+  * y              (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
+Data variables:
+    _image         (channels, y, x) uint16 15665 17953 14968 8183 ... 24 17 137
+    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 115.4 ... 5.0 77.8 75.05
+    _segmentation  (y, x) int32 57862 57862 57862 57862 0 ... 0 81800 81800 0 0</pre></div>
+</div>
+<p>Note that we can also pass <code class="docutils literal notranslate"><span class="pre">channels</span></code> and <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> coordinates at the same time.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 50:150, 50:150]
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 3251 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 2, y: 101, x: 101, labels: 12, props: 2,
+                    cells: 129, features: 4)
+Coordinates:
+  * cells          (cells) int64 373 775 847 941 ... 185592 189294 189428 218634
+  * channels       (channels) &lt;U7 &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
+  * y              (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
+Data variables:
+    _image         (channels, y, x) uint16 82 178 367 238 ... 139 167 219 246
+    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 115.4 ... 5.0 77.8 75.05
+    _segmentation  (y, x) int32 57862 57862 57862 57862 0 ... 0 81800 81800 0 0</pre></div>
+</div>
+</section>
+<section id="Slicing-labels">
+<h2>Slicing labels<a class="headerlink" href="#Slicing-labels" title="Permalink to this headline"></a></h2>
+<p>The labels accessor <code class="docutils literal notranslate"><span class="pre">.la</span></code> allows to select specific cell types.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la[4]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 5, y: 500, x: 500, labels: 1, props: 2,
+                    cells: 96, features: 4)
+Coordinates:
+  * cells          (cells) int64 15611 17529 21193 ... 212915 214319 214538
+  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 4
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
+    _labels        (labels, props) object &#x27;#fabebe&#x27; &#x27;Cell type 4&#x27;
+    _obs           (cells, features) float64 4.0 3.0 491.1 ... 3.0 156.5 490.0
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+</div>
+<p>Again it is possible to pass multiple cell labels.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la[4, 5, 6]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 5, y: 500, x: 500, labels: 3, props: 2,
+                    cells: 1802, features: 4)
+Coordinates:
+  * cells          (cells) int64 12 77 91 243 ... 218172 218185 218288 218634
+  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 4 5 6
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
+    _labels        (labels, props) object &#x27;#fabebe&#x27; ... &#x27;Cell type 6&#x27;
+    _obs           (cells, features) float64 5.0 4.0 49.25 ... 5.0 77.8 75.05
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+</div>
+<p>Finally, we can select all cells except a cell type using <code class="docutils literal notranslate"><span class="pre">la.deselect</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la.deselect([1])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 5, y: 500, x: 500, labels: 11, props: 2,
+                    cells: 3319, features: 4)
+Coordinates:
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
+    _labels        (labels, props) object &#x27;#808080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Example%201.html" class="btn btn-neutral float-left" title="Importing data and saving data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
