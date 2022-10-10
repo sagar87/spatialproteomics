@@ -19,6 +19,7 @@ Welcome to Spatial-data's documentation!
    
    notebooks/Example 1
    notebooks/Slicing
+   notebooks/Plotting
 
 
 Indices and tables
