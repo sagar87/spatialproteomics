@@ -18,6 +18,7 @@ Welcome to Spatial-data's documentation!
    :caption: Tutorials:
    
    notebooks/Example 1
+   notebooks/Slicing
 
 
 Indices and tables
