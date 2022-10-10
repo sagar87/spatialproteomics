@@ -50,6 +50,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Importing data to Spatial data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Importing-raw-data">Importing raw data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Adding-a-segmentation-mask">Adding a segmentation mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Adding-cell-type-annotations">Adding cell type annotations</a></li>
 </ul>
 </li>
 </ul>
@@ -358,16 +359,28 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Importing-data-to-Spatial-data">
 <h1>Importing data to Spatial data<a class="headerlink" href="#Importing-data-to-Spatial-data" title="Permalink to this headline"></a></h1>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from skimage.io import imread
+import pandas as pd
+import xarray as xr
+xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.core.options.set_options at 0x7f35c6832bb0&gt;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
@@ -376,7 +389,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
@@ -387,7 +400,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 <h2>Importing raw data<a class="headerlink" href="#Importing-raw-data" title="Permalink to this headline"></a></h2>
 <p>Spatial data implements useful accessors that complement <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code> objects. In order to use them we hence need to convert our image data to <code class="docutils literal notranslate"><span class="pre">xarray</span></code> objects. Here, we assume that our data comes in form of a <code class="docutils literal notranslate"><span class="pre">tiff</span></code> files. To read them into our session we use the <code class="docutils literal notranslate"><span class="pre">skimage</span></code> imread function.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>test_image = imread(&#39;../../tests/test_files/input.tiff&#39;)
@@ -396,7 +409,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p>By inspecting the <code class="docutils literal notranslate"><span class="pre">shape</span></code> of our image we see that it contains 5 channels and 500 pixels in <code class="docutils literal notranslate"><span class="pre">x,y</span></code> directions.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>test_image.shape
@@ -404,7 +417,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -414,7 +427,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p>To obtain an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object that is compatible with <code class="docutils literal notranslate"><span class="pre">spatial_data</span></code> we pass the image to the <code class="docutils literal notranslate"><span class="pre">spatial_data.load_image_data</span></code> function. The <code class="docutils literal notranslate"><span class="pre">channel_coords</span></code> argument enables us pass the appropriate channel names.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = spatial_data.load_image_data(test_image, channel_coords=[&#39;Hoechst&#39;, &#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;])
@@ -423,7 +436,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">spatial_data.load_image_data</span></code> returns an xarray object that we can simply inspect by calling in an jupyter cell. Note that the image is stored as the data variable <code class="docutils literal notranslate"><span class="pre">_image</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img
@@ -431,415 +444,25 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
-<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
-<defs>
-<symbol id="icon-database" viewBox="0 0 32 32">
-<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
-<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-</symbol>
-<symbol id="icon-file-text2" viewBox="0 0 32 32">
-<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
-<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-</symbol>
-</defs>
-</svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
-
-:root {
-  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
-  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
-  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
-  --xr-border-color: var(--jp-border-color2, #e0e0e0);
-  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
-  --xr-background-color: var(--jp-layout-color0, white);
-  --xr-background-color-row-even: var(--jp-layout-color1, white);
-  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
-}
-
-html[theme=dark],
-body[data-theme=dark],
-body.vscode-dark {
-  --xr-font-color0: rgba(255, 255, 255, 1);
-  --xr-font-color2: rgba(255, 255, 255, 0.54);
-  --xr-font-color3: rgba(255, 255, 255, 0.38);
-  --xr-border-color: #1F1F1F;
-  --xr-disabled-color: #515151;
-  --xr-background-color: #111111;
-  --xr-background-color-row-even: #111111;
-  --xr-background-color-row-odd: #313131;
-}
-
-.xr-wrap {
-  display: block !important;
-  min-width: 300px;
-  max-width: 700px;
-}
-
-.xr-text-repr-fallback {
-  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
-  display: none;
-}
-
-.xr-header {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  margin-bottom: 4px;
-  border-bottom: solid 1px var(--xr-border-color);
-}
-
-.xr-header > div,
-.xr-header > ul {
-  display: inline;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.xr-obj-type,
-.xr-array-name {
-  margin-left: 2px;
-  margin-right: 10px;
-}
-
-.xr-obj-type {
-  color: var(--xr-font-color2);
-}
-
-.xr-sections {
-  padding-left: 0 !important;
-  display: grid;
-  grid-template-columns: 150px auto auto 1fr 20px 20px;
-}
-
-.xr-section-item {
-  display: contents;
-}
-
-.xr-section-item input {
-  display: none;
-}
-
-.xr-section-item input + label {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-item input:enabled + label {
-  cursor: pointer;
-  color: var(--xr-font-color2);
-}
-
-.xr-section-item input:enabled + label:hover {
-  color: var(--xr-font-color0);
-}
-
-.xr-section-summary {
-  grid-column: 1;
-  color: var(--xr-font-color2);
-  font-weight: 500;
-}
-
-.xr-section-summary > span {
-  display: inline-block;
-  padding-left: 0.5em;
-}
-
-.xr-section-summary-in:disabled + label {
-  color: var(--xr-font-color2);
-}
-
-.xr-section-summary-in + label:before {
-  display: inline-block;
-  content: '►';
-  font-size: 11px;
-  width: 15px;
-  text-align: center;
-}
-
-.xr-section-summary-in:disabled + label:before {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-summary-in:checked + label:before {
-  content: '▼';
-}
-
-.xr-section-summary-in:checked + label > span {
-  display: none;
-}
-
-.xr-section-summary,
-.xr-section-inline-details {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.xr-section-inline-details {
-  grid-column: 2 / -1;
-}
-
-.xr-section-details {
-  display: none;
-  grid-column: 1 / -1;
-  margin-bottom: 5px;
-}
-
-.xr-section-summary-in:checked ~ .xr-section-details {
-  display: contents;
-}
-
-.xr-array-wrap {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 20px auto;
-}
-
-.xr-array-wrap > label {
-  grid-column: 1;
-  vertical-align: top;
-}
-
-.xr-preview {
-  color: var(--xr-font-color3);
-}
-
-.xr-array-preview,
-.xr-array-data {
-  padding: 0 5px !important;
-  grid-column: 2;
-}
-
-.xr-array-data,
-.xr-array-in:checked ~ .xr-array-preview {
-  display: none;
-}
-
-.xr-array-in:checked ~ .xr-array-data,
-.xr-array-preview {
-  display: inline-block;
-}
-
-.xr-dim-list {
-  display: inline-block !important;
-  list-style: none;
-  padding: 0 !important;
-  margin: 0;
-}
-
-.xr-dim-list li {
-  display: inline-block;
-  padding: 0;
-  margin: 0;
-}
-
-.xr-dim-list:before {
-  content: '(';
-}
-
-.xr-dim-list:after {
-  content: ')';
-}
-
-.xr-dim-list li:not(:last-child):after {
-  content: ',';
-  padding-right: 5px;
-}
-
-.xr-has-index {
-  font-weight: bold;
-}
-
-.xr-var-list,
-.xr-var-item {
-  display: contents;
-}
-
-.xr-var-item > div,
-.xr-var-item label,
-.xr-var-item > .xr-var-name span {
-  background-color: var(--xr-background-color-row-even);
-  margin-bottom: 0;
-}
-
-.xr-var-item > .xr-var-name:hover span {
-  padding-right: 5px;
-}
-
-.xr-var-list > li:nth-child(odd) > div,
-.xr-var-list > li:nth-child(odd) > label,
-.xr-var-list > li:nth-child(odd) > .xr-var-name span {
-  background-color: var(--xr-background-color-row-odd);
-}
-
-.xr-var-name {
-  grid-column: 1;
-}
-
-.xr-var-dims {
-  grid-column: 2;
-}
-
-.xr-var-dtype {
-  grid-column: 3;
-  text-align: right;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-preview {
-  grid-column: 4;
-}
-
-.xr-var-name,
-.xr-var-dims,
-.xr-var-dtype,
-.xr-preview,
-.xr-attrs dt {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 10px;
-}
-
-.xr-var-name:hover,
-.xr-var-dims:hover,
-.xr-var-dtype:hover,
-.xr-attrs dt:hover {
-  overflow: visible;
-  width: auto;
-  z-index: 1;
-}
-
-.xr-var-attrs,
-.xr-var-data {
-  display: none;
-  background-color: var(--xr-background-color) !important;
-  padding-bottom: 5px !important;
-}
-
-.xr-var-attrs-in:checked ~ .xr-var-attrs,
-.xr-var-data-in:checked ~ .xr-var-data {
-  display: block;
-}
-
-.xr-var-data > table {
-  float: right;
-}
-
-.xr-var-name span,
-.xr-var-data,
-.xr-attrs {
-  padding-left: 25px !important;
-}
-
-.xr-attrs,
-.xr-var-attrs,
-.xr-var-data {
-  grid-column: 1 / -1;
-}
-
-dl.xr-attrs {
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: 125px auto;
-}
-
-.xr-attrs dt,
-.xr-attrs dd {
-  padding: 0;
-  margin: 0;
-  float: left;
-  padding-right: 10px;
-  width: auto;
-}
-
-.xr-attrs dt {
-  font-weight: normal;
-  grid-column: 1;
-}
-
-.xr-attrs dt:hover span {
-  display: inline-block;
-  background: var(--xr-background-color);
-  padding-right: 10px;
-}
-
-.xr-attrs dd {
-  grid-column: 2;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.xr-icon-database,
-.xr-icon-file-text2 {
-  display: inline-block;
-  vertical-align: middle;
-  width: 1em;
-  height: 1.5em !important;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-}
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
+<pre>&lt;xarray.Dataset&gt;
 Dimensions:   (channels: 5, y: 500, x: 500)
 Coordinates:
   * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
   * y         (y) int64 0 1 2 3 4 5 6 7 8 ... 492 493 494 495 496 497 498 499
   * x         (x) int64 0 1 2 3 4 5 6 7 8 ... 492 493 494 495 496 497 498 499
 Data variables:
-    _image    (channels, y, x) uint16 10816 12359 14504 10965 ... 147 129 149 59</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-6c251f19-5a52-4ef6-a35a-a4f978667c35' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-6c251f19-5a52-4ef6-a35a-a4f978667c35' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>channels</span>: 5</li><li><span class='xr-has-index'>y</span>: 500</li><li><span class='xr-has-index'>x</span>: 500</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-11b41f19-ab93-475c-98f6-183cc2d88ab7' class='xr-section-summary-in' type='checkbox'  checked><label for='section-11b41f19-ab93-475c-98f6-183cc2d88ab7' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U7</div><div class='xr-var-preview xr-preview'>&#x27;Hoechst&#x27; &#x27;CD4&#x27; ... &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</div><input id='attrs-79bb1cae-9e10-490d-993b-85d15dfdabc0' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-79bb1cae-9e10-490d-993b-85d15dfdabc0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-557a9e35-518c-4858-8de7-6e87c19d7ff3' class='xr-var-data-in' type='checkbox'><label for='data-557a9e35-518c-4858-8de7-6e87c19d7ff3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;Hoechst&#x27;, &#x27;CD4&#x27;, &#x27;CD8&#x27;, &#x27;FOXP3&#x27;, &#x27;BCL6&#x27;], dtype=&#x27;&lt;U7&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 ... 495 496 497 498 499</div><input id='attrs-b8c51ff3-d62c-4fca-9a5f-12241922a0bb' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-b8c51ff3-d62c-4fca-9a5f-12241922a0bb' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-55c28e7b-40c3-4848-8473-c084898fbc60' class='xr-var-data-in' type='checkbox'><label for='data-55c28e7b-40c3-4848-8473-c084898fbc60' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([  0,   1,   2, ..., 497, 498, 499])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 ... 495 496 497 498 499</div><input id='attrs-11781c96-9617-4e9d-8b66-d8cfb68c3777' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-11781c96-9617-4e9d-8b66-d8cfb68c3777' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0c0c1891-664c-444f-b9aa-3caa9e6d48ec' class='xr-var-data-in' type='checkbox'><label for='data-0c0c1891-664c-444f-b9aa-3caa9e6d48ec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([  0,   1,   2, ..., 497, 498, 499])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-560cc140-d784-477e-8133-3a391125c95c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-560cc140-d784-477e-8133-3a391125c95c' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint16</div><div class='xr-var-preview xr-preview'>10816 12359 14504 ... 129 149 59</div><input id='attrs-196a1c52-536b-450d-8c6b-a2c14dfd9bee' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-196a1c52-536b-450d-8c6b-a2c14dfd9bee' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2309e9d0-edfb-4885-beda-cbf4a7db4f50' class='xr-var-data-in' type='checkbox'><label for='data-2309e9d0-edfb-4885-beda-cbf4a7db4f50' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[[10816, 12359, 14504, ...,  8317,  8919,  8115],
-        [10863, 10951, 11972, ...,  8847,  7674,  7324],
-        [11379,  8648,  8514, ...,  6802,  5289,  5650],
-        ...,
-        [ 9458,  5985,  2289, ...,  4701,  2877,   884],
-        [11675,  5429,  2905, ...,  4871,  3151,  1291],
-        [ 7802,  3931,  4377, ...,  4068,  3155,  1503]],
-
-       [[ 1462,   172,    35, ...,  1210,   735,   507],
-        [ 1187,   181,    98, ...,  1513,   506,   316],
-        [ 1303,   188,   247, ...,  1525,   441,   193],
-        ...,
-        [  346,   795,  2618, ...,  1174,   815,  1095],
-        [ 1208,  1954,  2883, ...,  2062,  1266,  1187],
-        [ 3741,  3775,  2779, ...,  3073,  1449,   973]],
-
-       [[ 8356,  1092,    44, ...,    66,     6,     1],
-        [ 3192,   390,   314, ...,   244,     6,     0],
-        [ 3710,  1156,   957, ...,   959,    82,     1],
-        ...,
-        [   14,   746,  3782, ...,    27,     0,     1],
-        [  567,  3375, 10237, ...,    88,     0,     0],
-        [ 3861,  6956,  9181, ...,    61,     9,    11]],
-
-       [[   81,    21,    11, ...,   280,   248,    87],
-        [   68,    59,    37, ...,   398,   235,   117],
-        [   16,    42,    43, ...,   367,   163,   138],
-        ...,
-        [  168,   125,    34, ...,    50,    45,    61],
-        [  137,    78,    60, ...,    16,    23,    53],
-        [  213,    88,    92, ...,     7,    15,    43]],
-
-       [[  293,   135,   219, ...,   372,   281,   134],
-        [  395,   270,   365, ...,   397,   218,   134],
-        [  296,   275,   395, ...,   297,   234,   114],
-        ...,
-        [  310,   216,   172, ...,   269,   207,   205],
-        [  222,   181,   195, ...,   305,   235,   216],
-        [  270,   233,   332, ...,   129,   149,    59]]], dtype=uint16)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-01c0a9cc-a4b3-42ff-9a52-fb4ed5b2223c' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-01c0a9cc-a4b3-42ff-9a52-fb4ed5b2223c' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+    _image    (channels, y, x) uint16 10816 12359 14504 10965 ... 147 129 149 59</pre></div>
 </div>
 </section>
 <section id="Adding-a-segmentation-mask">
 <h2>Adding a segmentation mask<a class="headerlink" href="#Adding-a-segmentation-mask" title="Permalink to this headline"></a></h2>
 <p>We may have a segmentation mask for our image ready. To make use of it we can add it to our <code class="docutils literal notranslate"><span class="pre">img</span></code> object.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>seg = imread(&#39;../../tests/test_files/segmentation.tiff&#39;)
@@ -848,7 +471,7 @@ Data variables:
 </div>
 <p>It is important to note that the dimensions of the segmentation mask has to match the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> dimension of our original image.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>seg.shape
@@ -856,7 +479,7 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -866,7 +489,7 @@ Data variables:
 </div>
 <p>Now, to add the segmentation mask we call the <code class="docutils literal notranslate"><span class="pre">se.add_segmentation</span></code> accessor. This will append the the segmentation mask to our image object and store it under the data variable <code class="docutils literal notranslate"><span class="pre">_segmentation</span></code>. Additionally, it will add an additional data variable <code class="docutils literal notranslate"><span class="pre">_obs</span></code> that is designed contain metdata for each segmentation object, i.e. cell. This table is initialised to contain the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates of each cell.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.se.add_segmentation(seg)
@@ -874,7 +497,7 @@ Data variables:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img
@@ -882,363 +505,11 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
-<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
-<defs>
-<symbol id="icon-database" viewBox="0 0 32 32">
-<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
-<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-</symbol>
-<symbol id="icon-file-text2" viewBox="0 0 32 32">
-<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
-<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-</symbol>
-</defs>
-</svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
-
-:root {
-  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
-  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
-  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
-  --xr-border-color: var(--jp-border-color2, #e0e0e0);
-  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
-  --xr-background-color: var(--jp-layout-color0, white);
-  --xr-background-color-row-even: var(--jp-layout-color1, white);
-  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
-}
-
-html[theme=dark],
-body[data-theme=dark],
-body.vscode-dark {
-  --xr-font-color0: rgba(255, 255, 255, 1);
-  --xr-font-color2: rgba(255, 255, 255, 0.54);
-  --xr-font-color3: rgba(255, 255, 255, 0.38);
-  --xr-border-color: #1F1F1F;
-  --xr-disabled-color: #515151;
-  --xr-background-color: #111111;
-  --xr-background-color-row-even: #111111;
-  --xr-background-color-row-odd: #313131;
-}
-
-.xr-wrap {
-  display: block !important;
-  min-width: 300px;
-  max-width: 700px;
-}
-
-.xr-text-repr-fallback {
-  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
-  display: none;
-}
-
-.xr-header {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  margin-bottom: 4px;
-  border-bottom: solid 1px var(--xr-border-color);
-}
-
-.xr-header > div,
-.xr-header > ul {
-  display: inline;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.xr-obj-type,
-.xr-array-name {
-  margin-left: 2px;
-  margin-right: 10px;
-}
-
-.xr-obj-type {
-  color: var(--xr-font-color2);
-}
-
-.xr-sections {
-  padding-left: 0 !important;
-  display: grid;
-  grid-template-columns: 150px auto auto 1fr 20px 20px;
-}
-
-.xr-section-item {
-  display: contents;
-}
-
-.xr-section-item input {
-  display: none;
-}
-
-.xr-section-item input + label {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-item input:enabled + label {
-  cursor: pointer;
-  color: var(--xr-font-color2);
-}
-
-.xr-section-item input:enabled + label:hover {
-  color: var(--xr-font-color0);
-}
-
-.xr-section-summary {
-  grid-column: 1;
-  color: var(--xr-font-color2);
-  font-weight: 500;
-}
-
-.xr-section-summary > span {
-  display: inline-block;
-  padding-left: 0.5em;
-}
-
-.xr-section-summary-in:disabled + label {
-  color: var(--xr-font-color2);
-}
-
-.xr-section-summary-in + label:before {
-  display: inline-block;
-  content: '►';
-  font-size: 11px;
-  width: 15px;
-  text-align: center;
-}
-
-.xr-section-summary-in:disabled + label:before {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-summary-in:checked + label:before {
-  content: '▼';
-}
-
-.xr-section-summary-in:checked + label > span {
-  display: none;
-}
-
-.xr-section-summary,
-.xr-section-inline-details {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.xr-section-inline-details {
-  grid-column: 2 / -1;
-}
-
-.xr-section-details {
-  display: none;
-  grid-column: 1 / -1;
-  margin-bottom: 5px;
-}
-
-.xr-section-summary-in:checked ~ .xr-section-details {
-  display: contents;
-}
-
-.xr-array-wrap {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 20px auto;
-}
-
-.xr-array-wrap > label {
-  grid-column: 1;
-  vertical-align: top;
-}
-
-.xr-preview {
-  color: var(--xr-font-color3);
-}
-
-.xr-array-preview,
-.xr-array-data {
-  padding: 0 5px !important;
-  grid-column: 2;
-}
-
-.xr-array-data,
-.xr-array-in:checked ~ .xr-array-preview {
-  display: none;
-}
-
-.xr-array-in:checked ~ .xr-array-data,
-.xr-array-preview {
-  display: inline-block;
-}
-
-.xr-dim-list {
-  display: inline-block !important;
-  list-style: none;
-  padding: 0 !important;
-  margin: 0;
-}
-
-.xr-dim-list li {
-  display: inline-block;
-  padding: 0;
-  margin: 0;
-}
-
-.xr-dim-list:before {
-  content: '(';
-}
-
-.xr-dim-list:after {
-  content: ')';
-}
-
-.xr-dim-list li:not(:last-child):after {
-  content: ',';
-  padding-right: 5px;
-}
-
-.xr-has-index {
-  font-weight: bold;
-}
-
-.xr-var-list,
-.xr-var-item {
-  display: contents;
-}
-
-.xr-var-item > div,
-.xr-var-item label,
-.xr-var-item > .xr-var-name span {
-  background-color: var(--xr-background-color-row-even);
-  margin-bottom: 0;
-}
-
-.xr-var-item > .xr-var-name:hover span {
-  padding-right: 5px;
-}
-
-.xr-var-list > li:nth-child(odd) > div,
-.xr-var-list > li:nth-child(odd) > label,
-.xr-var-list > li:nth-child(odd) > .xr-var-name span {
-  background-color: var(--xr-background-color-row-odd);
-}
-
-.xr-var-name {
-  grid-column: 1;
-}
-
-.xr-var-dims {
-  grid-column: 2;
-}
-
-.xr-var-dtype {
-  grid-column: 3;
-  text-align: right;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-preview {
-  grid-column: 4;
-}
-
-.xr-var-name,
-.xr-var-dims,
-.xr-var-dtype,
-.xr-preview,
-.xr-attrs dt {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 10px;
-}
-
-.xr-var-name:hover,
-.xr-var-dims:hover,
-.xr-var-dtype:hover,
-.xr-attrs dt:hover {
-  overflow: visible;
-  width: auto;
-  z-index: 1;
-}
-
-.xr-var-attrs,
-.xr-var-data {
-  display: none;
-  background-color: var(--xr-background-color) !important;
-  padding-bottom: 5px !important;
-}
-
-.xr-var-attrs-in:checked ~ .xr-var-attrs,
-.xr-var-data-in:checked ~ .xr-var-data {
-  display: block;
-}
-
-.xr-var-data > table {
-  float: right;
-}
-
-.xr-var-name span,
-.xr-var-data,
-.xr-attrs {
-  padding-left: 25px !important;
-}
-
-.xr-attrs,
-.xr-var-attrs,
-.xr-var-data {
-  grid-column: 1 / -1;
-}
-
-dl.xr-attrs {
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: 125px auto;
-}
-
-.xr-attrs dt,
-.xr-attrs dd {
-  padding: 0;
-  margin: 0;
-  float: left;
-  padding-right: 10px;
-  width: auto;
-}
-
-.xr-attrs dt {
-  font-weight: normal;
-  grid-column: 1;
-}
-
-.xr-attrs dt:hover span {
-  display: inline-block;
-  background: var(--xr-background-color);
-  padding-right: 10px;
-}
-
-.xr-attrs dd {
-  grid-column: 2;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.xr-icon-database,
-.xr-icon-file-text2 {
-  display: inline-block;
-  vertical-align: middle;
-  width: 1em;
-  height: 1.5em !important;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-}
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
+<pre>&lt;xarray.Dataset&gt;
 Dimensions:        (cells: 3640, features: 2, channels: 5, y: 500, x: 500)
 Coordinates:
   * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917
@@ -1249,59 +520,38 @@ Coordinates:
 Data variables:
     _obs           (cells, features) float64 139.8 49.25 47.77 ... 322.0 454.5
     _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-5c2728fd-9186-4a51-8f8e-84d24987130d' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-5c2728fd-9186-4a51-8f8e-84d24987130d' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>cells</span>: 3640</li><li><span class='xr-has-index'>features</span>: 2</li><li><span class='xr-has-index'>channels</span>: 5</li><li><span class='xr-has-index'>y</span>: 500</li><li><span class='xr-has-index'>x</span>: 500</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-af5bea31-10c5-4936-bbb7-8ea076878701' class='xr-section-summary-in' type='checkbox'  checked><label for='section-af5bea31-10c5-4936-bbb7-8ea076878701' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>12 77 91 ... 218775 218790 218917</div><input id='attrs-400d4ed7-a984-4053-90da-32f080207f4f' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-400d4ed7-a984-4053-90da-32f080207f4f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-52497613-4d6b-47bd-97ce-da8ee571fae8' class='xr-var-data-in' type='checkbox'><label for='data-52497613-4d6b-47bd-97ce-da8ee571fae8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    12,     77,     91, ..., 218775, 218790, 218917])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U2</div><div class='xr-var-preview xr-preview'>&#x27;_y&#x27; &#x27;_x&#x27;</div><input id='attrs-c8f09294-045b-45c4-b30f-e6632fbf7db9' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c8f09294-045b-45c4-b30f-e6632fbf7db9' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9f35610f-3ea1-4a3c-8135-f3dbf1d9b838' class='xr-var-data-in' type='checkbox'><label for='data-9f35610f-3ea1-4a3c-8135-f3dbf1d9b838' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_y&#x27;, &#x27;_x&#x27;], dtype=&#x27;&lt;U2&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U7</div><div class='xr-var-preview xr-preview'>&#x27;Hoechst&#x27; &#x27;CD4&#x27; ... &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</div><input id='attrs-6a5a4c15-ab43-4da8-82df-d31198e225ff' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-6a5a4c15-ab43-4da8-82df-d31198e225ff' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e474b7cd-4aee-4aa7-b85a-eaacb094bca6' class='xr-var-data-in' type='checkbox'><label for='data-e474b7cd-4aee-4aa7-b85a-eaacb094bca6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;Hoechst&#x27;, &#x27;CD4&#x27;, &#x27;CD8&#x27;, &#x27;FOXP3&#x27;, &#x27;BCL6&#x27;], dtype=&#x27;&lt;U7&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 ... 495 496 497 498 499</div><input id='attrs-9a2191e1-4e3f-41cf-9dfb-7f5dcd9bfe95' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9a2191e1-4e3f-41cf-9dfb-7f5dcd9bfe95' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e72bb7ee-336b-4c80-8160-7cc06ccfb656' class='xr-var-data-in' type='checkbox'><label for='data-e72bb7ee-336b-4c80-8160-7cc06ccfb656' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([  0,   1,   2, ..., 497, 498, 499])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 ... 495 496 497 498 499</div><input id='attrs-0c14f786-ca12-4f5a-afc1-90ef04f3545c' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-0c14f786-ca12-4f5a-afc1-90ef04f3545c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2e854d0d-d92a-42ed-9e61-66237a6b1cdd' class='xr-var-data-in' type='checkbox'><label for='data-2e854d0d-d92a-42ed-9e61-66237a6b1cdd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([  0,   1,   2, ..., 497, 498, 499])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-e874bba4-eba1-4929-bf10-770fa1674b5f' class='xr-section-summary-in' type='checkbox'  checked><label for='section-e874bba4-eba1-4929-bf10-770fa1674b5f' class='xr-section-summary' >Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>139.8 49.25 47.77 ... 322.0 454.5</div><input id='attrs-e5312193-bab6-465f-b4b1-5b56b623f5de' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e5312193-bab6-465f-b4b1-5b56b623f5de' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0a01eac9-c345-4576-bf75-d5883ff002d7' class='xr-var-data-in' type='checkbox'><label for='data-0a01eac9-c345-4576-bf75-d5883ff002d7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[139.78688525,  49.24590164],
-       [ 47.77358491, 388.75471698],
-       [292.49152542,  63.49152542],
-       ...,
-       [223.5       , 384.53571429],
-       [491.35294118,  73.58823529],
-       [322.        , 454.5       ]])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint16</div><div class='xr-var-preview xr-preview'>10816 12359 14504 ... 129 149 59</div><input id='attrs-f35940ff-ed85-46af-b09a-da512a8c82c1' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-f35940ff-ed85-46af-b09a-da512a8c82c1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ab203ba5-795f-4b93-82c8-bcf4b0774049' class='xr-var-data-in' type='checkbox'><label for='data-ab203ba5-795f-4b93-82c8-bcf4b0774049' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[[10816, 12359, 14504, ...,  8317,  8919,  8115],
-        [10863, 10951, 11972, ...,  8847,  7674,  7324],
-        [11379,  8648,  8514, ...,  6802,  5289,  5650],
-        ...,
-        [ 9458,  5985,  2289, ...,  4701,  2877,   884],
-        [11675,  5429,  2905, ...,  4871,  3151,  1291],
-        [ 7802,  3931,  4377, ...,  4068,  3155,  1503]],
-
-       [[ 1462,   172,    35, ...,  1210,   735,   507],
-        [ 1187,   181,    98, ...,  1513,   506,   316],
-        [ 1303,   188,   247, ...,  1525,   441,   193],
-        ...,
-        [  346,   795,  2618, ...,  1174,   815,  1095],
-        [ 1208,  1954,  2883, ...,  2062,  1266,  1187],
-        [ 3741,  3775,  2779, ...,  3073,  1449,   973]],
-
-       [[ 8356,  1092,    44, ...,    66,     6,     1],
-        [ 3192,   390,   314, ...,   244,     6,     0],
-        [ 3710,  1156,   957, ...,   959,    82,     1],
-        ...,
-        [   14,   746,  3782, ...,    27,     0,     1],
-        [  567,  3375, 10237, ...,    88,     0,     0],
-        [ 3861,  6956,  9181, ...,    61,     9,    11]],
-
-       [[   81,    21,    11, ...,   280,   248,    87],
-        [   68,    59,    37, ...,   398,   235,   117],
-        [   16,    42,    43, ...,   367,   163,   138],
-        ...,
-        [  168,   125,    34, ...,    50,    45,    61],
-        [  137,    78,    60, ...,    16,    23,    53],
-        [  213,    88,    92, ...,     7,    15,    43]],
-
-       [[  293,   135,   219, ...,   372,   281,   134],
-        [  395,   270,   365, ...,   397,   218,   134],
-        [  296,   275,   395, ...,   297,   234,   114],
-        ...,
-        [  310,   216,   172, ...,   269,   207,   205],
-        [  222,   181,   195, ...,   305,   235,   216],
-        [  270,   233,   332, ...,   129,   149,    59]]], dtype=uint16)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>63194 63194 63194 ... 59633 59633</div><input id='attrs-680e9659-c275-40e1-bd77-65dcebcdc604' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-680e9659-c275-40e1-bd77-65dcebcdc604' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d161335d-f716-4fee-bc78-33eb0b232b3f' class='xr-var-data-in' type='checkbox'><label for='data-d161335d-f716-4fee-bc78-33eb0b232b3f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[ 63194,  63194,  63194, ...,      0, 194159, 194159],
-       [ 63194,  63194,  63194, ..., 194159, 194159, 194159],
-       [ 63194,  63194,  63194, ..., 194159, 194159, 194159],
-       ...,
-       [ 51791,  51791,      0, ...,  59633,  59633,      0],
-       [ 51791,  51791,      0, ...,  59633,  59633,  59633],
-       [ 51791,      0,      0, ...,  59633,  59633,  59633]], dtype=int32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4a582461-c403-40f3-991d-365ac9174fd6' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-4a582461-c403-40f3-991d-365ac9174fd6' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
 </div>
 <p>Taking a closer look at the <code class="docutils literal notranslate"><span class="pre">img</span></code> object, we find that new coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> and <code class="docutils literal notranslate"><span class="pre">features</span></code> were added.</p>
+</section>
+<section id="Adding-cell-type-annotations">
+<h2>Adding cell type annotations<a class="headerlink" href="#Adding-cell-type-annotations" title="Permalink to this headline"></a></h2>
+<p>Finally, we may want to add cell type annotations that assign unique labels to each segmented object of our image.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = pd.read_csv(&#39;../../tests/test_files/labels.csv&#39;, index_col=0)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.core.options.set_options at 0x7fe601627a60&gt;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
