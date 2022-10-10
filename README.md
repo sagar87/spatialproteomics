@@ -26,7 +26,13 @@ and check the documentation for further information https://sagar87.github.io/sp
 
 ## History
 
-## 0.2.0
+
+## 0.2.2
+
+* Updated data import tutorial.
+* Updated RTD theme to make it wider.
+
+## 0.2.1
 
 * `.im` selector accepts arguments in form of `[channel, xmin:xmax]`
 * `.im` selector does not break when `Dims.CELLS` is not present
