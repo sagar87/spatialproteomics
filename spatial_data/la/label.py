@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from skimage.segmentation import find_boundaries, relabel_sequential
+from sklearn.neighbors import NearestNeighbors
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
@@ -323,6 +324,28 @@ class LabelAccessor:
             dims=[Dims.Y, Dims.X, Dims.RGBA],
             name=Layers.PLOT,
             attrs=attrs,
+        )
+
+        return xr.merge([self._obj, da])
+
+    def neighborhood_graph(self, neighbors=10, radius=1.0, metric="euclidean"):
+        cell_coords = self._obj.coords[Dims.CELLS].values
+
+        # fit neighborhood tree
+        tree = NearestNeighbors(n_neighbors=neighbors, radius=radius, metric=metric)
+        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]].values
+        tree.fit(coords)
+        distances, nearest_neighbors = tree.kneighbors()
+
+        #
+        da = xr.DataArray(
+            cell_coords[nearest_neighbors],
+            coords=[
+                self._obj.coords[Dims.CELLS],
+                np.arange(neighbors),
+            ],
+            dims=[Dims.CELLS, Dims.NEIGHBORS],
+            name=Layers.NEIGHBORS,
         )
 
         return xr.merge([self._obj, da])

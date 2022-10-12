@@ -3,6 +3,7 @@ from typing import List, Union
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
+from matplotlib.collections import LineCollection
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
@@ -368,5 +369,39 @@ class PlotAccessor:
             titles=[f"{i}" for i in da.coords[Dims.CELLS]],
             **plot_kwargs,
         )
+
+        return self._obj
+
+    def draw_edges(self, color="white", linewidths=0.5, ax=None):
+        # unpack data
+        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
+        neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
+        cell_dim = self._obj.dims[Dims.CELLS]
+        neighbor_dim = self._obj.dims[Dims.NEIGHBORS]
+
+        # set up edgelist
+        origin = coords.values
+        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(
+            cell_dim, neighbor_dim, 2
+        )
+
+        # line segments
+        all_lines = []
+        for k in range(target.shape[1]):
+            lines = [
+                [i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))
+            ]
+            all_lines.extend(lines)
+
+        # Line collection
+        # REFACTOR
+        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=-10)
+        if ax is None:
+            ax = plt.gca()
+
+        ax.add_collection(lc)
+        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin, xmax])
 
         return self._obj

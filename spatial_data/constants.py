@@ -6,6 +6,7 @@ class Layers(object):
     DATA = "_data"
     PLOT = "_plot"
     OBS = "_obs"
+    NEIGHBORS = "_neighbors"
 
 
 class Dims(object):
@@ -18,6 +19,7 @@ class Dims(object):
     LABELS = "labels"
     FEATURES = "features"
     PROPS = "props"
+    NEIGHBORS = "neighbors"
 
     IMAGE = ["channels", "x", "y"]
     COLORED_IMAGE = ["channels", "x", "y", "rgba"]

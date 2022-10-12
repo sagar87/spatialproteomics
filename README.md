@@ -33,6 +33,8 @@ and check the documentation for further information https://sagar87.github.io/sp
 * Updated RTD theme to make it wider.
 * Added slicing tutorial.
 * Added plotting tutorial.
+* Implemented neighborhood graph calculation.
+* Implemented `draw_edges` function.
 
 ## 0.2.1
 
