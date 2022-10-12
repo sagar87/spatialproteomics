@@ -138,6 +138,7 @@ class SegmentationAccessor:
         segmentation: Union[np.ndarray, None] = None,
         func=sum_intensity,
         batch=True,
+        remove_unlabeled=True,
     ):
         """
         Adds channel(s) to an existing image container.
@@ -148,6 +149,9 @@ class SegmentationAccessor:
 
         if segmentation is None:
             segmentation = self._obj[Layers.SEGMENTATION].values
+            segmentation = _remove_unlabeled_cells(
+                segmentation, self._obj.coords[Dims.CELLS].values
+            )
 
         if batch:
             image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
