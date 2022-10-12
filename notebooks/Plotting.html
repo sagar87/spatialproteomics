@@ -52,6 +52,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting spatial data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Channel-overlays">Channel overlays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Scatter-plots">Scatter plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Annotating-cells">Annotating cells</a></li>
 </ul>
 </li>
 </ul>
@@ -636,6 +638,107 @@ Dropped 2830 cells.
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Plotting_20_1.png" src="../_images/notebooks_Plotting_20_1.png" />
+</div>
+</div>
+</section>
+<section id="Scatter-plots">
+<h2>Scatter plots<a class="headerlink" href="#Scatter-plots" title="Permalink to this headline"></a></h2>
+<p>Rendering labels on the image might be to intense if the section to visualise is very large. In such cases we may want to fall back to a simple scatter plot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = ds.pl.scatter(legend_label=True, ax=ax, size=10)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_23_0.png" src="../_images/notebooks_Plotting_23_0.png" />
+</div>
+</div>
+<p>Note that we can also sub select cells to highlight certain celltypes using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = ds.la[1,4,11].pl.scatter(legend_label=True, ax=ax, size=30)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_25_0.png" src="../_images/notebooks_Plotting_25_0.png" />
+</div>
+</div>
+</section>
+<section id="Annotating-cells">
+<h2>Annotating cells<a class="headerlink" href="#Annotating-cells" title="Permalink to this headline"></a></h2>
+<p>We can also directly annotate cells on the plots.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = (ds
+     .im[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;], 100:300, 100:300]
+     .im.colorize(colors=[&#39;C2&#39;, &#39;C0&#39;, &#39;C3&#39;])
+     .la[5].la.render_label()
+     .pl.imshow(legend_label=True, legend_background=True, ax=ax)
+     .pl.annotate()
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_28_1.png" src="../_images/notebooks_Plotting_28_1.png" />
+</div>
+</div>
+<p>This also works on scatter plots.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = (ds
+     .la[1,4,11]
+     .pl.scatter(legend_label=True, ax=ax, size=30)
+     .la[4] # only show annotation for cell type for
+     .pl.annotate(text_kwargs=dict(color=&#39;black&#39;))
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_30_0.png" src="../_images/notebooks_Plotting_30_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
