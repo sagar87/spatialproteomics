@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting spatial data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Channel-overlays">Channel overlays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
 </ul>
 </li>
 </ul>
@@ -376,7 +377,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f0d946bf730&gt;
+&lt;xarray.core.options.set_options at 0x7fc6aa746f10&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -474,7 +475,7 @@ Dropped 2830 cells.
 </div>
 <p>All plotting functions accept <code class="docutils literal notranslate"><span class="pre">matplotlib.Axes</span></code> via the <code class="docutils literal notranslate"><span class="pre">ax</span></code> argument. This enables to easily modify plots using the normal <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> API.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -483,7 +484,7 @@ ax = plt.gca()
 _ = ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300].im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow(legend_background=True, ax=ax)
 ax.set_title(&#39;CD4 and CD8&#39;)
 ax.set_ylabel(&#39;Y&#39;)
-ax.set_ylabel(&#39;X&#39;)
+ax.set_xlabel(&#39;X&#39;)
 <br/></pre></div>
 </div>
 </div>
@@ -496,12 +497,12 @@ Dropped 2830 cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0, 0.5, &#39;X&#39;)
+Text(0.5, 0, &#39;X&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -509,6 +510,132 @@ Text(0, 0.5, &#39;X&#39;)
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Plotting_11_2.png" src="../_images/notebooks_Plotting_11_2.png" />
+</div>
+</div>
+</section>
+<section id="Rendering-Labels">
+<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this headline"></a></h2>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">la.render_label()</span></code> accessor we can visualise the segmentation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300].im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).la.render_label().pl.imshow(legend_background=True, ax=ax)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_14_1.png" src="../_images/notebooks_Plotting_14_1.png" />
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">la.render_label</span></code> accessor accepts the keyword arguments <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha_boundary</span></code> which control the intensity of the displayed segmentation mask and the boundaries.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = (ds
+     .im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300]
+     .im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
+     .la.render_label(alpha=.4, alpha_boundary=1)
+     .pl.imshow(legend_background=True, ax=ax)
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_16_1.png" src="../_images/notebooks_Plotting_16_1.png" />
+</div>
+</div>
+<p>We can also override colors to visualise all cells in a specific color.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = (ds
+     .im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300]
+     .im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
+     .la.render_label(override_color=&#39;white&#39;)
+     .pl.imshow(legend_background=True, ax=ax)
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_18_1.png" src="../_images/notebooks_Plotting_18_1.png" />
+</div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor we can also subset cell labels, rather than displaying all of them. Note that in the following plot, we also passed the <code class="docutils literal notranslate"><span class="pre">legend_label</span></code> argument which displays shown cell type labels.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
+ax = plt.gca()
+
+_ = (ds
+     .im[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;], 100:300, 100:300]
+     .im.colorize(colors=[&#39;C2&#39;, &#39;C0&#39;, &#39;C3&#39;])
+     .la[5].la.render_label()
+     .pl.imshow(legend_label=True, legend_background=True, ax=ax)
+    )
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_20_1.png" src="../_images/notebooks_Plotting_20_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
