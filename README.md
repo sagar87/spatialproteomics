@@ -35,6 +35,7 @@ and check the documentation for further information https://sagar87.github.io/sp
 * Added plotting tutorial.
 * Implemented neighborhood graph calculation.
 * Implemented `draw_edges` function.
+* Added data extraction tutorial.
 
 ## 0.2.1
 
