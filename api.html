@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Extracting.html">Extracting data</a></li>
 </ul>
 
         </div>
@@ -320,7 +321,7 @@ that indicates the location of each cell.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.quantify">
-<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em>, <em class="sig-param"><span class="pre">remove_unlabeled=True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
 <dd><p>Adds channel(s) to an existing image container.</p>
 </dd></dl>
 

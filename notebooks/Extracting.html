@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting spatial data &mdash; Spatial-Data 0.1.0 documentation</title>
+  <title>Extracting data &mdash; Spatial-Data 0.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,8 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Extracting data" href="Extracting.html" />
-    <link rel="prev" title="Slicing spatial data" href="Slicing.html" />
+    <link rel="prev" title="Plotting spatial data" href="Plotting.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -50,14 +49,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting spatial data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Channel-overlays">Channel overlays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Scatter-plots">Scatter plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Annotating-cells">Annotating cells</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extracting data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Extracting-information">Extracting information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Inspecting-the-expression-of-specific-cells">Inspecting the expression of specific cells</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
 </ul>
 
         </div>
@@ -74,9 +71,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Plotting spatial data</li>
+      <li>Extracting data</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Plotting.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/notebooks/Extracting.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -362,8 +359,8 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Plotting-spatial-data">
-<h1>Plotting spatial data<a class="headerlink" href="#Plotting-spatial-data" title="Permalink to this headline"></a></h1>
+<section id="Extracting-data">
+<h1>Extracting data<a class="headerlink" href="#Extracting-data" title="Permalink to this headline"></a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -371,6 +368,7 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
 import matplotlib.pyplot as plt
 import xarray as xr
+import numpy as np
 xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
@@ -381,7 +379,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fc6aa746f10&gt;
+&lt;xarray.core.options.set_options at 0x7f87d888e7c0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -411,208 +409,107 @@ import spatial_data
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
-<section id="Channel-overlays">
-<h2>Channel overlays<a class="headerlink" href="#Channel-overlays" title="Permalink to this headline"></a></h2>
-<p>The slicing capabilities of <code class="docutils literal notranslate"><span class="pre">xarray</span></code> make data visualisation very easy. The general pattern is here to first select the channels, image regions and labels of interest, and then to use the plotting functions that are available via the <code class="docutils literal notranslate"><span class="pre">.pl</span></code> accessor. In the following we show some examples.</p>
+<section id="Extracting-information">
+<h2>Extracting information<a class="headerlink" href="#Extracting-information" title="Permalink to this headline"></a></h2>
+<p>Once the image and segmentation masks are loaded in the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object we can leverage the <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code> accessor to capture the expression of each cells across the image channels (see also the Importing and saving data tutorial).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.im[&#39;Hoechst&#39;].pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No plot defined yet.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_5_1.png" src="../_images/notebooks_Plotting_5_1.png" />
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 5, y: 500, x: 500, labels: 12, props: 2,
+                    cells: 3380, features: 4)
+Coordinates:
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+Data variables:
+    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
+    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
+    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
 </div>
-</div>
-<p>Note that a warning message was thrown indicating that no plot was defined. We can define a plot by calling the <code class="docutils literal notranslate"><span class="pre">im.colorize</span></code> method.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code> accessor returns an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> with the coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> and <code class="docutils literal notranslate"><span class="pre">channels</span></code>. By default it will sum the intensity over the region of each cell.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.im[&#39;Hoechst&#39;].im.colorize().pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.se.quantify()
+da
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_7_0.png" src="../_images/notebooks_Plotting_7_0.png" />
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.DataArray (cells: 3380, channels: 5)&gt;
+array([[689660.,  79104., 507216.,  11554.,  22356.],
+       [547400., 111992.,   8004.,   6061.,  18178.],
+       [776478., 113204.,  35664.,   9373.,  18032.],
+       ...,
+       [375836.,  45599.,  13118.,   3591.,  11830.],
+       [181330.,  49300.,  11161.,   2535.,   7177.],
+       [142990.,  11275.,   3666.,   1303.,   5227.]])
+Coordinates:
+  * cells     (cells) int64 12 77 91 158 243 ... 218634 218740 218775 218790
+  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
 </div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">im.colorize</span></code> function allows us to make image overlays quickly by first selecting the channels of interest. We illustrate this by first selecting the CD4 and CD8 channels and then assigning the colors <code class="docutils literal notranslate"><span class="pre">C2</span></code> (<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> color for green) and <code class="docutils literal notranslate"><span class="pre">C3</span></code> (red), respectively.</p>
-<div class="nbinput docutils container">
+<p>It is easy to write custom functions for <code class="docutils literal notranslate"><span class="pre">se.quantify</span></code>. These must accept two arguments <code class="docutils literal notranslate"><span class="pre">regionmask</span></code> and <code class="docutils literal notranslate"><span class="pre">intensity_image</span></code> and return the value of interest. The following function calculates the log expression over the segemented cell(s).</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300].im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def log_expression(regionmask, intensity_image):
+    return np.log(np.sum(intensity_image[regionmask])+1)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_9_1.png" src="../_images/notebooks_Plotting_9_1.png" />
-</div>
-</div>
-<p>All plotting functions accept <code class="docutils literal notranslate"><span class="pre">matplotlib.Axes</span></code> via the <code class="docutils literal notranslate"><span class="pre">ax</span></code> argument. This enables to easily modify plots using the normal <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> API.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300].im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow(legend_background=True, ax=ax)
-ax.set_title(&#39;CD4 and CD8&#39;)
-ax.set_ylabel(&#39;Y&#39;)
-ax.set_xlabel(&#39;X&#39;)
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.se.quantify(func=log_expression)
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 0, &#39;X&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_11_2.png" src="../_images/notebooks_Plotting_11_2.png" />
-</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.DataArray (cells: 3380, channels: 5)&gt;
+array([[13.44395545, 11.27853136, 13.1366942 ,  9.35487352, 10.01489475],
+       [13.2129369 , 11.62619165,  8.98782163,  8.70979506,  9.80802236],
+       [13.56252488, 11.63695561, 10.48192509,  9.14569518,  9.79995869],
+       ...,
+       [12.83691082, 10.727663  ,  9.48181684,  8.18646443,  9.37847848],
+       [12.10807937, 10.80569964,  9.32027043,  7.83834332,  8.87877607],
+       [11.87053697,  9.33043185,  8.20712917,  7.17319174,  8.56178407]])
+Coordinates:
+  * cells     (cells) int64 12 77 91 158 243 ... 218634 218740 218775 218790
+  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
 </div>
 </section>
-<section id="Rendering-Labels">
-<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this headline"></a></h2>
-<p>Using the <code class="docutils literal notranslate"><span class="pre">la.render_label()</span></code> accessor we can visualise the segmentation.</p>
+<section id="Inspecting-the-expression-of-specific-cells">
+<h2>Inspecting the expression of specific cells<a class="headerlink" href="#Inspecting-the-expression-of-specific-cells" title="Permalink to this headline"></a></h2>
+<p>In the following section we illustrate how to pull out the expression spectra of specific cells. We start by inspecting the region of interest by slicing the respective region and cell types using <code class="docutils literal notranslate"><span class="pre">.im[]</span></code> and <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300].im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).la.render_label().pl.imshow(legend_background=True, ax=ax)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_14_1.png" src="../_images/notebooks_Plotting_14_1.png" />
-</div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">la.render_label</span></code> accessor accepts the keyword arguments <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha_boundary</span></code> which control the intensity of the displayed segmentation mask and the boundaries.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = (ds
-     .im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300]
-     .im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
-     .la.render_label(alpha=.4, alpha_boundary=1)
-     .pl.imshow(legend_background=True, ax=ax)
-    )
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_16_1.png" src="../_images/notebooks_Plotting_16_1.png" />
-</div>
-</div>
-<p>We can also override colors to visualise all cells in a specific color.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = (ds
-     .im[[&#39;CD4&#39;, &#39;CD8&#39;], 100:300, 100:300]
-     .im.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
-     .la.render_label(override_color=&#39;white&#39;)
-     .pl.imshow(legend_background=True, ax=ax)
-    )
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_18_1.png" src="../_images/notebooks_Plotting_18_1.png" />
-</div>
-</div>
-<p>Using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor we can also subset cell labels, rather than displaying all of them. Note that in the following plot, we also passed the <code class="docutils literal notranslate"><span class="pre">legend_label</span></code> argument which displays shown cell type labels.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -621,83 +518,7 @@ ax = plt.gca()
 _ = (ds
      .im[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;], 100:300, 100:300]
      .im.colorize(colors=[&#39;C2&#39;, &#39;C0&#39;, &#39;C3&#39;])
-     .la[5].la.render_label()
-     .pl.imshow(legend_label=True, legend_background=True, ax=ax)
-    )
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Dropped 2830 cells.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_20_1.png" src="../_images/notebooks_Plotting_20_1.png" />
-</div>
-</div>
-</section>
-<section id="Scatter-plots">
-<h2>Scatter plots<a class="headerlink" href="#Scatter-plots" title="Permalink to this headline"></a></h2>
-<p>Rendering labels on the image might be to intense if the section to visualise is very large. In such cases we may want to fall back to a simple scatter plot.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = ds.pl.scatter(legend_label=True, ax=ax, size=10)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_23_0.png" src="../_images/notebooks_Plotting_23_0.png" />
-</div>
-</div>
-<p>Note that we can also sub select cells to highlight certain celltypes using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = ds.la[1,4,11].pl.scatter(legend_label=True, ax=ax, size=30)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_25_0.png" src="../_images/notebooks_Plotting_25_0.png" />
-</div>
-</div>
-</section>
-<section id="Annotating-cells">
-<h2>Annotating cells<a class="headerlink" href="#Annotating-cells" title="Permalink to this headline"></a></h2>
-<p>We can also directly annotate cells on the plots.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = (ds
-     .im[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;], 100:300, 100:300]
-     .im.colorize(colors=[&#39;C2&#39;, &#39;C0&#39;, &#39;C3&#39;])
-     .la[5].la.render_label()
+     .la[8].la.render_label()
      .pl.imshow(legend_label=True, legend_background=True, ax=ax)
      .pl.annotate()
     )
@@ -716,23 +537,92 @@ Dropped 2830 cells.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_28_1.png" src="../_images/notebooks_Plotting_28_1.png" />
+<img alt="../_images/notebooks_Extracting_12_1.png" src="../_images/notebooks_Extracting_12_1.png" />
 </div>
 </div>
-<p>This also works on scatter plots.</p>
+<p>To extract the expression spectra we simply subset the region and cells followed by <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-ax = plt.gca()
-
-_ = (ds
-     .la[1,4,11]
-     .pl.scatter(legend_label=True, ax=ax, size=30)
-     .la[4] # only show annotation for cell type for
-     .pl.annotate(text_kwargs=dict(color=&#39;black&#39;))
-    )
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.im[100:300, 100:300].la[8].se.quantify()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Dropped 2830 cells.
+</pre></div></div>
+</div>
+<p>We obtain a <code class="docutils literal notranslate"><span class="pre">xarray</span></code> data array that contains the expression of our cell selection.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.DataArray (cells: 17, channels: 5)&gt;
+array([[4.31490e+05, 4.80420e+04, 7.53160e+04, 2.23300e+03, 1.55520e+04],
+       [1.02598e+05, 3.44300e+03, 2.42630e+04, 5.52000e+02, 4.76800e+03],
+       [7.13390e+05, 5.50030e+04, 7.77500e+03, 1.10510e+04, 2.29680e+04],
+       [3.11829e+05, 5.49320e+04, 1.00680e+04, 3.73800e+03, 1.46140e+04],
+       [3.69859e+05, 5.64970e+04, 3.63500e+03, 4.17100e+03, 1.10010e+04],
+       [1.88742e+05, 2.44370e+04, 4.44800e+03, 2.89600e+03, 1.02780e+04],
+       [3.82525e+05, 4.50230e+04, 9.93000e+02, 6.20500e+03, 1.34300e+04],
+       [2.83051e+05, 8.23600e+03, 1.47000e+03, 2.16700e+03, 8.98600e+03],
+       [1.30254e+05, 3.59710e+04, 1.22340e+04, 1.77800e+03, 6.86100e+03],
+       [2.19349e+05, 4.32470e+04, 1.30200e+04, 2.99800e+03, 8.53500e+03],
+       [1.19460e+05, 2.00290e+04, 7.03100e+03, 9.01000e+02, 4.64100e+03],
+       [9.33400e+04, 3.29720e+04, 2.36810e+04, 1.87900e+03, 1.17750e+04],
+       [6.30890e+04, 9.39200e+03, 1.07980e+04, 8.34000e+02, 3.56200e+03],
+       [2.75438e+05, 8.96650e+04, 1.26560e+04, 3.02200e+03, 6.95600e+03],
+       [1.80743e+05, 4.16640e+04, 1.81640e+04, 1.38100e+03, 7.59800e+03],
+       [5.84840e+04, 2.36250e+04, 5.04310e+04, 1.55100e+03, 3.81100e+03],
+       [1.90441e+05, 3.12430e+04, 6.47920e+04, 2.82200e+03, 7.09300e+03]])
+Coordinates:
+  * cells     (cells) int64 2506 17675 31461 43168 ... 115378 131089 134952
+  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
+</div>
+<p>To pull out the expression of a specific cell, say cell 52971, we can retrieve it as follows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da.loc[52971]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.DataArray (channels: 5)&gt;
+array([283051.,   8236.,   1470.,   2167.,   8986.])
+Coordinates:
+    cells     int64 52971
+  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
+</div>
+<p>To understand the output better we may want to plot the data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots()
+ax.bar(np.arange(5), da.loc[52971].values)
+_ = ax.set_xticks(np.arange(5))
+_ = ax.set_xticklabels(da.coords[&#39;channels&#39;].values.tolist())
+_ = ax.set_title(&#39;Cell 52971&#39;)
 </pre></div>
 </div>
 </div>
@@ -740,15 +630,7 @@ _ = (ds
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_30_0.png" src="../_images/notebooks_Plotting_30_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
+<img alt="../_images/notebooks_Extracting_20_0.png" src="../_images/notebooks_Extracting_20_0.png" />
 </div>
 </div>
 </section>
@@ -758,8 +640,7 @@ _ = (ds
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Slicing.html" class="btn btn-neutral float-left" title="Slicing spatial data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Extracting.html" class="btn btn-neutral float-right" title="Extracting data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Plotting.html" class="btn btn-neutral float-left" title="Plotting spatial data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
