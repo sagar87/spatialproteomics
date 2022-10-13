@@ -130,6 +130,7 @@ class PlotAccessor:
         legend_label=False,
         size: float = 0.001,
         alpha: float = 0.9,
+        zorder=10,
         ax=None,
         legend_kwargs: dict = {"framealpha": 1},
     ) -> xr.Dataset:
@@ -162,7 +163,9 @@ class PlotAccessor:
             obs_layer = label_subset[Layers.OBS]
             x = obs_layer.loc[:, Features.X]
             y = obs_layer.loc[:, Features.Y]
-            ax.scatter(x.values, y.values, s=size, c=color_dict[k], alpha=alpha)
+            ax.scatter(
+                x.values, y.values, s=size, c=color_dict[k], alpha=alpha, zorder=zorder
+            )
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
@@ -372,7 +375,7 @@ class PlotAccessor:
 
         return self._obj
 
-    def draw_edges(self, color="white", linewidths=0.5, ax=None):
+    def draw_edges(self, color="white", linewidths=0.5, zorder=0, ax=None):
         # unpack data
         coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
         neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
@@ -395,7 +398,9 @@ class PlotAccessor:
 
         # Line collection
         # REFACTOR
-        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=-10)
+        lc = LineCollection(
+            all_lines, colors=color, linewidths=linewidths, zorder=zorder
+        )
         if ax is None:
             ax = plt.gca()
 
