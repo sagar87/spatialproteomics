@@ -16,9 +16,30 @@ class PreprocessingAccessor:
         self._obj = xarray_obj
 
     def __getitem__(self, indices):
-        """Subsets the image container."""
-        if Dims.CELLS in self._obj.dims:
-            num_cells = self._obj.dims[Dims.CELLS]
+        """Fast subsetting the image container. The following examples show how
+        the user can subset the image container:
+
+        Subset the image container using x and y coordinates:
+        >> ds.pp[0:50, 0:50]
+
+        Subset the image container using x and y coordinates and channels:
+        >> ds.pp['Hoechst', 0:50, 0:50]
+
+        Subset the image container using channels:
+        >> ds.pp['Hoechst']
+
+        Multiple channels can be selected by passing a list of channels:
+        >> ds.pp[['Hoechst', 'CD4']]
+
+        Parameters:
+        -----------
+        indices: str, slice, list, tuple
+            The indices to subset the image container.
+        Returns:
+        --------
+        xarray.Dataset
+            The subsetted image container.
+        """
 
         # argument handling
         if type(indices) is str:
@@ -73,41 +94,8 @@ class PreprocessingAccessor:
                     x_slice = indices[1]
                     y_slice = indices[2]
 
-        # get the dimensionality of the image
-        xdim = self._obj.coords[Dims.X]
-        ydim = self._obj.coords[Dims.Y]
-
-        x_start = xdim[0] if x_slice.start is None else x_slice.start
-        y_start = ydim[0] if y_slice.start is None else y_slice.start
-        x_stop = xdim[-1] if x_slice.stop is None else x_slice.stop
-        y_stop = ydim[-1] if y_slice.stop is None else y_slice.stop
-
-        selection = {
-            Dims.CHANNELS: c_slice,
-            Dims.X: x_slice,
-            Dims.Y: y_slice,
-        }
-
-        if Dims.CELLS in self._obj.dims:
-            coords = self._obj[Layers.OBS]
-            cells = (
-                (coords.loc[:, Features.X] >= x_start)
-                & (coords.loc[:, Features.X] <= x_stop)
-                & (coords.loc[:, Features.Y] >= y_start)
-                & (coords.loc[:, Features.Y] <= y_stop)
-            ).values
-
-            selection[Dims.CELLS] = cells
-
-        ds = self._obj.sel(selection)
-
-        if Dims.CELLS in self._obj.dims:
-            lost_cells = num_cells - ds.dims[Dims.CELLS]
-
-        if Dims.CELLS in self._obj.dims and lost_cells > 0:
-            logger.warning(f"Dropped {lost_cells} cells.")
-
-        return ds
+        ds = self._obj.pp.get_channels(c_slice)
+        return ds.pp.get_bbox(x_slice, y_slice)
 
     def get_bbox(self, x_slice: slice, y_slice: slice):
         """Returns the bounds of the image container."""
@@ -141,7 +129,7 @@ class PreprocessingAccessor:
             ).values
             # calculates the number of cells that were dropped due setting the bounding box
             lost_cells = num_cells - sum(cells)
-            
+
             if lost_cells > 0:
                 logger.warning(f"Dropped {lost_cells} cells.")
 
