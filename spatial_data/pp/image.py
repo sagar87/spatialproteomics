@@ -73,6 +73,7 @@ class PreprocessingAccessor:
                     x_slice = indices[1]
                     y_slice = indices[2]
 
+        # get the dimensionality of the image
         xdim = self._obj.coords[Dims.X]
         ydim = self._obj.coords[Dims.Y]
 
@@ -107,6 +108,56 @@ class PreprocessingAccessor:
             logger.warning(f"Dropped {lost_cells} cells.")
 
         return ds
+
+    def get_bbox(self, x_slice: slice, y_slice: slice):
+        """Returns the bounds of the image container."""
+
+        # get the dimensionality of the image
+        xdim = self._obj.coords[Dims.X]
+        ydim = self._obj.coords[Dims.Y]
+
+        # set the start and stop indices
+        x_start = xdim[0] if x_slice.start is None else x_slice.start
+        y_start = ydim[0] if y_slice.start is None else y_slice.start
+        x_stop = xdim[-1] if x_slice.stop is None else x_slice.stop
+        y_stop = ydim[-1] if y_slice.stop is None else y_slice.stop
+
+        # set up query
+        query = {
+            Dims.X: x_slice,
+            Dims.Y: y_slice,
+        }
+
+        # handle case when there are cells in the image
+        if Dims.CELLS in self._obj.dims:
+            num_cells = self._obj.dims[Dims.CELLS]
+
+            coords = self._obj[Layers.OBS]
+            cells = (
+                (coords.loc[:, Features.X] >= x_start)
+                & (coords.loc[:, Features.X] <= x_stop)
+                & (coords.loc[:, Features.Y] >= y_start)
+                & (coords.loc[:, Features.Y] <= y_stop)
+            ).values
+            # calculates the number of cells that were dropped due setting the bounding box
+            lost_cells = num_cells - sum(cells)
+            
+            if lost_cells > 0:
+                logger.warning(f"Dropped {lost_cells} cells.")
+
+            # finalise query
+            query[Dims.CELLS] = cells
+
+        return self._obj.sel(query)
+
+    def get_channels(self, channels: Union[List[str], str]):
+        """Returns a single channel as a numpy array."""
+        if isinstance(channels, str):
+            channels = [channels]
+        # build query
+        query = {Dims.CHANNELS: channels}
+
+        return self._obj.sel(query)
 
     def add_channel(self, channels: Union[str, list], array: np.ndarray):
         """
