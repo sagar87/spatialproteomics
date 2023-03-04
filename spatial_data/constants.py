@@ -7,6 +7,7 @@ class Layers(object):
     PLOT = "_plot"
     OBS = "_obs"
     NEIGHBORS = "_neighbors"
+    INTENSITY = "_intensity"
 
 
 class Dims(object):

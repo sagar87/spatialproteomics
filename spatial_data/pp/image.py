@@ -8,8 +8,8 @@ from ..constants import Attrs, Dims, Features, Layers
 from .transforms import _colorize, _normalize
 
 
-@xr.register_dataset_accessor("im")
-class ImageAccessor:
+@xr.register_dataset_accessor("pp")
+class PreprocessingAccessor:
     """The image accessor enables fast indexing and preprocesses image.data"""
 
     def __init__(self, xarray_obj):

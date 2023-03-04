@@ -79,6 +79,7 @@ class PlotAccessor:
 
     def annotate(
         self,
+        variable: str = "cell",
         highlight: list = [],
         text_kwargs: dict = {"color": "w", "fontsize": 12},
         highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
@@ -117,11 +118,31 @@ class PlotAccessor:
             cells = sub.coords[Dims.CELLS]
 
         for cell in cells:
-            x, y = self._obj[Layers.OBS].loc[cell, [Features.X, Features.Y]].values
-            if cell in highlight:
-                ax.text(x, y, s=f"{cell}", **highlight_kwargs)
+            x = (
+                self._obj[Layers.OBS]
+                .sel({Dims.CELLS: cell, Dims.FEATURES: Features.X})
+                .values
+            )
+            y = (
+                self._obj[Layers.OBS]
+                .sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y})
+                .values
+            )
+            if variable != "cell":
+                t = (
+                    self._obj[Layers.OBS]
+                    .sel({Dims.CELLS: cell, Dims.FEATURES: variable})
+                    .values
+                )
             else:
-                ax.text(x, y, s=f"{cell}", **text_kwargs)
+                t = cell
+
+            # print(x,y, t)
+            if cell in highlight:
+                ax.text(x, y, s=f"{t}", **highlight_kwargs)
+            else:
+
+                ax.text(x, y, s=f"{t}", **text_kwargs)
 
         return self._obj
 
@@ -279,6 +300,7 @@ class PlotAccessor:
         legend_background: bool = False,
         legend_label: bool = False,
         legend_kwargs: dict = {"framealpha": 1},
+        downsample: int = 1,
         ax=None,
     ):
         """Plots the image.
@@ -311,7 +333,7 @@ class PlotAccessor:
         bounds = self._obj.pl._get_bounds()
 
         ax.imshow(
-            self._obj[Layers.PLOT].values,
+            self._obj[Layers.PLOT].values[::downsample, ::downsample],
             origin="lower",
             interpolation="none",
             extent=bounds,

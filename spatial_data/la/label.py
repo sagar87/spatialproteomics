@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -45,6 +45,19 @@ def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.
     # remove cells that are not indexed
     neg_mask = ~np.isin(segmentation, all_cells)
     labeled_segmentation[neg_mask] = 0
+
+    return labeled_segmentation
+
+
+def _remove_segmentation_mask_labels(
+    segmentation: np.ndarray, labels: Union[list, np.ndarray]
+) -> np.ndarray:
+    """
+    Relabels a segmentation according to the labels df (contains the columns type, cell).
+    """
+    labeled_segmentation = segmentation.copy()
+    mask = ~np.isin(segmentation, labels)
+    labeled_segmentation[mask] = 0
 
     return labeled_segmentation
 
@@ -116,6 +129,22 @@ class LabelAccessor:
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
 
         return cells_sel
+
+    def filter_by_obs(self, col: str, func: Callable):
+        """Returns the list of cells with the labels from items."""
+        cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
+        cells_bool = func(cells)
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+        # print(cells_sel, len(cells_sel))
+        return self._obj.sel({Dims.CELLS: cells_sel})
+
+    def filter_by_intensity(self, col: str, func: Callable):
+        """Returns the list of cells with the labels from items."""
+        cells = self._obj[Layers.INTENSITY].sel({Dims.CHANNELS: col}).values.copy()
+        cells_bool = func(cells)
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        return self._obj.sel({Dims.CELLS: cells_sel})
 
     def __getitem__(self, indices):
         """
@@ -278,6 +307,54 @@ class LabelAccessor:
 
     def set_label_color(self, label, color):
         self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
+
+    def render_segmentation(
+        self,
+        alpha=0,
+        alpha_boundary=1,
+        mode="inner",
+    ):
+        color_dict = {1: "white"}
+        cmap = _get_listed_colormap(color_dict)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        segmentation = _remove_segmentation_mask_labels(
+            segmentation, self._obj.coords[Dims.CELLS].values
+        )
+        # mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+        return xr.merge([self._obj, da])
 
     def render_label(
         self, alpha=0, alpha_boundary=1, mode="inner", override_color=None

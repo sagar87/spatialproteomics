@@ -117,6 +117,15 @@ class SegmentationAccessor:
 
         return xr.merge([da, self._obj])
 
+    def properties(self, props):
+        """
+        Returns a xr.DataArray with the coordinates of each cell.
+        """
+        table = regionprops_table(
+            self._obj[Layers.SEGMENTATION].values, properties=props
+        )
+        return table
+
     def get_coordinates(self):
         """
         Returns a xr.DataArray with the coordinates of each cell.
@@ -139,6 +148,7 @@ class SegmentationAccessor:
         func=sum_intensity,
         batch=True,
         remove_unlabeled=True,
+        return_dataarray=False,
     ):
         """
         Adds channel(s) to an existing image container.
@@ -181,13 +191,17 @@ class SegmentationAccessor:
                 measurements.append(props[func.__name__])
                 i += 1
 
-        ds = xr.DataArray(
+        da = xr.DataArray(
             np.stack(measurements, -1),
             coords=[cell_idx, all_channels],
             dims=[Dims.CELLS, Dims.CHANNELS],
+            name=Layers.INTENSITY,
         )
 
-        return ds
+        if return_dataarray:
+            return da
+
+        return xr.merge([self._obj, da])
 
     def quantify_cells(self, cells: list):
         segmentation_layer = self._obj[Layers.SEGMENTATION]
