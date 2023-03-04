@@ -111,3 +111,12 @@ def test_image_normalize(dataset_full):
 
     assert type(normalized_image) is xr.DataArray
     assert normalized_image.shape[0] == 5
+
+
+def test_add_obs(dataset):
+    dataset.pp.add_properties()
+
+    assert Layers.OBS in dataset
+    assert Dims.FEATURES in dataset.coords
+    assert "centroid-0" in dataset[Layers.OBS].coords[Dims.FEATURES]
+    assert "centroid-1" in dataset[Layers.OBS].coords[Dims.FEATURES]

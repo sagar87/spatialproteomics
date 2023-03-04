@@ -43,8 +43,8 @@ class Props(object):
 class Features(object):
     LABELS = "_labels"
     ORIGINAL_LABELS = "_original_labels"
-    X = "_x"
-    Y = "_y"
+    X = "centroid-1"  # "_x"
+    Y = "centroid-0"  # "_y"
 
 
 COLORS = [
@@ -71,3 +71,5 @@ COLORS = [
     "#808080",
     "#ffffff",
 ]
+
+PROPS_DICT = {"centroid-1": Features.X, "centroid-0": Features.Y}

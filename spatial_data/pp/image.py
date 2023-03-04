@@ -2,6 +2,7 @@ from typing import List, Union
 
 import numpy as np
 import xarray as xr
+from skimage.measure import regionprops_table
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers
@@ -183,7 +184,7 @@ class PreprocessingAccessor:
 
     def add_segmentation(
         self, segmentation: np.ndarray, copy: bool = True
-    ) -> np.ndarray:
+    ) -> xr.Dataset:
         """Adds a segmentation mask (_segmentation) and an obs (_obs) field to the xarray dataset.
 
         Parameters
@@ -221,6 +222,78 @@ class PreprocessingAccessor:
 
         # self._obj[Layers.SEGMENTATION] = da
         # self._obj = self._obj.se.add_obs("centroid")
+
+        return xr.merge([self._obj, da])
+
+    def add_properties(
+        self,
+        properties: Union[str, list, tuple] = ("label", "centroid"),
+        return_xarray: bool = False,
+    ) -> xr.Dataset:
+        """Adds properties derived from the mask to the image container.
+
+        Parameters:
+        -----------
+        properties: Union[str, list, tuple]
+            A list of properties to be added to the image container. See
+            skimage.measure.regionprops_table for a list of available properties.
+        return_xarray: bool
+            If true, the function returns an xarray.DataArray with the properties
+            instead of adding them to the image container.
+        key_added: str
+            The key under which the properties are added to the image container,
+            by default this is "_obs".
+
+        Returns:
+        --------
+        xr.DataSet
+            The amended image container.
+        """
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("No segmentation mask found.")
+
+        if type(properties) is str:
+            properties = [properties]
+
+        if "label" not in properties:
+            properties = ["label", *properties]
+
+        table = regionprops_table(
+            self._obj[Layers.SEGMENTATION].values, properties=properties
+        )
+
+        label = table.pop("label")
+        data = []
+        cols = []
+
+        for k, v in table.items():
+            if Dims.FEATURES in self._obj.coords:
+                if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
+                    logger.warning(f"Found {k} in _obs. Skipping.")
+                    continue
+            cols.append(k)
+            data.append(v)
+
+        if len(data) == 0:
+            logger.warning("Warning: No properties were added.")
+            return self._obj
+
+        da = xr.DataArray(
+            np.stack(data, -1),
+            coords=[label, cols],
+            dims=[Dims.CELLS, Dims.FEATURES],
+            name=Layers.OBS,
+        )
+
+        if return_xarray:
+            return da
+
+        # if there are already observations, concatenate them
+        if Layers.OBS in self._obj:
+            da = xr.concat(
+                [self._obj[Layers.OBS].copy(), da],
+                dim=Dims.FEATURES,
+            )
 
         return xr.merge([self._obj, da])
 
