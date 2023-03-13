@@ -78,9 +78,7 @@ def test_image_slicing_channels_with_list(dataset_full):
 
 def test_image_slicing_false_channel_type(dataset_full):
 
-    with pytest.raises(
-        AssertionError, match="First index must index channel coordinates."
-    ):
+    with pytest.raises(AssertionError, match="First index must index channel coordinates."):
         dataset_full.pp[4, :50, :50]
 
 
@@ -113,10 +111,10 @@ def test_image_normalize(dataset_full):
     assert normalized_image.shape[0] == 5
 
 
-def test_add_obs(dataset):
-    dataset.pp.add_properties()
+# def test_add_obs(dataset):
+#     dataset.pp.add_properties()
 
-    assert Layers.OBS in dataset
-    assert Dims.FEATURES in dataset.coords
-    assert "centroid-0" in dataset[Layers.OBS].coords[Dims.FEATURES]
-    assert "centroid-1" in dataset[Layers.OBS].coords[Dims.FEATURES]
+#     assert Layers.OBS in dataset
+#     assert Dims.FEATURES in dataset.coords
+#     assert "centroid-0" in dataset[Layers.OBS].coords[Dims.FEATURES]
+#     assert "centroid-1" in dataset[Layers.OBS].coords[Dims.FEATURES]

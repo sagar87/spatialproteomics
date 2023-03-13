@@ -26,14 +26,10 @@ def load_files(data_dir):
 
     files = os.listdir(data_dir)
     files_loaded = {
-        str(f).split("/")[-1].split(".")[0]: imread(os.path.join(str(data_dir), f))
-        for f in files
-        if f.endswith("tiff")
+        str(f).split("/")[-1].split(".")[0]: imread(os.path.join(str(data_dir), f)) for f in files if f.endswith("tiff")
     }
 
-    files_loaded["labels"] = pd.read_csv(
-        os.path.join(str(data_dir), files[files.index("labels.csv")]), index_col=0
-    )
+    files_loaded["labels"] = pd.read_csv(os.path.join(str(data_dir), files[files.index("labels.csv")]), index_col=0)
 
     return files_loaded
 

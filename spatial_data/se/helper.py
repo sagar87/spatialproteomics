@@ -21,10 +21,7 @@ def render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=0, mode="i
     im = img.copy()
 
     im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
-    im[mask_bound] = (
-        alpha_boundary * colored_mask[mask_bound]
-        + (1 - alpha_boundary) * img[mask_bound]
-    )
+    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
 
     return im
 
@@ -70,9 +67,7 @@ def generate_cmap(num_cell_types, colors=COLORS, labels=None):
         labels = ["BG"] + [f"Cell type {i}" for i in range(num_cell_types)]
 
     legend_elements = [
-        Line2D(
-            [0], [0], marker="o", color="w", label=t, markerfacecolor=c, markersize=15
-        )
+        Line2D([0], [0], marker="o", color="w", label=t, markerfacecolor=c, markersize=15)
         for c, t in zip(colors, labels)
     ]
     return cmap, legend_elements

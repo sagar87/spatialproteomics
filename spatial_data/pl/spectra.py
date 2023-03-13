@@ -15,9 +15,7 @@ def format_annotation_df(annotation, da, index_col="idx", channel_col="name"):
     )
 
     new_annot = (
-        annotation.drop(columns=index_col)
-        .merge(df, on=channel_col, how="left")
-        .rename(columns={"index": index_col})
+        annotation.drop(columns=index_col).merge(df, on=channel_col, how="left").rename(columns={"index": index_col})
     )
     return new_annot
 
@@ -134,9 +132,7 @@ def plot_expression_spectrum(
     axes_min = 0
     last_bound = 0
     for i, grid_bound in grid_bounds.iterrows():
-        sub_frame = annotations[
-            (annotations[categories_col] == grid_bound[categories_col])
-        ]
+        sub_frame = annotations[(annotations[categories_col] == grid_bound[categories_col])]
 
         if sorting_col is not None:
             sub_frame = sub_frame.sort_values(by=sorting_col)

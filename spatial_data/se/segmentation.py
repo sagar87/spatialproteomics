@@ -13,9 +13,7 @@ from .helper import sum_intensity
 PROPS_DICT = {"centroid-1": Features.X, "centroid-0": Features.Y}
 
 
-def _remove_unlabeled_cells(
-    segmentation: np.ndarray, cells: np.ndarray, copy: bool = True
-) -> np.ndarray:
+def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray, copy: bool = True) -> np.ndarray:
     """Removes all cells from the segmentation that are not in cells."""
     if copy:
         segmentation = segmentation.copy()
@@ -32,9 +30,7 @@ class SegmentationAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def add_segmentation(
-        self, segmentation: np.ndarray, copy: bool = True
-    ) -> np.ndarray:
+    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> np.ndarray:
         """Adds a segmentation mask (_segmentation) and an obs (_obs) field to the xarray dataset.
 
         Parameters
@@ -50,9 +46,7 @@ class SegmentationAccessor:
         xr.Dataset
             The amended xarray.
         """
-        assert ~np.all(
-            segmentation < 0
-        ), "A segmentation mask may not contain negative numbers."
+        assert ~np.all(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
 
@@ -86,9 +80,7 @@ class SegmentationAccessor:
         if "label" not in properties:
             properties = ["label", *properties]
 
-        table = regionprops_table(
-            self._obj[Layers.SEGMENTATION].values, properties=properties
-        )
+        table = regionprops_table(self._obj[Layers.SEGMENTATION].values, properties=properties)
 
         label = table.pop("label")
         data = []
@@ -121,18 +113,14 @@ class SegmentationAccessor:
         """
         Returns a xr.DataArray with the coordinates of each cell.
         """
-        table = regionprops_table(
-            self._obj[Layers.SEGMENTATION].values, properties=props
-        )
+        table = regionprops_table(self._obj[Layers.SEGMENTATION].values, properties=props)
         return table
 
     def get_coordinates(self):
         """
         Returns a xr.DataArray with the coordinates of each cell.
         """
-        table = regionprops_table(
-            self._obj[Layers.SEGMENTATION].values, properties=("label", "centroid")
-        )
+        table = regionprops_table(self._obj[Layers.SEGMENTATION].values, properties=("label", "centroid"))
         da = xr.DataArray(
             np.stack([table["centroid-1"], table["centroid-0"]], -1),
             coords=[table["label"], [Dims.X, Dims.Y]],
@@ -159,15 +147,11 @@ class SegmentationAccessor:
 
         if segmentation is None:
             segmentation = self._obj[Layers.SEGMENTATION].values
-            segmentation = _remove_unlabeled_cells(
-                segmentation, self._obj.coords[Dims.CELLS].values
-            )
+            segmentation = _remove_unlabeled_cells(segmentation, self._obj.coords[Dims.CELLS].values)
 
         if batch:
             image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
-            props = regionprops_table(
-                segmentation, intensity_image=image, extra_properties=(func,)
-            )
+            props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
             cell_idx = props.pop("label")
             for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
                 if k.startswith(func.__name__):

@@ -37,9 +37,7 @@ def _normalize(
     """
     perc = np.percentile(img, [pmin, pmax], axis=(1, 2)).T
 
-    norm = (img - np.expand_dims(perc[:, 0], (1, 2))) / (
-        np.expand_dims(perc[:, 1] - perc[:, 0], (1, 2)) + eps
-    )
+    norm = (img - np.expand_dims(perc[:, 0], (1, 2))) / (np.expand_dims(perc[:, 1] - perc[:, 0], (1, 2)) + eps)
 
     if clip:
         norm = np.clip(norm, 0, 1)
@@ -102,8 +100,7 @@ def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
             alpha_0 = alpha_a + alpha_b * (1 - alpha_a)
             im_combined = np.ones_like(images[0])
             im_combined[:, :, 0:3] = (
-                images[i][:, :, 0:3] * alpha_a
-                + im_base[:, :, 0:3] * alpha_b * (1 - alpha_a)
+                images[i][:, :, 0:3] * alpha_a + im_base[:, :, 0:3] * alpha_b * (1 - alpha_a)
             ) / alpha_0
             im_base = im_combined
 

@@ -12,6 +12,31 @@ from ..constants import Attrs, Dims, Features, Layers, Props
 from .spectra import format_annotation_df, plot_expression_spectra
 
 
+def set_up_subplots(num_plots, ncols=4, width=4, height=3):
+    """Set up subplots for plotting multiple factors."""
+
+    if num_plots == 1:
+        fig, ax = plt.subplots()
+        return fig, ax
+
+    nrows, reminder = divmod(num_plots, ncols)
+
+    if num_plots < ncols:
+        nrows = 1
+        ncols = num_plots
+    else:
+        nrows, reminder = divmod(num_plots, ncols)
+
+        if nrows == 0:
+            nrows = 1
+        if reminder > 0:
+            nrows += 1
+
+    fig, axes = plt.subplots(nrows, ncols, figsize=(width * ncols, height * nrows))
+    _ = [ax.axis("off") for ax in axes.flatten()[num_plots:]]
+    return fig, axes
+
+
 @xr.register_dataset_accessor("pl")
 class PlotAccessor:
     """Adds plotting functions to the image container."""
@@ -111,29 +136,15 @@ class PlotAccessor:
         if bbox is None:
             cells = self._obj.coords[Dims.CELLS]
         else:
-            assert (
-                len(bbox) == 4
-            ), "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
+            assert len(bbox) == 4, "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
             sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
             cells = sub.coords[Dims.CELLS]
 
         for cell in cells:
-            x = (
-                self._obj[Layers.OBS]
-                .sel({Dims.CELLS: cell, Dims.FEATURES: Features.X})
-                .values
-            )
-            y = (
-                self._obj[Layers.OBS]
-                .sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y})
-                .values
-            )
+            x = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.X}).values
+            y = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y}).values
             if variable != "cell":
-                t = (
-                    self._obj[Layers.OBS]
-                    .sel({Dims.CELLS: cell, Dims.FEATURES: variable})
-                    .values
-                )
+                t = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: variable}).values
             else:
                 t = cell
 
@@ -153,7 +164,9 @@ class PlotAccessor:
         alpha: float = 0.9,
         zorder=10,
         ax=None,
+        colorize: bool = True,
         legend_kwargs: dict = {"framealpha": 1},
+        scatter_kws: dict = {},
     ) -> xr.Dataset:
         """Plots a scatter plot of labels
 
@@ -184,9 +197,10 @@ class PlotAccessor:
             obs_layer = label_subset[Layers.OBS]
             x = obs_layer.loc[:, Features.X]
             y = obs_layer.loc[:, Features.Y]
-            ax.scatter(
-                x.values, y.values, s=size, c=color_dict[k], alpha=alpha, zorder=zorder
-            )
+            if colorize:
+                ax.scatter(x.values, y.values, s=size, c=color_dict[k], alpha=alpha, zorder=zorder, **scatter_kws)
+            else:
+                ax.scatter(x.values, y.values, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
@@ -260,10 +274,11 @@ class PlotAccessor:
         obs_layer = self._obj[Layers.OBS]
         label_array = obs_layer.loc[:, Features.LABELS].values
         x, y = np.unique(label_array, return_counts=True)
+        query = ~(x == 0)
 
-        ax.bar(x, y, color=[color_dict[i] for i in x], **bar_kwargs)
-        ax.set_xticks(x)
-        ax.set_xticklabels([names_dict[i] for i in x], rotation=90)
+        ax.bar(x[query], y[query], color=[color_dict[i] for i in x[query]], **bar_kwargs)
+        ax.set_xticks(x[query])
+        ax.set_xticklabels([names_dict[i] for i in x[query]], rotation=90)
         ax.set_ylabel("Label Frequency")
         ax.set_xlabel("Label")
 
@@ -360,9 +375,7 @@ class PlotAccessor:
         num_cells = len(cells)
 
         if ax is isinstance(ax, np.ndarray):
-            assert (
-                np.prod(ax.shape) >= num_cells
-            ), "Must provide at least one axis for each cell to plot."
+            assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
 
         return da
 
@@ -406,23 +419,17 @@ class PlotAccessor:
 
         # set up edgelist
         origin = coords.values
-        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(
-            cell_dim, neighbor_dim, 2
-        )
+        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(cell_dim, neighbor_dim, 2)
 
         # line segments
         all_lines = []
         for k in range(target.shape[1]):
-            lines = [
-                [i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))
-            ]
+            lines = [[i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))]
             all_lines.extend(lines)
 
         # Line collection
         # REFACTOR
-        lc = LineCollection(
-            all_lines, colors=color, linewidths=linewidths, zorder=zorder
-        )
+        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=zorder)
         if ax is None:
             ax = plt.gca()
 
@@ -430,5 +437,41 @@ class PlotAccessor:
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
+
+        return self._obj
+
+    def channel_histogram(
+        self,
+        intensity_key: str,
+        bins: int = 50,
+        ncols: int = 4,
+        width: float = 4,
+        height: float = 3,
+        ax=None,
+        **kwargs,
+    ):
+        intensities = self._obj[intensity_key]
+        channels = self._obj.coords[Dims.CHANNELS].values
+        num_channels = len(channels)
+
+        # if num_channels > 1 and ax is not None:
+        #     logger.warning("More than one channel. Plotting on first axis.")
+        #     # assert np.prod(ax.shape) >= num_channels, "Must provide at least one axis for each channel to plot."
+        # else:
+        #     if ax is None:
+        #         ax = plt.gca()
+        fig, axes = set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
+
+        if num_channels > 1:
+
+            for ch, ax in zip(channels, axes.flatten()):
+                data = intensities.sel({Dims.CHANNELS: ch}).values
+                ax.hist(data, bins=bins, **kwargs)
+                ax.set_title(ch)
+        else:
+            ch = channels[0]
+            data = intensities.sel({Dims.CHANNELS: ch}).values
+            axes.hist(data, bins=bins, **kwargs)
+            axes.set_title(ch)
 
         return self._obj

@@ -50,14 +50,10 @@ def load_image_data(
 
     channel_dim, y_dim, x_dim = image.shape
 
-    assert (
-        len(channel_coords) == channel_dim
-    ), "Length of channel_coords must match image.shape[0]."
+    assert len(channel_coords) == channel_dim, "Length of channel_coords must match image.shape[0]."
 
     if labels is not None:
-        assert (
-            segmentation is not None
-        ), "Labels may only be provided in conjunction with a segmentation."
+        assert segmentation is not None, "Labels may only be provided in conjunction with a segmentation."
 
     im = xr.DataArray(
         image,
@@ -69,14 +65,10 @@ def load_image_data(
     dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
 
     if segmentation is not None:
-        dataset = dataset.pp.add_segmentation(
-            segmentation, copy=copy_segmentation
-        ).pp.add_properties()
+        dataset = dataset.pp.add_segmentation(segmentation, copy=copy_segmentation).pp.add_observations()
 
         if labels is not None:
-            dataset = dataset.la.add_labels(
-                labels, cell_col=cell_col, label_col=label_col
-            )
+            dataset = dataset.la.add_labels(labels, cell_col=cell_col, label_col=label_col)
 
     else:
         dataset = xr.Dataset(data_vars={Layers.IMAGE: im})

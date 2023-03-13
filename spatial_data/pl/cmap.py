@@ -2,9 +2,7 @@ from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
 
 def _get_linear_colormap(colors: list, background: str):
-    return [
-        LinearSegmentedColormap.from_list(c, [background, c], N=256) for c in colors
-    ]
+    return [LinearSegmentedColormap.from_list(c, [background, c], N=256) for c in colors]
 
 
 def _get_listed_colormap(color_dict: dict):

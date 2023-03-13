@@ -1,5 +1,6 @@
 from typing import Callable, List, Union
 
+import networkx as nx
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -49,9 +50,7 @@ def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.
     return labeled_segmentation
 
 
-def _remove_segmentation_mask_labels(
-    segmentation: np.ndarray, labels: Union[list, np.ndarray]
-) -> np.ndarray:
+def _remove_segmentation_mask_labels(segmentation: np.ndarray, labels: Union[list, np.ndarray]) -> np.ndarray:
     """
     Relabels a segmentation according to the labels df (contains the columns type, cell).
     """
@@ -62,9 +61,7 @@ def _remove_segmentation_mask_labels(
     return labeled_segmentation
 
 
-def _render_label(
-    mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"
-):
+def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
     colored_mask = cmap_mask(mask)
 
     mask_bool = mask > 0
@@ -78,10 +75,7 @@ def _render_label(
     im = img.copy()
 
     im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
-    im[mask_bound] = (
-        alpha_boundary * colored_mask[mask_bound]
-        + (1 - alpha_boundary) * img[mask_bound]
-    )
+    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
 
     return im
 
@@ -95,23 +89,38 @@ class LabelAccessor:
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
         return {fw[k]: v for k, v in dictionary.items()}
 
-    def _label_to_dict(self, prop: str, relabel: bool = False):
+    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False):
+        """Returns a dictionary that maps each label to a list to their property.
+
+        Parameters:
+        -----------
+        prop: str
+            The property to map to the labels.
+        reverse: bool
+            If True, the dictionary will be reversed.
+        relabel: bool
+            Deprecated.
+
+        Returns:
+        --------
+        label_dict: dict
+            A dictionary that maps each label to a list to their property.
+        """
         labels_layer = self._obj[Layers.LABELS]
-        label_dict = {
-            label.item(): labels_layer.loc[label, prop].item()
-            for label in self._obj.coords[Dims.LABELS]
-        }
+        label_dict = {label.item(): labels_layer.loc[label, prop].item() for label in self._obj.coords[Dims.LABELS]}
 
         if relabel:
             return self._obj.la._relabel_dict(label_dict)
+
+        if reverse:
+            label_dict = {v: k for k, v in label_dict.items()}
 
         return label_dict
 
     def _cells_to_label(self, relabel: bool = False):
         """Returns a dictionary that maps each label to a list of cells."""
         label_dict = {
-            label.item(): self._obj.la._filter_cells_by_label(label.item())
-            for label in self._obj.coords[Dims.LABELS]
+            label.item(): self._obj.la._filter_cells_by_label(label.item()) for label in self._obj.coords[Dims.LABELS]
         }
 
         if relabel:
@@ -154,11 +163,7 @@ class LabelAccessor:
         # TODO: Write tests!
         if type(indices) is slice:
             l_start = indices.start if indices.start is not None else 1
-            l_stop = (
-                indices.stop
-                if indices.stop is not None
-                else self._obj.dims[Dims.LABELS]
-            )
+            l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
         elif type(indices) is list:
             all_int = all([type(i) is int for i in indices])
@@ -171,9 +176,7 @@ class LabelAccessor:
             assert all_int, "All label indices must be integers."
             sel = indices
         else:
-            assert (
-                type(indices) is int
-            ), "Label must be provided as slices, lists, tuple or int."
+            assert type(indices) is int, "Label must be provided as slices, lists, tuple or int."
 
             sel = [indices]
 
@@ -184,11 +187,7 @@ class LabelAccessor:
         # REFACTOR
         if type(indices) is slice:
             l_start = indices.start if indices.start is not None else 1
-            l_stop = (
-                indices.stop
-                if indices.stop is not None
-                else self._obj.dims[Dims.LABELS]
-            )
+            l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
         elif type(indices) is list:
             all_int = all([type(i) is int for i in indices])
@@ -201,9 +200,7 @@ class LabelAccessor:
             assert all_int, "All label indices must be integers."
             sel = indices
         else:
-            assert (
-                type(indices) is int
-            ), "Label must be provided as slices, lists, tuple or int."
+            assert type(indices) is int, "Label must be provided as slices, lists, tuple or int."
 
             sel = [indices]
 
@@ -212,7 +209,187 @@ class LabelAccessor:
         cells = self._obj.la._filter_cells_by_label(inv_sel)
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
-    def add_labels(
+    def add_label_type(self, name: str, color: str = "w"):
+        """Add a new label type to the image container."""
+
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("No segmentation mask found.")
+        if Layers.OBS not in self._obj:
+            raise ValueError("No observation table found.")
+
+        array = np.array([name, color]).reshape(1, -1)
+
+        # if label annotations (Layers.LABELS) are not present, create them
+        if Layers.LABELS not in self._obj:
+            da = xr.DataArray(
+                array,
+                coords=[np.array([1]), [Props.NAME, Props.COLOR]],
+                dims=[Dims.LABELS, Dims.PROPS],
+                name=Layers.LABELS,
+            )
+
+            db = xr.DataArray(
+                np.zeros(self._obj.coords[Dims.CELLS].shape[0]).reshape(-1, 1),
+                coords=[self._obj.coords[Dims.CELLS], [Features.LABELS]],
+                dims=[Dims.CELLS, Dims.FEATURES],
+                name=Layers.OBS,
+            )
+
+            obj = xr.merge([self._obj, da, db])
+        else:
+            new_coord = self._obj.coords[Dims.LABELS].values.max() + 1
+            da = xr.DataArray(
+                array,
+                coords=[np.array([new_coord]), [Props.NAME, Props.COLOR]],
+                dims=[Dims.LABELS, Dims.PROPS],
+            )
+
+            da = xr.concat(
+                [self._obj[Layers.LABELS], da],
+                dim=Dims.LABELS,
+            )
+            obj = xr.merge([self._obj, da])
+
+        return obj
+
+    def remove_label_type(self, cell_type: Union[int, List[int]]):
+
+        if isinstance(cell_type, int):
+            cell_type = [cell_type]
+
+        if Layers.LABELS not in self._obj:
+            raise ValueError("No cell type labels found.")
+
+        for i in cell_type:
+            if i not in self._obj.coords[Dims.LABELS].values:
+                raise ValueError(f"Cell type {i} not found.")
+
+        cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
+        cells = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        self._obj[Layers.OBS].loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+
+        return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
+
+    def get_gate_graph(self):
+        if "graph" not in self._obj.attrs:
+            # initialize graph
+            graph = nx.Graph()
+            graph.add_node(0)
+            self._obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+            return graph
+
+        g = nx.from_dict_of_dicts(self._obj.attrs["graph"])
+
+        for k, v in self._obj.attrs.items():
+            if k == "graph":
+                continue
+
+            nx.set_node_attributes(g, v, name=k)
+        return g
+
+    def gate_label_type(
+        self,
+        label_id: int,
+        channel: str,
+        threshold: float,
+        intensity_key: str,
+        override: bool = False,
+        parent: int = 0,
+    ):
+        """
+
+        Parameters:
+        -----------
+        label_id: int
+            The cell type id to assign to the gated cells.
+        channel: str
+            The channel to use for gating.
+        threshold: float
+            The threshold to use for gating.
+        intensity_key: str
+            The key to use for the intensity layer.
+        """
+        labels = self._obj.coords[Dims.LABELS]
+
+        if isinstance(label_id, str):
+            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+
+            if label_id not in label_dict:
+                raise ValueError(f"Cell type {label_id} not found.")
+
+            # overwrite label_id with the corresponding id
+            label_id = label_dict[label_id]
+
+        if label_id not in labels:
+            raise ValueError(f"Cell type id {label_id} not found.")
+
+        label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
+        labeled_cells = self._obj.la._cells_to_label()  # dict of cell ids per label
+        # graph = self._obj.get_gate_graph() # gating graph
+        
+        # should use filter
+        cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
+        cells = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        logger.info(f"Gating yields {len(cells)} positive labels.")
+
+        for label_i, cells_i in labeled_cells.items():
+            if parent != 0:
+                if label_i != parent:
+                    cells = np.array([cell for cell in cells if cell not in cells_i])
+                    continue
+
+            overlap = np.isin(cells, cells_i)
+            num_cells_overwritten = np.sum(overlap)
+            if np.any(overlap):
+                if override:
+                    logger.info(
+                        f"{num_cells_overwritten} cells of cell type {label_names[label_i]} ({label_i}) is being overwritten by cell type {label_names[label_id]} ({label_id})."
+                    )
+                else:
+                    cells = np.array([cell for cell in cells if cell not in cells_i])
+
+                    logger.info(
+                        f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[label_i]} ({label_i}). New number of positive labels: {len(cells)}."
+                    )
+
+        obs = self._obj[Layers.OBS]
+        obj = self._obj.drop_vars(Layers.OBS)
+
+        da = obs.copy()
+        da.loc[{Dims.CELLS: cells, Dims.FEATURES: Features.LABELS}] = label_id
+
+        if len(self._obj.attrs) == 0:
+            # initialize graph
+            graph = nx.Graph()
+            graph.add_node(0)
+            graph.add_node(
+                label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
+            )
+            graph.add_edge(0, label_id)
+
+            obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
+                obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+        else:
+            graph = nx.from_dict_of_dicts(obj.attrs.pop("graph"))
+
+            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
+                nx.set_node_attributes(graph, obj.attrs.pop(node_prop), node_prop)
+
+            graph.add_node(
+                label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
+            )
+            graph.add_edge(parent, label_id)
+
+            obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
+                obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+
+        return xr.merge([obj, da])
+
+    def add_label_types_from_dataframe(
         self,
         df: pd.DataFrame,
         cell_col: str = "cell",
@@ -265,24 +442,22 @@ class LabelAccessor:
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
-        self._obj = self._obj.la.add_props(colors, Props.COLOR)
+        self._obj = self._obj.la.add_label_property(colors, Props.COLOR)
 
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
             names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
 
-        self._obj = self._obj.la.add_props(names, Props.NAME)
+        self._obj = self._obj.la.add_label_property(names, Props.NAME)
         self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
             self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
         )
 
         return self._obj
 
-    def add_props(self, array: Union[np.ndarray, list], prop: str):
-        unique_labels = np.unique(
-            self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS})
-        )
+    def add_label_property(self, array: Union[np.ndarray, list], prop: str):
+        unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
 
         if type(array) is list:
             array = np.array(array)
@@ -302,6 +477,7 @@ class LabelAccessor:
 
         return xr.merge([da, self._obj])
 
+
     def set_label_name(self, label, name):
         self._obj[Layers.LABELS].loc[label, Props.NAME] = name
 
@@ -317,9 +493,7 @@ class LabelAccessor:
         color_dict = {1: "white"}
         cmap = _get_listed_colormap(color_dict)
         segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_segmentation_mask_labels(
-            segmentation, self._obj.coords[Dims.CELLS].values
-        )
+        segmentation = _remove_segmentation_mask_labels(segmentation, self._obj.coords[Dims.CELLS].values)
         # mask = _label_segmentation_mask(segmentation, cells_dict)
 
         if Layers.PLOT in self._obj:
@@ -356,12 +530,8 @@ class LabelAccessor:
         )
         return xr.merge([self._obj, da])
 
-    def render_label(
-        self, alpha=0, alpha_boundary=1, mode="inner", override_color=None
-    ):
-        assert (
-            Layers.LABELS in self._obj
-        ), "Add labels via the add_labels function first."
+    def render_label(self, alpha=0, alpha_boundary=1, mode="inner", override_color=None):
+        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
 
         # TODO: Attribute class in constants.py
         color_dict = self._label_to_dict(Props.COLOR, relabel=True)
@@ -387,9 +557,7 @@ class LabelAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_label(
-                mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode
-            )
+            rendered = _render_label(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
 
         da = xr.DataArray(
             rendered,

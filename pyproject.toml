@@ -34,3 +34,6 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon", "nbsphinx"]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120

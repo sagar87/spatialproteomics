@@ -7,9 +7,7 @@ from spatial_data.container import load_image_data
 
 def test_load_data_proper_five_channel_input(data_dic):
     # datafiles.listdir() will list fileA and fileB originally from dir1
-    dataset = load_image_data(
-        data_dic["input"], ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"]
-    )
+    dataset = load_image_data(data_dic["input"], ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"])
 
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset

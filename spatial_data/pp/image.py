@@ -1,11 +1,14 @@
 from typing import List, Union
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 from skimage.measure import regionprops_table
 
 from ..base_logger import logger
-from ..constants import Attrs, Dims, Features, Layers
+from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
+from ..la.label import _format_labels
+from .segmentation import _remove_unlabeled_cells, sum_intensity
 from .transforms import _colorize, _normalize
 
 
@@ -168,9 +171,7 @@ class PreprocessingAccessor:
         assert (
             len(channels) == other_channels
         ), "The length of channels must match the number of channels in array (DxMxN)."
-        assert (self_x_dim == other_x_dim) & (
-            self_y_dim == other_y_dim
-        ), "Dims do not match."
+        assert (self_x_dim == other_x_dim) & (self_y_dim == other_y_dim), "Dims do not match."
 
         da = xr.DataArray(
             array,
@@ -182,27 +183,27 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(
-        self, segmentation: np.ndarray, copy: bool = True
-    ) -> xr.Dataset:
-        """Adds a segmentation mask (_segmentation) and an obs (_obs) field to the xarray dataset.
+    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> xr.Dataset:
+        """Adds a segmentation mask (_segmentation) field to the xarray dataset.
+        Expects an array of shape (x, y) that matches the shape of the image, ie.
+        the x and y coordinates of the image container. Further, the mask is expected
+        to mark the background with zeros and the cell instances with positive integers.
 
-        Parameters
-        ----------
-        segmentation : np.ndarray
+
+        Parameters:
+        -----------
+        segmentation: np.ndarray
             A segmentation mask, i.e. a np.ndarray with image.shape = (n, x, y),
             that indicates the location of each cell.
         copy: bool
             If true the segmentation mask is copied.
 
-        Returns
-        -------
+        Returns:
+        --------
         xr.Dataset
             The amended xarray.
         """
-        assert ~np.all(
-            segmentation < 0
-        ), "A segmentation mask may not contain negative numbers."
+        assert ~np.all(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
 
@@ -213,6 +214,7 @@ class PreprocessingAccessor:
         if copy:
             segmentation = segmentation.copy()
 
+        # crete a data array with the segmentation mask
         da = xr.DataArray(
             segmentation,
             coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
@@ -220,12 +222,13 @@ class PreprocessingAccessor:
             name=Layers.SEGMENTATION,
         )
 
-        # self._obj[Layers.SEGMENTATION] = da
-        # self._obj = self._obj.se.add_obs("centroid")
+        # add cell coordinates
+        obj = self._obj.copy()
+        obj.coords[Dims.CELLS] = np.unique(segmentation[segmentation > 0]).astype(int)
 
-        return xr.merge([self._obj, da])
+        return xr.merge([obj, da])
 
-    def add_properties(
+    def add_observations(
         self,
         properties: Union[str, list, tuple] = ("label", "centroid"),
         return_xarray: bool = False,
@@ -258,9 +261,7 @@ class PreprocessingAccessor:
         if "label" not in properties:
             properties = ["label", *properties]
 
-        table = regionprops_table(
-            self._obj[Layers.SEGMENTATION].values, properties=properties
-        )
+        table = regionprops_table(self._obj[Layers.SEGMENTATION].values, properties=properties)
 
         label = table.pop("label")
         data = []
@@ -290,12 +291,212 @@ class PreprocessingAccessor:
 
         # if there are already observations, concatenate them
         if Layers.OBS in self._obj:
+            logger.info("Found _obs in image container. Concatenating.")
             da = xr.concat(
                 [self._obj[Layers.OBS].copy(), da],
                 dim=Dims.FEATURES,
             )
 
         return xr.merge([self._obj, da])
+
+    def add_quantification(
+        self,
+        channels: Union[str, list] = "all",
+        func=sum_intensity,
+        remove_unlabeled=True,
+        key_added: str = Layers.INTENSITY,
+        return_xarray=False,
+    ):
+        """
+        Adds channel(s) to an existing image container.
+        """
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("No segmentation mask found.")
+
+        if key_added in self._obj:
+            logger.warning(f"Found {key_added} in image container. Please add a different key.")
+            return self._obj
+
+        if Dims.CELLS not in self._obj.coords:
+            logger.warning("No cell coordinates found. Adding _obs table.")
+            self._obj = self._obj.pp.add_observations()
+
+        measurements = []
+        all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        segmentation = _remove_unlabeled_cells(segmentation, self._obj.coords[Dims.CELLS].values)
+
+        image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
+        props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
+        cell_idx = props.pop("label")
+        for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+            if k.startswith(func.__name__):
+                measurements.append(props[k])
+
+        da = xr.DataArray(
+            np.stack(measurements, -1),
+            coords=[cell_idx, all_channels],
+            dims=[Dims.CELLS, Dims.CHANNELS],
+            name=key_added,
+        )
+
+        if return_xarray:
+            return da
+
+        return xr.merge([self._obj, da])
+
+    def add_quantification_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.INTENSITY) -> xr.Dataset:
+        """Adds an observation table to the image container. Columns of the
+        dataframe are added have to match the channel coords of the image
+        container, and index of the dataframe has to match the cell coords
+        of the image container.
+
+        Parameters:
+        -----------
+        df: pd.DataFrame
+            A dataframe with the quantification values.
+        key_added: str
+            The key under which the quantification is added to the image container,
+
+        Returns:
+        --------
+        xr.DataSet
+            The amended image container.
+        """
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("No segmentation mask found. A segmentation mask is required to add quantification.")
+
+        # pulls out the cell and channel coordinates from the image container
+        cells = self._obj.coords[Dims.CELLS].values
+        channels = self._obj.coords[Dims.CHANNELS].values
+
+        # create a data array from the dataframe
+        da = xr.DataArray(
+            df.loc[cells, channels].values,
+            coords=[cells, channels],
+            dims=[Dims.CELLS, Dims.CHANNELS],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
+
+    # def add_cell_type(self, num_cell_types: int):
+
+    #     if Layers.LABELS not in self._obj:
+    #         labels =  np.arange(1, num_cell_types + 1).reshape(-1, 1)
+    #         props = np.full((num_cell_types, 2), -1)
+
+    #         da = xr.DataArray(
+    #             np.concatenate([labels, props], 1),
+    #             coords=[np.arange(1, num_cell_types + 1), [Layers.LABELS, Props.NAME, Props.COLOR]],
+    #             dims=[Dims.LABELS, Dims.PROPS],
+    #             name=Layers.LABELS,
+    #         )
+    #     else:
+    #         da = self.da[Layer.LABELS].coo
+
+    #     return xr.merge([self._obj, da])
+
+    def add_properties(self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False):
+        # unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+
+        if type(array) is list:
+            array = np.array(array)
+
+        if prop == Features.LABELS:
+            unique_labels = np.unique(_format_labels(array))
+
+        da = xr.DataArray(
+            array.reshape(-1, 1),
+            coords=[unique_labels.astype(int), [prop]],
+            dims=[Dims.LABELS, Dims.PROPS],
+            name=Layers.LABELS,
+        )
+
+        if return_xarray:
+            return da
+
+        if Layers.LABELS in self._obj:
+            da = xr.concat(
+                [self._obj[Layers.LABELS], da],
+                dim=Dims.PROPS,
+            )
+
+        return xr.merge([da, self._obj])
+
+    def add_labels(
+        self,
+        df: Union[pd.DataFrame, None] = None,
+        cell_col: str = "cell",
+        label_col: str = "label",
+        colors: Union[list, None] = None,
+        names: Union[list, None] = None,
+    ):
+
+        if df is None:
+            cells = self._obj.coords[Dims.CELLS].values
+            labels = np.ones(len(cells))
+            formated_labels = np.ones(len(cells))
+            unique_labels = np.unique(formated_labels)
+        else:
+            sub = df.loc[:, [cell_col, label_col]].dropna()
+            cells = sub.loc[:, cell_col].values.squeeze()
+            labels = sub.loc[:, label_col].values.squeeze()
+
+            assert ~np.all(labels < 0), "Labels must be >= 0."
+
+            formated_labels = _format_labels(labels)
+            unique_labels = np.unique(formated_labels)
+
+        if np.all(formated_labels == labels):
+            da = xr.DataArray(
+                formated_labels.reshape(-1, 1),
+                coords=[cells, [Features.LABELS]],
+                dims=[Dims.CELLS, Dims.FEATURES],
+                name=Layers.OBS,
+            )
+        else:
+            da = xr.DataArray(
+                np.stack([formated_labels, labels], -1),
+                coords=[
+                    cells,
+                    [
+                        Features.LABELS,
+                        Features.ORIGINAL_LABELS,
+                    ],
+                ],
+                dims=[Dims.CELLS, Dims.FEATURES],
+                name=Layers.OBS,
+            )
+
+        da = da.where(
+            da.coords[Dims.CELLS].isin(
+                self._obj.coords[Dims.CELLS],
+            ),
+            drop=True,
+        )
+
+        # self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
+
+        # if colors is not None:
+        #     assert len(colors) == len(unique_labels), "Colors has the same."
+        # else:
+        #     colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
+
+        # self._obj = self._obj.la.add_props(colors, Props.COLOR)
+
+        # if names is not None:
+        #     assert len(names) == len(unique_labels), "Names has the same."
+        # else:
+        #     names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
+
+        # self._obj = self._obj.la.add_props(names, Props.NAME)
+        # self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
+        #     self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
+        # )
+
+        return xr.merge([self._obj.sel(cells=da.cells), da])
 
     def normalize(self):
         """Performs a percentile normalisation on each channel.
@@ -359,12 +560,7 @@ class PreprocessingAccessor:
             ],
             dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
             name=Layers.PLOT,
-            attrs={
-                Attrs.IMAGE_COLORS: {
-                    k.item(): v
-                    for k, v in zip(image_layer.coords[Dims.CHANNELS], colors)
-                }
-            },
+            attrs={Attrs.IMAGE_COLORS: {k.item(): v for k, v in zip(image_layer.coords[Dims.CHANNELS], colors)}},
         )
 
         if merge:
