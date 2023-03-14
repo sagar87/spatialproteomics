@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
-import xarray as xr
 
-from spatial_data.constants import Dims, Layers
+from spatial_data.constants import Dims
 
 
 def test_label_get_item_correct_inputs(dataset_labeled):

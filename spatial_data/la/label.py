@@ -340,12 +340,12 @@ class LabelAccessor:
 
     def gate_label_type(
         self,
-        label_id: int,
+        label_id: Union[int, str],
         channel: str,
         threshold: float,
         intensity_key: str,
         override: bool = False,
-        parent: int = 0,
+        parent: Union[int, str] = 0,
     ):
         """
 
@@ -359,17 +359,24 @@ class LabelAccessor:
             The threshold to use for gating.
         intensity_key: str
             The key to use for the intensity layer.
+        override: bool
+            Whether to override the existing descendant label types.
         """
         labels = self._obj.coords[Dims.LABELS]
+        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
 
         if isinstance(label_id, str):
-            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
-
-            if label_id not in label_dict:
+            if label_id not in label_names_reverse:
                 raise ValueError(f"Cell type {label_id} not found.")
 
             # overwrite label_id with the corresponding id
-            label_id = label_dict[label_id]
+            label_id = label_names_reverse[label_id]
+
+        if isinstance(parent, str):
+            if parent not in label_names_reverse:
+                raise ValueError(f"Cell type {parent} not found.")
+
+            parent = label_names_reverse[parent]
 
         if label_id not in labels:
             raise ValueError(f"Cell type id {label_id} not found.")
@@ -377,7 +384,7 @@ class LabelAccessor:
         label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
         labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)  # dict of cell ids per label
         graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
-        step = max(list(nx.get_node_attributes(graph, "step").values())) + 1
+        step = max(list(nx.get_node_attributes(graph, "step").values())) + 1  # keeps track of the current gating step
 
         # print(graph.nodes)
 
@@ -385,12 +392,20 @@ class LabelAccessor:
         cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
         cells = self._obj.coords[Dims.CELLS].values
         cells_gated = cells[cells_bool]
-        cells_available = labeled_cells[parent]
+
+        if override:
+            print("descendants", nx.descendants(graph, parent))
+            descendants = [parent] + list(nx.descendants(graph, parent))
+            cells_available = []
+            for descendant in descendants:
+                cells_available.append(labeled_cells[descendant])
+
+            cells_available = np.concatenate(cells_available)
+        else:
+            cells_available = labeled_cells[parent]
 
         cells_selected = cells_gated[np.isin(cells_gated, cells_available)]
         # print(cells_selected)
-
-        print("descendants", nx.descendants(graph, parent))
 
         logger.info(
             f"Gating yields {len(cells_selected)} of positive {len(cells_gated)} labels (availale cells {len(cells_available)})."
