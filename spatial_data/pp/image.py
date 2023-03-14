@@ -399,7 +399,7 @@ class PreprocessingAccessor:
     #     return xr.merge([self._obj, da])
 
     def add_properties(self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False):
-        # unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+        unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
 
         if type(array) is list:
             array = np.array(array)
@@ -477,24 +477,24 @@ class PreprocessingAccessor:
             drop=True,
         )
 
-        # self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
+        self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
 
-        # if colors is not None:
-        #     assert len(colors) == len(unique_labels), "Colors has the same."
-        # else:
-        #     colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
+        if colors is not None:
+            assert len(colors) == len(unique_labels), "Colors has the same."
+        else:
+            colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
-        # self._obj = self._obj.la.add_props(colors, Props.COLOR)
+        self._obj = self._obj.pp.add_properties(colors, Props.COLOR)
 
-        # if names is not None:
-        #     assert len(names) == len(unique_labels), "Names has the same."
-        # else:
-        #     names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
+        if names is not None:
+            assert len(names) == len(unique_labels), "Names has the same."
+        else:
+            names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
 
-        # self._obj = self._obj.la.add_props(names, Props.NAME)
-        # self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
-        #     self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
-        # )
+        self._obj = self._obj.pp.add_properties(names, Props.NAME)
+        self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
+            self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
+        )
 
         return xr.merge([self._obj.sel(cells=da.cells), da])
 

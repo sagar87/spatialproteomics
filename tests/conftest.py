@@ -56,6 +56,19 @@ def load_dataset_five_dim(data_dic):
     return dataset
 
 
+@pytest.fixture(scope="session", name="dataset_labeled")
+def load_labeled_dataset(data_dic):
+
+    dataset = load_image_data(
+        data_dic["input"],
+        ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
+        segmentation=data_dic["segmentation"],
+        labels=data_dic["labels"],
+    )
+
+    return dataset
+
+
 @pytest.fixture(scope="session", name="test_segmentation")
 def load_test_segmentation():
     seg_mask = np.zeros((10, 10))

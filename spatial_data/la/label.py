@@ -164,25 +164,48 @@ class LabelAccessor:
         Sub selects labels.
         """
         # type checking
-        # TODO: Write tests!
-        if type(indices) is slice:
+        # TODO: Write more tests!
+        if isinstance(indices, float):
+            raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
+
+        if isinstance(indices, int):
+            if indices not in self._obj.coords[Dims.LABELS].values:
+                raise ValueError(f"Label type {indices} not found.")
+
+            sel = [indices]
+
+        if isinstance(indices, str):
+            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+
+            if indices not in label_dict:
+                raise ValueError(f"Label type {indices} not found.")
+
+            sel = [label_dict[indices]]
+
+        if isinstance(indices, slice):
             l_start = indices.start if indices.start is not None else 1
             l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
-        elif type(indices) is list:
-            all_int = all([type(i) is int for i in indices])
-            assert all_int, "All label indices must be integers."
-            sel = indices
 
-        elif type(indices) is tuple:
-            indices = list(indices)
-            all_int = all([type(i) is int for i in indices])
-            assert all_int, "All label indices must be integers."
-            sel = indices
-        else:
-            assert type(indices) is int, "Label must be provided as slices, lists, tuple or int."
+        if isinstance(indices, (list, tuple)):
+            if not all([isinstance(i, (str, int)) for i in indices]):
+                raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
 
-            sel = [indices]
+            sel = []
+            for i in indices:
+                if isinstance(i, str):
+                    label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+
+                    if i not in label_dict:
+                        raise ValueError(f"Label type {i} not found.")
+
+                    sel.append(label_dict[i])
+
+                if isinstance(i, int):
+                    if i not in self._obj.coords[Dims.LABELS].values:
+                        raise ValueError(f"Label type {i} not found.")
+
+                    sel.append(i)
 
         cells = self._obj.la._filter_cells_by_label(sel)
         return self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
@@ -194,8 +217,7 @@ class LabelAccessor:
             l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
         elif type(indices) is list:
-            all_int = all([type(i) is int for i in indices])
-            assert all_int, "All label indices must be integers."
+            assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers."
             sel = indices
 
         elif type(indices) is tuple:
