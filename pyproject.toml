@@ -17,7 +17,7 @@ sphinx-rtd-theme = { version = "1.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
 nbsphinx = { version = "0.8.9", optional = true }
 tqdm = "^4.64.0"
-sklearn = "^0.0"
+scikit-learn = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
