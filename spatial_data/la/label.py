@@ -117,11 +117,15 @@ class LabelAccessor:
 
         return label_dict
 
-    def _cells_to_label(self, relabel: bool = False):
+    def _cells_to_label(self, relabel: bool = False, include_unlabeled: bool = False):
         """Returns a dictionary that maps each label to a list of cells."""
+
         label_dict = {
             label.item(): self._obj.la._filter_cells_by_label(label.item()) for label in self._obj.coords[Dims.LABELS]
         }
+
+        if include_unlabeled:
+            label_dict[0] = self._obj.la._filter_cells_by_label(0)
 
         if relabel:
             return self._obj.la._relabel_dict(label_dict)
@@ -271,22 +275,46 @@ class LabelAccessor:
 
         return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
-    def get_gate_graph(self):
+    def get_gate_graph(self, pop: bool = False):
         if "graph" not in self._obj.attrs:
             # initialize graph
-            graph = nx.Graph()
-            graph.add_node(0)
-            self._obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+            graph = nx.DiGraph()
+            graph.add_node(
+                0,
+                label_name="Unlabeled",
+                label_id=0,
+                channel=None,
+                threshold=None,
+                intensity_key=None,
+                override=None,
+                step=0,
+            )
+
+            # graph.add_node(0)
+            # self._obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
             return graph
 
-        g = nx.from_dict_of_dicts(self._obj.attrs["graph"])
+        # pop and initialise graph
+        obj = self._obj
+        if pop:
+            graph_dict = obj.attrs.pop("graph")
+        else:
+            graph_dict = obj.attrs["graph"]
 
-        for k, v in self._obj.attrs.items():
-            if k == "graph":
-                continue
+        graph = nx.from_dict_of_dicts(graph_dict, create_using=nx.DiGraph)
 
-            nx.set_node_attributes(g, v, name=k)
-        return g
+        attrs_keys = list(obj.attrs.keys())
+        for key in attrs_keys:
+            if pop:
+                node_attributes = obj.attrs.pop(key)
+            else:
+                if key == "graph":
+                    continue
+                node_attributes = obj.attrs[key]
+
+            nx.set_node_attributes(graph, node_attributes, name=key)
+
+        return graph
 
     def gate_label_type(
         self,
@@ -325,67 +353,115 @@ class LabelAccessor:
             raise ValueError(f"Cell type id {label_id} not found.")
 
         label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
-        labeled_cells = self._obj.la._cells_to_label()  # dict of cell ids per label
-        # graph = self._obj.get_gate_graph() # gating graph
-        
+        labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)  # dict of cell ids per label
+        graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
+        step = max(list(nx.get_node_attributes(graph, "step").values())) + 1
+
+        # print(graph.nodes)
+
         # should use filter
         cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
-        cells = self._obj.coords[Dims.CELLS][cells_bool].values
+        cells = self._obj.coords[Dims.CELLS].values
+        cells_gated = cells[cells_bool]
+        cells_available = labeled_cells[parent]
 
-        logger.info(f"Gating yields {len(cells)} positive labels.")
+        cells_selected = cells_gated[np.isin(cells_gated, cells_available)]
+        # print(cells_selected)
 
-        for label_i, cells_i in labeled_cells.items():
-            if parent != 0:
-                if label_i != parent:
-                    cells = np.array([cell for cell in cells if cell not in cells_i])
-                    continue
+        print("descendants", nx.descendants(graph, parent))
 
-            overlap = np.isin(cells, cells_i)
-            num_cells_overwritten = np.sum(overlap)
-            if np.any(overlap):
-                if override:
-                    logger.info(
-                        f"{num_cells_overwritten} cells of cell type {label_names[label_i]} ({label_i}) is being overwritten by cell type {label_names[label_id]} ({label_id})."
-                    )
-                else:
-                    cells = np.array([cell for cell in cells if cell not in cells_i])
+        logger.info(
+            f"Gating yields {len(cells_selected)} of positive {len(cells_gated)} labels (availale cells {len(cells_available)})."
+        )
 
-                    logger.info(
-                        f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[label_i]} ({label_i}). New number of positive labels: {len(cells)}."
-                    )
+        # not_overriden = {}
+
+        # for other_label, other_cells in labeled_cells.items():
+        #     # if it is not a top level node
+        #     if parent != 0:
+        #         if other_label != parent:
+        #             cells_gated = np.array([cell for cell in cells_gated if cell not in other_cells])
+        #             not_overriden[other_label] = [cell for cell in cells_gated if cell not in other_cells]
+
+        #             logger.info(
+        #                 f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[other_label]} ({other_label}). New number of positive labels: {len(cells_gated)}."
+        #             )
+
+        #             continue
+
+        #     overlap = np.isin(cells_gated, other_cells)
+        #     num_cells_overwritten = np.sum(overlap)
+
+        #     if np.any(overlap):
+        #         if override:
+        #             logger.info(
+        #                 f"{num_cells_overwritten} cells of cell type {label_names[other_label]} ({other_label}) is being overwritten by cell type {label_names[label_id]} ({label_id})."
+        #             )
+        #         else:
+        #             cells_gated = np.array([cell for cell in cells_gated if cell not in other_cells])
+
+        #             logger.info(
+        #                 f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[other_label]} ({other_label}). New number of positive labels: {len(cells_gated)}."
+        #             )
 
         obs = self._obj[Layers.OBS]
         obj = self._obj.drop_vars(Layers.OBS)
 
         da = obs.copy()
-        da.loc[{Dims.CELLS: cells, Dims.FEATURES: Features.LABELS}] = label_id
+        da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = label_id
 
-        if len(self._obj.attrs) == 0:
-            # initialize graph
-            graph = nx.Graph()
-            graph.add_node(0)
-            graph.add_node(
-                label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
-            )
-            graph.add_edge(0, label_id)
+        # update the graph
+        graph.add_node(
+            label_id,
+            label_id=label_id,
+            label_name=label_names[label_id],
+            channel=channel,
+            threshold=threshold,
+            intensity_key=intensity_key,
+            override=override,
+            step=step,
+            num_cells=len(cells_gated),
+        )
+        graph.add_edge(parent, label_id)
 
-            obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
-            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
-                obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
-        else:
-            graph = nx.from_dict_of_dicts(obj.attrs.pop("graph"))
+        # save graph to the image container
+        # TODO: Refactor this
+        obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+        for node_prop in [
+            "channel",
+            "threshold",
+            "intensity_key",
+            "override",
+            "label_name",
+            "label_id",
+            "step",
+            "num_cells",
+        ]:
+            obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
 
-            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
-                nx.set_node_attributes(graph, obj.attrs.pop(node_prop), node_prop)
+        # if len(self._obj.attrs) == 0:
+        #     # initialize graph
+        #     graph = nx.Graph()
+        #     graph.add_node(0)
+        #     graph.add_node(
+        #         label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
+        #     )
+        #     graph.add_edge(0, label_id)
 
-            graph.add_node(
-                label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
-            )
-            graph.add_edge(parent, label_id)
+        #     obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+        #     for node_prop in ["channel", "threshold", "intensity_key", "override"]:
+        #         obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+        #
+        # else:
+        #     graph = nx.from_dict_of_dicts(obj.attrs.pop("graph"))
 
-            obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
-            for node_prop in ["channel", "threshold", "intensity_key", "override"]:
-                obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+        #     for node_prop in ["channel", "threshold", "intensity_key", "override"]:
+        #         nx.set_node_attributes(graph, obj.attrs.pop(node_prop), node_prop)
+
+        #     graph.add_node(
+        #         label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
+        #     )
+        #     graph.add_edge(parent, label_id)
 
         return xr.merge([obj, da])
 
@@ -476,7 +552,6 @@ class LabelAccessor:
             )
 
         return xr.merge([da, self._obj])
-
 
     def set_label_name(self, label, name):
         self._obj[Layers.LABELS].loc[label, Props.NAME] = name
