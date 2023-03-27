@@ -74,11 +74,11 @@ class PlotAccessor:
 
         return [xmin, xmax, ymin, ymax]
 
-    def _legend_background(self):
+    def _legend_background(self, **kwargs):
         """Returns legend handles for the background."""
         color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
 
-        elements = [Patch(facecolor=c, label=ch) for ch, c in color_dict.items()]
+        elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
         return elements
 
     def _legend_labels(self):
@@ -146,7 +146,7 @@ class PlotAccessor:
             if variable != "cell":
                 t = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: variable}).values
             else:
-                t = cell
+                t = cell.values
 
             # print(x,y, t)
             if cell in highlight:

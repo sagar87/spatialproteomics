@@ -111,12 +111,12 @@ class LabelAccessor:
         # print(labels)
         # print(labels_layer.loc[labels[1], prop])
         label_dict = {}
-        
+
         for label in labels:
             # print(label)
             current_row = labels_layer.loc[label, prop]
             label_dict[label.values.item()] = current_row.values.item()
-            
+
         # label_dict = {label.item(): labels_layer.loc[label, prop].item() for label in self._obj.coords[Dims.LABELS]}
 
         if relabel:
@@ -456,19 +456,17 @@ class LabelAccessor:
 
         da = obs.copy()
         da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = label_id
-        
+
         # number cells after the update
-        updated_labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)
-        updated_cell_numbers = { k: len(v) for k, v in updated_labeled_cells.items() }
-        
+        # updated_labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)
+        # updated_cell_numbers = {k: len(v) for k, v in updated_labeled_cells.items()}
 
         updated_label_types = da.loc[:, Features.LABELS].values.copy()
         label_types, label_counts = np.unique(updated_label_types, return_counts=True)
         updated_label_numbers = dict(zip(label_types.astype(int), label_counts.astype(int)))
         # cells_bool = np.isin(cells, items)
         # cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-        
-        
+
         # update the graph
         graph.add_node(
             label_id,
