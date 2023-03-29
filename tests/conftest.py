@@ -69,6 +69,16 @@ def load_labeled_dataset(data_dic):
     return dataset
 
 
+@pytest.fixture(scope="session", name="dataset_segmentation")
+def load_dataset_segmentation(data_dic):
+
+    dataset = load_image_data(
+        data_dic["input"],
+        ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
+    )
+    return dataset
+
+
 @pytest.fixture(scope="session", name="test_segmentation")
 def load_test_segmentation():
     seg_mask = np.zeros((10, 10))
