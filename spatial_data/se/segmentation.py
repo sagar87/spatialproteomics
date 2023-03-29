@@ -30,45 +30,6 @@ class SegmentationAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> np.ndarray:
-        """Adds a segmentation mask (_segmentation) and an obs (_obs) field to the xarray dataset.
-
-        Parameters
-        ----------
-        segmentation : np.ndarray
-            A segmentation mask, i.e. a np.ndarray with image.shape = (n, x, y),
-            that indicates the location of each cell.
-        copy: bool
-            If true the segmentation mask is copied.
-
-        Returns
-        -------
-        xr.Dataset
-            The amended xarray.
-        """
-        assert ~np.all(segmentation < 0), "A segmentation mask may not contain negative numbers."
-
-        y_dim, x_dim = segmentation.shape
-
-        assert (x_dim == self._obj.dims[Dims.X]) & (
-            y_dim == self._obj.dims[Dims.Y]
-        ), "The shape of segmentation mask does not match that of the image."
-
-        if copy:
-            segmentation = segmentation.copy()
-
-        da = xr.DataArray(
-            segmentation,
-            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-            dims=[Dims.Y, Dims.X],
-            name=Layers.SEGMENTATION,
-        )
-
-        self._obj[Layers.SEGMENTATION] = da
-        self._obj = self._obj.se.add_obs("centroid")
-
-        return self._obj
-
     def add_obs(
         self,
         properties: Union[str, list, tuple] = ("label", "centroid"),
