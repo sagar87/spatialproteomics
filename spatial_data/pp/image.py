@@ -203,7 +203,7 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended xarray.
         """
-        assert ~np.all(segmentation < 0), "A segmentation mask may not contain negative numbers."
+        assert ~np.any(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
 
