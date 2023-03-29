@@ -253,6 +253,11 @@ class LabelAccessor:
         if Layers.OBS not in self._obj:
             raise ValueError("No observation table found.")
 
+        # Assert that label type is not already present
+        if Layers.LABELS in self._obj:
+            if name in self._obj[Layers.LABELS].sel({Dims.PROPS: Props.NAME}):
+                raise ValueError("Label type already exists.")
+
         array = np.array([name, color]).reshape(1, -1)
 
         # if label annotations (Layers.LABELS) are not present, create them
