@@ -293,25 +293,6 @@ class LabelAccessor:
 
         return obj
 
-    def remove_label_type(self, cell_type: Union[int, List[int]]):
-
-        if isinstance(cell_type, int):
-            cell_type = [cell_type]
-
-        if Layers.LABELS not in self._obj:
-            raise ValueError("No cell type labels found.")
-
-        for i in cell_type:
-            if i not in self._obj.coords[Dims.LABELS].values:
-                raise ValueError(f"Cell type {i} not found.")
-
-        cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
-        cells = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        self._obj[Layers.OBS].loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
-
-        return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
-
     def get_gate_graph(self, pop: bool = False):
         if "graph" not in self._obj.attrs:
             # initialize graph
@@ -354,6 +335,25 @@ class LabelAccessor:
             nx.set_node_attributes(graph, node_attributes, name=key)
 
         return graph
+
+    def remove_label_type(self, cell_type: Union[int, List[int]]):
+
+        if isinstance(cell_type, int):
+            cell_type = [cell_type]
+
+        if Layers.LABELS not in self._obj:
+            raise ValueError("No cell type labels found.")
+
+        for i in cell_type:
+            if i not in self._obj.coords[Dims.LABELS].values:
+                raise ValueError(f"Cell type {i} not found.")
+
+        cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
+        cells = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        self._obj[Layers.OBS].loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+
+        return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
     def gate_label_type(
         self,
@@ -436,7 +436,9 @@ class LabelAccessor:
         updated_obj = xr.merge([obj, da])
         updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
         updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
         
+
         # update the graph
         graph.add_node(
             label_id,
@@ -456,6 +458,7 @@ class LabelAccessor:
         updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
         updated_obj.attrs["num_cells"] = updated_label_counts
         updated_obj.attrs["gated_cells"] = updated_labels
+        updated_obj.attrs["colors"] = { node: color_dict.get(node, 'w') for node in graph.nodes }
         for node_prop in [
             "channel",
             "threshold",
