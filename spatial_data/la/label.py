@@ -325,6 +325,8 @@ class LabelAccessor:
                 intensity_key=None,
                 override=None,
                 step=0,
+                num_cells=self._obj.dims[Dims.CELLS],
+                gated_cells=set(self._obj.coords[Dims.CELLS].values),
             )
 
             # graph.add_node(0)
@@ -401,8 +403,6 @@ class LabelAccessor:
         graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
         step = max(list(nx.get_node_attributes(graph, "step").values())) + 1  # keeps track of the current gating step
 
-        # print(graph.nodes)
-
         # should use filter
         cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
         cells = self._obj.coords[Dims.CELLS].values
@@ -412,6 +412,7 @@ class LabelAccessor:
             print("descendants", nx.descendants(graph, parent))
             descendants = [parent] + list(nx.descendants(graph, parent))
             cells_available = []
+
             for descendant in descendants:
                 cells_available.append(labeled_cells[descendant])
 
@@ -426,52 +427,16 @@ class LabelAccessor:
             f"Gating yields {len(cells_selected)} of positive {len(cells_gated)} labels (availale cells {len(cells_available)})."
         )
 
-        # not_overriden = {}
-
-        # for other_label, other_cells in labeled_cells.items():
-        #     # if it is not a top level node
-        #     if parent != 0:
-        #         if other_label != parent:
-        #             cells_gated = np.array([cell for cell in cells_gated if cell not in other_cells])
-        #             not_overriden[other_label] = [cell for cell in cells_gated if cell not in other_cells]
-
-        #             logger.info(
-        #                 f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[other_label]} ({other_label}). New number of positive labels: {len(cells_gated)}."
-        #             )
-
-        #             continue
-
-        #     overlap = np.isin(cells_gated, other_cells)
-        #     num_cells_overwritten = np.sum(overlap)
-
-        #     if np.any(overlap):
-        #         if override:
-        #             logger.info(
-        #                 f"{num_cells_overwritten} cells of cell type {label_names[other_label]} ({other_label}) is being overwritten by cell type {label_names[label_id]} ({label_id})."
-        #             )
-        #         else:
-        #             cells_gated = np.array([cell for cell in cells_gated if cell not in other_cells])
-
-        #             logger.info(
-        #                 f"Removing {num_cells_overwritten} labels {label_names[label_id]} ({label_id}) to prevent overwriting cell type {label_names[other_label]} ({other_label}). New number of positive labels: {len(cells_gated)}."
-        #             )
-
         obs = self._obj[Layers.OBS]
         obj = self._obj.drop_vars(Layers.OBS)
 
         da = obs.copy()
         da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = label_id
 
-        # number cells after the update
-        # updated_labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)
-        # updated_cell_numbers = {k: len(v) for k, v in updated_labeled_cells.items()}
-
-        updated_label_types = da.loc[:, Features.LABELS].values.copy()
-        label_types, label_counts = np.unique(updated_label_types, return_counts=True)
-        updated_label_numbers = dict(zip(label_types.astype(int), label_counts.astype(int)))
-        # cells_bool = np.isin(cells, items)
-        # cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
+        updated_obj = xr.merge([obj, da])
+        updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
+        updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
+        
         # update the graph
         graph.add_node(
             label_id,
@@ -482,13 +447,15 @@ class LabelAccessor:
             intensity_key=intensity_key,
             override=override,
             step=step,
-            num_cells=len(cells_gated),
         )
         graph.add_edge(parent, label_id)
 
         # save graph to the image container
         # TODO: Refactor this
-        obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+
+        updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+        updated_obj.attrs["num_cells"] = updated_label_counts
+        updated_obj.attrs["gated_cells"] = updated_labels
         for node_prop in [
             "channel",
             "threshold",
@@ -497,38 +464,10 @@ class LabelAccessor:
             "label_name",
             "label_id",
             "step",
-            "num_cells",
         ]:
-            if node_prop == "num_cells":
-                obj.attrs[node_prop] = updated_label_numbers
-            else:
-                obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+            updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
 
-        # if len(self._obj.attrs) == 0:
-        #     # initialize graph
-        #     graph = nx.Graph()
-        #     graph.add_node(0)
-        #     graph.add_node(
-        #         label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
-        #     )
-        #     graph.add_edge(0, label_id)
-
-        #     obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
-        #     for node_prop in ["channel", "threshold", "intensity_key", "override"]:
-        #         obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
-        #
-        # else:
-        #     graph = nx.from_dict_of_dicts(obj.attrs.pop("graph"))
-
-        #     for node_prop in ["channel", "threshold", "intensity_key", "override"]:
-        #         nx.set_node_attributes(graph, obj.attrs.pop(node_prop), node_prop)
-
-        #     graph.add_node(
-        #         label_id, channel=channel, threshold=threshold, intensity_key=intensity_key, override=override
-        #     )
-        #     graph.add_edge(parent, label_id)
-
-        return xr.merge([obj, da])
+        return updated_obj
 
     def add_label_types_from_dataframe(
         self,
