@@ -4,6 +4,7 @@ from distutils import dir_util
 import numpy as np
 import pandas as pd
 import pytest
+import xarray as xr
 from skimage.io import imread
 
 from spatial_data.container import load_image_data
@@ -30,6 +31,7 @@ def load_files(data_dir):
     }
 
     files_loaded["labels"] = pd.read_csv(os.path.join(str(data_dir), files[files.index("labels.csv")]), index_col=0)
+    files_loaded["zarr"] = xr.open_zarr(os.path.join(str(data_dir), files[files.index("test.zarr")]))
 
     return files_loaded
 
@@ -77,6 +79,11 @@ def load_dataset_segmentation(data_dic):
         ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
     )
     return dataset
+
+
+@pytest.fixture(scope="session", name="full_zarr")
+def load_full_zarr(data_dic):
+    return data_dic["zarr"]
 
 
 @pytest.fixture(scope="session", name="test_segmentation")
