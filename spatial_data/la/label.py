@@ -437,7 +437,6 @@ class LabelAccessor:
         updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
         updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        
 
         # update the graph
         graph.add_node(
@@ -458,7 +457,7 @@ class LabelAccessor:
         updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
         updated_obj.attrs["num_cells"] = updated_label_counts
         updated_obj.attrs["gated_cells"] = updated_labels
-        updated_obj.attrs["colors"] = { node: color_dict.get(node, 'w') for node in graph.nodes }
+        updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
         for node_prop in [
             "channel",
             "threshold",

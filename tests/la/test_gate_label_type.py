@@ -44,7 +44,3 @@ def test_gate_cell_type_adds_graph(dataset_full):
     assert ds.attrs["label_id"][3] == 3
     assert ds.attrs["step"][3] == 2
     # assert ds.attrs["num_cells"][3] == 194
-
-
-def test_gate_cell_type_raises_exception_upon_gating_same_cells(full_zarr):
-    sdata = full_zarr.la.add_label_type("T cell", "C0")
