@@ -355,6 +355,71 @@ class LabelAccessor:
 
         return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
+    def reset_label_type(self, label_id):
+        labels = self._obj.coords[Dims.LABELS]
+        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+
+        if isinstance(label_id, str):
+            if label_id not in label_names_reverse:
+                raise ValueError(f"Cell type {label_id} not found.")
+
+            # overwrite label_id with the corresponding id
+            label_id = label_names_reverse[label_id]
+
+        if label_id not in labels:
+            raise ValueError(f"Cell type id {label_id} not found.")
+
+        graph = self._obj.la.get_gate_graph(pop=False)
+        gated_cells = nx.get_node_attributes(graph, "gated_cells")
+
+        descendants = sorted(nx.descendants(graph, label_id) | {label_id})
+        # if label_id == 2:
+        #     import pdb
+
+        #     pdb.set_trace()
+
+        cells_selected = []
+
+        for node in descendants:
+            cells_selected.append(gated_cells[node])
+
+        cells_selected = np.concatenate(cells_selected)
+
+        predecessor = [key for key in graph.predecessors(label_id)]
+        parent_id = predecessor[-1]
+
+        obs = self._obj[Layers.OBS]
+        obj = self._obj.drop_vars(Layers.OBS)
+
+        da = obs.copy()
+        da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = parent_id
+
+        updated_obj = xr.merge([obj, da])
+        updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
+        updated_labels = {k: v for k, v in updated_labels.items() if len(v) != 0}
+        updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+
+        for node in descendants:
+            graph.remove_node(node)
+
+        updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
+        updated_obj.attrs["num_cells"] = updated_label_counts
+        updated_obj.attrs["gated_cells"] = updated_labels
+        updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
+        for node_prop in [
+            "channel",
+            "threshold",
+            "intensity_key",
+            "override",
+            "label_name",
+            "label_id",
+            "step",
+        ]:
+            updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
+
+        return updated_obj
+
     def gate_label_type(
         self,
         label_id: Union[int, str],
@@ -435,6 +500,7 @@ class LabelAccessor:
 
         updated_obj = xr.merge([obj, da])
         updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
+        updated_labels = {k: v for k, v in updated_labels.items() if len(v) != 0}
         updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
 
