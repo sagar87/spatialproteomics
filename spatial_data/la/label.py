@@ -423,11 +423,12 @@ class LabelAccessor:
     def gate_label_type(
         self,
         label_id: Union[int, str],
-        channel: str,
-        threshold: float,
+        channel: Union[List[str], str],
+        threshold: Union[List[float], float],
         intensity_key: str,
         override: bool = False,
         parent: Union[int, str] = 0,
+        op: str = "AND",
     ):
         """
 
@@ -463,6 +464,17 @@ class LabelAccessor:
         if label_id not in labels:
             raise ValueError(f"Cell type id {label_id} not found.")
 
+        if isinstance(channel, list):
+            num_channels = len(channel)
+            if isinstance(threshold, float) and num_channels > 1:
+                logger.warning("Caution, found more than 1 channel but only one threshold. Broadcasting.")
+                threshold = np.array([threshold] * num_channels).reshape(1, num_channels)
+            if isinstance(threshold, list):
+                if len(threshold) > num_channels or len(threshold) < num_channels:
+                    raise ValueError("Threshold array must have the same length as the number of channels.")
+
+                threshold = np.array(threshold).reshape(1, num_channels)
+
         label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
         labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)  # dict of cell ids per label
         graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
@@ -470,6 +482,15 @@ class LabelAccessor:
 
         # should use filter
         cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
+
+        if cells_bool.squeeze().ndim > 1:
+            if op == "AND":
+                cells_bool = np.all(cells_bool, axis=1)
+            elif op == "OR":
+                cells_bool = np.any(cells_bool, axis=1)
+            else:
+                raise ValueError("Operator (op) must  be either AND or OR.")
+
         cells = self._obj.coords[Dims.CELLS].values
         cells_gated = cells[cells_bool]
 
