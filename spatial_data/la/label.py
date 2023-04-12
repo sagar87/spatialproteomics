@@ -546,15 +546,7 @@ class LabelAccessor:
         updated_obj.attrs["num_cells"] = updated_label_counts
         updated_obj.attrs["gated_cells"] = updated_labels
         updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
-        for node_prop in [
-            "channel",
-            "threshold",
-            "intensity_key",
-            "override",
-            "label_name",
-            "label_id",
-            "step",
-        ]:
+        for node_prop in ["channel", "threshold", "intensity_key", "override", "label_name", "label_id", "step", "op"]:
             updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
 
         return updated_obj
