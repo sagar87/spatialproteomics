@@ -535,6 +535,7 @@ class LabelAccessor:
             intensity_key=intensity_key,
             override=override,
             step=step,
+            op=op,
         )
         graph.add_edge(parent, label_id)
 
