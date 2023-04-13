@@ -447,6 +447,7 @@ class PlotAccessor:
         ncols: int = 4,
         width: float = 4,
         height: float = 3,
+        log_scale: bool = False,
         ax=None,
         **kwargs,
     ):
@@ -468,10 +469,14 @@ class PlotAccessor:
                 data = intensities.sel({Dims.CHANNELS: ch}).values
                 ax.hist(data, bins=bins, **kwargs)
                 ax.set_title(ch)
+                if log_scale:
+                    ax.set_yscale("log")
         else:
             ch = channels[0]
             data = intensities.sel({Dims.CHANNELS: ch}).values
             axes.hist(data, bins=bins, **kwargs)
             axes.set_title(ch)
+            if log_scale:
+                axes.set_yscale("log")
 
         return self._obj
