@@ -153,6 +153,14 @@ class LabelAccessor:
 
         return cells_sel
 
+    def _label_name_to_id(self, label):
+        """Given a label name return its id."""
+        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+        if label not in label_names_reverse:
+            raise ValueError(f"Cell type {label} not found.")
+
+        return label_names_reverse[label]
+
     def filter_by_obs(self, col: str, func: Callable):
         """Returns the list of cells with the labels from items."""
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
@@ -640,9 +648,15 @@ class LabelAccessor:
         return xr.merge([da, self._obj])
 
     def set_label_name(self, label, name):
+        if isinstance(label, str):
+            label = self._obj.la._label_name_to_id(label)
+
         self._obj[Layers.LABELS].loc[label, Props.NAME] = name
 
     def set_label_color(self, label, color):
+        if isinstance(label, str):
+            label = self._obj.la._label_name_to_id(label)
+
         self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
 
     def render_segmentation(
