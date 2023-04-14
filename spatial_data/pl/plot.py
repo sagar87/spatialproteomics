@@ -105,10 +105,12 @@ class PlotAccessor:
     def annotate(
         self,
         variable: str = "cell",
+        layer_key: str = Layers.OBS,
         highlight: list = [],
         text_kwargs: dict = {"color": "w", "fontsize": 12},
         highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
         bbox: Union[List, None] = None,
+        format_string: str = "",
         ax=None,
     ) -> xr.Dataset:
         """Annotates cells with their respective number.
@@ -144,16 +146,25 @@ class PlotAccessor:
             x = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.X}).values
             y = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y}).values
             if variable != "cell":
-                t = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: variable}).values
+                table = self._obj[layer_key]
+                dims = table.dims
+                if len(dims) != 2:
+                    raise ValueError("Layer does not have the dimension.")
+                if Dims.CELLS not in dims:
+                    raise ValueError("Layer does not have a cell dimension.")
+
+                dim = [d for d in dims if d != Dims.CELLS][0]
+                # import pdb; pdb.set_trace()
+                t = table.sel({Dims.CELLS: cell, dim: variable}).values
             else:
                 t = cell.values
 
             # print(x,y, t)
             if cell in highlight:
-                ax.text(x, y, s=f"{t}", **highlight_kwargs)
+                ax.text(x, y, s=f"{t:{format_string}}", **highlight_kwargs)
             else:
 
-                ax.text(x, y, s=f"{t}", **text_kwargs)
+                ax.text(x, y, s=f"{t:{format_string}}", **text_kwargs)
 
         return self._obj
 
