@@ -348,12 +348,12 @@ class LabelAccessor:
 
         if isinstance(cell_type, int):
             cell_type = [cell_type]
-            
+
         if isinstance(cell_type, str):
-            cell_type = [ self._obj.la._label_name_to_id(cell_type) ] 
-        # TODO: If list should properly get cell -type    
-        # TODO: should call reset label type prior to removing the cell type 
-        
+            cell_type = [self._obj.la._label_name_to_id(cell_type)]
+        # TODO: If list should properly get cell -type
+        # TODO: should call reset label type prior to removing the cell type
+
         if Layers.LABELS not in self._obj:
             raise ValueError("No cell type labels found.")
 
@@ -543,6 +543,7 @@ class LabelAccessor:
             label_id,
             label_id=label_id,
             label_name=label_names[label_id],
+            parent=parent,
             channel=channel,
             threshold=threshold,
             intensity_key=intensity_key,
@@ -559,7 +560,18 @@ class LabelAccessor:
         updated_obj.attrs["num_cells"] = updated_label_counts
         updated_obj.attrs["gated_cells"] = updated_labels
         updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
-        for node_prop in ["channel", "threshold", "intensity_key", "override", "label_name", "label_id", "step", "op"]:
+
+        for node_prop in [
+            "channel",
+            "threshold",
+            "intensity_key",
+            "override",
+            "label_name",
+            "label_id",
+            "step",
+            "op",
+            "parent",
+        ]:
             updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
 
         return updated_obj
