@@ -348,7 +348,12 @@ class LabelAccessor:
 
         if isinstance(cell_type, int):
             cell_type = [cell_type]
-
+            
+        if isinstance(cell_type, str):
+            cell_type = [ self._obj.la._label_name_to_id(cell_type) ] 
+        # TODO: If list should properly get cell -type    
+        # TODO: should call reset label type prior to removing the cell type 
+        
         if Layers.LABELS not in self._obj:
             raise ValueError("No cell type labels found.")
 
