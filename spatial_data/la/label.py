@@ -85,6 +85,13 @@ class LabelAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
+    def __contains__(self, key):
+        if Layers.LABELS not in self._obj:
+            return False
+
+        label_dict = self._obj.la._label_to_dict(Props.NAME)
+        return key in label_dict.keys() or key in label_dict.values()
+
     def _relabel_dict(self, dictionary: dict):
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
         return {fw[k]: v for k, v in dictionary.items()}
