@@ -23,7 +23,7 @@ def test_gate_cell_type_adds_graph(dataset_full):
     assert "step" in ds.attrs
     assert "num_cells" in ds.attrs
 
-    assert ds.attrs["channel"][1] == "CD4"
+    assert ds.attrs["channel"][1] == ["CD4"]
     assert ds.attrs["threshold"][1] == 1e5
     assert ds.attrs["intensity_key"][1] == "_intensity"
     assert ds.attrs["override"][1] is False
@@ -38,7 +38,7 @@ def test_gate_cell_type_adds_graph(dataset_full):
 
     ds = ds.la.gate_label_type("CT3", "CD8", 2e5, "_intensity")
 
-    assert ds.attrs["channel"][3] == "CD8"
+    assert ds.attrs["channel"][3] == ["CD8"]
     assert ds.attrs["threshold"][3] == 2e5
     assert ds.attrs["intensity_key"][3] == "_intensity"
     assert ds.attrs["override"][3] is False
@@ -61,7 +61,7 @@ def test_remove_label_type(full_zarr):
     sdata = full_zarr.la.add_label_type(cell_type, "C0")
     sdata = sdata.la.gate_label_type(cell_type, channel, intensity, intensity_channel, override, parent)
 
-    assert sdata.attrs["channel"][1] == channel
+    assert sdata.attrs["channel"][1] == [channel]
     assert sdata.attrs["threshold"][1] == intensity
     assert sdata.attrs["intensity_key"][1] == intensity_channel
     assert sdata.attrs["override"][1] is override
@@ -90,7 +90,7 @@ def test_remove_label_type(full_zarr):
     sdata = sdata.la.add_label_type(cell_type, "C0")
     sdata = sdata.la.gate_label_type(cell_type, channel, intensity, intensity_channel, override, parent)
 
-    assert sdata.attrs["channel"][2] == channel
+    assert sdata.attrs["channel"][2] == [channel]
     assert sdata.attrs["threshold"][2] == intensity
     assert sdata.attrs["intensity_key"][2] == intensity_channel
     assert sdata.attrs["override"][2] is override
@@ -113,7 +113,7 @@ def test_remove_label_type(full_zarr):
     # import pdb
 
     # pdb.set_trace()
-    assert sdata.attrs["channel"][3] == channel
+    assert sdata.attrs["channel"][3] == [channel]
     assert sdata.attrs["threshold"][3] == intensity
     assert sdata.attrs["intensity_key"][3] == intensity_channel
     assert sdata.attrs["override"][3] is override
@@ -138,7 +138,7 @@ def test_remove_label_type(full_zarr):
     # add CD8+ T cells again
     sdata = sdata.la.gate_label_type(cell_type, channel, intensity, intensity_channel, override, parent)
 
-    assert sdata.attrs["channel"][3] == channel
+    assert sdata.attrs["channel"][3] == [channel]
     assert sdata.attrs["threshold"][3] == intensity
     assert sdata.attrs["intensity_key"][3] == intensity_channel
     assert sdata.attrs["override"][3] is override

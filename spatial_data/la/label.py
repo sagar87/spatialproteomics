@@ -495,6 +495,11 @@ class LabelAccessor:
 
                 threshold = np.array(threshold).reshape(1, num_channels)
 
+        if isinstance(channel, str):
+            channel = [channel]
+        if isinstance(threshold, float):
+            threshold = np.array(threshold).reshape(1, 1)
+
         label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
         labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)  # dict of cell ids per label
         graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
@@ -512,7 +517,7 @@ class LabelAccessor:
                 raise ValueError("Operator (op) must  be either AND or OR.")
 
         cells = self._obj.coords[Dims.CELLS].values
-        cells_gated = cells[cells_bool]
+        cells_gated = cells[cells_bool.squeeze()]
 
         if override:
             print("descendants", nx.descendants(graph, parent))
@@ -552,7 +557,7 @@ class LabelAccessor:
             label_name=label_names[label_id],
             parent=parent,
             channel=channel,
-            threshold=threshold,
+            threshold=threshold.squeeze().tolist(),
             intensity_key=intensity_key,
             override=override,
             step=step,
