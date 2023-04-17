@@ -5,6 +5,7 @@ from .pl import PlotAccessor
 from .pp import PreprocessingAccessor  # , colorize, normalize
 from .pp import arcsinh_mean_intensity, arcsinh_sum_intensity
 from .se import SegmentationAccessor
+from .tl import TwoComponentGaussianMixture
 
 __all__ = [
     "load_image_data",
@@ -18,4 +19,5 @@ __all__ = [
     "Props",
     "arcsinh_sum_intensity",
     "arcsinh_mean_intensity",
+    "TwoComponentGaussianMixture",
 ]
