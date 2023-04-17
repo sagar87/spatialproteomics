@@ -449,6 +449,7 @@ class LabelAccessor:
         override: bool = False,
         parent: Union[int, str] = 0,
         op: str = "AND",
+        show_channel: Union[List[str], str] = None,
     ):
         """
 
@@ -562,6 +563,7 @@ class LabelAccessor:
             override=override,
             step=step,
             op=op,
+            show_channel=show_channel if show_channel is not None else channel,
         )
         graph.add_edge(parent, label_id)
 
@@ -583,6 +585,7 @@ class LabelAccessor:
             "step",
             "op",
             "parent",
+            "show_channel",
         ]:
             updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
 
