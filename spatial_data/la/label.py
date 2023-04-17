@@ -591,6 +591,45 @@ class LabelAccessor:
 
         return updated_obj
 
+    def add_label_types_from_graph(self, graph):
+
+        # unpack data
+        steps = {v: k for k, v in nx.get_node_attributes(graph, "step").items()}
+        label_names = nx.get_node_attributes(graph, "label_name")
+        channels = nx.get_node_attributes(graph, "channel")
+        colors = nx.get_node_attributes(graph, "colors")
+        parents = nx.get_node_attributes(graph, "parent")
+        ops = nx.get_node_attributes(graph, "op")
+        override = nx.get_node_attributes(graph, "override")
+        intensity_channels = nx.get_node_attributes(graph, "intensity_key")
+        thresholds = nx.get_node_attributes(graph, "threshold")
+
+        for step, cell_type in steps.items():
+            if step == 0:
+                continue
+
+            current_name = label_names[cell_type]
+            current_color = colors[cell_type]
+            current_channels = channels[cell_type]
+            current_thresholds = thresholds[cell_type]
+            current_key = intensity_channels[cell_type]
+            current_override = override[cell_type]
+            current_parent = parents[cell_type]
+            current_op = ops[cell_type]
+
+            if current_name not in self._obj.la:
+                self._obj = self._obj.la.add_label_type(current_name, current_color)
+
+            self._obj = self._obj.la.gate_label_type(
+                current_name,
+                current_channels,
+                current_thresholds,
+                current_key,
+                current_override,
+                current_parent,
+                current_op,
+            )
+
     def add_label_types_from_dataframe(
         self,
         df: pd.DataFrame,
