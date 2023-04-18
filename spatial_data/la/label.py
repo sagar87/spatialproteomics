@@ -629,6 +629,7 @@ class LabelAccessor:
                 current_parent,
                 current_op,
             )
+        return self._obj
 
     def add_label_types_from_dataframe(
         self,
