@@ -8,7 +8,7 @@ from sklearn.mixture import GaussianMixture
 from tqdm import tqdm
 
 
-def plot_mixture(gmm, X, intersection=None, show_legend=False, xmin=-3, xmax=3.0, ax=None):
+def plot_mixture(gmm, X, rug=False, intersection=None, show_legend=False, xmin=-3, xmax=3.0, ax=None):
     if ax is None:
         ax = plt.gca()
     # Compute PDF of whole mixture
@@ -26,12 +26,19 @@ def plot_mixture(gmm, X, intersection=None, show_legend=False, xmin=-3, xmax=3.0
     # Plot PDF of each component
     neg_idx = np.argmin(gmm.means_)
     pos_idx = np.argmax(gmm.means_)
-    ax.plot(x, pdf_individual[:, neg_idx], "--", color="C3", label="Component PDF")
-    ax.plot(x, pdf_individual[:, pos_idx], "--", color="C2", label="Component PDF")
+    ax.plot(x, pdf_individual[:, neg_idx], "-", color="C3", label="Component PDF")
+    ax.plot(x, pdf_individual[:, pos_idx], "-", color="C2", label="Component PDF")
     ax.set_xlabel("$x$")
     ax.set_ylabel("$p(x)$")
+
+    # if rug:
+    # sns.rugplot(data=pd.DataFrame(X, columns=['samples']), x="samples", ax=ax, alpha=1, height=.07, palette='C0', lw=.05)
+    # ax.set_ylim(bottom=-.1)
+
     if intersection is not None:
-        ax.axvline(intersection, color="k", lw=0.5, ls="--")
+        ax.axvline(intersection, color="C0", lw=1.0, ls="--")
+        ax.axvline(gmm.means_[neg_idx], color="C3", lw=1.0, ls="--")
+        ax.axvline(gmm.means_[pos_idx], color="C2", lw=1.0, ls="--")
 
     if show_legend:
         ax.legend()
@@ -135,7 +142,13 @@ class TwoComponentGaussianMixture:
         nrows, remainder = divmod(sub.shape[1], ncols)
         if remainder > 0:
             nrows += 1
+
+        ncols = min([len(markers), ncols])
+
         fig, axes = plt.subplots(nrows, ncols, figsize=(ncols * width, nrows * height))
+
+        if ncols == 1 and nrows == 1:
+            axes = np.array([axes])
 
         for marker, ax in zip(sub.coords["channels"].values.tolist(), axes.flatten()):
             expression = sub.sel({"channels": marker}).values.squeeze()
@@ -149,7 +162,8 @@ class TwoComponentGaussianMixture:
                 xmax=xmax,
                 ax=ax,
             )
-            ax.set_title(f"{marker} ($x_c=${self.intersect[marker]:.2f})")
+            diff = np.abs(np.diff(self.models[marker].means_.squeeze()))[0]
+            ax.set_title(f"{marker} ($x_c=${self.intersect[marker]:.2f}, $\\delta=${diff:.2f})")
             if show_sigmoid:
                 ax2 = ax.twinx()
                 x = np.linspace(xmin, xmax, 1000)
