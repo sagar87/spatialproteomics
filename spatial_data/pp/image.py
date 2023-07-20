@@ -3,7 +3,9 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
+from scipy.signal import wiener
 from skimage.measure import regionprops_table
+from skimage.restoration import unsupervised_wiener
 
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
@@ -497,6 +499,32 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([self._obj.sel(cells=da.cells), da])
+
+    def restore(self, method="wiener", **kwargs):
+        image_layer = self._obj[Layers.IMAGE]
+
+        obj = self._obj.drop(Layers.IMAGE)
+
+        if method == "wiener":
+            restored = wiener(image_layer.values)
+        elif method == "unsupervised_wiener":
+            psf = np.ones((5, 5)) / 25
+            restored, _ = unsupervised_wiener(image_layer.values.squeeze(), psf)
+            restored = np.expand_dims(restored, 0)
+        elif method == "threshold":
+            value = kwargs.get("value", 128)
+            rev_func = kwargs.get("rev_func", lambda x: x)
+            restored = np.zeros_like(image_layer)
+            idx = np.where(image_layer > rev_func(value))
+            restored[idx] = image_layer[idx]
+
+        normed = xr.DataArray(
+            restored,
+            coords=image_layer.coords,
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=Layers.IMAGE,
+        )
+        return xr.merge([obj, normed])
 
     def normalize(self):
         """Performs a percentile normalisation on each channel.
