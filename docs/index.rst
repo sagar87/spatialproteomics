@@ -17,6 +17,7 @@ Welcome to Spatial-data's documentation!
    :maxdepth: 2
    :caption: Tutorials:
    
+   notebooks/Example 2
    notebooks/Example 1
    notebooks/Slicing
    notebooks/Plotting
