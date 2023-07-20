@@ -378,21 +378,29 @@ class PlotAccessor:
 
         return self._obj
 
-    def spectra(self, cells: Union[List[int], int], ax=None):
+    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ax=None):
         if type(cells) is int:
             cells = [cells]
 
-        da = self._obj.se.quantify_cells(cells)
+        da = self._obj[layers_key].sel({"cells": cells})
         num_cells = len(cells)
 
-        if ax is isinstance(ax, np.ndarray):
-            assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
+        fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
+
+        for i in range(da.values.shape[0]):
+            axes[i].bar(np.arange(da.values.shape[1]), da.values[i])
+            axes[i].set_xticks(np.arange(da.values.shape[1]))
+            axes[i].set_xticklabels(da.channels.values, rotation=90)
+
+        # if ax is isinstance(ax, np.ndarray):
+        # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
 
         return da
 
     def spectra_with_annotation(
         self,
         cells: Union[List[int], None] = None,
+        layers_key="intensity",
         format_df=None,
         plot_kwargs: dict = {
             "width": 12,
@@ -409,7 +417,8 @@ class PlotAccessor:
         if cells is None:
             cells = self._obj.coords[Dims.CELLS].values.tolist()
 
-        da = self._obj.se.quantify_cells(cells)
+        # da = self._obj.se.quantify_cells(cells)
+        da = self._obj[layers_key].sel({"cells": cells})
         annot = format_annotation_df(format_df, da)
 
         plot_expression_spectra(
