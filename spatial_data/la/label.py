@@ -651,8 +651,8 @@ class LabelAccessor:
 
         if np.all(formated_labels == labels):
             da = xr.DataArray(
-                formated_labels.reshape(-1, 1),
-                coords=[cells, [Features.LABELS]],
+                np.stack([formated_labels, labels], -1),
+                coords=[cells, [Features.LABELS, Features.ORIGINAL_LABELS]],
                 dims=[Dims.CELLS, Dims.FEATURES],
                 name=Layers.OBS,
             )
@@ -677,26 +677,34 @@ class LabelAccessor:
             drop=True,
         )
 
-        self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
+        if Layers.OBS not in self._obj:
+            self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
+        else:
+            da = xr.concat([self._obj[Layers.OBS], da], dim=Dims.FEATURES)
+            obj = xr.merge([self._obj.drop(Layers.OBS).drop_dims(Dims.FEATURES).sel(cells=da.cells), da])
+
+        # import pdb;pdb.set_trace()
 
         if colors is not None:
             assert len(colors) == len(unique_labels), "Colors has the same."
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
-        self._obj = self._obj.la.add_label_property(colors, Props.COLOR)
-
+        # import pdb; pdb.set_trace()
+        obj = obj.la.add_label_property(colors, Props.COLOR)
+        # print('after')
+        # import pdb; pdb.set_trace()
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
             names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
 
-        self._obj = self._obj.la.add_label_property(names, Props.NAME)
-        self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
-            self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
+        obj = obj.la.add_label_property(names, Props.NAME)
+        obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
+            obj[Layers.SEGMENTATION].values, obj.coords[Dims.CELLS].values
         )
 
-        return self._obj
+        return obj
 
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
         unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
@@ -712,6 +720,7 @@ class LabelAccessor:
         )
 
         if Layers.LABELS in self._obj:
+            # import pdb;pdb.set_trace()
             da = xr.concat(
                 [self._obj[Layers.LABELS], da],
                 dim=Dims.PROPS,
