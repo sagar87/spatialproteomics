@@ -3,7 +3,14 @@ from .container import load_image_data
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor  # , colorize, normalize
-from .pp import arcsinh_mean_intensity, arcsinh_sum_intensity
+from .pp import (
+    arcsinh_mean_intensity,
+    arcsinh_sum_intensity,
+    arcsinh_var_intensity,
+    detect_peaks_num,
+    mean_intensity,
+    sum_intensity,
+)
 from .se import SegmentationAccessor
 from .tl import TwoComponentGaussianMixture
 
@@ -17,7 +24,11 @@ __all__ = [
     "Dims",
     "Features",
     "Props",
+    "sum_intensity",
+    "mean_intensity",
     "arcsinh_sum_intensity",
     "arcsinh_mean_intensity",
+    "arcsinh_var_intensity",
+    "detect_peaks_num",
     "TwoComponentGaussianMixture",
 ]
