@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; Spatial-Data 0.1.0 documentation</title>
+  <title>The plot (pl) accessor &mdash; Spatial-Data 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,6 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The labels (la) accessor" href="labels.html" />
+    <link rel="prev" title="The preprocessing (pp) accessor" href="preprocessing.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -39,9 +41,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
@@ -67,9 +69,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>API</li>
+      <li>The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/plot.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -101,14 +103,8 @@
     text-align: unset;
 }
 </style>
-<section id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h1>
-<section id="the-image-im-accessor">
-<h2>The image (<code class="code docutils literal notranslate"><span class="pre">im</span></code>) accessor<a class="headerlink" href="#the-image-im-accessor" title="Permalink to this headline"></a></h2>
-<p>The image accessor enables to easily subset the image container.</p>
-</section>
 <section id="the-plot-pl-accessor">
-<h2>The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor<a class="headerlink" href="#the-plot-pl-accessor" title="Permalink to this headline"></a></h2>
+<h1>The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor<a class="headerlink" href="#the-plot-pl-accessor" title="Permalink to this headline"></a></h1>
 <p>The plotting accessor provides several plotting functions.</p>
 <span class="target" id="module-spatial_data.pl.plot"></span><dl class="py class">
 <dt class="sig sig-object py" id="spatial_data.pl.plot.PlotAccessor">
@@ -412,44 +408,14 @@ See examples.</p>
 </dd></dl>
 
 </section>
-<section id="the-label-la-accessor">
-<h2>The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor<a class="headerlink" href="#the-label-la-accessor" title="Permalink to this headline"></a></h2>
-<p>The label accesor enables to subset the labels of the dataset and define associated meta data.</p>
-<span class="target" id="module-spatial_data.la.label"></span></section>
-<section id="the-segmentation-se-accessor">
-<h2>The segmentation (<code class="code docutils literal notranslate"><span class="pre">se</span></code>) accessor<a class="headerlink" href="#the-segmentation-se-accessor" title="Permalink to this headline"></a></h2>
-<p>The segmentation accessor contains methods that interrogate with the segmentaton mask.</p>
-<span class="target" id="module-spatial_data.se.segmentation"></span><dl class="py class">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.se.segmentation.</span></span><span class="sig-name descname"><span class="pre">SegmentationAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor" title="Permalink to this definition"></a></dt>
-<dd><p>Handles everything that relates to the provided segmentation.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.get_coordinates">
-<span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.get_coordinates" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.properties">
-<span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.properties" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.quantify">
-<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em>, <em class="sig-param"><span class="pre">remove_unlabeled=True</span></em>, <em class="sig-param"><span class="pre">return_dataarray=False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
-<dd><p>Adds channel(s) to an existing image container.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="preprocessing.html" class="btn btn-neutral float-left" title="The preprocessing (pp) accessor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="labels.html" class="btn btn-neutral float-right" title="The labels (la) accessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

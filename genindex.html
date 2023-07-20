@@ -39,10 +39,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Example%202.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a></li>
@@ -78,22 +81,40 @@
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.add_box">add_box() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.add_box">add_box() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.add_box">[1]</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_channel">add_channel() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_labels">add_labels() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_observations">add_observations() (spatial_data.pp.image.PreprocessingAccessor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.annotate">annotate() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_properties">add_properties() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_quantification">add_quantification() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_quantification_from_dataframe">add_quantification_from_dataframe() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.add_segmentation">add_segmentation() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.annotate">annotate() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.annotate">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -101,7 +122,27 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.bar">bar() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.bar">bar() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.bar">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.channel_histogram">channel_histogram() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.channel_histogram">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.colorize">colorize() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.draw_edges">draw_edges() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.draw_edges">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -109,6 +150,12 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.get_bbox">get_bbox() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.get_channels">get_channels() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
       <li><a href="api.html#spatial_data.se.segmentation.SegmentationAccessor.get_coordinates">get_coordinates() (spatial_data.se.segmentation.SegmentationAccessor method)</a>
 </li>
   </ul></td>
@@ -117,7 +164,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.imshow">imshow() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.imshow">imshow() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.imshow">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -129,9 +176,11 @@
     module
 
       <ul>
-        <li><a href="api.html#module-spatial_data.la.label">spatial_data.la.label</a>
+        <li><a href="api.html#module-spatial_data.la.label">spatial_data.la.label</a>, <a href="labels.html#module-spatial_data.la.label">[1]</a>
 </li>
-        <li><a href="api.html#module-spatial_data.pl.plot">spatial_data.pl.plot</a>
+        <li><a href="api.html#module-spatial_data.pl.plot">spatial_data.pl.plot</a>, <a href="plot.html#module-spatial_data.pl.plot">[1]</a>
+</li>
+        <li><a href="preprocessing.html#module-spatial_data.pp.image">spatial_data.pp.image</a>
 </li>
         <li><a href="api.html#module-spatial_data.se.segmentation">spatial_data.se.segmentation</a>
 </li>
@@ -139,13 +188,25 @@
   </ul></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.normalize">normalize() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor">PlotAccessor (class in spatial_data.pl.plot)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.pie">pie() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.pie">[1]</a>
+</li>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor">PlotAccessor (class in spatial_data.pl.plot)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor">PreprocessingAccessor (class in spatial_data.pp.image)</a>
+</li>
       <li><a href="api.html#spatial_data.se.segmentation.SegmentationAccessor.properties">properties() (spatial_data.se.segmentation.SegmentationAccessor method)</a>
 </li>
   </ul></td>
@@ -159,29 +220,44 @@
   </ul></td>
 </tr></table>
 
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing.html#spatial_data.pp.image.PreprocessingAccessor.restore">restore() (spatial_data.pp.image.PreprocessingAccessor method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.scatter">scatter() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.scatter">scatter() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.scatter">[1]</a>
 </li>
       <li><a href="api.html#spatial_data.se.segmentation.SegmentationAccessor">SegmentationAccessor (class in spatial_data.se.segmentation)</a>
 </li>
-      <li><a href="api.html#spatial_data.pl.plot.set_up_subplots">set_up_subplots() (in module spatial_data.pl.plot)</a>
+      <li><a href="api.html#spatial_data.pl.plot.set_up_subplots">set_up_subplots() (in module spatial_data.pl.plot)</a>, <a href="plot.html#spatial_data.pl.plot.set_up_subplots">[1]</a>
 </li>
       <li>
     spatial_data.la.label
 
       <ul>
-        <li><a href="api.html#module-spatial_data.la.label">module</a>
+        <li><a href="api.html#module-spatial_data.la.label">module</a>, <a href="labels.html#module-spatial_data.la.label">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    spatial_data.pl.plot
+
+      <ul>
+        <li><a href="api.html#module-spatial_data.pl.plot">module</a>, <a href="plot.html#module-spatial_data.pl.plot">[1]</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    spatial_data.pl.plot
+    spatial_data.pp.image
 
       <ul>
-        <li><a href="api.html#module-spatial_data.pl.plot">module</a>
+        <li><a href="preprocessing.html#module-spatial_data.pp.image">module</a>
 </li>
       </ul></li>
       <li>
@@ -191,7 +267,9 @@
         <li><a href="api.html#module-spatial_data.se.segmentation">module</a>
 </li>
       </ul></li>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">spectra_with_annotation() (spatial_data.pl.plot.PlotAccessor method)</a>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.spectra">spectra() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra">[1]</a>
+</li>
+      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">spectra_with_annotation() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">[1]</a>
 </li>
   </ul></td>
 </tr></table>
