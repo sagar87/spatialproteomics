@@ -236,6 +236,28 @@ class LabelAccessor:
         return self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
 
     def deselect(self, indices):
+        """
+        Deselect specific label indices from the data object.
+
+        This method deselects specific label indices from the data object, effectively removing them from the selection.
+        The deselection can be performed using slices, lists, tuples, or individual integers.
+
+        Parameters
+        ----------
+        indices : slice, list, tuple, or int
+            The label indices to be deselected. Can be a slice, list, tuple, or an individual integer.
+
+        Returns
+        -------
+        any
+            The updated data object with the deselected label indices.
+
+        Notes
+        -----
+        - The function uses 'indices' to specify which labels to deselect.
+        - 'indices' can be provided as slices, lists, tuples, or an integer.
+        - The function then updates the data object to remove the deselected label indices.
+        """
         # REFACTOR
         if type(indices) is slice:
             l_start = indices.start if indices.start is not None else 1
@@ -261,7 +283,36 @@ class LabelAccessor:
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
     def add_label_type(self, name: str, color: str = "w"):
-        """Add a new label type to the image container."""
+        """
+        Add a new label type to the data object.
+
+        This method adds a new label type with the specified 'name' and 'color' to the data object.
+        The label type is used to identify and categorize cells in the segmentation mask.
+
+        Parameters
+        ----------
+        name : str
+            The name of the new label type to be added.
+        color : str, optional
+            The color code to represent the new label type in the visualization. Default is "white" ("w").
+
+        Returns
+        -------
+        any
+            The updated data object with the newly added label type.
+
+        Raises
+        ------
+        ValueError
+            If the segmentation mask or observation table is not found in the data object.
+            If the provided 'name' already exists as a label type.
+
+        Notes
+        -----
+        - The function checks for the existence of the segmentation mask and observation table in the data object.
+        - It ensures that the 'name' of the new label type does not already exist in the label types.
+        - The function then adds the new label type with the given 'name' and 'color' to the data object.
+        """
 
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
@@ -309,6 +360,27 @@ class LabelAccessor:
         return obj
 
     def get_gate_graph(self, pop: bool = False):
+        """
+        Get the gating graph from the data object.
+
+        This method retrieves the gating graph from the data object, which represents the gating hierarchy
+        used to categorize cells into different cell types.
+
+        Parameters
+        ----------
+        pop : bool, optional
+            Whether to remove the gating graph from the data object after retrieval. Default is False.
+
+        Returns
+        -------
+        networkx.DiGraph
+            The gating graph representing the gating hierarchy of cell types.
+
+        Notes
+        -----
+        - The function looks for the 'graph' attribute in the data object to obtain the gating graph.
+        - If 'pop' is True, the gating graph is removed from the data object after retrieval.
+        """
         if "graph" not in self._obj.attrs:
             # initialize graph
             graph = nx.DiGraph()
@@ -352,7 +424,33 @@ class LabelAccessor:
         return graph
 
     def remove_label_type(self, cell_type: Union[int, List[int]]):
+        """
+        Remove specific cell type label(s) from the data object.
 
+        This method removes specific cell type label(s) identified by 'cell_type' from the data object.
+        The cell type label(s) are effectively removed, and their associated cells are assigned to the 'Unlabeled' category.
+
+        Parameters
+        ----------
+        cell_type : int or list of int
+            The ID(s) of the cell type label(s) to be removed.
+
+        Returns
+        -------
+        any
+            The updated data object with the specified cell type label(s) removed.
+
+        Raises
+        ------
+        ValueError
+            If the data object does not contain any cell type labels.
+            If the specified 'cell_type' is not found among the existing cell type labels.
+
+        Notes
+        -----
+        - The function first checks for the existence of cell type labels in the data object.
+        - It then removes the specified 'cell_type' from the cell type labels, setting their cells to the 'Unlabeled' category.
+        """
         if isinstance(cell_type, int):
             cell_type = [cell_type]
 
@@ -376,6 +474,35 @@ class LabelAccessor:
         return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
     def reset_label_type(self, label_id):
+        """
+        Reset the label type of cells to its parent label.
+
+        This method resets the label type of cells, identified by the given label_id, to its parent label.
+        The cells assigned to descendant labels of the provided label_id will also be updated to the parent label.
+
+        Parameters
+        ----------
+        label_id :
+            The cell type id or name to reset its cells' label type.
+
+        Returns
+        -------
+        any
+            The updated data object with cells' label type reset to its parent label.
+
+        Raises
+        ------
+        ValueError
+            If the provided label_id is not found in the data object.
+
+        Notes
+        -----
+        - The function identifies the parent label of the provided label_id.
+        - It gathers all the descendant labels of the provided label_id, including itself.
+        - The cells assigned to the descendant labels will be updated to the parent label.
+        - The function also updates the gating graph and relevant attributes in the data object.
+        """
+
         labels = self._obj.coords[Dims.LABELS]
         label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
 
@@ -452,19 +579,52 @@ class LabelAccessor:
         show_channel: Union[List[str], str] = None,
     ):
         """
+        Gate cells based on specified criteria and assign a cell type label.
 
-        Parameters:
-        -----------
-        label_id: int
-            The cell type id to assign to the gated cells.
-        channel: str
-            The channel to use for gating.
-        threshold: float
-            The threshold to use for gating.
-        intensity_key: str
+        This method gates cells in the data object based on the given channel and threshold.
+        Cells that meet the gating criteria will be assigned the provided cell type label.
+
+        Parameters
+        ----------
+        label_id :
+            The cell type id or name to assign to the gated cells.
+        channel :
+            The channel or list of channels to use for gating.
+        threshold :
+            The threshold or list of thresholds to use for gating.
+        intensity_key :
             The key to use for the intensity layer.
-        override: bool
-            Whether to override the existing descendant label types.
+        override : bool, optional
+            Whether to override the existing descendant label types. Default is False.
+        parent : any, optional
+            The parent cell type id or name for gating hierarchy. Default is 0, indicating no parent label.
+        op : str, optional
+            The logical operator to apply when dealing with multiple channels:
+            "AND" for logical AND, "OR" for logical OR. Default is "AND".
+        show_channel : any, optional
+            The channel or list of channels to display in the gating result.
+            If None, the gating channel(s) will be used. Default is None.
+
+        Returns
+        -------
+        any
+            The updated data object with gated cells labeled with the specified cell type.
+
+        Raises
+        ------
+        ValueError
+            If the provided label_id or parent is not found in the data object.
+        ValueError
+            If the threshold array length does not match the number of channels.
+        ValueError
+            If the logical operator (op) is neither "AND" nor "OR".
+
+        Notes
+        -----
+        - The gating process is based on the specified channel(s) and threshold(s).
+        - The result of the gating operation is stored as new cell type labels.
+        - The gating operation can either override existing descendant labels or not.
+        - The gating process also updates the gating graph and relevant attributes in the data object.
         """
         labels = self._obj.coords[Dims.LABELS]
         label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
@@ -592,7 +752,32 @@ class LabelAccessor:
         return updated_obj
 
     def add_label_types_from_graph(self, graph):
+        """
+        Add label types and gate cells based on the provided gating graph.
 
+        This method adds label types to the data object based on the information in the provided gating graph.
+        It also gates cells for each step in the graph, applying the specified criteria from the graph.
+
+        Parameters
+        ----------
+        graph : networkx.DiGraph
+            The gating graph representing cell type hierarchies and gating steps.
+
+        Returns
+        -------
+        any
+            The updated data object with added label types and gated cells.
+
+        Notes
+        -----
+        - The function extracts relevant information from the gating graph, including label names, colors,
+        gating channels, thresholds, intensity keys, logical operators, parent labels, and override flags.
+        - It iterates over the steps in the graph and adds label types for each unique cell type encountered.
+        - For each step, the function gates cells based on the provided gating criteria for the respective cell type.
+        - The gating process updates the data object with the newly added label types and gated cells.
+        - The function assumes that the data object (`self._obj`) has relevant methods for adding label types
+        (`add_label_type`) and gating cells (`gate_label_type`) based on its existing implementation.
+        """
         # unpack data
         steps = {v: k for k, v in nx.get_node_attributes(graph, "step").items()}
         label_names = nx.get_node_attributes(graph, "label_name")
@@ -639,6 +824,51 @@ class LabelAccessor:
         colors: Union[list, None] = None,
         names: Union[list, None] = None,
     ):
+        """
+        Add label types and assign cell type labels based on the provided DataFrame.
+
+        This method adds label types to the data object and assigns cell type labels to cells
+        based on the information in the provided DataFrame.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing cell information with 'cell_col' representing cell IDs and
+            'label_col' representing the corresponding cell type labels.
+        cell_col : str, optional
+            The column name in the DataFrame representing cell IDs. Default is "cell".
+        label_col : str, optional
+            The column name in the DataFrame representing cell type labels. Default is "label".
+        colors : list or None, optional
+            A list of colors to assign to the label types. If None, random colors will be used.
+            Default is None.
+        names : list or None, optional
+            A list of names for the label types. If None, default names will be generated.
+            Default is None.
+
+        Returns
+        -------
+        any
+            The updated data object with added label types and assigned cell type labels.
+
+        Notes
+        -----
+        - The function uses the provided DataFrame 'df' to extract cell IDs and corresponding cell type labels.
+        - It ensures that cell type labels are non-negative, raising an assertion error otherwise.
+        - The function formats and creates a DataArray 'da' with cell IDs and their respective labels.
+        - The DataArray 'da' is then merged into the data object, associating cells with their label types.
+        - If label colors are provided, they are assigned to the label types using 'COLORS' or random colors.
+        - If label names are provided, they are assigned to the label types; otherwise, default names are used.
+        - The segmentation layer is updated to remove cells with unlabeled cell type labels.
+
+        Raises
+        ------
+        AssertionError
+            If cell type labels contain negative values.
+        AssertionError
+            If the number of provided colors or names does not match the number of unique label types.
+        """
+
         sub = df.loc[:, [cell_col, label_col]].dropna()
 
         cells = sub.loc[:, cell_col].values.squeeze()
@@ -707,6 +937,31 @@ class LabelAccessor:
         return obj
 
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
+        """
+        Add a label property for each unique cell type label.
+
+        This method adds a property, specified by 'prop', for each unique cell type label in the data object.
+        The property values are taken from the 'array' argument and assigned to each corresponding cell type label.
+
+        Parameters
+        ----------
+        array : numpy.ndarray or list
+            An array or list containing property values to be assigned to each unique cell type label.
+        prop : str
+            The name of the property to be added to the cell type labels.
+
+        Returns
+        -------
+        any
+            The updated data object with the added label property.
+
+        Notes
+        -----
+        - The function ensures that 'array' is converted to a NumPy array.
+        - It creates a DataArray 'da' with the given 'array' as the property values and unique cell type labels as coords.
+        - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
+        - If the label property already exists in the data object, it will be updated with the new property values.
+        """
         unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
 
         if type(array) is list:
@@ -729,12 +984,56 @@ class LabelAccessor:
         return xr.merge([da, self._obj])
 
     def set_label_name(self, label, name):
+        """
+        Set the name of a specific cell type label.
+
+        This method sets the 'name' of a specific cell type label identified by the 'label'.
+        The 'label' can be either a label ID or the name of the cell type label.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the cell type label whose name will be updated.
+        name : str
+            The new name to be assigned to the specified cell type label.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'label' from its name to the corresponding ID for internal processing.
+        - It updates the name of the cell type label in the data object to the new 'name'.
+        """
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
         self._obj[Layers.LABELS].loc[label, Props.NAME] = name
 
     def set_label_color(self, label, color):
+        """
+        Set the color of a specific cell type label.
+
+        This method sets the 'color' of a specific cell type label identified by the 'label'.
+        The 'label' can be either a label ID or the name of the cell type label.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the cell type label whose color will be updated.
+        color : any
+            The new color to be assigned to the specified cell type label.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'label' from its name to the corresponding ID for internal processing.
+        - It updates the color of the cell type label in the data object to the new 'color'.
+        """
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
@@ -746,6 +1045,34 @@ class LabelAccessor:
         alpha_boundary=1,
         mode="inner",
     ):
+        """
+        Render the segmentation layer of the data object.
+
+        This method renders the segmentation layer of the data object and returns an updated data object
+        with the rendered visualization. The rendered segmentation is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered segmentation. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
+        mode : str, optional
+            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered segmentation as a new plot layer.
+
+        Notes
+        -----
+        - The function extracts the segmentation layer and information about boundary pixels from the data object.
+        - It applies the specified alpha values and mode to render the segmentation.
+        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
+        """
+
         color_dict = {1: "white"}
         cmap = _get_listed_colormap(color_dict)
         segmentation = self._obj[Layers.SEGMENTATION].values
@@ -787,6 +1114,41 @@ class LabelAccessor:
         return xr.merge([self._obj, da])
 
     def render_label(self, alpha=0, alpha_boundary=1, mode="inner", override_color=None):
+        """
+        Render the labeled cells in the data object.
+
+        This method renders the labeled cells in the data object based on the label colors and segmentation.
+        The rendered visualization is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered labels. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered labels. Default is 1.
+        mode : str, optional
+            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+        override_color : any, optional
+            The color value to override the default label colors. Default is None.
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered labeled cells as a new plot layer.
+
+        Raises
+        ------
+        AssertionError
+            If the data object does not contain label information. Use 'add_labels' function to add labels first.
+
+        Notes
+        -----
+        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
+        - It renders the labeled cells based on the label colors and the segmentation layer.
+        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
+        - If 'override_color' is provided, all labels will be rendered using the specified color.
+        """
         assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
 
         # TODO: Attribute class in constants.py
@@ -830,6 +1192,32 @@ class LabelAccessor:
         return xr.merge([self._obj, da])
 
     def neighborhood_graph(self, neighbors=10, radius=1.0, metric="euclidean"):
+        """
+        Generate a neighborhood graph based on cell coordinates.
+
+        This method creates a neighborhood graph for the cells in the data object based on their coordinates.
+        The neighborhood graph contains information about the 'neighbors' nearest cells to each cell.
+
+        Parameters
+        ----------
+        neighbors : int, optional
+            The number of neighbors to consider for each cell. Default is 10.
+        radius : float, optional
+            The radius within which to search for neighbors. Default is 1.0.
+        metric : str, optional
+            The distance metric to be used when calculating distances between cells. Default is "euclidean".
+
+        Returns
+        -------
+        any
+            The updated data object with the neighborhood graph information.
+
+        Notes
+        -----
+        - The function extracts cell coordinates from the data object.
+        - It uses the 'neighbors', 'radius', and 'metric' parameters to generate the neighborhood graph.
+        - The neighborhood graph information is added to the data object as a new layer.
+        """
         cell_coords = self._obj.coords[Dims.CELLS].values
 
         # fit neighborhood tree

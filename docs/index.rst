@@ -11,7 +11,9 @@ Welcome to Spatial-data's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   api
+   preprocessing
+   plot
+   labels
 
 .. toctree::
    :maxdepth: 2

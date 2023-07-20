@@ -104,7 +104,21 @@ class PreprocessingAccessor:
         return ds.pp.get_bbox(x_slice, y_slice)
 
     def get_bbox(self, x_slice: slice, y_slice: slice):
-        """Returns the bounds of the image container."""
+        """
+        Returns the bounds of the image container.
+
+        Parameters:
+        -----------
+        x_slice: slice
+            The slice representing the x-coordinates for the bounding box.
+        y_slice: slice
+            The slice representing the y-coordinates for the bounding box.
+
+        Returns:
+        --------
+        xarray.Dataset
+            The updated image container.
+        """
 
         # get the dimensionality of the image
         xdim = self._obj.coords[Dims.X]
@@ -145,7 +159,19 @@ class PreprocessingAccessor:
         return self._obj.sel(query)
 
     def get_channels(self, channels: Union[List[str], str]):
-        """Returns a single channel as a numpy array."""
+        """
+        Returns a single channel as a numpy array.
+
+        Parameters:
+        -----------
+        channels: Union[str, list]
+            The name of the channel or a list of channel names.
+
+        Returns:
+        --------
+        xarray.Dataset
+            The selected channels as a new image container.
+        """
         if isinstance(channels, str):
             channels = [channels]
         # build query
@@ -157,7 +183,17 @@ class PreprocessingAccessor:
         """
         Adds channel(s) to an existing image container.
 
+        Parameters:
+        -----------
+        channels: Union[str, list]
+            The name of the channel or a list of channel names to be added.
+        array: np.ndarray
+            The numpy array representing the channel(s) to be added.
 
+        Returns:
+        --------
+        xarray.Dataset
+            The updated image container with added channel(s).
         """
         assert type(array) is np.ndarray, "Added channel(s) must be numpy arrays"
 
@@ -186,16 +222,13 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, da])
 
     def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> xr.Dataset:
-        """Adds a segmentation mask (_segmentation) field to the xarray dataset.
-        Expects an array of shape (x, y) that matches the shape of the image, ie.
-        the x and y coordinates of the image container. Further, the mask is expected
-        to mark the background with zeros and the cell instances with positive integers.
-
+        """
+        Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
         Parameters:
         -----------
         segmentation: np.ndarray
-            A segmentation mask, i.e. a np.ndarray with image.shape = (n, x, y),
+            A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
             that indicates the location of each cell.
         copy: bool
             If true the segmentation mask is copied.
@@ -205,6 +238,7 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended xarray.
         """
+
         assert ~np.any(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
@@ -235,7 +269,8 @@ class PreprocessingAccessor:
         properties: Union[str, list, tuple] = ("label", "centroid"),
         return_xarray: bool = False,
     ) -> xr.Dataset:
-        """Adds properties derived from the mask to the image container.
+        """
+        Adds properties derived from the mask to the image container.
 
         Parameters:
         -----------
@@ -245,9 +280,6 @@ class PreprocessingAccessor:
         return_xarray: bool
             If true, the function returns an xarray.DataArray with the properties
             instead of adding them to the image container.
-        key_added: str
-            The key under which the properties are added to the image container,
-            by default this is "_obs".
 
         Returns:
         --------
@@ -310,7 +342,25 @@ class PreprocessingAccessor:
         return_xarray=False,
     ):
         """
-        Adds channel(s) to an existing image container.
+        Quantify channel intensities over the segmentation mask.
+
+        Parameters:
+        -----------
+        channels: Union[str, list], optional
+            The name of the channel or a list of channel names to be added. Default is "all".
+        func: Callable, optional
+            The function used for quantification. Default is sum_intensity.
+        remove_unlabeled: bool, optional
+            Whether to remove unlabeled cells. Default is True.
+        key_added: str, optional
+            The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
+        return_xarray: bool, optional
+            If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.
+
+        Returns:
+        --------
+        xr.Dataset or xr.DataArray
+            The updated image container with added quantification data or the quantification data as a separate xarray.DataArray.
         """
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
@@ -349,17 +399,18 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, da])
 
     def add_quantification_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.INTENSITY) -> xr.Dataset:
-        """Adds an observation table to the image container. Columns of the
-        dataframe are added have to match the channel coords of the image
-        container, and index of the dataframe has to match the cell coords
+        """
+        Adds an observation table to the image container. Columns of the
+        dataframe have to match the channel coordinates of the image
+        container, and the index of the dataframe has to match the cell coordinates
         of the image container.
 
         Parameters:
         -----------
         df: pd.DataFrame
             A dataframe with the quantification values.
-        key_added: str
-            The key under which the quantification is added to the image container,
+        key_added: str, optional
+            The key under which the quantification data will be added to the image container.
 
         Returns:
         --------
@@ -401,6 +452,23 @@ class PreprocessingAccessor:
     #     return xr.merge([self._obj, da])
 
     def add_properties(self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False):
+        """
+        Adds properties to the image container.
+
+        Parameters:
+        -----------
+        array: Union[np.ndarray, list]
+            An array or list of properties to be added to the image container.
+        prop: str, optional
+            The name of the property. Default is Features.LABELS.
+        return_xarray: bool, optional
+            If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.
+
+        Returns:
+        --------
+        xr.Dataset or xr.DataArray
+            The updated image container with added properties or the properties as a separate xarray.DataArray.
+        """
         unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
 
         if type(array) is list:
@@ -435,7 +503,27 @@ class PreprocessingAccessor:
         colors: Union[list, None] = None,
         names: Union[list, None] = None,
     ):
+        """
+        Adds labels to the image container.
 
+        Parameters:
+        -----------
+        df: Union[pd.DataFrame, None], optional
+            A dataframe with the cell and label information. If None, a default labeling will be applied.
+        cell_col: str, optional
+            The name of the column in the dataframe representing cell coordinates. Default is "cell".
+        label_col: str, optional
+            The name of the column in the dataframe representing cell labels. Default is "label".
+        colors: Union[list, None], optional
+            A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.
+        names: Union[list, None], optional
+            A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.
+
+        Returns:
+        --------
+        xr.Dataset
+            The updated image container with added labels.
+        """
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values
             labels = np.ones(len(cells))
@@ -501,6 +589,21 @@ class PreprocessingAccessor:
         return xr.merge([self._obj.sel(cells=da.cells), da])
 
     def restore(self, method="wiener", **kwargs):
+        """
+        Restores the image using a specified method.
+
+        Parameters:
+        -----------
+        method: str, optional
+            The method used for image restoration. Options are "wiener", "unsupervised_wiener", or "threshold". Default is "wiener".
+        **kwargs: dict, optional
+            Additional keyword arguments specific to the chosen method.
+
+        Returns:
+        --------
+        xr.Dataset
+            The restored image container.
+        """
         image_layer = self._obj[Layers.IMAGE]
 
         obj = self._obj.drop(Layers.IMAGE)
@@ -527,12 +630,13 @@ class PreprocessingAccessor:
         return xr.merge([obj, normed])
 
     def normalize(self):
-        """Performs a percentile normalisation on each channel.
+        """
+        Performs a percentile normalization on each channel.
 
-        Returns
-        -------
+        Returns:
+        --------
         xr.Dataset
-            The image container with the colorized image stored in Layers.PLOT.
+            The image container with the normalized image stored in Layers.PLOT.
         """
         image_layer = self._obj[Layers.IMAGE]
         normed = xr.DataArray(
@@ -551,26 +655,25 @@ class PreprocessingAccessor:
         normalize: bool = True,
         merge=True,
     ) -> xr.Dataset:
-        """Colorizes a stack of images.
+        """
+        Colorizes a stack of images.
 
-        Parameters
-        ----------
-        colors: List[str]
-            A list of strings that denote the color of each channel.
-        background: float
-            Background color of the colorized image.
-        normalize: bool
-            Normalizes the image prior to colorizing it.
-        merge: True
-            Merge the channel dimension.
+        Parameters:
+        -----------
+        colors: List[str], optional
+            A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
+        background: str, optional
+            Background color of the colorized image. Default is "black".
+        normalize: bool, optional
+            Normalize the image prior to colorizing it. Default is True.
+        merge: True, optional
+            Merge the channel dimension. Default is True.
 
-
-        Returns
-        -------
+        Returns:
+        --------
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
         """
-
         image_layer = self._obj[Layers.IMAGE]
         colored = _colorize(
             image_layer.values,

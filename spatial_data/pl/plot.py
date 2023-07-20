@@ -113,24 +113,40 @@ class PlotAccessor:
         format_string: str = "",
         ax=None,
     ) -> xr.Dataset:
-        """Annotates cells with their respective number.
+        """
+        Annotates cells with their respective number on the plot.
 
         Parameters
         ----------
-        highlight: List[int]
-            A list with cell ids which are highlighted in the plot.
-        text_kwargs: dict
-            Keyword arguments that are passed to matplotlib's text function.
-        hightlight_kwargs: dict
-            Similar to text_kwargs but specifically for the cell ids that are
-            passed via highlight.
-        ax: matplotlib.Axes
-            Matplotlib axis.
+        variable : str, optional
+            The feature in the observation table to be used for cell annotation. Default is "cell".
+        layer_key : str, optional
+            The key representing the layer in the data object. Default is Layers.OBS.
+        highlight : list, optional
+            A list containing cell IDs to be highlighted in the plot.
+        text_kwargs : dict, optional
+            Keyword arguments passed to matplotlib's text function for normal cell annotations.
+        highlight_kwargs : dict, optional
+            Similar to 'text_kwargs' but specifically for the cell IDs passed via 'highlight'.
+        bbox : Union[List, None], optional
+            A list containing bounding box coordinates [xmin, xmax, ymin, ymax] to annotate cells only within the box.
+            Default is None, which annotates all cells.
+        format_string : str, optional
+            The format string used to format the cell annotation text. Default is "" (no formatting).
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
 
         Returns
         -------
         xr.Dataset
-            The image container.
+            The updated image container.
+
+        Notes
+        -----
+        - The function annotates cells with their respective values from the selected feature.
+        - You can highlight specific cells in the plot using the 'highlight' parameter.
+        - Bounding box coordinates can be provided via 'bbox' to annotate cells only within the specified box.
+        - 'format_string' can be used to format the cell annotation text (e.g., "{t:.2f}" for float formatting).
         """
         if ax is None:
             ax = plt.gca()
@@ -179,22 +195,39 @@ class PlotAccessor:
         legend_kwargs: dict = {"framealpha": 1},
         scatter_kws: dict = {},
     ) -> xr.Dataset:
-        """Plots a scatter plot of labels
+        """
+        Plots a scatter plot of labels.
 
         Parameters
         ----------
-        legend_label: bool
-            Plots the legend of the labels.
-        size: float
-            Size of the dots.
-        ax: matplotlib.axes
-            Matplotlib axis to plot on (default: None)
-
+        legend_label : bool, optional
+            Plots the legend of the labels. Default is False.
+        size : float, optional
+            Size of the dots in the scatter plot. Default is 0.001.
+        alpha : float, optional
+            Alpha value for transparency of the dots in the scatter plot. Default is 0.9.
+        zorder : int, optional
+            The z-order of the scatter plot. Default is 10.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+        colorize : bool, optional
+            Whether to colorize the dots based on label colors. Default is True.
+        legend_kwargs : dict, optional
+            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
+        scatter_kws : dict, optional
+            Additional keyword arguments to be passed to the matplotlib scatter function.
 
         Returns
         -------
         xr.Dataset
-            The image container.
+            The updated image container.
+
+        Notes
+        -----
+        - The function plots a scatter plot of labels from the data object.
+        - The size, alpha, and zorder parameters control the appearance of the scatter plot.
+        - You can colorize the dots based on label colors using the 'colorize' parameter.
+        - The legend of the labels can be displayed using the 'legend_label' parameter.
         """
         if ax is None:
             ax = plt.gca()
@@ -232,22 +265,31 @@ class PlotAccessor:
         linewidth: float = 2,
         ax=None,
     ):
-        """Adds a box to the current plot.
+        """
+        Adds a box to the current plot.
 
         Parameters
         ----------
-        xlim: List[int]
+        xlim : List[int]
             The x-bounds of the box [xstart, xstop].
-        ylim: List[int]
+        ylim : List[int]
             The y-bounds of the box [ymin, ymax].
-        ax: matplotlib.axes
-            Matplotlib axis to plot on (default: None)
-
+        color : str, optional
+            The color of the box. Default is "w" (white).
+        linewidth : float, optional
+            The linewidth of the box. Default is 2.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
 
         Returns
         -------
         xr.Dataset
-            The image container.
+            The updated image container.
+
+        Notes
+        -----
+        - The function adds a rectangular box to the current plot with specified x and y bounds.
+        - The box can be customized using the 'color' and 'linewidth' parameters.
         """
 
         if ax is None:
@@ -264,17 +306,25 @@ class PlotAccessor:
         return self._obj
 
     def bar(self, ax=None, bar_kwargs: dict = {}):
-        """Plots a bar plot present labels.
+        """
+        Plots a bar plot of present labels.
 
         Parameters
         ----------
-        ax: matplotlib.axes
-            Matplotlib axis to plot on.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+        bar_kwargs : dict, optional
+            Keyword arguments passed to the matplotlib bar function.
 
         Returns
         -------
         xr.Dataset
-            The image container.
+            The updated image container.
+
+        Notes
+        -----
+        - The function plots a bar plot of present labels in the data object.
+        - The appearance of the bar plot can be customized using 'bar_kwargs'.
         """
         if ax is None:
             ax = plt.gca()
@@ -302,6 +352,30 @@ class PlotAccessor:
         labels=True,
         ax=None,
     ):
+        """
+        Plots a pie chart of label frequencies.
+
+        Parameters
+        ----------
+        wedgeprops : dict, optional
+            Keyword arguments passed to the matplotlib pie function for wedge properties.
+        circle_radius : float, optional
+            The radius of the inner circle in the pie chart. Default is 0.2.
+        labels : bool, optional
+            Whether to display labels on the pie chart. Default is True.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function plots a pie chart of label frequencies in the data object.
+        - The appearance of the pie chart can be customized using 'wedgeprops' and 'circle_radius'.
+        - Labels on the pie chart can be shown or hidden using the 'labels' parameter.
+        """
         if ax is None:
             ax = plt.gca()
 
@@ -329,24 +403,34 @@ class PlotAccessor:
         downsample: int = 1,
         ax=None,
     ):
-        """Plots the image.
+        """
+        Plots the image.
 
         Meant to be used in conjunction with im.colorize and la.render_label.
         See examples.
 
         Parameters
         ----------
-        legend_background: bool
-            Show the label of the colorized image.
-        legend_label: bool
-            Show the labels.
-        ax: matplotlib.axes
-            Matplotlib axis to plot on.
+        legend_background : bool, optional
+            Show the label of the colorized image. Default is False.
+        legend_label : bool, optional
+            Show the labels. Default is False.
+        legend_kwargs : dict, optional
+            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
+        downsample : int, optional
+            Downsample factor for the image. Default is 1 (no downsampling).
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
 
         Returns
         -------
         xr.Dataset
-            The image container.
+            The updated image container.
+
+        Notes
+        -----
+        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
+        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
         if Layers.PLOT not in self._obj:
             logger.warning("No plot defined yet.")
@@ -379,6 +463,27 @@ class PlotAccessor:
         return self._obj
 
     def spectra(self, cells: Union[List[int], int], layers_key="intensity", ax=None):
+        """
+        Plots the spectra of cells.
+
+        Parameters
+        ----------
+        cells : Union[List[int], int]
+            The cell ID(s) whose spectra will be plotted.
+        layers_key : str, optional
+            The key representing the layer in the data object for plotting spectra. Default is "intensity".
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, a new figure and axis will be created.
+
+        Returns
+        -------
+        xr.Dataset
+            The selected data array for the plotted cells.
+
+        Notes
+        -----
+        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
+        """
         if type(cells) is int:
             cells = [cells]
 
@@ -411,7 +516,28 @@ class PlotAccessor:
         },
     ):
         """
-        Plots the spectra of cells.
+        Plots the spectra of cells with annotation.
+
+        Parameters
+        ----------
+        cells : Union[List[int], None], optional
+            The cell ID(s) whose spectra will be plotted. If None, all cells will be plotted.
+        layers_key : str, optional
+            The key representing the layer in the data object for plotting spectra. Default is "intensity".
+        format_df : pd.DataFrame or None, optional
+            A DataFrame containing annotation information for the plotted cells. Default is None (no annotation).
+        plot_kwargs : dict, optional
+            Additional keyword arguments for setting up subplots and plot appearance.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+
+        Notes
+        -----
+        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
+        - Annotates the spectra using the provided 'format_df' DataFrame.
         """
 
         if cells is None:
@@ -431,7 +557,30 @@ class PlotAccessor:
         return self._obj
 
     def draw_edges(self, color="white", linewidths=0.5, zorder=0, ax=None):
-        # unpack data
+        """
+        Draws edges connecting neighboring cells.
+
+        Parameters
+        ----------
+        color : str, optional
+            The color of the edges. Default is "white".
+        linewidths : float, optional
+            The linewidth of the edges. Default is 0.5.
+        zorder : int, optional
+            The z-order of the edges in the plot. Default is 0.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function draws edges connecting neighboring cells in the plot.
+        - The appearance of the edges can be customized using 'color' and 'linewidths'.
+        """
         coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
         neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
         cell_dim = self._obj.dims[Dims.CELLS]
@@ -471,6 +620,39 @@ class PlotAccessor:
         ax=None,
         **kwargs,
     ):
+        """
+        Plots histograms of intensity values for each channel.
+
+        Parameters
+        ----------
+        intensity_key : str
+            The key representing the intensity values in the data object.
+        bins : int, optional
+            The number of bins for histogram bins. Default is 50.
+        ncols : int, optional
+            The number of columns for subplot arrangement. Default is 4.
+        width : float, optional
+            The width of the figure. Default is 4.
+        height : float, optional
+            The height of the figure. Default is 3.
+        log_scale : bool, optional
+            Whether to use a logarithmic scale for the y-axis. Default is False.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, subplots will be created.
+        **kwargs : dict, optional
+            Additional keyword arguments passed to the matplotlib hist function.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+
+        Notes
+        -----
+        - The function plots histograms of intensity values for each channel using the 'intensity_key' from the data object.
+        - The histograms are arranged in subplots with 'ncols' columns.
+        - Additional keyword arguments can be passed to customize the appearance of the histograms.
+        """
         intensities = self._obj[intensity_key]
         channels = self._obj.coords[Dims.CHANNELS].values
         num_channels = len(channels)
