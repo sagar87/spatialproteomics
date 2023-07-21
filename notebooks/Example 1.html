@@ -54,6 +54,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Importing data and saving data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Importing-raw-data">Importing raw data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Adding-a-segmentation-mask">Adding a segmentation mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Adding-observations-(_obs-table)">Adding observations (<code class="docutils literal notranslate"><span class="pre">_obs</span></code> table)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Adding-cell-type-annotations">Adding cell type annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Loading-data-all-data-at-once">Loading data all data at once</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Saving-data">Saving data</a></li>
@@ -368,11 +369,21 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Importing-data-and-saving-data">
 <h1>Importing data and saving data<a class="headerlink" href="#Importing-data-and-saving-data" title="Permalink to this headline"></a></h1>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from skimage.io import imread
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%load_ext autoreload
+%autoreload 2
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
+from skimage.io import imread
 import pandas as pd
 import xarray as xr
 xr.set_options(display_style=&#39;text&#39;)
@@ -380,36 +391,19 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f14394ee3a0&gt;
+&lt;xarray.core.options.set_options at 0x7f45b2901650&gt;
 </pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
-sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
-</pre></div>
-</div>
 </div>
 <section id="Importing-raw-data">
 <h2>Importing raw data<a class="headerlink" href="#Importing-raw-data" title="Permalink to this headline"></a></h2>
 <p>Spatial data implements useful accessors that complement <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code> objects. In order to use them we hence need to convert our image data to <code class="docutils literal notranslate"><span class="pre">xarray</span></code> objects. Here, we assume that our data comes in form of a <code class="docutils literal notranslate"><span class="pre">tiff</span></code> files. To read them into our session we use the <code class="docutils literal notranslate"><span class="pre">skimage</span></code> imread function.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>test_image = imread(&#39;../../tests/test_files/input.tiff&#39;)
@@ -418,7 +412,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p>By inspecting the <code class="docutils literal notranslate"><span class="pre">shape</span></code> of our image we see that it contains 5 channels and 500 pixels in <code class="docutils literal notranslate"><span class="pre">x,y</span></code> directions.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>test_image.shape
@@ -426,7 +420,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -436,7 +430,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p>To obtain an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object that is compatible with <code class="docutils literal notranslate"><span class="pre">spatial_data</span></code> we pass the image to the <code class="docutils literal notranslate"><span class="pre">spatial_data.load_image_data</span></code> function. The <code class="docutils literal notranslate"><span class="pre">channel_coords</span></code> argument enables us pass the appropriate channel names.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = spatial_data.load_image_data(test_image, channel_coords=[&#39;Hoechst&#39;, &#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;])
@@ -445,7 +439,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">spatial_data.load_image_data</span></code> returns an xarray object that we can simply inspect by calling in an jupyter cell. Note that the image is stored as the data variable <code class="docutils literal notranslate"><span class="pre">_image</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img
@@ -453,7 +447,7 @@ sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -471,7 +465,7 @@ Data variables:
 <h2>Adding a segmentation mask<a class="headerlink" href="#Adding-a-segmentation-mask" title="Permalink to this headline"></a></h2>
 <p>We may have a segmentation mask for our image ready. To make use of it we can add it to our <code class="docutils literal notranslate"><span class="pre">img</span></code> object.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>seg = imread(&#39;../../tests/test_files/segmentation.tiff&#39;)
@@ -480,7 +474,7 @@ Data variables:
 </div>
 <p>It is important to note that the dimensions of the segmentation mask has to match the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> dimension of our original image.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>seg.shape
@@ -488,7 +482,7 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -496,17 +490,17 @@ Data variables:
 (500, 500)
 </pre></div></div>
 </div>
-<p>Now, to add the segmentation mask we call the <code class="docutils literal notranslate"><span class="pre">se.add_segmentation</span></code> accessor. This will append the the segmentation mask to our image object and store it under the data variable <code class="docutils literal notranslate"><span class="pre">_segmentation</span></code>. Additionally, it will add an additional data variable <code class="docutils literal notranslate"><span class="pre">_obs</span></code> that is designed contain metdata for each segmentation object, i.e. cell. This table is initialised to contain the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates of each cell.</p>
+<p>Now, to add the segmentation mask we call the <code class="docutils literal notranslate"><span class="pre">pp.add_segmentation</span></code> accessor. This will append the the segmentation mask to our image object and store it under the data variable <code class="docutils literal notranslate"><span class="pre">_segmentation</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.se.add_segmentation(seg)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.pp.add_segmentation(seg)
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img
@@ -514,28 +508,38 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (cells: 3640, features: 2, channels: 5, y: 500, x: 500)
+Dimensions:        (channels: 5, y: 500, x: 500, cells: 3640)
 Coordinates:
-  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917
-  * features       (features) &lt;U2 &#x27;_y&#x27; &#x27;_x&#x27;
   * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
   * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
   * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917
 Data variables:
-    _obs           (cells, features) float64 139.8 49.25 47.77 ... 322.0 454.5
     _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
     _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
 </div>
-<p>Taking a closer look at the <code class="docutils literal notranslate"><span class="pre">img</span></code> object, we find that new coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> and <code class="docutils literal notranslate"><span class="pre">features</span></code> were added.</p>
+<p>Taking a closer look at the <code class="docutils literal notranslate"><span class="pre">img</span></code> object, we find that new coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> were added.</p>
+</section>
+<section id="Adding-observations-(_obs-table)">
+<h2>Adding observations (<code class="docutils literal notranslate"><span class="pre">_obs</span></code> table)<a class="headerlink" href="#Adding-observations-(_obs-table)" title="Permalink to this headline"></a></h2>
+<p>Metadata associated with each region defined in the segmentation mask may be easily added to the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> dataset using the <code class="docutils literal notranslate"><span class="pre">pp.add_observations</span></code> function. Internally, this function makes use of <code class="docutils literal notranslate"><span class="pre">skimage.measure.regionprops_table</span></code> and will add an additional data table <code class="docutils literal notranslate"><span class="pre">_obs</span></code> to the <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.pp.add_observations([&#39;area&#39;, &#39;centroid&#39;]) # adds area centroid coordinates to the obs table
+</pre></div>
+</div>
+</div>
 </section>
 <section id="Adding-cell-type-annotations">
 <h2>Adding cell type annotations<a class="headerlink" href="#Adding-cell-type-annotations" title="Permalink to this headline"></a></h2>
-<p>Finally, we may want to add cell type annotations that assign unique labels to each segmented object of our image. Here, we will use some arbitrary cl</p>
+<p>Finally, we may want to add cell type annotations that assign unique labels to each segmented object of our image.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -609,12 +613,29 @@ Data variables:
 </table>
 </div></div>
 </div>
-<p>Currently the addition of cell type labels is only supported via <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframes. This dataframe must specify the cell numbers and the label of the respective cell. Labels must be consecutive integers, starting from 1.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.la.add_labels(df, cell_col=&#39;cell&#39;, label_col=&#39;label&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.label.unique()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([ 5,  1,  2, 11,  4,  9, 10,  7,  8,  6,  3,  0])
+</pre></div></div>
+</div>
+<p>Currently the addition of cell type labels is only supported via <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframes. This dataframe must specify the cell numbers and the label of the respective cell. Labels must be consecutive integers, starting from 1.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img = img.pp.add_labels(df, cell_col=&#39;cell&#39;, label_col=&#39;label&#39;)
 </pre></div>
 </div>
 </div>
@@ -628,7 +649,7 @@ Found 0 in labels. Reindexing ...
 </div>
 <p>Adding cell type labels adds yet another coordinate <code class="docutils literal notranslate"><span class="pre">labels</span></code> to the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> dataset object. Additionally, the data variable <code class="docutils literal notranslate"><span class="pre">_labels</span></code> is stored which holds meta information about the labels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img
@@ -636,33 +657,33 @@ Found 0 in labels. Reindexing ...
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,
-                    channels: 5, y: 500, x: 500)
+Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,
+                    cells: 3380, features: 5)
 Coordinates:
   * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
   * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
   * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
   * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; ... &#x27;centroid-1&#x27;
 Data variables:
-    _labels        (labels, props) object &#x27;#bcf60c&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _labels        (labels, props) object &#x27;#7A4900&#x27; ... &#x27;Cell type 12&#x27;
     _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633
+    _obs           (cells, features) float64 5.0 4.0 61.0 ... 17.0 491.4 73.59</pre></div>
 </div>
 </section>
 <section id="Loading-data-all-data-at-once">
 <h2>Loading data all data at once<a class="headerlink" href="#Loading-data-all-data-at-once" title="Permalink to this headline"></a></h2>
 <p>As a side note, it is also possible to set up the spatial data <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object simply by providing the segmentation and cell type labels to the <code class="docutils literal notranslate"><span class="pre">spatial_data.load_image_data</span></code> function.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img2 = spatial_data.load_image_data(test_image, channel_coords=[&#39;Hoechst&#39;, &#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;], segmentation=seg, labels=df, cell_col=&#39;cell&#39;, label_col=&#39;label&#39;)
@@ -678,7 +699,7 @@ Found 0 in labels. Reindexing ...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img2
@@ -686,33 +707,33 @@ Found 0 in labels. Reindexing ...
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,
-                    channels: 5, y: 500, x: 500)
+Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,
+                    cells: 3380, features: 4)
 Coordinates:
   * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
   * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
   * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
   * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
+  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; ... &#x27;centroid-1&#x27;
 Data variables:
-    _labels        (labels, props) object &#x27;#f032e6&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
+    _labels        (labels, props) object &#x27;#886F4C&#x27; ... &#x27;Cell type 12&#x27;
     _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633
+    _obs           (cells, features) float64 5.0 4.0 139.8 ... 7.0 491.4 73.59</pre></div>
 </div>
 </section>
 <section id="Saving-data">
 <h2>Saving data<a class="headerlink" href="#Saving-data" title="Permalink to this headline"></a></h2>
 <p>To save our data object we simply invoke the <code class="docutils literal notranslate"><span class="pre">xarray.to_zarr</span></code> method.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>img.to_zarr(&#39;/home/voehring/voehring/notebooks/small_image.zarr&#39;)

@@ -364,11 +364,21 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Extracting-data">
 <h1>Extracting data<a class="headerlink" href="#Extracting-data" title="Permalink to this headline"></a></h1>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%load_ext autoreload
+%autoreload 2
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
+import pandas as pd
 import matplotlib.pyplot as plt
 import xarray as xr
 import numpy as np
@@ -377,29 +387,19 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f87d888e7c0&gt;
+&lt;xarray.core.options.set_options at 0x7f016e4c0a50&gt;
 </pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
-sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
-import spatial_data
-</pre></div>
-</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../../small_image.zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr&#39;)
 </pre></div>
 </div>
 </div>
@@ -408,109 +408,74 @@ import spatial_data
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/voehring/.local/lib/python3.8/site-packages/xarray/backends/plugins.py:117: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/voehring/voehring/conda/pymc_env/lib/python3.11/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;h5netcdf&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+/home/voehring/voehring/conda/pymc_env/lib/python3.11/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
 <section id="Extracting-information">
 <h2>Extracting information<a class="headerlink" href="#Extracting-information" title="Permalink to this headline"></a></h2>
-<p>Once the image and segmentation masks are loaded in the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object we can leverage the <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code> accessor to capture the expression of each cells across the image channels (see also the Importing and saving data tutorial).</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 5, y: 500, x: 500, labels: 12, props: 2,
-                    cells: 3380, features: 4)
-Coordinates:
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-Data variables:
-    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code> accessor returns an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> with the coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> and <code class="docutils literal notranslate"><span class="pre">channels</span></code>. By default it will sum the intensity over the region of each cell.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.se.quantify()
-da
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray (cells: 3380, channels: 5)&gt;
-array([[689660.,  79104., 507216.,  11554.,  22356.],
-       [547400., 111992.,   8004.,   6061.,  18178.],
-       [776478., 113204.,  35664.,   9373.,  18032.],
-       ...,
-       [375836.,  45599.,  13118.,   3591.,  11830.],
-       [181330.,  49300.,  11161.,   2535.,   7177.],
-       [142990.,  11275.,   3666.,   1303.,   5227.]])
-Coordinates:
-  * cells     (cells) int64 12 77 91 158 243 ... 218634 218740 218775 218790
-  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
-</div>
-<p>It is easy to write custom functions for <code class="docutils literal notranslate"><span class="pre">se.quantify</span></code>. These must accept two arguments <code class="docutils literal notranslate"><span class="pre">regionmask</span></code> and <code class="docutils literal notranslate"><span class="pre">intensity_image</span></code> and return the value of interest. The following function calculates the log expression over the segemented cell(s).</p>
+<p>Once the image and segmentation masks are loaded in the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object we can leverage the <code class="docutils literal notranslate"><span class="pre">pp.add_quantification()</span></code> accessor to capture the expression of each cell across the image channels (see also the Importing and saving data tutorial).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">pp.add_quantification()</span></code> accessor returns an <code class="docutils literal notranslate"><span class="pre">xarray</span></code> with the coordinates <code class="docutils literal notranslate"><span class="pre">cells</span></code> and <code class="docutils literal notranslate"><span class="pre">channels</span></code>. By default it will sum the intensity over the region of each cell. The <code class="docutils literal notranslate"><span class="pre">key_added</span></code> argument allows us to specify the name of the added <code class="docutils literal notranslate"><span class="pre">xararray.DataArray</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def log_expression(regionmask, intensity_image):
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = ds.pp.add_quantification(key_added=&#39;_sum_intensity&#39;)
+</pre></div>
+</div>
+</div>
+<p>It is easy to write custom functions for <code class="docutils literal notranslate"><span class="pre">pp.add_quantification</span></code>. These must accept two arguments <code class="docutils literal notranslate"><span class="pre">regionmask</span></code> and <code class="docutils literal notranslate"><span class="pre">intensity_image</span></code> and return the value of interest. The following function calculates the log expression over the segemented cell(s).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def log_intensity(regionmask, intensity_image):
     return np.log(np.sum(intensity_image[regionmask])+1)
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.se.quantify(func=log_expression)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.pp.add_quantification(func=log_intensity, key_added=&#39;_log_intensity&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray (cells: 3380, channels: 5)&gt;
-array([[13.44395545, 11.27853136, 13.1366942 ,  9.35487352, 10.01489475],
-       [13.2129369 , 11.62619165,  8.98782163,  8.70979506,  9.80802236],
-       [13.56252488, 11.63695561, 10.48192509,  9.14569518,  9.79995869],
-       ...,
-       [12.83691082, 10.727663  ,  9.48181684,  8.18646443,  9.37847848],
-       [12.10807937, 10.80569964,  9.32027043,  7.83834332,  8.87877607],
-       [11.87053697,  9.33043185,  8.20712917,  7.17319174,  8.56178407]])
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:         (cells: 12560, channels: 56, y: 3000, x: 3000, labels: 8,
+                     props: 2, features: 4)
 Coordinates:
-  * cells     (cells) int64 12 77 91 158 243 ... 218634 218740 218775 218790
-  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
+  * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features        (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels          (labels) int64 1 2 3 4 5 6 7 8
+  * props           (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean   (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
+    _arcsinh_sum    (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
+    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _labels         (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs            (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean       (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
+    _raw_sum        (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
+    _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _sum_intensity  (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
+    _log_intensity  (cells, channels) float64 9.262 0.0 7.48 ... 7.542 6.142</pre></div>
 </div>
 </section>
 <section id="Inspecting-the-expression-of-specific-cells">
 <h2>Inspecting the expression of specific cells<a class="headerlink" href="#Inspecting-the-expression-of-specific-cells" title="Permalink to this headline"></a></h2>
-<p>In the following section we illustrate how to pull out the expression spectra of specific cells. We start by inspecting the region of interest by slicing the respective region and cell types using <code class="docutils literal notranslate"><span class="pre">.im[]</span></code> and <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
+<p>In the following section we illustrate how to pull out the expression spectra of specific cells. We start by inspecting the region of interest by slicing the respective region and cell types using the preprocesing <code class="docutils literal notranslate"><span class="pre">.pp[]</span></code> and label <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -519,9 +484,10 @@ Coordinates:
 ax = plt.gca()
 
 _ = (ds
-     .im[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;], 100:300, 100:300]
-     .im.colorize(colors=[&#39;C2&#39;, &#39;C0&#39;, &#39;C3&#39;])
-     .la[8].la.render_label()
+     .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 2000:2500] # select CD3 and PAX5
+     .pp.colorize(colors=[&#39;C0&#39;, &#39;C3&#39;]) # assign colors to the channels CD3 and PAX5
+     .la[&#39;T (CD3)&#39;] # subset T cells (CD3+)
+     .pp.render_label() # render labels
      .pl.imshow(legend_label=True, legend_background=True, ax=ax)
      .pl.annotate()
     )
@@ -533,22 +499,24 @@ _ = (ds
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Dropped 2830 cells.
+/g/huber/users/voehring/notebooks/spatial-data/spatial_data/pp/preprocessing.py:25: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  @xr.register_dataset_accessor(&#34;pp&#34;)
+Dropped 11931 cells.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Extracting_12_1.png" src="../_images/notebooks_Extracting_12_1.png" />
+<img alt="../_images/notebooks_Extracting_10_1.png" src="../_images/notebooks_Extracting_10_1.png" />
 </div>
 </div>
-<p>To extract the expression spectra we simply subset the region and cells followed by <code class="docutils literal notranslate"><span class="pre">se.quantify()</span></code>.</p>
+<p>To extract the expression spectra of the T cells we simply subset the region and cells followed by <code class="docutils literal notranslate"><span class="pre">pp.add_quantification()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.im[100:300, 100:300].la[8].se.quantify()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.pp[1000:1500, 2000:2500].la[&#39;T (CD3)&#39;].pp.add_quantification()
 </pre></div>
 </div>
 </div>
@@ -557,75 +525,15 @@ Dropped 2830 cells.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Dropped 2830 cells.
+Dropped 11931 cells.
 </pre></div></div>
 </div>
 <p>We obtain a <code class="docutils literal notranslate"><span class="pre">xarray</span></code> data array that contains the expression of our cell selection.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray (cells: 17, channels: 5)&gt;
-array([[4.31490e+05, 4.80420e+04, 7.53160e+04, 2.23300e+03, 1.55520e+04],
-       [1.02598e+05, 3.44300e+03, 2.42630e+04, 5.52000e+02, 4.76800e+03],
-       [7.13390e+05, 5.50030e+04, 7.77500e+03, 1.10510e+04, 2.29680e+04],
-       [3.11829e+05, 5.49320e+04, 1.00680e+04, 3.73800e+03, 1.46140e+04],
-       [3.69859e+05, 5.64970e+04, 3.63500e+03, 4.17100e+03, 1.10010e+04],
-       [1.88742e+05, 2.44370e+04, 4.44800e+03, 2.89600e+03, 1.02780e+04],
-       [3.82525e+05, 4.50230e+04, 9.93000e+02, 6.20500e+03, 1.34300e+04],
-       [2.83051e+05, 8.23600e+03, 1.47000e+03, 2.16700e+03, 8.98600e+03],
-       [1.30254e+05, 3.59710e+04, 1.22340e+04, 1.77800e+03, 6.86100e+03],
-       [2.19349e+05, 4.32470e+04, 1.30200e+04, 2.99800e+03, 8.53500e+03],
-       [1.19460e+05, 2.00290e+04, 7.03100e+03, 9.01000e+02, 4.64100e+03],
-       [9.33400e+04, 3.29720e+04, 2.36810e+04, 1.87900e+03, 1.17750e+04],
-       [6.30890e+04, 9.39200e+03, 1.07980e+04, 8.34000e+02, 3.56200e+03],
-       [2.75438e+05, 8.96650e+04, 1.26560e+04, 3.02200e+03, 6.95600e+03],
-       [1.80743e+05, 4.16640e+04, 1.81640e+04, 1.38100e+03, 7.59800e+03],
-       [5.84840e+04, 2.36250e+04, 5.04310e+04, 1.55100e+03, 3.81100e+03],
-       [1.90441e+05, 3.12430e+04, 6.47920e+04, 2.82200e+03, 7.09300e+03]])
-Coordinates:
-  * cells     (cells) int64 2506 17675 31461 43168 ... 115378 131089 134952
-  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
-</div>
-<p>To pull out the expression of a specific cell, say cell 52971, we can retrieve it as follows.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da.loc[52971]
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray (channels: 5)&gt;
-array([283051.,   8236.,   1470.,   2167.,   8986.])
-Coordinates:
-    cells     int64 52971
-  * channels  (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;</pre></div>
-</div>
-<p>To understand the output better we may want to plot the data.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots()
-ax.bar(np.arange(5), da.loc[52971].values)
-_ = ax.set_xticks(np.arange(5))
-_ = ax.set_xticklabels(da.coords[&#39;channels&#39;].values.tolist())
-_ = ax.set_title(&#39;Cell 52971&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = da.pl.spectra(cells=[8045, 8200], layers_key=&#39;_sum_intensity&#39;)
 </pre></div>
 </div>
 </div>
@@ -633,7 +541,7 @@ _ = ax.set_title(&#39;Cell 52971&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Extracting_20_0.png" src="../_images/notebooks_Extracting_20_0.png" />
+<img alt="../_images/notebooks_Extracting_14_0.png" src="../_images/notebooks_Extracting_14_0.png" />
 </div>
 </div>
 </section>

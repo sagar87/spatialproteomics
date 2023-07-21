@@ -11,46 +11,39 @@
   {
    "cell_type": "code",
    "execution_count": 1,
+   "id": "349d3e14-610c-4ad3-b157-6f05612706fa",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "%load_ext autoreload\n",
+    "%autoreload 2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
    "id": "af90b58a-0dc7-4c64-8839-7e87fc706fc0",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "<xarray.core.options.set_options at 0x7f14394ee3a0>"
+       "<xarray.core.options.set_options at 0x7f45b2901650>"
       ]
      },
-     "execution_count": 1,
+     "execution_count": 2,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
+    "import spatial_data\n",
     "from skimage.io import imread\n",
     "import pandas as pd\n",
     "import xarray as xr\n",
     "xr.set_options(display_style='text')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "id": "69fb2eab-d1fe-4212-8d20-617b64a410ed",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import sys\n",
-    "sys.path.append('/home/voehring/voehring/notebooks/spatial-data')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "id": "965c2467-1834-47fd-b4cc-9bcccec4f6c9",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import spatial_data"
    ]
   },
   {
@@ -65,7 +58,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 3,
    "id": "68dd0f5c-16c6-461a-b116-c3d25c11235e",
    "metadata": {},
    "outputs": [],
@@ -83,7 +76,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 4,
    "id": "f1a12dc1-3045-4fde-931e-4b8a049928eb",
    "metadata": {},
    "outputs": [
@@ -93,7 +86,7 @@
        "(5, 500, 500)"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -112,7 +105,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 5,
    "id": "306a4717-fa1d-4f53-b888-cc253b9ee741",
    "metadata": {},
    "outputs": [],
@@ -130,7 +123,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 6,
    "id": "c79fc559-9704-4c38-a521-484ab37d0b26",
    "metadata": {},
    "outputs": [
@@ -157,7 +150,7 @@
        "    _image    (channels, y, x) uint16 10816 12359 14504 10965 ... 147 129 149 59"
       ]
      },
-     "execution_count": 7,
+     "execution_count": 6,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -178,7 +171,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 7,
    "id": "fc8ce031-39d3-4318-94ed-dddacdf71fb9",
    "metadata": {},
    "outputs": [],
@@ -196,7 +189,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 8,
    "id": "129eb621-1a23-4216-80ba-f64fa7191500",
    "metadata": {},
    "outputs": [
@@ -206,7 +199,7 @@
        "(500, 500)"
       ]
      },
-     "execution_count": 9,
+     "execution_count": 8,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -220,22 +213,22 @@
    "id": "d9d10d75-87ab-46e0-8a84-1489566a8865",
    "metadata": {},
    "source": [
-    "Now, to add the segmentation mask we call the `se.add_segmentation` accessor. This will append the the segmentation mask to our image object and store it under the data variable `_segmentation`. Additionally, it will add an additional data variable `_obs` that is designed contain metdata for each segmentation object, i.e. cell. This table is initialised to contain the `x` and `y` coordinates of each cell."
+    "Now, to add the segmentation mask we call the `pp.add_segmentation` accessor. This will append the the segmentation mask to our image object and store it under the data variable `_segmentation`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "08540236-b128-4f01-9dc0-70a8763ba6a3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "img = img.pp.add_segmentation(seg)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "08540236-b128-4f01-9dc0-70a8763ba6a3",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "img = img.se.add_segmentation(seg)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 11,
    "id": "7154f839-bd9b-4311-ba9c-2c8c0a14b255",
    "metadata": {},
    "outputs": [
@@ -243,34 +236,30 @@
      "data": {
       "text/html": [
        "<pre>&lt;xarray.Dataset&gt;\n",
-       "Dimensions:        (cells: 3640, features: 2, channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (channels: 5, y: 500, x: 500, cells: 3640)\n",
        "Coordinates:\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917\n",
-       "  * features       (features) &lt;U2 &#x27;_y&#x27; &#x27;_x&#x27;\n",
        "  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917\n",
        "Data variables:\n",
-       "    _obs           (cells, features) float64 139.8 49.25 47.77 ... 322.0 454.5\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
        "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre>"
       ],
       "text/plain": [
        "<xarray.Dataset>\n",
-       "Dimensions:        (cells: 3640, features: 2, channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (channels: 5, y: 500, x: 500, cells: 3640)\n",
        "Coordinates:\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917\n",
-       "  * features       (features) <U2 '_y' '_x'\n",
        "  * channels       (channels) <U7 'Hoechst' 'CD4' 'CD8' 'FOXP3' 'BCL6'\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218763 218775 218790 218917\n",
        "Data variables:\n",
-       "    _obs           (cells, features) float64 139.8 49.25 47.77 ... 322.0 454.5\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
        "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633"
       ]
      },
-     "execution_count": 11,
+     "execution_count": 10,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -284,7 +273,31 @@
    "id": "7cdec8e8-13d6-4ed2-8457-2555b1e4a580",
    "metadata": {},
    "source": [
-    "Taking a closer look at the `img` object, we find that new coordinates `cells` and `features` were added."
+    "Taking a closer look at the `img` object, we find that new coordinates `cells` were added."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "330df0ff-4931-4eeb-a0fd-a03b91a80ebf",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "## Adding observations (`_obs` table)\n",
+    "\n",
+    "Metadata associated with each region defined in the segmentation mask may be easily added to the `xarray` dataset using the `pp.add_observations` function. Internally, this function makes use of `skimage.measure.regionprops_table` and will add an additional data table `_obs` to the `xarray.Dataset`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "3e766677-d14d-4f98-a078-1f78b07de498",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "img = img.pp.add_observations(['area', 'centroid']) # adds area centroid coordinates to the obs table"
    ]
   },
   {
@@ -294,7 +307,7 @@
    "source": [
     "## Adding cell type annotations\n",
     "\n",
-    "Finally, we may want to add cell type annotations that assign unique labels to each segmented object of our image. Here, we will use some arbitrary cl"
+    "Finally, we may want to add cell type annotations that assign unique labels to each segmented object of our image. "
    ]
   },
   {
@@ -387,6 +400,29 @@
    ]
   },
   {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "42d1bff0-c7fe-4fac-b996-ef8f552d15d2",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 5,  1,  2, 11,  4,  9, 10,  7,  8,  6,  3,  0])"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.label.unique()"
+   ]
+  },
+  {
    "cell_type": "markdown",
    "id": "abb6705f-d122-48a8-a067-3c54ca52aeb9",
    "metadata": {},
@@ -396,7 +432,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
+   "execution_count": 15,
    "id": "14cd92ad-d036-4291-ba53-14fadc49c14e",
    "metadata": {},
    "outputs": [
@@ -409,7 +445,7 @@
     }
    ],
    "source": [
-    "img = img.la.add_labels(df, cell_col='cell', label_col='label')"
+    "img = img.pp.add_labels(df, cell_col='cell', label_col='label')"
    ]
   },
   {
@@ -422,7 +458,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 16,
    "id": "f0b61d7b-b8a3-42eb-9a32-b284a54e56e4",
    "metadata": {},
    "outputs": [
@@ -430,42 +466,42 @@
      "data": {
       "text/html": [
        "<pre>&lt;xarray.Dataset&gt;\n",
-       "Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,\n",
-       "                    channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,\n",
+       "                    cells: 3380, features: 5)\n",
        "Coordinates:\n",
        "  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12\n",
        "  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
-       "  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;\n",
        "  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
+       "  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; ... &#x27;centroid-1&#x27;\n",
        "Data variables:\n",
-       "    _labels        (labels, props) object &#x27;#bcf60c&#x27; ... &#x27;Cell type 12&#x27;\n",
-       "    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4\n",
+       "    _labels        (labels, props) object &#x27;#7A4900&#x27; ... &#x27;Cell type 12&#x27;\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
-       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre>"
+       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633\n",
+       "    _obs           (cells, features) float64 5.0 4.0 61.0 ... 17.0 491.4 73.59</pre>"
       ],
       "text/plain": [
        "<xarray.Dataset>\n",
-       "Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,\n",
-       "                    channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,\n",
+       "                    cells: 3380, features: 5)\n",
        "Coordinates:\n",
        "  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12\n",
        "  * props          (props) <U6 '_color' '_name'\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
-       "  * features       (features) <U16 '_labels' '_original_labels' '_x' '_y'\n",
        "  * channels       (channels) <U7 'Hoechst' 'CD4' 'CD8' 'FOXP3' 'BCL6'\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
+       "  * features       (features) <U16 '_labels' '_original_labels' ... 'centroid-1'\n",
        "Data variables:\n",
-       "    _labels        (labels, props) object '#bcf60c' ... 'Cell type 12'\n",
-       "    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4\n",
+       "    _labels        (labels, props) object '#7A4900' ... 'Cell type 12'\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
-       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633"
+       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633\n",
+       "    _obs           (cells, features) float64 5.0 4.0 61.0 ... 17.0 491.4 73.59"
       ]
      },
-     "execution_count": 15,
+     "execution_count": 16,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -486,7 +522,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": 17,
    "id": "fa1e93b6-5e8b-4bdf-be66-68c6af5c535d",
    "metadata": {},
    "outputs": [
@@ -504,7 +540,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 18,
    "id": "059d1af0-f6b0-4864-8ee7-b03a2b17112b",
    "metadata": {},
    "outputs": [
@@ -512,42 +548,42 @@
      "data": {
       "text/html": [
        "<pre>&lt;xarray.Dataset&gt;\n",
-       "Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,\n",
-       "                    channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,\n",
+       "                    cells: 3380, features: 4)\n",
        "Coordinates:\n",
        "  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12\n",
        "  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
-       "  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;\n",
        "  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
+       "  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; ... &#x27;centroid-1&#x27;\n",
        "Data variables:\n",
-       "    _labels        (labels, props) object &#x27;#f032e6&#x27; ... &#x27;Cell type 12&#x27;\n",
-       "    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4\n",
+       "    _labels        (labels, props) object &#x27;#886F4C&#x27; ... &#x27;Cell type 12&#x27;\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
-       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre>"
+       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633\n",
+       "    _obs           (cells, features) float64 5.0 4.0 139.8 ... 7.0 491.4 73.59</pre>"
       ],
       "text/plain": [
        "<xarray.Dataset>\n",
-       "Dimensions:        (labels: 12, props: 2, cells: 3380, features: 4,\n",
-       "                    channels: 5, y: 500, x: 500)\n",
+       "Dimensions:        (labels: 12, props: 2, channels: 5, y: 500, x: 500,\n",
+       "                    cells: 3380, features: 4)\n",
        "Coordinates:\n",
        "  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12\n",
        "  * props          (props) <U6 '_color' '_name'\n",
-       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
-       "  * features       (features) <U16 '_labels' '_original_labels' '_x' '_y'\n",
        "  * channels       (channels) <U7 'Hoechst' 'CD4' 'CD8' 'FOXP3' 'BCL6'\n",
        "  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
        "  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499\n",
+       "  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790\n",
+       "  * features       (features) <U16 '_labels' '_original_labels' ... 'centroid-1'\n",
        "Data variables:\n",
-       "    _labels        (labels, props) object '#f032e6' ... 'Cell type 12'\n",
-       "    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4\n",
+       "    _labels        (labels, props) object '#886F4C' ... 'Cell type 12'\n",
        "    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59\n",
-       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633"
+       "    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633\n",
+       "    _obs           (cells, features) float64 5.0 4.0 139.8 ... 7.0 491.4 73.59"
       ]
      },
-     "execution_count": 17,
+     "execution_count": 18,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -568,7 +604,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
+   "execution_count": 19,
    "id": "f558a66a-3a2f-46c5-80b1-f054cae7c762",
    "metadata": {},
    "outputs": [],
@@ -579,9 +615,9 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "spat-data",
+   "display_name": "pymc",
    "language": "python",
-   "name": "spat-data"
+   "name": "pymc"
   },
   "language_info": {
    "codemirror_mode": {
@@ -593,7 +629,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.0"
+   "version": "3.11.3"
   }
  },
  "nbformat": 4,
