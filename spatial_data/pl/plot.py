@@ -489,22 +489,22 @@ class PlotAccessor:
 
         da = self._obj[layers_key].sel({"cells": cells})
         num_cells = len(cells)
-        
+
         fig, axes = _set_up_subplots(num_cells, ncols=ncols, width=width, height=height)
-        
+
         # fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
-        
+
         if num_cells > 1:
             for i, ax in zip(range(da.values.shape[0]), axes.flatten()):
                 ax.bar(np.arange(da.values.shape[1]), da.values[i])
                 ax.set_xticks(np.arange(da.values.shape[1]))
                 ax.set_xticklabels(da.channels.values, rotation=90)
-                ax.set_title(f'Cell {da.cells.values[i]}')
+                ax.set_title(f"Cell {da.cells.values[i]}")
         else:
             axes.bar(np.arange(da.values.squeeze().shape[0]), da.values.squeeze())
-            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))    
-            axes.set_xticklabels(da.channels.values, rotation=90)            
-            axes.set_title(f'Cell {da.cells.values[0]}')
+            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))
+            axes.set_xticklabels(da.channels.values, rotation=90)
+            axes.set_title(f"Cell {da.cells.values[0]}")
 
         # if ax is isinstance(ax, np.ndarray):
         # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
@@ -672,7 +672,7 @@ class PlotAccessor:
         # else:
         #     if ax is None:
         #         ax = plt.gca()
-        fig, axes = set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
+        fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
 
         if num_channels > 1:
 
