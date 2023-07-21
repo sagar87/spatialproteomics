@@ -119,10 +119,13 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the channel or a list of channel names to be added.</p></li>
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The numpy array representing the channel(s) to be added.</p></li>
-<li><p><strong>Returns</strong> – </p></li>
-<li><p><strong>--------</strong> – </p></li>
-<li><p><strong>xarray.Dataset</strong> – The updated image container with added channel(s).</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container with added channel(s).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,20 +134,21 @@
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_labels">
 <span class="sig-name descname"><span class="pre">add_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'label'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_labels" title="Permalink to this definition"></a></dt>
 <dd><p>Adds labels to the image container.</p>
-<dl class="simple">
-<dt>df: Union[pd.DataFrame, None], optional</dt><dd><p>A dataframe with the cell and label information. If None, a default labeling will be applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>Union</em><em>[</em><em>pd.DataFrame</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – A dataframe with the cell and label information. If None, a default labeling will be applied.</p></li>
+<li><p><strong>cell_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column in the dataframe representing cell coordinates. Default is “cell”.</p></li>
+<li><p><strong>label_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column in the dataframe representing cell labels. Default is “label”.</p></li>
+<li><p><strong>colors</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.</p></li>
+<li><p><strong>names</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.</p></li>
+</ul>
 </dd>
-<dt>cell_col: str, optional</dt><dd><p>The name of the column in the dataframe representing cell coordinates. Default is “cell”.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container with added labels.</p>
 </dd>
-<dt>label_col: str, optional</dt><dd><p>The name of the column in the dataframe representing cell labels. Default is “label”.</p>
-</dd>
-<dt>colors: Union[list, None], optional</dt><dd><p>A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.</p>
-</dd>
-<dt>names: Union[list, None], optional</dt><dd><p>A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>xr.Dataset</dt><dd><p>The updated image container with added labels.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -175,16 +179,19 @@ instead of adding them to the image container.</p></li>
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_properties">
 <span class="sig-name descname"><span class="pre">add_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_labels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Adds properties to the image container.</p>
-<dl class="simple">
-<dt>array: Union[np.ndarray, list]</dt><dd><p>An array or list of properties to be added to the image container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>list</em><em>]</em>) – An array or list of properties to be added to the image container.</p></li>
+<li><p><strong>prop</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the property. Default is Features.LABELS.</p></li>
+<li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.</p></li>
+</ul>
 </dd>
-<dt>prop: str, optional</dt><dd><p>The name of the property. Default is Features.LABELS.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container with added properties or the properties as a separate xarray.DataArray.</p>
 </dd>
-<dt>return_xarray: bool, optional</dt><dd><p>If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>xr.Dataset or xr.DataArray</dt><dd><p>The updated image container with added properties or the properties as a separate xarray.DataArray.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset or xr.DataArray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -257,18 +264,20 @@ that indicates the location of each cell.</p></li>
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.colorize">
 <span class="sig-name descname"><span class="pre">colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">['C0',</span> <span class="pre">'C1',</span> <span class="pre">'C2',</span> <span class="pre">'C3']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.colorize" title="Permalink to this definition"></a></dt>
 <dd><p>Colorizes a stack of images.</p>
-<dl class="simple">
-<dt>colors: List[str], optional</dt><dd><p>A list of strings that denote the color of each channel. Default is [“C0”, “C1”, “C2”, “C3”].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colors</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of strings that denote the color of each channel. Default is [“C0”, “C1”, “C2”, “C3”].</p></li>
+<li><p><strong>background</strong> (<em>str</em><em>, </em><em>optional</em>) – Background color of the colorized image. Default is “black”.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Normalize the image prior to colorizing it. Default is True.</p></li>
+<li><p><strong>merge</strong> (<em>True</em><em>, </em><em>optional</em>) – Merge the channel dimension. Default is True.</p></li>
+</ul>
 </dd>
-<dt>background: str, optional</dt><dd><p>Background color of the colorized image. Default is “black”.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container with the colorized image stored in Layers.PLOT.</p>
 </dd>
-<dt>normalize: bool, optional</dt><dd><p>Normalize the image prior to colorizing it. Default is True.</p>
-</dd>
-<dt>merge: True, optional</dt><dd><p>Merge the channel dimension. Default is True.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>xr.Dataset</dt><dd><p>The image container with the colorized image stored in Layers.PLOT.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -294,12 +303,15 @@ that indicates the location of each cell.</p></li>
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.get_channels">
 <span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.get_channels" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a single channel as a numpy array.</p>
-<dl class="simple">
-<dt>channels: Union[str, list]</dt><dd><p>The name of the channel or a list of channel names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the channel or a list of channel names.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>xarray.Dataset</dt><dd><p>The selected channels as a new image container.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The selected channels as a new image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -308,8 +320,12 @@ that indicates the location of each cell.</p></li>
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.normalize">
 <span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.normalize" title="Permalink to this definition"></a></dt>
 <dd><p>Performs a percentile normalization on each channel.</p>
-<dl class="simple">
-<dt>xr.Dataset</dt><dd><p>The image container with the normalized image stored in Layers.PLOT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The image container with the normalized image stored in Layers.PLOT.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -383,14 +399,18 @@ Default is “inner”.</p></li>
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.restore">
 <span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wiener'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.restore" title="Permalink to this definition"></a></dt>
 <dd><p>Restores the image using a specified method.</p>
-<dl class="simple">
-<dt>method: str, optional</dt><dd><p>The method used for image restoration. Options are “wiener”, “unsupervised_wiener”, or “threshold”. Default is “wiener”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The method used for image restoration. Options are “wiener”, “unsupervised_wiener”, or “threshold”. Default is “wiener”.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments specific to the chosen method.</p></li>
+</ul>
 </dd>
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: dict, optional</dt><dd><p>Additional keyword arguments specific to the chosen method.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The restored image container.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>xr.Dataset</dt><dd><p>The restored image container.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>

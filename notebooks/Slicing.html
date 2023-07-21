@@ -366,40 +366,31 @@ div.rendered_html tbody tr:hover {
 <section id="Slicing-spatial-data">
 <h1>Slicing spatial data<a class="headerlink" href="#Slicing-spatial-data" title="Permalink to this headline"></a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
+import pandas as pd
 import xarray as xr
 xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7efee81970d0&gt;
+&lt;xarray.core.options.set_options at 0x7fd18a1534d0&gt;
 </pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
-sys.path.append(&#39;/home/voehring/voehring/notebooks/spatial-data&#39;)
-import spatial_data
-</pre></div>
-</div>
 </div>
 <p>One of the key features of <code class="docutils literal notranslate"><span class="pre">spatial_data</span></code> is the ability to slice our image data quickly and intuitively. We start by loading our spatial data <code class="docutils literal notranslate"><span class="pre">xarray</span></code> object.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../../small_image.zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr&#39;)
 </pre></div>
 </div>
 </div>
@@ -408,80 +399,90 @@ import spatial_data
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/voehring/.local/lib/python3.8/site-packages/xarray/backends/plugins.py:117: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/voehring/voehring/conda/pymc_env/lib/python3.11/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;h5netcdf&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+/home/voehring/voehring/conda/pymc_env/lib/python3.11/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
 <section id="Slicing-channels-and-x,-y-coordinates">
 <h2>Slicing channels and x, y coordinates<a class="headerlink" href="#Slicing-channels-and-x,-y-coordinates" title="Permalink to this headline"></a></h2>
-<p>To slice specific channels of the image we simply use <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor together with the familiar bracket <code class="docutils literal notranslate"><span class="pre">[]</span></code> indexing.</p>
+<p>To slice specific channels of the image we simply use <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor together with the familiar bracket <code class="docutils literal notranslate"><span class="pre">[]</span></code> indexing.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[&#39;CD4&#39;]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.pp[&#39;CD4&#39;]
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 1, y: 500, x: 500, labels: 12, props: 2,
-                    cells: 3380, features: 4)
+Dimensions:        (cells: 12560, channels: 1, y: 3000, x: 3000, labels: 8,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * channels       (channels) &lt;U7 &#x27;CD4&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;CD4&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image         (channels, y, x) uint16 1462 172 35 153 ... 3073 1449 973
-    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _arcsinh_mean  (cells, channels) float64 2.473 1.98 2.647 ... 2.113 1.923
+    _arcsinh_sum   (cells, channels) float64 7.703 7.224 7.812 ... 7.55 7.277
+    _image         (channels, y, x) uint8 1 1 2 0 0 0 0 1 1 ... 1 1 0 0 0 0 1 0
+    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean      (cells, channels) float64 29.45 17.77 35.1 ... 20.39 16.75
+    _raw_sum       (cells, channels) float64 5.536e+03 3.429e+03 ... 3.617e+03
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
-<p>We can also select multiple channels by simply passing a list to the <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor. As we will see later, this makes visualising image overlays easy.</p>
+<p>We can also select multiple channels by simply passing a list to the <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor. As we will see later, this makes visualising image overlays easy.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[[&#39;CD4&#39;, &#39;CD8&#39;]]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.pp[[&#39;CD4&#39;, &#39;CD8&#39;]]
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 2, y: 500, x: 500, labels: 12, props: 2,
-                    cells: 3380, features: 4)
+Dimensions:        (cells: 12560, channels: 2, y: 3000, x: 3000, labels: 8,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * channels       (channels) &lt;U7 &#x27;CD4&#x27; &#x27;CD8&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image         (channels, y, x) uint16 1462 172 35 153 133 ... 95 86 61 9 11
-    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _arcsinh_mean  (cells, channels) float64 2.473 0.7143 1.98 ... 1.923 0.5909
+    _arcsinh_sum   (cells, channels) float64 7.703 5.677 7.224 ... 7.277 5.6
+    _image         (channels, y, x) uint8 1 1 2 0 0 0 0 1 1 ... 1 1 2 1 1 1 2 1
+    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean      (cells, channels) float64 29.45 3.883 17.77 ... 16.75 3.13
+    _raw_sum       (cells, channels) float64 5.536e+03 730.0 ... 3.617e+03 676.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">.im</span></code> accessor also understands <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates. When <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates are sliced, we get ridd of all cells that do not belong to the respective image slice.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor also understands <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates. When <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates are sliced, we get ridd of all cells that do not belong to the respective image slice.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[50:150, 50:150]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.pp[50:150, 50:150]
 </pre></div>
 </div>
 </div>
@@ -490,37 +491,41 @@ Data variables:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Dropped 3251 cells.
+Dropped 12560 cells.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 5, y: 101, x: 101, labels: 12, props: 2,
-                    cells: 129, features: 4)
+Dimensions:        (cells: 0, channels: 56, y: 101, x: 101, labels: 8,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 373 775 847 941 ... 185592 189294 189428 218634
-  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * cells          (cells) int64
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
   * x              (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
   * y              (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
 Data variables:
-    _image         (channels, y, x) uint16 15665 17953 14968 8183 ... 24 17 137
-    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 115.4 ... 5.0 77.8 75.05
-    _segmentation  (y, x) int32 57862 57862 57862 57862 0 ... 0 81800 81800 0 0</pre></div>
+    _arcsinh_mean  (cells, channels) float64
+    _arcsinh_sum   (cells, channels) float64
+    _image         (channels, y, x) uint8 5 4 5 4 5 4 5 4 4 ... 2 2 2 1 2 2 2 2
+    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64
+    _raw_mean      (cells, channels) float64
+    _raw_sum       (cells, channels) float64
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Note that we can also pass <code class="docutils literal notranslate"><span class="pre">channels</span></code> and <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> coordinates at the same time.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.im[[&#39;CD4&#39;, &#39;CD8&#39;], 50:150, 50:150]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.pp[[&#39;CD4&#39;, &#39;CD8&#39;], 50:150, 50:150]
 </pre></div>
 </div>
 </div>
@@ -529,37 +534,41 @@ Data variables:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Dropped 3251 cells.
+Dropped 12560 cells.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 2, y: 101, x: 101, labels: 12, props: 2,
-                    cells: 129, features: 4)
+Dimensions:        (cells: 0, channels: 2, y: 101, x: 101, labels: 8, props: 2,
+                    features: 4)
 Coordinates:
-  * cells          (cells) int64 373 775 847 941 ... 185592 189294 189428 218634
-  * channels       (channels) &lt;U7 &#x27;CD4&#x27; &#x27;CD8&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * cells          (cells) int64
+  * channels       (channels) &lt;U11 &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
   * x              (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
   * y              (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
 Data variables:
-    _image         (channels, y, x) uint16 82 178 367 238 ... 139 167 219 246
-    _labels        (labels, props) object &#x27;#008080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 115.4 ... 5.0 77.8 75.05
-    _segmentation  (y, x) int32 57862 57862 57862 57862 0 ... 0 81800 81800 0 0</pre></div>
+    _arcsinh_mean  (cells, channels) float64
+    _arcsinh_sum   (cells, channels) float64
+    _image         (channels, y, x) uint8 0 0 0 0 0 0 1 1 0 ... 2 1 1 1 1 1 4 1
+    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64
+    _raw_mean      (cells, channels) float64
+    _raw_sum       (cells, channels) float64
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>
 <section id="Slicing-labels">
 <h2>Slicing labels<a class="headerlink" href="#Slicing-labels" title="Permalink to this headline"></a></h2>
-<p>The labels accessor <code class="docutils literal notranslate"><span class="pre">.la</span></code> allows to select specific cell types.</p>
+<p>The labels accessor <code class="docutils literal notranslate"><span class="pre">.la</span></code> allows to select specific cell types by their label number or name.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la[4]
@@ -567,30 +576,68 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 5, y: 500, x: 500, labels: 1, props: 2,
-                    cells: 96, features: 4)
+Dimensions:        (cells: 5891, channels: 56, y: 3000, x: 3000, labels: 1,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 15611 17529 21193 ... 212915 214319 214538
-  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * cells          (cells) int64 1 4 8 10 12 ... 12444 12469 12473 12505 12522
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
   * labels         (labels) int64 4
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _labels        (labels, props) object &#x27;#fabebe&#x27; &#x27;Cell type 4&#x27;
-    _obs           (cells, features) float64 4.0 3.0 491.1 ... 3.0 156.5 490.0
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 0.9208 0.4512
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 4.93 5.817 5.0
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _labels        (labels, props) object &#x27;C0&#x27; &#x27;T (CD3)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 4.0 3.0
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 5.283 2.333
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 840.0 371.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la[&#39;T (CD3)&#39;]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (cells: 5891, channels: 56, y: 3000, x: 3000, labels: 1,
+                    props: 2, features: 4)
+Coordinates:
+  * cells          (cells) int64 1 4 8 10 12 ... 12444 12469 12473 12505 12522
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 4
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 0.9208 0.4512
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 4.93 5.817 5.0
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _labels        (labels, props) object &#x27;C0&#x27; &#x27;T (CD3)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 4.0 3.0
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 5.283 2.333
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 840.0 371.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Again it is possible to pass multiple cell labels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la[4, 5, 6]
@@ -598,30 +645,34 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 5, y: 500, x: 500, labels: 3, props: 2,
-                    cells: 1802, features: 4)
+Dimensions:        (cells: 7806, channels: 56, y: 3000, x: 3000, labels: 3,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 12 77 91 243 ... 218172 218185 218288 218634
-  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
+  * cells          (cells) int64 1 2 4 5 6 8 ... 12531 12536 12540 12549 12557
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
   * labels         (labels) int64 4 5 6
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _labels        (labels, props) object &#x27;#fabebe&#x27; ... &#x27;Cell type 6&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 5.0 77.8 75.05
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 0.2297 0.4495
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 4.208 4.904
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _labels        (labels, props) object &#x27;C0&#x27; &#x27;T (CD3)&#x27; ... &#x27;Macro (CD68)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 6.0 5.0
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 1.159 2.324
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 168.0 337.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Finally, we can select all cells except a cell type using <code class="docutils literal notranslate"><span class="pre">la.deselect</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds.la.deselect([1])
@@ -629,26 +680,30 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (channels: 5, y: 500, x: 500, labels: 11, props: 2,
-                    cells: 3319, features: 4)
+Dimensions:        (cells: 12391, channels: 56, y: 3000, x: 3000, labels: 7,
+                    props: 2, features: 4)
 Coordinates:
-  * cells          (cells) int64 12 77 91 158 ... 218634 218740 218775 218790
-  * channels       (channels) &lt;U7 &#x27;Hoechst&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27; &#x27;FOXP3&#x27; &#x27;BCL6&#x27;
-  * features       (features) &lt;U16 &#x27;_labels&#x27; &#x27;_original_labels&#x27; &#x27;_x&#x27; &#x27;_y&#x27;
-  * labels         (labels) int64 2 3 4 5 6 7 8 9 10 11 12
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 2 3 4 5 6 7 8
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
-  * y              (y) int64 0 1 2 3 4 5 6 7 ... 492 493 494 495 496 497 498 499
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image         (channels, y, x) uint16 10816 12359 14504 ... 129 149 59
-    _labels        (labels, props) object &#x27;#808080&#x27; ... &#x27;Cell type 12&#x27;
-    _obs           (cells, features) float64 5.0 4.0 49.25 ... 7.0 73.59 491.4
-    _segmentation  (y, x) int32 63194 63194 63194 63194 ... 59633 59633 59633</pre></div>
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _labels        (labels, props) object &#x27;C7&#x27; &#x27;Stroma (CD90)&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
