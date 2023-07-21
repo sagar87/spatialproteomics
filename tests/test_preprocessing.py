@@ -3,7 +3,7 @@ import pytest
 import xarray as xr
 
 from spatial_data.constants import Dims, Features, Layers
-from spatial_data.pp.transforms import _normalize
+from spatial_data.pp.utils import _normalize
 
 
 def test_image_slicing_two_coordinates(dataset):

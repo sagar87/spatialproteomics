@@ -10,8 +10,16 @@ from skimage.restoration import unsupervised_wiener
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
 from ..la.label import _format_labels
-from .segmentation import _remove_unlabeled_cells, sum_intensity
-from .transforms import _colorize, _normalize
+from ..pl import _get_listed_colormap
+from .intensity import sum_intensity
+from .utils import (
+    _colorize,
+    _label_segmentation_mask,
+    _normalize,
+    _remove_segmentation_mask_labels,
+    _remove_unlabeled_cells,
+    _render_label,
+)
 
 
 @xr.register_dataset_accessor("pp")
@@ -638,7 +646,7 @@ class PreprocessingAccessor:
         colors: List[str] = ["C0", "C1", "C2", "C3"],
         background: str = "black",
         normalize: bool = True,
-        merge=True,
+        merge: bool = True,
     ) -> xr.Dataset:
         """
         Colorizes a stack of images.
@@ -682,5 +690,160 @@ class PreprocessingAccessor:
         if merge:
             da = da.sum(Dims.CHANNELS, keep_attrs=True)
             da.values[da.values > 1] = 1.0
+
+        return xr.merge([self._obj, da])
+
+    def render_segmentation(
+        self,
+        alpha: float = 0,
+        alpha_boundary: float = 1,
+        mode: str = "inner",
+    ) -> xr.Dataset:
+        """
+        Render the segmentation layer of the data object.
+
+        This method renders the segmentation layer of the data object and returns an updated data object
+        with the rendered visualization. The rendered segmentation is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered segmentation. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
+        mode : str, optional
+            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered segmentation as a new plot layer.
+
+        Notes
+        -----
+        - The function extracts the segmentation layer and information about boundary pixels from the data object.
+        - It applies the specified alpha values and mode to render the segmentation.
+        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
+        """
+        assert Layers.SEGMENTATION in self._obj, "Add Segmentation first."
+
+        color_dict = {1: "white"}
+        cmap = _get_listed_colormap(color_dict)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        segmentation = _remove_segmentation_mask_labels(segmentation, self._obj.coords[Dims.CELLS].values)
+        # mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+        return xr.merge([self._obj, da])
+
+    def render_label(
+        self, alpha: float = 0, alpha_boundary: float = 1, mode: str = "inner", override_color: Union[str, None] = None
+    ) -> xr.Dataset:
+        """
+        Render the labeled cells in the data object.
+
+        This method renders the labeled cells in the data object based on the label colors and segmentation.
+        The rendered visualization is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered labels. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered labels. Default is 1.
+        mode : str, optional
+            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+        override_color : any, optional
+            The color value to override the default label colors. Default is None.
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered labeled cells as a new plot layer.
+
+        Raises
+        ------
+        AssertionError
+            If the data object does not contain label information. Use 'add_labels' function to add labels first.
+
+        Notes
+        -----
+        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
+        - It renders the labeled cells based on the label colors and the segmentation layer.
+        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
+        - If 'override_color' is provided, all labels will be rendered using the specified color.
+        """
+        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
+
+        # TODO: Attribute class in constants.py
+        color_dict = self._label_to_dict(Props.COLOR, relabel=True)
+        if override_color is not None:
+            color_dict = {k: override_color for k in color_dict.keys()}
+
+        cmap = _get_listed_colormap(color_dict)
+
+        cells_dict = self._cells_to_label(relabel=True)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_label(
+                mask,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_label(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
 
         return xr.merge([self._obj, da])

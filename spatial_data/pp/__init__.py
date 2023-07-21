@@ -1,5 +1,4 @@
-from .preprocessing import PreprocessingAccessor
-from .segmentation import (
+from .intensity import (
     arcsinh_mean_intensity,
     arcsinh_sum_intensity,
     arcsinh_var_intensity,
@@ -7,6 +6,7 @@ from .segmentation import (
     mean_intensity,
     sum_intensity,
 )
+from .preprocessing import PreprocessingAccessor
 
 __all__ = [
     "PreprocessingAccessor",

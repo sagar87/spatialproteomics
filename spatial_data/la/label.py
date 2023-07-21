@@ -3,12 +3,11 @@ from typing import Callable, List, Union
 import networkx as nx
 import numpy as np
 import xarray as xr
-from skimage.segmentation import find_boundaries, relabel_sequential
+from skimage.segmentation import relabel_sequential
 from sklearn.neighbors import NearestNeighbors
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
-from ..pl import _get_listed_colormap
 
 # from tqdm import tqdm
 
@@ -27,55 +26,6 @@ def _format_labels(labels):
         formatted_labels, _, _ = relabel_sequential(formatted_labels)
 
     return formatted_labels
-
-
-def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.ndarray:
-    """
-    Relabels a segmentation according to the annotations df (contains the columns type, cell).
-    """
-    labeled_segmentation = segmentation.copy()
-    all_cells = []
-
-    for k, v in annotations.items():
-        mask = np.isin(segmentation, v)
-        labeled_segmentation[mask] = k
-        all_cells.extend(v)
-
-    # remove cells that are not indexed
-    neg_mask = ~np.isin(segmentation, all_cells)
-    labeled_segmentation[neg_mask] = 0
-
-    return labeled_segmentation
-
-
-def _remove_segmentation_mask_labels(segmentation: np.ndarray, labels: Union[list, np.ndarray]) -> np.ndarray:
-    """
-    Relabels a segmentation according to the labels df (contains the columns type, cell).
-    """
-    labeled_segmentation = segmentation.copy()
-    mask = ~np.isin(segmentation, labels)
-    labeled_segmentation[mask] = 0
-
-    return labeled_segmentation
-
-
-def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
-    colored_mask = cmap_mask(mask)
-
-    mask_bool = mask > 0
-    mask_bound = np.bitwise_and(mask_bool, find_boundaries(mask, mode=mode))
-
-    # blend
-    if img is None:
-        img = np.zeros(mask.shape + (4,), np.float32)
-        img[..., -1] = 1
-
-    im = img.copy()
-
-    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
-    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
-
-    return im
 
 
 @xr.register_dataset_accessor("la")
@@ -918,158 +868,6 @@ class LabelAccessor:
             label = self._obj.la._label_name_to_id(label)
 
         self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
-
-    def render_segmentation(
-        self,
-        alpha=0,
-        alpha_boundary=1,
-        mode="inner",
-    ):
-        """
-        Render the segmentation layer of the data object.
-
-        This method renders the segmentation layer of the data object and returns an updated data object
-        with the rendered visualization. The rendered segmentation is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered segmentation. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
-        mode : str, optional
-            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered segmentation as a new plot layer.
-
-        Notes
-        -----
-        - The function extracts the segmentation layer and information about boundary pixels from the data object.
-        - It applies the specified alpha values and mode to render the segmentation.
-        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
-        """
-
-        color_dict = {1: "white"}
-        cmap = _get_listed_colormap(color_dict)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_segmentation_mask_labels(segmentation, self._obj.coords[Dims.CELLS].values)
-        # mask = _label_segmentation_mask(segmentation, cells_dict)
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_label(
-                segmentation,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_label(
-                segmentation,
-                cmap,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
-        )
-        return xr.merge([self._obj, da])
-
-    def render_label(self, alpha=0, alpha_boundary=1, mode="inner", override_color=None):
-        """
-        Render the labeled cells in the data object.
-
-        This method renders the labeled cells in the data object based on the label colors and segmentation.
-        The rendered visualization is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered labels. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered labels. Default is 1.
-        mode : str, optional
-            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-        override_color : any, optional
-            The color value to override the default label colors. Default is None.
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered labeled cells as a new plot layer.
-
-        Raises
-        ------
-        AssertionError
-            If the data object does not contain label information. Use 'add_labels' function to add labels first.
-
-        Notes
-        -----
-        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
-        - It renders the labeled cells based on the label colors and the segmentation layer.
-        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
-        - If 'override_color' is provided, all labels will be rendered using the specified color.
-        """
-        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
-
-        # TODO: Attribute class in constants.py
-        color_dict = self._label_to_dict(Props.COLOR, relabel=True)
-        if override_color is not None:
-            color_dict = {k: override_color for k in color_dict.keys()}
-
-        cmap = _get_listed_colormap(color_dict)
-
-        cells_dict = self._cells_to_label(relabel=True)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        mask = _label_segmentation_mask(segmentation, cells_dict)
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_label(
-                mask,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_label(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
-        )
-
-        return xr.merge([self._obj, da])
 
     def neighborhood_graph(self, neighbors=10, radius=1.0, metric="euclidean"):
         """

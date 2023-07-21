@@ -1,6 +1,5 @@
 import numpy as np
-from scipy.ndimage.filters import maximum_filter
-from scipy.ndimage.morphology import binary_erosion, generate_binary_structure
+from scipy.ndimage import binary_erosion, generate_binary_structure, maximum_filter
 
 
 def sum_intensity(regionmask, intensity_image):
@@ -54,13 +53,3 @@ def detect_peaks_num(regionmask, intensity_image):
     detected_peaks = local_max ^ eroded_background
 
     return detected_peaks[regionmask].sum()
-
-
-def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray, copy: bool = True) -> np.ndarray:
-    """Removes all cells from the segmentation that are not in cells."""
-    if copy:
-        segmentation = segmentation.copy()
-    bool_mask = ~np.isin(segmentation, cells)
-    segmentation[bool_mask] = 0
-
-    return segmentation

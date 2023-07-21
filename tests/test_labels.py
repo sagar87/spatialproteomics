@@ -1,6 +1,7 @@
 import numpy as np
 
-from spatial_data.la.label import _format_labels, _label_segmentation_mask
+from spatial_data.la.label import _format_labels
+from spatial_data.pp.utils import _label_segmentation_mask
 
 
 def test_label_segmentation_mask(test_segmentation):

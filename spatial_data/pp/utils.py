@@ -1,8 +1,58 @@
-from typing import List
+from typing import List, Union
 
 import numpy as np
+from skimage.segmentation import find_boundaries
 
 from ..pl import _get_linear_colormap
+
+
+def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
+    colored_mask = cmap_mask(mask)
+
+    mask_bool = mask > 0
+    mask_bound = np.bitwise_and(mask_bool, find_boundaries(mask, mode=mode))
+
+    # blend
+    if img is None:
+        img = np.zeros(mask.shape + (4,), np.float32)
+        img[..., -1] = 1
+
+    im = img.copy()
+
+    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
+    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
+
+    return im
+
+
+def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.ndarray:
+    """
+    Relabels a segmentation according to the annotations df (contains the columns type, cell).
+    """
+    labeled_segmentation = segmentation.copy()
+    all_cells = []
+
+    for k, v in annotations.items():
+        mask = np.isin(segmentation, v)
+        labeled_segmentation[mask] = k
+        all_cells.extend(v)
+
+    # remove cells that are not indexed
+    neg_mask = ~np.isin(segmentation, all_cells)
+    labeled_segmentation[neg_mask] = 0
+
+    return labeled_segmentation
+
+
+def _remove_segmentation_mask_labels(segmentation: np.ndarray, labels: Union[list, np.ndarray]) -> np.ndarray:
+    """
+    Relabels a segmentation according to the labels df (contains the columns type, cell).
+    """
+    labeled_segmentation = segmentation.copy()
+    mask = ~np.isin(segmentation, labels)
+    labeled_segmentation[mask] = 0
+
+    return labeled_segmentation
 
 
 def _normalize(
@@ -105,3 +155,13 @@ def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
             im_base = im_combined
 
     return im_combined
+
+
+def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray, copy: bool = True) -> np.ndarray:
+    """Removes all cells from the segmentation that are not in cells."""
+    if copy:
+        segmentation = segmentation.copy()
+    bool_mask = ~np.isin(segmentation, cells)
+    segmentation[bool_mask] = 0
+
+    return segmentation
