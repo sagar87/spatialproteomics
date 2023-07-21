@@ -2,23 +2,104 @@ import numpy as np
 from scipy.ndimage import binary_erosion, generate_binary_structure, maximum_filter
 
 
-def sum_intensity(regionmask, intensity_image):
+def sum_intensity(regionmask: np.ndarray, intensity_image: np.ndarray) -> float:
+    """
+    Calculate the sum of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+
+    Returns
+    -------
+    numpy.float64
+        The sum of intensity values within the specified regionmask.
+    """
     return np.sum(intensity_image[regionmask])
 
 
-def mean_intensity(regionmask, intensity_image):
+def mean_intensity(regionmask: np.ndarray, intensity_image: np.ndarray) -> float:
+    """
+    Calculate the mean of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+
+    Returns
+    -------
+    numpy.float64
+        The mean of intensity values within the specified regionmask.
+    """
     return np.mean(intensity_image[regionmask])
 
 
-def arcsinh_mean_intensity(regionmask, intensity_image, cofactor=5):
+def arcsinh_mean_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, cofactor: float = 5) -> float:
+    """
+    Calculate the arcsinh-transformed mean of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+    cofactor : numpy.float64, optional
+        The cofactor used for the arcsinh transformation. Default is 5.
+
+    Returns
+    -------
+    numpy.float64
+        The arcsinh-transformed mean of intensity values within the specified regionmask.
+    """
     return np.arcsinh(np.mean(intensity_image[regionmask]) / cofactor)
 
 
-def arcsinh_var_intensity(regionmask, intensity_image, cofactor=5):
+def arcsinh_var_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, cofactor: float = 5) -> float:
+    """
+    Calculate the arcsinh-transformed variance of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+    cofactor : numpy.float64, optional
+        The cofactor used for the arcsinh transformation. Default is 5.
+
+    Returns
+    -------
+    numpy.float64
+        The arcsinh-transformed variance of intensity values within the specified regionmask.
+    """
     return np.arcsinh(np.var(intensity_image[regionmask]) / cofactor)
 
 
-def arcsinh_sum_intensity(regionmask, intensity_image, cofactor=5):
+def arcsinh_sum_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, cofactor: float = 5) -> float:
+    """
+    Calculate the arcsinh-transformed sum of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+    cofactor : numpy.float64, optional
+        The cofactor used for the arcsinh transformation. Default is 5.
+
+    Returns
+    -------
+    numpy.float64
+        The arcsinh-transformed sum of intensity values within the specified regionmask.
+    """
     return np.arcsinh(np.sum(intensity_image[regionmask]) / cofactor)
 
 
