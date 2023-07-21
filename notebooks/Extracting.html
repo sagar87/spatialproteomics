@@ -392,7 +392,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f016e4c0a50&gt;
+&lt;xarray.core.options.set_options at 0x7fc73e484190&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -477,7 +477,7 @@ Data variables:
 <h2>Inspecting the expression of specific cells<a class="headerlink" href="#Inspecting-the-expression-of-specific-cells" title="Permalink to this headline"></a></h2>
 <p>In the following section we illustrate how to pull out the expression spectra of specific cells. We start by inspecting the region of interest by slicing the respective region and cell types using the preprocesing <code class="docutils literal notranslate"><span class="pre">.pp[]</span></code> and label <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -499,8 +499,6 @@ _ = (ds
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/g/huber/users/voehring/notebooks/spatial-data/spatial_data/pp/preprocessing.py:25: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  @xr.register_dataset_accessor(&#34;pp&#34;)
 Dropped 11931 cells.
 </pre></div></div>
 </div>
@@ -513,7 +511,7 @@ Dropped 11931 cells.
 </div>
 <p>To extract the expression spectra of the T cells we simply subset the region and cells followed by <code class="docutils literal notranslate"><span class="pre">pp.add_quantification()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>da = ds.pp[1000:1500, 2000:2500].la[&#39;T (CD3)&#39;].pp.add_quantification()
@@ -530,10 +528,11 @@ Dropped 11931 cells.
 </div>
 <p>We obtain a <code class="docutils literal notranslate"><span class="pre">xarray</span></code> data array that contains the expression of our cell selection.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = da.pl.spectra(cells=[8045, 8200], layers_key=&#39;_sum_intensity&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = da.pl.spectra(cells=[8045, 11454, 11420], layers_key=&#39;_sum_intensity&#39;, width=6, ncols=2)
+plt.tight_layout()
 </pre></div>
 </div>
 </div>
