@@ -170,13 +170,13 @@ class PreprocessingAccessor:
         """
         Returns a single channel as a numpy array.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         channels: Union[str, list]
             The name of the channel or a list of channel names.
 
-        Returns:
-        --------
+        Returns
+        -------
         xarray.Dataset
             The selected channels as a new image container.
         """
@@ -198,8 +198,8 @@ class PreprocessingAccessor:
         array : np.ndarray
             The numpy array representing the channel(s) to be added.
 
-        Returns:
-        --------
+        Returns
+        -------
         xarray.Dataset
             The updated image container with added channel(s).
         """
@@ -448,17 +448,17 @@ class PreprocessingAccessor:
         """
         Adds properties to the image container.
 
-        Parameters:
-        -----------
-        array: Union[np.ndarray, list]
+        Parameters
+        ----------
+        array : Union[np.ndarray, list]
             An array or list of properties to be added to the image container.
-        prop: str, optional
+        prop : str, optional
             The name of the property. Default is Features.LABELS.
-        return_xarray: bool, optional
+        return_xarray : bool, optional
             If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset or xr.DataArray
             The updated image container with added properties or the properties as a separate xarray.DataArray.
         """
@@ -499,21 +499,21 @@ class PreprocessingAccessor:
         """
         Adds labels to the image container.
 
-        Parameters:
-        -----------
-        df: Union[pd.DataFrame, None], optional
+        Parameters
+        ----------
+        df : Union[pd.DataFrame, None], optional
             A dataframe with the cell and label information. If None, a default labeling will be applied.
-        cell_col: str, optional
+        cell_col : str, optional
             The name of the column in the dataframe representing cell coordinates. Default is "cell".
-        label_col: str, optional
+        label_col : str, optional
             The name of the column in the dataframe representing cell labels. Default is "label".
-        colors: Union[list, None], optional
+        colors : Union[list, None], optional
             A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.
-        names: Union[list, None], optional
+        names : Union[list, None], optional
             A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The updated image container with added labels.
         """
@@ -585,15 +585,15 @@ class PreprocessingAccessor:
         """
         Restores the image using a specified method.
 
-        Parameters:
-        -----------
-        method: str, optional
+        Parameters
+        ----------
+        method : str, optional
             The method used for image restoration. Options are "wiener", "unsupervised_wiener", or "threshold". Default is "wiener".
-        **kwargs: dict, optional
+        **kwargs : dict, optional
             Additional keyword arguments specific to the chosen method.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The restored image container.
         """
@@ -626,8 +626,8 @@ class PreprocessingAccessor:
         """
         Performs a percentile normalization on each channel.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The image container with the normalized image stored in Layers.PLOT.
         """
@@ -651,19 +651,19 @@ class PreprocessingAccessor:
         """
         Colorizes a stack of images.
 
-        Parameters:
-        -----------
-        colors: List[str], optional
+        Parameters
+        ----------
+        colors : List[str], optional
             A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
-        background: str, optional
+        background : str, optional
             Background color of the colorized image. Default is "black".
-        normalize: bool, optional
+        normalize : bool, optional
             Normalize the image prior to colorizing it. Default is True.
-        merge: True, optional
+        merge : True, optional
             Merge the channel dimension. Default is True.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
         """

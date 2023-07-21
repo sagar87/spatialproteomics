@@ -435,7 +435,7 @@ class PlotAccessor:
         if Layers.PLOT not in self._obj:
             logger.warning("No plot defined yet.")
             channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-            self._obj = self._obj.im[channel].im.colorize(colors=["white"])
+            self._obj = self._obj.pp[channel].pp.colorize(colors=["white"])
 
         if ax is None:
             ax = plt.gca()
