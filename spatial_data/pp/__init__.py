@@ -1,4 +1,4 @@
-from .image import PreprocessingAccessor
+from .preprocessing import PreprocessingAccessor
 from .segmentation import (
     arcsinh_mean_intensity,
     arcsinh_sum_intensity,

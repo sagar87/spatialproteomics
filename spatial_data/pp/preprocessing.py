@@ -21,7 +21,7 @@ class PreprocessingAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def __getitem__(self, indices):
+    def __getitem__(self, indices) -> xr.Dataset:
         """Fast subsetting the image container. The following examples show how
         the user can subset the image container:
 
@@ -103,7 +103,7 @@ class PreprocessingAccessor:
         ds = self._obj.pp.get_channels(c_slice)
         return ds.pp.get_bbox(x_slice, y_slice)
 
-    def get_bbox(self, x_slice: slice, y_slice: slice):
+    def get_bbox(self, x_slice: slice, y_slice: slice) -> xr.Dataset:
         """
         Returns the bounds of the image container.
 
@@ -158,7 +158,7 @@ class PreprocessingAccessor:
 
         return self._obj.sel(query)
 
-    def get_channels(self, channels: Union[List[str], str]):
+    def get_channels(self, channels: Union[List[str], str]) -> xr.Dataset:
         """
         Returns a single channel as a numpy array.
 
@@ -179,7 +179,7 @@ class PreprocessingAccessor:
 
         return self._obj.sel(query)
 
-    def add_channel(self, channels: Union[str, list], array: np.ndarray):
+    def add_channel(self, channels: Union[str, list], array: np.ndarray) -> xr.Dataset:
         """
         Adds channel(s) to an existing image container.
 
@@ -340,25 +340,25 @@ class PreprocessingAccessor:
         remove_unlabeled=True,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
-    ):
+    ) -> xr.Dataset:
         """
         Quantify channel intensities over the segmentation mask.
 
-        Parameters:
-        -----------
-        channels: Union[str, list], optional
+        Parameters
+        ----------
+        channels : Union[str, list], optional
             The name of the channel or a list of channel names to be added. Default is "all".
-        func: Callable, optional
+        func : Callable, optional
             The function used for quantification. Default is sum_intensity.
-        remove_unlabeled: bool, optional
+        remove_unlabeled : bool, optional
             Whether to remove unlabeled cells. Default is True.
-        key_added: str, optional
+        key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
-        return_xarray: bool, optional
+        return_xarray : bool, optional
             If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset or xr.DataArray
             The updated image container with added quantification data or the quantification data as a separate xarray.DataArray.
         """
@@ -405,15 +405,15 @@ class PreprocessingAccessor:
         container, and the index of the dataframe has to match the cell coordinates
         of the image container.
 
-        Parameters:
-        -----------
-        df: pd.DataFrame
+        Parameters
+        ----------
+        df : pd.DataFrame
             A dataframe with the quantification values.
-        key_added: str, optional
+        key_added : str, optional
             The key under which the quantification data will be added to the image container.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.DataSet
             The amended image container.
         """
@@ -434,24 +434,9 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    # def add_cell_type(self, num_cell_types: int):
-
-    #     if Layers.LABELS not in self._obj:
-    #         labels =  np.arange(1, num_cell_types + 1).reshape(-1, 1)
-    #         props = np.full((num_cell_types, 2), -1)
-
-    #         da = xr.DataArray(
-    #             np.concatenate([labels, props], 1),
-    #             coords=[np.arange(1, num_cell_types + 1), [Layers.LABELS, Props.NAME, Props.COLOR]],
-    #             dims=[Dims.LABELS, Dims.PROPS],
-    #             name=Layers.LABELS,
-    #         )
-    #     else:
-    #         da = self.da[Layer.LABELS].coo
-
-    #     return xr.merge([self._obj, da])
-
-    def add_properties(self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False):
+    def add_properties(
+        self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False
+    ) -> xr.Dataset:
         """
         Adds properties to the image container.
 
@@ -502,7 +487,7 @@ class PreprocessingAccessor:
         label_col: str = "label",
         colors: Union[list, None] = None,
         names: Union[list, None] = None,
-    ):
+    ) -> xr.Dataset:
         """
         Adds labels to the image container.
 
