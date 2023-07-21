@@ -12,7 +12,7 @@ from ..constants import Attrs, Dims, Features, Layers, Props
 from .spectra import format_annotation_df, plot_expression_spectra
 
 
-def set_up_subplots(num_plots, ncols=4, width=4, height=3):
+def _set_up_subplots(num_plots, ncols=4, width=4, height=3):
     """Set up subplots for plotting multiple factors."""
 
     if num_plots == 1:
@@ -462,7 +462,7 @@ class PlotAccessor:
 
         return self._obj
 
-    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ax=None):
+    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
         """
         Plots the spectra of cells.
 
@@ -489,13 +489,22 @@ class PlotAccessor:
 
         da = self._obj[layers_key].sel({"cells": cells})
         num_cells = len(cells)
-
-        fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
-
-        for i in range(da.values.shape[0]):
-            axes[i].bar(np.arange(da.values.shape[1]), da.values[i])
-            axes[i].set_xticks(np.arange(da.values.shape[1]))
-            axes[i].set_xticklabels(da.channels.values, rotation=90)
+        
+        fig, axes = _set_up_subplots(num_cells, ncols=ncols, width=width, height=height)
+        
+        # fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
+        
+        if num_cells > 1:
+            for i, ax in zip(range(da.values.shape[0]), axes.flatten()):
+                ax.bar(np.arange(da.values.shape[1]), da.values[i])
+                ax.set_xticks(np.arange(da.values.shape[1]))
+                ax.set_xticklabels(da.channels.values, rotation=90)
+                ax.set_title(f'Cell {da.cells.values[i]}')
+        else:
+            axes.bar(np.arange(da.values.squeeze().shape[0]), da.values.squeeze())
+            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))    
+            axes.set_xticklabels(da.channels.values, rotation=90)            
+            axes.set_title(f'Cell {da.cells.values[0]}')
 
         # if ax is isinstance(ax, np.ndarray):
         # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
