@@ -44,21 +44,21 @@ class LabelAccessor:
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
         return {fw[k]: v for k, v in dictionary.items()}
 
-    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False):
+    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
         """Returns a dictionary that maps each label to a list to their property.
 
-        Parameters:
-        -----------
-        prop: str
+        Parameters
+        ----------
+        prop : str
             The property to map to the labels.
-        reverse: bool
+        reverse : bool
             If True, the dictionary will be reversed.
-        relabel: bool
+        relabel : bool
             Deprecated.
 
-        Returns:
-        --------
-        label_dict: dict
+        Returns
+        -------
+        label_dict : dict
             A dictionary that maps each label to a list to their property.
         """
         labels_layer = self._obj[Layers.LABELS]
@@ -230,7 +230,7 @@ class LabelAccessor:
         cells = self._obj.la._filter_cells_by_label(inv_sel)
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
-    def add_label_type(self, name: str, color: str = "w"):
+    def add_label_type(self, name: str, color: str = "w") -> xr.Dataset:
         """
         Add a new label type to the data object.
 
@@ -246,7 +246,7 @@ class LabelAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the newly added label type.
 
         Raises
@@ -307,7 +307,7 @@ class LabelAccessor:
 
         return obj
 
-    def get_gate_graph(self, pop: bool = False):
+    def get_gate_graph(self, pop: bool = False) -> nx.DiGraph:
         """
         Get the gating graph from the data object.
 
@@ -371,7 +371,7 @@ class LabelAccessor:
 
         return graph
 
-    def remove_label_type(self, cell_type: Union[int, List[int]]):
+    def remove_label_type(self, cell_type: Union[int, List[int]]) -> xr.Dataset:
         """
         Remove specific cell type label(s) from the data object.
 
@@ -385,7 +385,7 @@ class LabelAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the specified cell type label(s) removed.
 
         Raises
@@ -421,7 +421,7 @@ class LabelAccessor:
 
         return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
-    def reset_label_type(self, label_id):
+    def reset_label_type(self, label_id) -> xr.Dataset:
         """
         Reset the label type of cells to its parent label.
 
@@ -435,7 +435,7 @@ class LabelAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with cells' label type reset to its parent label.
 
         Raises

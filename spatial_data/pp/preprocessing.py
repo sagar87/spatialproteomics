@@ -115,11 +115,11 @@ class PreprocessingAccessor:
         """
         Returns the bounds of the image container.
 
-        Parameters:
-        -----------
-        x_slice: slice
+        Parameters
+        ----------
+        x_slice : slice
             The slice representing the x-coordinates for the bounding box.
-        y_slice: slice
+        y_slice : slice
             The slice representing the y-coordinates for the bounding box.
 
         Returns:
@@ -191,11 +191,11 @@ class PreprocessingAccessor:
         """
         Adds channel(s) to an existing image container.
 
-        Parameters:
-        -----------
-        channels: Union[str, list]
+        Parameters
+        ----------
+        channels : Union[str, list]
             The name of the channel or a list of channel names to be added.
-        array: np.ndarray
+        array : np.ndarray
             The numpy array representing the channel(s) to be added.
 
         Returns:
@@ -233,12 +233,12 @@ class PreprocessingAccessor:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
-        Parameters:
-        -----------
-        segmentation: np.ndarray
+        Parameters
+        ----------
+        segmentation : np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
             that indicates the location of each cell.
-        copy: bool
+        copy : bool
             If true the segmentation mask is copied.
 
         Returns:
@@ -280,17 +280,17 @@ class PreprocessingAccessor:
         """
         Adds properties derived from the mask to the image container.
 
-        Parameters:
-        -----------
-        properties: Union[str, list, tuple]
+        Parameters
+        ----------
+        properties : Union[str, list, tuple]
             A list of properties to be added to the image container. See
             skimage.measure.regionprops_table for a list of available properties.
-        return_xarray: bool
+        return_xarray : bool
             If true, the function returns an xarray.DataArray with the properties
             instead of adding them to the image container.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.DataSet
             The amended image container.
         """
