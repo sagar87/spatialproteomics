@@ -2,15 +2,13 @@ from typing import Callable, List, Union
 
 import networkx as nx
 import numpy as np
-import pandas as pd
 import xarray as xr
 from skimage.segmentation import find_boundaries, relabel_sequential
 from sklearn.neighbors import NearestNeighbors
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Layers, Props
+from ..constants import Dims, Features, Layers, Props
 from ..pl import _get_listed_colormap
-from ..se.segmentation import _remove_unlabeled_cells
 
 # from tqdm import tqdm
 
@@ -816,126 +814,6 @@ class LabelAccessor:
             )
         return self._obj
 
-    def add_label_types_from_dataframe(
-        self,
-        df: pd.DataFrame,
-        cell_col: str = "cell",
-        label_col: str = "label",
-        colors: Union[list, None] = None,
-        names: Union[list, None] = None,
-    ):
-        """
-        Add label types and assign cell type labels based on the provided DataFrame.
-
-        This method adds label types to the data object and assigns cell type labels to cells
-        based on the information in the provided DataFrame.
-
-        Parameters
-        ----------
-        df : pandas.DataFrame
-            The DataFrame containing cell information with 'cell_col' representing cell IDs and
-            'label_col' representing the corresponding cell type labels.
-        cell_col : str, optional
-            The column name in the DataFrame representing cell IDs. Default is "cell".
-        label_col : str, optional
-            The column name in the DataFrame representing cell type labels. Default is "label".
-        colors : list or None, optional
-            A list of colors to assign to the label types. If None, random colors will be used.
-            Default is None.
-        names : list or None, optional
-            A list of names for the label types. If None, default names will be generated.
-            Default is None.
-
-        Returns
-        -------
-        any
-            The updated data object with added label types and assigned cell type labels.
-
-        Notes
-        -----
-        - The function uses the provided DataFrame 'df' to extract cell IDs and corresponding cell type labels.
-        - It ensures that cell type labels are non-negative, raising an assertion error otherwise.
-        - The function formats and creates a DataArray 'da' with cell IDs and their respective labels.
-        - The DataArray 'da' is then merged into the data object, associating cells with their label types.
-        - If label colors are provided, they are assigned to the label types using 'COLORS' or random colors.
-        - If label names are provided, they are assigned to the label types; otherwise, default names are used.
-        - The segmentation layer is updated to remove cells with unlabeled cell type labels.
-
-        Raises
-        ------
-        AssertionError
-            If cell type labels contain negative values.
-        AssertionError
-            If the number of provided colors or names does not match the number of unique label types.
-        """
-
-        sub = df.loc[:, [cell_col, label_col]].dropna()
-
-        cells = sub.loc[:, cell_col].values.squeeze()
-        labels = sub.loc[:, label_col].values.squeeze()
-
-        assert ~np.all(labels < 0), "Labels must be >= 0."
-
-        formated_labels = _format_labels(labels)
-        unique_labels = np.unique(formated_labels)
-
-        if np.all(formated_labels == labels):
-            da = xr.DataArray(
-                np.stack([formated_labels, labels], -1),
-                coords=[cells, [Features.LABELS, Features.ORIGINAL_LABELS]],
-                dims=[Dims.CELLS, Dims.FEATURES],
-                name=Layers.OBS,
-            )
-        else:
-            da = xr.DataArray(
-                np.stack([formated_labels, labels], -1),
-                coords=[
-                    cells,
-                    [
-                        Features.LABELS,
-                        Features.ORIGINAL_LABELS,
-                    ],
-                ],
-                dims=[Dims.CELLS, Dims.FEATURES],
-                name=Layers.OBS,
-            )
-
-        da = da.where(
-            da.coords[Dims.CELLS].isin(
-                self._obj.coords[Dims.CELLS],
-            ),
-            drop=True,
-        )
-
-        if Layers.OBS not in self._obj:
-            self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
-        else:
-            da = xr.concat([self._obj[Layers.OBS], da], dim=Dims.FEATURES)
-            obj = xr.merge([self._obj.drop(Layers.OBS).drop_dims(Dims.FEATURES).sel(cells=da.cells), da])
-
-        # import pdb;pdb.set_trace()
-
-        if colors is not None:
-            assert len(colors) == len(unique_labels), "Colors has the same."
-        else:
-            colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
-
-        # import pdb; pdb.set_trace()
-        obj = obj.la.add_label_property(colors, Props.COLOR)
-        # print('after')
-        # import pdb; pdb.set_trace()
-        if names is not None:
-            assert len(names) == len(unique_labels), "Names has the same."
-        else:
-            names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
-
-        obj = obj.la.add_label_property(names, Props.NAME)
-        obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
-            obj[Layers.SEGMENTATION].values, obj.coords[Dims.CELLS].values
-        )
-
-        return obj
-
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
         """
         Add a label property for each unique cell type label.
@@ -962,7 +840,9 @@ class LabelAccessor:
         - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
         - If the label property already exists in the data object, it will be updated with the new property values.
         """
-        unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+        unique_labels = self._obj.coords[
+            Dims.LABELS
+        ].values  # np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
 
         if type(array) is list:
             array = np.array(array)
@@ -1238,70 +1118,3 @@ class LabelAccessor:
         )
 
         return xr.merge([self._obj, da])
-
-    # def add_labels(
-    #     self,
-    #     labels,
-    #     cell_col: str = "cell",
-    #     label_col: str = "label",
-    #     color_dict: Union[None, dict] = None,
-    #     names_dict: Union[None, dict] = None,
-    # ):
-    #     num_cells = self._obj.dims[Dims.CELLS]
-
-    #     # select the cells indices which are consistent with the segmentation
-    #     df = (
-    #         pd.DataFrame(index=self._obj.coords[Dims.CELLS].values)
-    #         .reset_index()
-    #         .rename(columns={"index": cell_col})
-    #     )
-
-    #     df = df.merge(labels, on=cell_col, how="inner")
-
-    #     array = df.loc[:, label_col].values
-
-    #     if 0 in array:
-    #         logger.warning(
-    #             "Found '0' as cell type as label, reindexing. Please ensure that cell type labels are consecutive integers (1, 2, ..., k) starting from 1."
-    #         )
-    #         array += 1
-
-    #     unique_labels = np.unique(array)
-    #     attrs = {}
-
-    #     # set up the meta data
-    #     if color_dict is None:
-    #         logger.warning("No label colors specified. Choosing random colors.")
-    #         attrs[Attrs.LABEL_COLORS] = {
-    #             k: v
-    #             for k, v in zip(
-    #                 unique_labels,
-    #                 np.random.choice(COLORS, size=len(unique_labels), replace=False),
-    #             )
-    #         }
-    #     else:
-    #         attrs[Attrs.LABEL_COLORS] = color_dict
-
-    #     if names_dict is None:
-    #         attrs[Attrs.LABEL_NAMES] = {k: f"Cell type {k}" for k in unique_labels}
-    #     else:
-    #         attrs[Attrs.LABEL_NAMES] = names_dict
-
-    #     da = xr.DataArray(
-    #         array.reshape(-1, 1),
-    #         coords=[df.loc[:, cell_col].values, ["label"]],
-    #         dims=[Dims.CELLS, Dims.LABELS],
-    #         name=Layers.LABELS,
-    #         attrs=attrs,
-    #     )
-
-    #     # merge datasets
-    #     ds = self._obj.merge(da, join="inner")
-    #     ds.se._remove_unlabeled_cells()
-
-    #     lost_cells = num_cells - ds.dims[Dims.CELLS]
-
-    #     if lost_cells > 0:
-    #         logger.warning(f"No cell label for {lost_cells} cells. Dropping cells.")
-
-    #     return ds
