@@ -809,13 +809,13 @@ class PreprocessingAccessor:
         assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
 
         # TODO: Attribute class in constants.py
-        color_dict = self._label_to_dict(Props.COLOR, relabel=True)
+        color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
         if override_color is not None:
             color_dict = {k: override_color for k in color_dict.keys()}
 
         cmap = _get_listed_colormap(color_dict)
 
-        cells_dict = self._cells_to_label(relabel=True)
+        cells_dict = self._obj.la._cells_to_label(relabel=True)
         segmentation = self._obj[Layers.SEGMENTATION].values
         mask = _label_segmentation_mask(segmentation, cells_dict)
 
