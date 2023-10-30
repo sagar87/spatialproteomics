@@ -96,7 +96,11 @@ class TwoComponentGaussianMixture:
             model.fit(expression)
             self.models[marker] = model
 
-            xc = critical_pt(model)
+            try:
+                xc = critical_pt(model)
+            except ValueError:
+                xc = 0
+
             self.intersect[marker] = xc
             self.sigmoid[marker] = partial(sigmoid, xc=xc)
 

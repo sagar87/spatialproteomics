@@ -253,7 +253,7 @@ class PlotAccessor:
 
         if legend_label:
             legend = self._obj.pl._legend_labels()
-            ax.legend(handles=legend, **legend_kwargs)
+            ax.legend(handles=legend, **legend_kwargs).set_zorder(102)
 
         return self._obj
 

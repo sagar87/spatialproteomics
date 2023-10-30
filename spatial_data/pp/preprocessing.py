@@ -54,7 +54,7 @@ class PreprocessingAccessor:
         xarray.Dataset
             The subsetted image container.
         """
-
+        # print(indices)
         # argument handling
         if type(indices) is str:
             c_slice = [indices]
@@ -107,6 +107,8 @@ class PreprocessingAccessor:
                 if (type(indices[1]) is slice) & (type(indices[2]) is slice):
                     x_slice = indices[1]
                     y_slice = indices[2]
+                    
+        
 
         ds = self._obj.pp.get_channels(c_slice)
         return ds.pp.get_bbox(x_slice, y_slice)
@@ -524,9 +526,17 @@ class PreprocessingAccessor:
             unique_labels = np.unique(formated_labels)
         else:
             sub = df.loc[:, [cell_col, label_col]].dropna()
-            cells = sub.loc[:, cell_col].values.squeeze()
-            labels = sub.loc[:, label_col].values.squeeze()
-
+            cells = sub.loc[:, cell_col].to_numpy().squeeze()
+            labels = sub.loc[:, label_col].to_numpy().squeeze()
+            
+            
+            if np.all([ isinstance(i, str) for i in labels]):
+                unique_labels = np.unique(labels)
+                label_to_num = dict(zip(unique_labels, range(1, len(unique_labels)+1)))
+                num_to_label = { v:k for k, v in label_to_num.items() }
+                labels = np.array([ label_to_num[l] for l in labels ])
+                names = [ k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
+                
             assert ~np.all(labels < 0), "Labels must be >= 0."
 
             formated_labels = _format_labels(labels)
@@ -534,8 +544,8 @@ class PreprocessingAccessor:
 
         if np.all(formated_labels == labels):
             da = xr.DataArray(
-                formated_labels.reshape(-1, 1),
-                coords=[cells, [Features.LABELS]],
+                np.stack([formated_labels, labels], -1),
+                coords=[cells, [Features.LABELS, Features.ORIGINAL_LABELS]],
                 dims=[Dims.CELLS, Dims.FEATURES],
                 name=Layers.OBS,
             )
@@ -568,7 +578,8 @@ class PreprocessingAccessor:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
         self._obj = self._obj.pp.add_properties(colors, Props.COLOR)
-
+        
+        
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
@@ -579,6 +590,7 @@ class PreprocessingAccessor:
             self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
         )
 
+        # import pdb;pdb.set_trace()
         return xr.merge([self._obj.sel(cells=da.cells), da])
 
     def restore(self, method="wiener", **kwargs):
@@ -641,9 +653,38 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, normed])
 
+    def downsample(self, rate: int):
+        image_layer = self._obj[Layers.IMAGE]
+        # image_data = image_layer.values[:, ::rate,::rate]
+
+        x = self._obj.x.values[::rate]
+        y = self._obj.y.values[::rate]
+        c = self._obj.channels.values
+        # import pdb;pdb.set_trace()
+        img = image_layer.values[:, ::rate, ::rate]
+        # import pdb;pdb.set_trace()
+        new_img = xr.DataArray(img, coords=[c, y, x], dims=[Dims.CHANNELS, Dims.Y, Dims.X], name=Layers.IMAGE)
+        # import pdb;pdb.set_trace()
+        obj = self._obj.drop(Layers.IMAGE)
+        # import pdb;pdb.set_trace()
+
+        if Layers.SEGMENTATION in self._obj:
+            seg_layer = self._obj[Layers.SEGMENTATION]
+            # import pdb;pdb.set_trace()
+            new_seg = xr.DataArray(
+                seg_layer.values[::rate, ::rate], coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
+            )
+            # import pdb;pdb.set_trace()
+            obj = obj.drop(Layers.SEGMENTATION)
+        
+        
+        obj = obj.drop_dims([Dims.Y, Dims.X])
+
+        return xr.merge([obj, new_img, new_seg])
+
     def colorize(
         self,
-        colors: List[str] = ["C0", "C1", "C2", "C3"],
+        colors: List[str] = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'],
         background: str = "black",
         normalize: bool = True,
         merge: bool = True,
@@ -667,6 +708,10 @@ class PreprocessingAccessor:
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
         """
+        if isinstance(colors, str):
+            colors = [colors]
+        
+            
         image_layer = self._obj[Layers.IMAGE]
         colored = _colorize(
             image_layer.values,
