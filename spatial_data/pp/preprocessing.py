@@ -146,7 +146,7 @@ class PreprocessingAccessor:
 
         # handle case when there are cells in the image
         if Dims.CELLS in self._obj.dims:
-            num_cells = self._obj.dims[Dims.CELLS]
+            # num_cells = self._obj.dims[Dims.CELLS]
 
             coords = self._obj[Layers.OBS]
             cells = (
@@ -156,7 +156,7 @@ class PreprocessingAccessor:
                 & (coords.loc[:, Features.Y] <= y_stop)
             ).values
             # calculates the number of cells that were dropped due setting the bounding box
-            lost_cells = num_cells - sum(cells)
+            # lost_cells = num_cells - sum(cells)
 
             # if lost_cells > 0:
             # logger.warning(f"Dropped {lost_cells} cells.")
@@ -530,8 +530,8 @@ class PreprocessingAccessor:
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
                 label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
-                num_to_label = {v: k for k, v in label_to_num.items()}
-                labels = np.array([label_to_num[l] for l in labels])
+                # num_to_label = {v: k for k, v in label_to_num.items()}
+                labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
             assert ~np.all(labels < 0), "Labels must be >= 0."
