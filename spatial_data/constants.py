@@ -21,6 +21,7 @@ Grey = "#a9a9a9"
 White = "#ffffff"
 Black = "#000000"
 
+
 class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"

@@ -107,8 +107,6 @@ class PreprocessingAccessor:
                 if (type(indices[1]) is slice) & (type(indices[2]) is slice):
                     x_slice = indices[1]
                     y_slice = indices[2]
-                    
-        
 
         ds = self._obj.pp.get_channels(c_slice)
         return ds.pp.get_bbox(x_slice, y_slice)
@@ -148,7 +146,7 @@ class PreprocessingAccessor:
 
         # handle case when there are cells in the image
         if Dims.CELLS in self._obj.dims:
-            num_cells = self._obj.dims[Dims.CELLS]
+            # num_cells = self._obj.dims[Dims.CELLS]
 
             coords = self._obj[Layers.OBS]
             cells = (
@@ -158,10 +156,10 @@ class PreprocessingAccessor:
                 & (coords.loc[:, Features.Y] <= y_stop)
             ).values
             # calculates the number of cells that were dropped due setting the bounding box
-            lost_cells = num_cells - sum(cells)
+            # lost_cells = num_cells - sum(cells)
 
             # if lost_cells > 0:
-                # logger.warning(f"Dropped {lost_cells} cells.")
+            # logger.warning(f"Dropped {lost_cells} cells.")
 
             # finalise query
             query[Dims.CELLS] = cells
@@ -528,15 +526,14 @@ class PreprocessingAccessor:
             sub = df.loc[:, [cell_col, label_col]].dropna()
             cells = sub.loc[:, cell_col].to_numpy().squeeze()
             labels = sub.loc[:, label_col].to_numpy().squeeze()
-            
-            
-            if np.all([ isinstance(i, str) for i in labels]):
+
+            if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
-                label_to_num = dict(zip(unique_labels, range(1, len(unique_labels)+1)))
-                num_to_label = { v:k for k, v in label_to_num.items() }
-                labels = np.array([ label_to_num[l] for l in labels ])
-                names = [ k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
-                
+                label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
+                # num_to_label = {v: k for k, v in label_to_num.items()}
+                labels = np.array([label_to_num[label] for label in labels])
+                names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
+
             assert ~np.all(labels < 0), "Labels must be >= 0."
 
             formated_labels = _format_labels(labels)
@@ -578,8 +575,7 @@ class PreprocessingAccessor:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
         self._obj = self._obj.pp.add_properties(colors, Props.COLOR)
-        
-        
+
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
@@ -676,15 +672,35 @@ class PreprocessingAccessor:
             )
             # import pdb;pdb.set_trace()
             obj = obj.drop(Layers.SEGMENTATION)
-        
-        
+
         obj = obj.drop_dims([Dims.Y, Dims.X])
 
         return xr.merge([obj, new_img, new_seg])
 
     def colorize(
         self,
-        colors: List[str] = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9'],
+        colors: List[str] = [
+            "#e6194B",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#42d4f4",
+            "#f032e6",
+            "#bfef45",
+            "#fabed4",
+            "#469990",
+            "#dcbeff",
+            "#9A6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#a9a9a9",
+        ],
         background: str = "black",
         normalize: bool = True,
         merge: bool = True,
@@ -710,8 +726,7 @@ class PreprocessingAccessor:
         """
         if isinstance(colors, str):
             colors = [colors]
-        
-            
+
         image_layer = self._obj[Layers.IMAGE]
         colored = _colorize(
             image_layer.values,
