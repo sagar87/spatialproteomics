@@ -35,7 +35,9 @@ from .pp import (
     arcsinh_sum_intensity,
     arcsinh_var_intensity,
     detect_peaks_num,
+    is_positive,
     mean_intensity,
+    percentage_positive,
     sum_intensity,
 )
 from .se import SegmentationAccessor
@@ -57,6 +59,8 @@ __all__ = [
     "arcsinh_mean_intensity",
     "arcsinh_var_intensity",
     "detect_peaks_num",
+    "percentage_positive",
+    "is_positive",
     "TwoComponentGaussianMixture",
     "Apricot",
     "Beige",
