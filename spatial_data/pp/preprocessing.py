@@ -160,8 +160,8 @@ class PreprocessingAccessor:
             # calculates the number of cells that were dropped due setting the bounding box
             lost_cells = num_cells - sum(cells)
 
-            if lost_cells > 0:
-                logger.warning(f"Dropped {lost_cells} cells.")
+            # if lost_cells > 0:
+                # logger.warning(f"Dropped {lost_cells} cells.")
 
             # finalise query
             query[Dims.CELLS] = cells
