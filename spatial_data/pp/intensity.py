@@ -103,6 +103,24 @@ def arcsinh_sum_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, c
     return np.arcsinh(np.sum(intensity_image[regionmask]) / cofactor)
 
 
+def is_positive(regionmask: np.ndarray, intensity_image: np.ndarray, threshold: float) -> float:
+    """
+    Computes whether the cell is positive or not
+    """
+    # regionmask
+
+    return (intensity_image[regionmask] > 0).sum() / (regionmask == 1).sum() > threshold
+
+
+def percentage_positive(regionmask: np.ndarray, intensity_image: np.ndarray) -> float:
+    """
+    Computes whether the cell is positive or not
+    """
+    # regionmask
+
+    return (intensity_image[regionmask] > 0).sum() / (regionmask == 1).sum()
+
+
 def detect_peaks_num(regionmask, intensity_image):
     """
     Takes an image and detect the peaks usingthe local maximum filter.
