@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -629,6 +629,24 @@ class PreprocessingAccessor:
             name=Layers.IMAGE,
         )
         return xr.merge([obj, normed])
+
+    def filter(self, quantile: float = 0.99, key_added: Optional[str] = None):
+        # Pull out the image from its corresponding field (by default "_image")
+        image_layer = self._obj[Layers.IMAGE]
+        # Calulate quat
+        lower = np.quantile(image_layer.values, quantile, axis=(1, 2))
+        filtered = (image_layer - np.expand_dims(lower, (1, 2))).clip(min=0)
+
+        if key_added is None:
+            obj = self._obj.drop(Layers.IMAGE)
+
+        filtered = xr.DataArray(
+            filtered,
+            coords=image_layer.coords,
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=Layers.IMAGE if key_added is None else key_added,
+        )
+        return xr.merge([obj, filtered])
 
     def normalize(self):
         """
