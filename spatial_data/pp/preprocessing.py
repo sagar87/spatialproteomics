@@ -637,7 +637,14 @@ class PreprocessingAccessor:
             restored = maximum(image_layer.values.squeeze(), footprint=selem)
         elif method == "medfilt2d":
             kernel_size = kwargs.get("kernel_size", 3)
-            restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
+            
+            if image_layer.values.ndim == 3:
+                restore_array = []
+                for i in range(image_layer.values.shape[0]):
+                    restore_array.append(medfilt2d(image_layer.values[i].squeeze(), kernel_size))
+                restored = np.stack(restore_array, 0)
+            else:        
+                restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
 
         if restored.ndim == 2:
             restored = np.expand_dims(restored, 0)
@@ -653,9 +660,12 @@ class PreprocessingAccessor:
     def filter(self, quantile: float = 0.99, key_added: Optional[str] = None):
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
+        if isinstance(quantile, list):
+            quantile = np.array(quantile)
         # Calulate quat
-        lower = np.quantile(image_layer.values, quantile, axis=(1, 2))
-        filtered = (image_layer - np.expand_dims(lower, (1, 2))).clip(min=0)
+        lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
+        print(lower, lower.shape)
+        filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
         if key_added is None:
             obj = self._obj.drop(Layers.IMAGE)
