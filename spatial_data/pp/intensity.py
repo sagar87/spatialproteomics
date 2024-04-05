@@ -61,6 +61,27 @@ def arcsinh_mean_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, 
     return np.arcsinh(np.mean(intensity_image[regionmask]) / cofactor)
 
 
+def arcsinh_median_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, cofactor: float = 5) -> float:
+    """
+    Calculate the arcsinh-transformed median of intensity values within the specified regionmask.
+
+    Parameters
+    ----------
+    regionmask : numpy.ndarray
+        Binary mask representing the region of interest.
+    intensity_image : numpy.ndarray
+        Array containing the intensity values of the corresponding image.
+    cofactor : numpy.float64, optional
+        The cofactor used for the arcsinh transformation. Default is 5.
+
+    Returns
+    -------
+    numpy.float64
+        The arcsinh-transformed median of intensity values within the specified regionmask.
+    """
+    return np.arcsinh(np.median(intensity_image[regionmask]) / cofactor)
+
+
 def arcsinh_var_intensity(regionmask: np.ndarray, intensity_image: np.ndarray, cofactor: float = 5) -> float:
     """
     Calculate the arcsinh-transformed variance of intensity values within the specified regionmask.
