@@ -3,8 +3,10 @@ from typing import List, Optional, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
-from scipy.signal import wiener
+from scipy.signal import medfilt2d, wiener
+from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
+from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
 
 from ..base_logger import logger
@@ -621,6 +623,24 @@ class PreprocessingAccessor:
             restored = np.zeros_like(image_layer)
             idx = np.where(image_layer > rev_func(value))
             restored[idx] = image_layer[idx]
+        elif method == "median":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = median(image_layer.values.squeeze(), footprint=selem)
+        elif method == "mean":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = mean(image_layer.values.squeeze(), footprint=selem)
+        elif method == "minimum":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = minimum(image_layer.values.squeeze(), footprint=selem)
+        elif method == "maximum":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = maximum(image_layer.values.squeeze(), footprint=selem)
+        elif method == "medfilt2d":
+            kernel_size = kwargs.get("kernel_size", 3)
+            restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
+
+        if restored.ndim == 2:
+            restored = np.expand_dims(restored, 0)
 
         normed = xr.DataArray(
             restored,
