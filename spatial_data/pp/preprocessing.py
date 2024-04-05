@@ -270,7 +270,7 @@ class PreprocessingAccessor:
         obj = self._obj.copy()
         obj.coords[Dims.CELLS] = np.unique(segmentation[segmentation > 0]).astype(int)
 
-        return xr.merge([obj, da])
+        return xr.merge([obj, da]).pp.add_observations()
 
     def add_observations(
         self,

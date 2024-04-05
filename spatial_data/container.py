@@ -65,7 +65,7 @@ def load_image_data(
     dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
 
     if segmentation is not None:
-        dataset = dataset.pp.add_segmentation(segmentation, copy=copy_segmentation).pp.add_observations()
+        dataset = dataset.pp.add_segmentation(segmentation, copy=copy_segmentation)
 
         if labels is not None:
             dataset = dataset.pp.add_labels(labels, cell_col=cell_col, label_col=label_col)
