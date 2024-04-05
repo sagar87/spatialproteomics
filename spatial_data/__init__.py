@@ -13,6 +13,7 @@ from .pp import (
 )
 from .se import SegmentationAccessor
 from .tl import TwoComponentGaussianMixture
+from .ext import ExternalAccessor
 
 __all__ = [
     "load_image_data",
@@ -20,6 +21,7 @@ __all__ = [
     "LabelAccessor",
     "PlotAccessor",
     "SegmentationAccessor",
+    "ExternalAccessor",
     "Layers",
     "Dims",
     "Features",
