@@ -672,10 +672,9 @@ class PlotAccessor:
         # else:
         #     if ax is None:
         #         ax = plt.gca()
-        
 
         if num_channels > 1:
-            
+
             fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
 
             for ch, ax in zip(channels, axes.flatten()):
