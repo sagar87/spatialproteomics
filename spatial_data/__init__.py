@@ -27,6 +27,7 @@ from .constants import (
     Yellow,
 )
 from .container import load_image_data
+from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor  # , colorize, normalize
@@ -40,7 +41,6 @@ from .pp import (
 )
 from .se import SegmentationAccessor
 from .tl import TwoComponentGaussianMixture
-from .ext import ExternalAccessor
 
 __all__ = [
     "load_image_data",
