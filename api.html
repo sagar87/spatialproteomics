@@ -413,6 +413,30 @@ See examples.</p>
 <section id="the-segmentation-se-accessor">
 <h2>The segmentation (<code class="code docutils literal notranslate"><span class="pre">se</span></code>) accessor<a class="headerlink" href="#the-segmentation-se-accessor" title="Permalink to this headline"></a></h2>
 <p>The segmentation accessor contains methods that interrogate with the segmentaton mask.</p>
+<span class="target" id="module-spatial_data.se.segmentation"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.se.segmentation.</span></span><span class="sig-name descname"><span class="pre">SegmentationAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Handles everything that relates to the provided segmentation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.get_coordinates">
+<span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.get_coordinates" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.properties">
+<span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.properties" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.quantify">
+<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em>, <em class="sig-param"><span class="pre">remove_unlabeled=True</span></em>, <em class="sig-param"><span class="pre">return_dataarray=False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
+<dd><p>Adds channel(s) to an existing image container.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
