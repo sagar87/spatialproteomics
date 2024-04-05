@@ -1,4 +1,31 @@
-from .constants import Dims, Features, Layers, Props, Red, Green, Yellow, Blue, Orange, Purple, Cyan, Magenta, Lime, Pink, Teal, Lavender, Brown, Beige, Maroon, Mint, Olive, Apricot, Navy, Grey, White, Black
+from .constants import (
+    Dims,
+    Features,
+    Layers,
+    Props,
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Orange,
+    Purple,
+    Cyan,
+    Magenta,
+    Lime,
+    Pink,
+    Teal,
+    Lavender,
+    Brown,
+    Beige,
+    Maroon,
+    Mint,
+    Olive,
+    Apricot,
+    Navy,
+    Grey,
+    White,
+    Black,
+)
 from .container import load_image_data
 from .la import LabelAccessor
 from .pl import PlotAccessor
@@ -13,6 +40,7 @@ from .pp import (
 )
 from .se import SegmentationAccessor
 from .tl import TwoComponentGaussianMixture
+from .ext import ExternalAccessor
 
 __all__ = [
     "load_image_data",
@@ -20,6 +48,7 @@ __all__ = [
     "LabelAccessor",
     "PlotAccessor",
     "SegmentationAccessor",
+    "ExternalAccessor",
     "Layers",
     "Dims",
     "Features",
