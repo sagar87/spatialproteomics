@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -19,6 +19,7 @@ from .utils import (
     _remove_segmentation_mask_labels,
     _remove_unlabeled_cells,
     _render_label,
+    _relabel_cells,
 )
 
 
@@ -676,6 +677,38 @@ class PreprocessingAccessor:
         obj = obj.drop_dims([Dims.Y, Dims.X])
 
         return xr.merge([obj, new_img, new_seg])
+
+    def filter_by_obs(self, col: str, func: Callable):
+        """Returns the list of cells with the labels from items."""
+        cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
+        cells_bool = func(cells)
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        # selecting only the cells that are in cells_sel
+        obj = self._obj.sel({Dims.CELLS: cells_sel})
+
+        # synchronizing the segmentation mask with the selected cells
+        segmentation = obj[Layers.SEGMENTATION].values
+        # setting all cells that are not in cells to 0
+        segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
+        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+        segmentation, relabel_dict = _relabel_cells(segmentation)
+        # updating the cell coords of the object
+        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
+
+        # creating a data array with the segmentation mask, so that we can merge it to the original
+        da = xr.DataArray(
+            segmentation,
+            coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
+        )
+
+        # removing the old segmentation
+        obj = obj.drop_vars(Layers.SEGMENTATION)
+
+        # adding the new filtered and relabeled segmentation
+        return xr.merge([obj, da])
 
     def colorize(
         self,

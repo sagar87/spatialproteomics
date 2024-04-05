@@ -116,14 +116,6 @@ class LabelAccessor:
 
         return label_names_reverse[label]
 
-    def filter_by_obs(self, col: str, func: Callable):
-        """Returns the list of cells with the labels from items."""
-        cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
-        cells_bool = func(cells)
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-        # print(cells_sel, len(cells_sel))
-        return self._obj.sel({Dims.CELLS: cells_sel})
-
     def filter_by_intensity(self, col: str, func: Callable, layer_key: str):
         """Returns the list of cells with the labels from items."""
         cells = self._obj[layer_key].sel({Dims.CHANNELS: col}).values.copy()
