@@ -23,7 +23,7 @@ class ExternalAccessor:
         max_epochs: int = 500,
         cell_id_col: str = "cell_id",
         cell_type_col: str = "cell_type",
-        **kwargs
+        **kwargs,
     ):
         """
         This method predicts cell types from an expression matrix using the Astir algorithm.
@@ -49,19 +49,23 @@ class ExternalAccessor:
         """
         import astir
         import torch
-        
+
         # check if there is an expression matrix
         if key not in self._obj:
-            raise ValueError(f"No expression matrix with key {key} found in the object. Make sure to call pp.quantify first.")
+            raise ValueError(
+                f"No expression matrix with key {key} found in the object. Make sure to call pp.quantify first."
+            )
 
         # raise an error if the image is of anything other than uint8
         if self._obj[Layers.IMAGE].dtype != "uint8":
-            raise ValueError("The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8.")
+            raise ValueError(
+                "The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8."
+            )
 
         # converting the xarray to a pandas dataframe to keep track of channel names and indicies after running astir
         expression_df = pd.DataFrame(self._obj[key].values, columns=self._obj.coords[Dims.CHANNELS].values)
         expression_df.index = self._obj.coords[Dims.CELLS].values
-        
+
         # running astir
         model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)
         model.fit_type(
@@ -70,9 +74,9 @@ class ExternalAccessor:
             n_init=n_init,
             n_init_epochs=n_init_epochs,
             max_epochs=max_epochs,
-            **kwargs
+            **kwargs,
         )
-        
+
         # getting the predictions
         assigned_cell_types = model.get_celltypes(threshold=threshold)
         # assign the index to its own column (called cell)
@@ -81,6 +85,6 @@ class ExternalAccessor:
         assigned_cell_types.columns = [cell_id_col, cell_type_col]
         # setting the cell dtype to int
         assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
-        
+
         # adding the labels to the obs slot
         return self._obj.pp.add_labels(assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col)
