@@ -418,21 +418,15 @@ See examples.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.se.segmentation.</span></span><span class="sig-name descname"><span class="pre">SegmentationAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor" title="Permalink to this definition"></a></dt>
 <dd><p>Handles everything that relates to the provided segmentation.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.get_coordinates">
-<span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.get_coordinates" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.filter_cells">
+<span class="sig-name descname"><span class="pre">filter_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.filter_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Filters cells by size.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.properties">
-<span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.properties" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a xr.DataArray with the coordinates of each cell.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.quantify">
-<span class="sig-name descname"><span class="pre">quantify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">segmentation:</span> <span class="pre">Optional[numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">batch=True</span></em>, <em class="sig-param"><span class="pre">remove_unlabeled=True</span></em>, <em class="sig-param"><span class="pre">return_dataarray=False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.quantify" title="Permalink to this definition"></a></dt>
-<dd><p>Adds channel(s) to an existing image container.</p>
+<dt class="sig sig-object py" id="spatial_data.se.segmentation.SegmentationAccessor.grow_cells">
+<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.se.segmentation.SegmentationAccessor.grow_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Grows the cells in the segmentation mask.</p>
 </dd></dl>
 
 </dd></dl>
