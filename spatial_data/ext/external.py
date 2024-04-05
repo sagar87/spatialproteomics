@@ -62,7 +62,7 @@ class ExternalAccessor:
                 "The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8."
             )
 
-        # converting the xarray to a pandas dataframe to keep track of channel names and indicies after running astir
+        # converting the xarray to a pandas dataframe to keep track of channel names and indices after running astir
         expression_df = pd.DataFrame(self._obj[key].values, columns=self._obj.coords[Dims.CHANNELS].values)
         expression_df.index = self._obj.coords[Dims.CELLS].values
 
@@ -79,12 +79,12 @@ class ExternalAccessor:
 
         # getting the predictions
         assigned_cell_types = model.get_celltypes(threshold=threshold)
-        # assign the index to its own column (called cell)
+        # assign the index to its own column
         assigned_cell_types = assigned_cell_types.reset_index()
         # renaming the columns
         assigned_cell_types.columns = [cell_id_col, cell_type_col]
         # setting the cell dtype to int
         assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
-        # adding the labels to the obs slot
+        # adding the labels to the xarray object
         return self._obj.pp.add_labels(assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col)
