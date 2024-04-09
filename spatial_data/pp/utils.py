@@ -2,6 +2,7 @@ from typing import List, Union
 
 import numpy as np
 from skimage.segmentation import find_boundaries
+import numpy as np
 
 from ..pl import _get_linear_colormap
 
@@ -165,3 +166,36 @@ def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray, copy: b
     segmentation[bool_mask] = 0
 
     return segmentation
+
+
+def _relabel_cells(segmentation: np.ndarray):
+    """
+    Relabels cells in a segmentation array.
+
+    Parameters:
+    ----------
+    segmentation : np.ndarray
+        The input segmentation array.
+
+    Returns:
+    -------
+    tuple[np.ndarray, dict]
+        A tuple containing the relabeled segmentation array and a mapping dictionary.
+
+    Notes:
+    ------
+    This method relabels cells in the segmentation array, so that non-consecutive labels are turned into labels from 1 to n again.
+    This is important since CellSeg's mask growing relies on this assumption.
+
+    The mapping dictionary provides a mapping from the original values to the new values.
+    """
+    unique_values = np.unique(segmentation)  # Find unique values in the array
+    num_unique_values = len(unique_values)  # Get the number of unique values
+
+    # Create a mapping from original values to new values
+    value_map = {value: i for i, value in enumerate(unique_values)}
+
+    # Map the original array to the new values using the mapping
+    segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
+
+    return segmentation_relabeled, value_map
