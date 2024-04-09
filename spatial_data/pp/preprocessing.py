@@ -532,6 +532,7 @@ class PreprocessingAccessor:
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
                 label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
+
                 # num_to_label = {v: k for k, v in label_to_num.items()}
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
