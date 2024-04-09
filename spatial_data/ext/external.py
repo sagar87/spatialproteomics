@@ -1,6 +1,7 @@
-import xarray as xr
 import pandas as pd
-from ..constants import Layers, Dims
+import xarray as xr
+
+from ..constants import Dims, Layers
 
 
 @xr.register_dataset_accessor("ext")
@@ -9,6 +10,73 @@ class ExternalAccessor:
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
+        
+    def stardist(
+        self,
+        scale: float = 3,
+        n_tiles: int = 12,
+        normalize: bool = True,
+        nuclear_channel: str = "DAPI",
+        predict_big: bool = False,
+        **kwargs
+    ) -> xr.Dataset:
+        """
+        Apply StarDist algorithm to perform instance segmentation on the nuclear image.
+
+        Parameters:
+        ----------
+        scale : float, optional
+            Scaling factor for the StarDist model (default is 3).
+        n_tiles : int, optional
+            Number of tiles to split the image into for prediction (default is 12).
+        normalize : bool, optional
+            Flag indicating whether to normalize the nuclear image (default is True).
+        nuclear_channel : str, optional
+            Name of the nuclear channel in the image (default is "DAPI").
+        predict_big : bool, optional
+            Flag indicating whether to use the 'predict_instances_big' method for large images (default is False).
+        **kwargs : dict, optional
+            Additional keyword arguments to be passed to the StarDist prediction method.
+
+        Returns:
+        -------
+        obj : xr.Dataset
+            Xarray dataset containing the segmentation mask and centroids.
+
+        Raises:
+        ------
+        ValueError
+            If the object already contains a segmentation mask.
+
+        """
+        from stardist.models import StarDist2D
+        import csbdeep.utils
+
+        if Layers.SEGMENTATION in self._obj:
+            raise ValueError(f"The object already contains a segmentation mask. StarDist will not be executed.")
+
+        # getting the nuclear image
+        nuclear_img = self._obj.pp[nuclear_channel].to_array().values.squeeze()
+
+        # normalizing the image
+        if normalize:
+            nuclear_img = csbdeep.utils.normalize(nuclear_img)
+
+        # Load the StarDist model
+        model = StarDist2D.from_pretrained("2D_versatile_fluo")
+
+        # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
+        if predict_big:
+            labels, _ = model.predict_instances_big(
+                nuclear_img,
+                scale=scale,
+                **kwargs
+            )
+        else:
+            labels, _ = model.predict_instances(nuclear_img, scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
+
+        # Adding the segmentation mask  and centroids to the xarray dataset
+        return self._obj.pp.add_segmentation(labels).pp.add_observations()
 
     def astir(
         self,
@@ -28,24 +96,40 @@ class ExternalAccessor:
         """
         This method predicts cell types from an expression matrix using the Astir algorithm.
 
-        Args:
-            marker_dict (dict): dictionary mapping markers to cell types. Can also include cell states. Example: {"cell_type": {'B': ['PAX5'], 'T': ['CD3'], 'Myeloid': ['CD11b']}}
-            key (str, optional): Layer to use as expression matrix.
-            threshold (float, optional): Certainty threshold for astir to assign a cell type. Defaults to 0.
-            seed (int, optional): Defaults to 42.
-            learning_rate (float, optional): Defaults to 0.001.
-            batch_size (float, optional): Defaults to 64.
-            n_init (int, optional): Defaults to 5.
-            n_init_epochs (int, optional): Defaults to 5.
-            max_epochs (int, optional):  Defaults to 500.
-            cell_id_col (str, optional): Defaults to "cell_id".
-            cell_type_col (str, optional): Defaults to "cell_type".
+        Parameters
+        ----------
+        marker_dict : dict
+            Dictionary mapping markers to cell types. Can also include cell states. Example: {"cell_type": {'B': ['PAX5'], 'T': ['CD3'], 'Myeloid': ['CD11b']}}
+        key : str, optional
+            Layer to use as expression matrix.
+        threshold : float, optional
+            Certainty threshold for astir to assign a cell type. Defaults to 0.
+        seed : int, optional
+            Random seed. Defaults to 42.
+        learning_rate : float, optional
+            Learning rate. Defaults to 0.001.
+        batch_size : float, optional
+            Batch size. Defaults to 64.
+        n_init : int, optional
+            Number of initializations. Defaults to 5.
+        n_init_epochs : int, optional
+            Number of epochs for each initialization. Defaults to 5.
+        max_epochs : int, optional
+            Maximum number of epochs. Defaults to 500.
+        cell_id_col : str, optional
+            Column name for cell IDs. Defaults to "cell_id".
+        cell_type_col : str, optional
+            Column name for cell types. Defaults to "cell_type".
 
-        Raises:
-            ValueError: if no expression matrix was present or the image is not of type uint8.
+        Raises
+        ------
+        ValueError
+            If no expression matrix was present or the image is not of type uint8.
 
-        Returns:
-            DataArray: a DataArray with the assigned cell types.
+        Returns
+        -------
+        DataArray
+            A DataArray with the assigned cell types.
         """
         import astir
         import torch

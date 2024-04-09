@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_data.constants import Dims
+from spatial_data.constants import Dims, Layers
 
 
 def test_add_segmentation(data_dic, dataset_segmentation):
@@ -10,6 +10,7 @@ def test_add_segmentation(data_dic, dataset_segmentation):
     assert "_segmentation" not in dataset_segmentation
     assert Dims.CELLS in segmented.coords
     assert Dims.CELLS not in dataset_segmentation.coords
+    assert Layers.OBS in segmented
 
 
 def test_add_segmentation_wrong_dims(data_dic, dataset_segmentation):
