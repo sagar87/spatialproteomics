@@ -1,10 +1,12 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-from scipy.signal import wiener
+from scipy.signal import medfilt2d, wiener
+from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
+from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
 
 from ..base_logger import logger
@@ -146,7 +148,7 @@ class PreprocessingAccessor:
 
         # handle case when there are cells in the image
         if Dims.CELLS in self._obj.dims:
-            num_cells = self._obj.dims[Dims.CELLS]
+            # num_cells = self._obj.dims[Dims.CELLS]
 
             coords = self._obj[Layers.OBS]
             cells = (
@@ -156,7 +158,7 @@ class PreprocessingAccessor:
                 & (coords.loc[:, Features.Y] <= y_stop)
             ).values
             # calculates the number of cells that were dropped due setting the bounding box
-            lost_cells = num_cells - sum(cells)
+            # lost_cells = num_cells - sum(cells)
 
             # if lost_cells > 0:
             # logger.warning(f"Dropped {lost_cells} cells.")
@@ -530,8 +532,9 @@ class PreprocessingAccessor:
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
                 label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
-                num_to_label = {v: k for k, v in label_to_num.items()}
-                labels = np.array([label_to_num[l] for l in labels])
+
+                # num_to_label = {v: k for k, v in label_to_num.items()}
+                labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
             assert ~np.all(labels < 0), "Labels must be >= 0."
@@ -621,6 +624,31 @@ class PreprocessingAccessor:
             restored = np.zeros_like(image_layer)
             idx = np.where(image_layer > rev_func(value))
             restored[idx] = image_layer[idx]
+        elif method == "median":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = median(image_layer.values.squeeze(), footprint=selem)
+        elif method == "mean":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = mean(image_layer.values.squeeze(), footprint=selem)
+        elif method == "minimum":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = minimum(image_layer.values.squeeze(), footprint=selem)
+        elif method == "maximum":
+            selem = kwargs.get("selem", disk(radius=1))
+            restored = maximum(image_layer.values.squeeze(), footprint=selem)
+        elif method == "medfilt2d":
+            kernel_size = kwargs.get("kernel_size", 3)
+            
+            if image_layer.values.ndim == 3:
+                restore_array = []
+                for i in range(image_layer.values.shape[0]):
+                    restore_array.append(medfilt2d(image_layer.values[i].squeeze(), kernel_size))
+                restored = np.stack(restore_array, 0)
+            else:        
+                restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
+
+        if restored.ndim == 2:
+            restored = np.expand_dims(restored, 0)
 
         normed = xr.DataArray(
             restored,
@@ -629,6 +657,27 @@ class PreprocessingAccessor:
             name=Layers.IMAGE,
         )
         return xr.merge([obj, normed])
+
+    def filter(self, quantile: float = 0.99, key_added: Optional[str] = None):
+        # Pull out the image from its corresponding field (by default "_image")
+        image_layer = self._obj[Layers.IMAGE]
+        if isinstance(quantile, list):
+            quantile = np.array(quantile)
+        # Calulate quat
+        lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
+        print(lower, lower.shape)
+        filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
+
+        if key_added is None:
+            obj = self._obj.drop(Layers.IMAGE)
+
+        filtered = xr.DataArray(
+            filtered,
+            coords=image_layer.coords,
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=Layers.IMAGE if key_added is None else key_added,
+        )
+        return xr.merge([obj, filtered])
 
     def normalize(self):
         """

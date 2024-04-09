@@ -672,9 +672,10 @@ class PlotAccessor:
         # else:
         #     if ax is None:
         #         ax = plt.gca()
-        fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
 
         if num_channels > 1:
+
+            fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
 
             for ch, ax in zip(channels, axes.flatten()):
                 data = intensities.sel({Dims.CHANNELS: ch}).values
@@ -683,11 +684,13 @@ class PlotAccessor:
                 if log_scale:
                     ax.set_yscale("log")
         else:
+            if ax is None:
+                ax = plt.gca()
             ch = channels[0]
             data = intensities.sel({Dims.CHANNELS: ch}).values
-            axes.hist(data, bins=bins, **kwargs)
-            axes.set_title(ch)
+            ax.hist(data, bins=bins, **kwargs)
+            ax.set_title(ch)
             if log_scale:
-                axes.set_yscale("log")
+                ax.set_yscale("log")
 
         return self._obj
