@@ -1,6 +1,7 @@
-import xarray as xr
 import pandas as pd
-from ..constants import Layers, Dims
+import xarray as xr
+
+from ..constants import Dims, Layers
 
 
 @xr.register_dataset_accessor("ext")

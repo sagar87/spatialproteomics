@@ -52,7 +52,7 @@ def test_load_data_proper_input_one_channel_input(data_dic):
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
     assert Layers.SEGMENTATION in dataset
-    assert Layers.SEGMENTATION in dataset
+    assert Layers.OBS in dataset
 
 
 def test_load_data_assertions(data_dic):

@@ -1,32 +1,33 @@
 from .constants import (
+    Apricot,
+    Beige,
+    Black,
+    Blue,
+    Brown,
+    Cyan,
     Dims,
     Features,
-    Layers,
-    Props,
-    Red,
     Green,
-    Yellow,
-    Blue,
-    Orange,
-    Purple,
-    Cyan,
-    Magenta,
-    Lime,
-    Pink,
-    Teal,
+    Grey,
     Lavender,
-    Brown,
-    Beige,
+    Layers,
+    Lime,
+    Magenta,
     Maroon,
     Mint,
-    Olive,
-    Apricot,
     Navy,
-    Grey,
+    Olive,
+    Orange,
+    Pink,
+    Props,
+    Purple,
+    Red,
+    Teal,
     White,
-    Black,
+    Yellow,
 )
 from .container import load_image_data
+from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor  # , colorize, normalize
@@ -43,7 +44,6 @@ from .pp import (
 )
 from .se import SegmentationAccessor
 from .tl import TwoComponentGaussianMixture
-from .ext import ExternalAccessor
 
 __all__ = [
     "load_image_data",
