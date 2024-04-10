@@ -261,7 +261,7 @@ class PreprocessingAccessor:
 
         if copy:
             segmentation = segmentation.copy()
-            
+
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
 
@@ -642,13 +642,13 @@ class PreprocessingAccessor:
             restored = maximum(image_layer.values.squeeze(), footprint=selem)
         elif method == "medfilt2d":
             kernel_size = kwargs.get("kernel_size", 3)
-            
+
             if image_layer.values.ndim == 3:
                 restore_array = []
                 for i in range(image_layer.values.shape[0]):
                     restore_array.append(medfilt2d(image_layer.values[i].squeeze(), kernel_size))
                 restored = np.stack(restore_array, 0)
-            else:        
+            else:
                 restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
 
         if restored.ndim == 2:
@@ -761,23 +761,21 @@ class PreprocessingAccessor:
 
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
-    
+
     def grow_cells(self, iterations: int = 2, num_neighbors: int = 30):
         """
         Grows the cells in the segmentation mask.
         """
-        #raise NotImplementedError(
-        #    "This method is not yet implemented, because the CellSeq code has some weird behavior."
-        #)
-        # checking if the segmentation layer is present
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("The object does not contain a segmentation mask.")
-        
+
         segmentation = self._obj[Layers.SEGMENTATION].values
-        
+
         # checking if the segmentation masks are labeled 1 to n
         unique_values = np.unique(segmentation)
-        assert np.all(unique_values == np.arange(0, len(unique_values))), "Segmentation mask is not labeled 1 to n, which is required for mask growing to work properly. Set relabel=True when reading in the segmentation mask to avoid this error."
+        assert np.all(
+            unique_values == np.arange(0, len(unique_values))
+        ), "Segmentation mask is not labeled 1 to n, which is required for mask growing to work properly. Set relabel=True when reading in the segmentation mask to avoid this error."
 
         # getting the centroids of the cells
         centroids = self._obj.pp.add_observations()[Layers.OBS].sel(features=[Features.Y, Features.X]).values
@@ -791,7 +789,7 @@ class PreprocessingAccessor:
             dims=[Dims.Y, Dims.X],
             name=Layers.SEGMENTATION,
         )
-        
+
         # replacing the old segmentation mask with the new one
         obj = self._obj.drop_vars(Layers.SEGMENTATION)
         obj = xr.merge([obj, da])
@@ -807,7 +805,6 @@ class PreprocessingAccessor:
         obj = obj.drop_dims(Dims.FEATURES)
         # adding the obs back to the object
         return obj.pp.add_observations(obs_features)
-    
 
     def colorize(
         self,

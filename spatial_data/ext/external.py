@@ -10,7 +10,7 @@ class ExternalAccessor:
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
-        
+
     def stardist(
         self,
         scale: float = 3,
@@ -18,7 +18,7 @@ class ExternalAccessor:
         normalize: bool = True,
         nuclear_channel: str = "DAPI",
         predict_big: bool = False,
-        **kwargs
+        **kwargs,
     ) -> xr.Dataset:
         """
         Apply StarDist algorithm to perform instance segmentation on the nuclear image.
@@ -67,11 +67,7 @@ class ExternalAccessor:
 
         # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
         if predict_big:
-            labels, _ = model.predict_instances_big(
-                nuclear_img,
-                scale=scale,
-                **kwargs
-            )
+            labels, _ = model.predict_instances_big(nuclear_img, scale=scale, **kwargs)
         else:
             labels, _ = model.predict_instances(nuclear_img, scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
 
