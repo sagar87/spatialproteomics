@@ -2,7 +2,11 @@ from typing import List, Union
 
 import numpy as np
 from skimage.segmentation import find_boundaries
-import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from skimage.morphology import disk, dilation
+from sklearn.neighbors import kneighbors_graph
+from scipy.spatial.distance import cdist
 
 from ..pl import _get_linear_colormap
 
@@ -199,3 +203,109 @@ def _relabel_cells(segmentation: np.ndarray):
     segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
 
     return segmentation_relabeled, value_map
+
+
+def _remove_overlaps_nearest_neighbors(original_masks, masks, centroids):
+    """
+    Remove overlaps between masks by assigning each overlapping pixel to mask with the closest centroid.
+
+    Args:
+        original_masks (ndarray): The original masks before growing.
+        masks (ndarray): The grown masks with overlaps.
+        centroids (ndarray): The centroids of the masks.
+
+    Returns:
+        ndarray: The masks with overlaps removed.
+
+    """
+    final_masks = np.max(masks, axis=2)
+    collisions = np.nonzero(np.sum(masks > 0, axis=2) > 1)
+    collision_masks = masks[collisions]
+    collision_index = np.nonzero(collision_masks)
+    collision_masks = collision_masks[collision_index]
+    collision_frame = pd.DataFrame(np.transpose(np.array([collision_index[0], collision_masks]))).rename(
+        columns={0: "collis_idx", 1: "mask_id"}
+    )
+    grouped_frame = collision_frame.groupby("collis_idx")
+    for collis_idx, group in grouped_frame:
+        collis_pos = np.expand_dims(np.array([collisions[0][collis_idx], collisions[1][collis_idx]]), axis=0)
+        mask_ids = list(group["mask_id"])
+        curr_centroids = np.array([centroids[mask_id - 1] for mask_id in mask_ids])
+        dists = cdist(curr_centroids, collis_pos)
+        closest_mask = mask_ids[np.argmin(dists)]
+        final_masks[collis_pos[0, 0], collis_pos[0, 1]] = closest_mask
+            
+    # setting all values to the original masks so no masks get overwritten
+    # get all pixels that were background in the original masks
+    background_pixels = original_masks == 0
+    # only reassigning cells which were previously background
+    final_masks = np.array(final_masks * background_pixels, dtype=original_masks.dtype)
+    # adding this growth to the original masks
+    final_masks += original_masks
+    return final_masks
+
+
+def _grow_masks(flatmasks, centroids, growth, num_neighbors=30):
+    """
+    Grow the masks by performing dilation on each mask in the given flatmasks.
+
+    Parameters
+    ----------
+    flatmasks : numpy.ndarray
+        2D array representing the flat masks.
+    centroids : numpy.ndarray
+        Array of centroids corresponding to each mask.
+    growth : int
+        Number of times to perform dilation on the masks.
+    num_neighbors : int, optional
+        Number of nearest neighbors to consider for connectivity, by default 30.
+
+    Returns
+    -------
+    numpy.ndarray
+        2D array representing the grown masks.
+
+    """
+    masks = flatmasks
+    num_masks = len(np.unique(masks)) - 1
+    num_neighbors = min(num_neighbors, num_masks-1)
+
+    for _ in range(growth):
+        # getting neighboring cells
+        indices = np.where(masks != 0)
+        values = masks[indices[0], indices[1]]
+        maskframe = pd.DataFrame(np.transpose(np.array([indices[0], indices[1], values]))).rename(columns = {0:"x", 1:"y", 2:"id"})
+        cent_array = maskframe.groupby('id').agg({'x': 'mean', 'y': 'mean'}).to_numpy()
+        connectivity_matrix = kneighbors_graph(cent_array, num_neighbors).toarray() * np.arange(1, num_masks + 1)
+        connectivity_matrix = connectivity_matrix.astype(int)
+        labels = {}
+        for n in range(num_masks):
+            connections = list(connectivity_matrix[n, :])
+            connections.remove(0)
+            layers_used = [labels[i] for i in connections if i in labels]
+            layers_used.sort()
+            currlayer = 0
+            for layer in layers_used:
+                if currlayer != layer: 
+                    break
+                currlayer += 1
+            labels[n + 1] = currlayer
+
+        possible_layers = len(list(set(labels.values())))
+        label_frame = pd.DataFrame(list(labels.items()), columns = ["maskid", "layer"])
+        image_h, image_w = masks.shape
+        expanded_masks = np.zeros((image_h, image_w, possible_layers), dtype = np.uint32)
+
+        grouped_frame = label_frame.groupby('layer')
+        for layer, group in grouped_frame:
+            currids = list(group['maskid'])
+            masklocs = np.isin(masks, currids)
+            expanded_masks[masklocs, layer] = masks[masklocs]
+
+        dilation_mask = disk(1)
+        grown_masks = np.copy(expanded_masks)
+        for i in range(possible_layers):
+            grown_masks[:, :, i] = dilation(grown_masks[:, :, i], dilation_mask)
+        masks = _remove_overlaps_nearest_neighbors(masks, grown_masks, centroids)
+    
+    return masks

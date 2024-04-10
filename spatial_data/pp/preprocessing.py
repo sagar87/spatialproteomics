@@ -7,6 +7,7 @@ from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
 from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
+import re
 
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
@@ -21,6 +22,7 @@ from .utils import (
     _remove_unlabeled_cells,
     _render_label,
     _relabel_cells,
+    _grow_masks,
 )
 
 
@@ -231,7 +233,7 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> xr.Dataset:
+    def add_segmentation(self, segmentation: np.ndarray, relabel: bool = True, copy: bool = True) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
@@ -259,6 +261,9 @@ class PreprocessingAccessor:
 
         if copy:
             segmentation = segmentation.copy()
+            
+        if relabel:
+            segmentation, _ = _relabel_cells(segmentation)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -756,6 +761,53 @@ class PreprocessingAccessor:
 
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
+    
+    def grow_cells(self, iterations: int = 2, num_neighbors: int = 30):
+        """
+        Grows the cells in the segmentation mask.
+        """
+        #raise NotImplementedError(
+        #    "This method is not yet implemented, because the CellSeq code has some weird behavior."
+        #)
+        # checking if the segmentation layer is present
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("The object does not contain a segmentation mask.")
+        
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        
+        # checking if the segmentation masks are labeled 1 to n
+        unique_values = np.unique(segmentation)
+        assert np.all(unique_values == np.arange(0, len(unique_values))), "Segmentation mask is not labeled 1 to n, which is required for mask growing to work properly. Set relabel=True when reading in the segmentation mask to avoid this error."
+
+        # getting the centroids of the cells
+        centroids = self._obj.pp.add_observations()[Layers.OBS].sel(features=[Features.Y, Features.X]).values
+        # growing segmentation masks
+        masks_grown = _grow_masks(segmentation, centroids, iterations, num_neighbors=num_neighbors)
+
+        # assigning the grown masks to the object
+        da = xr.DataArray(
+            masks_grown,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
+        )
+        
+        # replacing the old segmentation mask with the new one
+        obj = self._obj.drop_vars(Layers.SEGMENTATION)
+        obj = xr.merge([obj, da])
+
+        # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+        # getting all of the obs features that should be retained
+        obs_features = list(self._obj.coords[Dims.FEATURES].values)
+        # for some features, regionprops adds things like -0, -1, etc. (e. g. centroid-0, centroid-1)
+        # we capture such cases with regex and only retain the feature name
+        obs_features = sorted(list(set([re.sub(r"-\d+", "", feature) for feature in obs_features])))
+        # removing the original obs and features from the object
+        obj = obj.drop_vars(Layers.OBS)
+        obj = obj.drop_dims(Dims.FEATURES)
+        # adding the obs back to the object
+        return obj.pp.add_observations(obs_features)
+    
 
     def colorize(
         self,
