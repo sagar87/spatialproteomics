@@ -7,7 +7,9 @@ from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
 from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
+from skimage.segmentation import expand_labels
 import re
+
 
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
@@ -22,7 +24,6 @@ from .utils import (
     _remove_unlabeled_cells,
     _render_label,
     _relabel_cells,
-    _grow_masks,
 )
 
 
@@ -762,25 +763,18 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, num_neighbors: int = 30):
+    def grow_cells(self, iterations: int = 2):
         """
         Grows the cells in the segmentation mask.
         """
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("The object does not contain a segmentation mask.")
 
+        # getting the segmentation mask
         segmentation = self._obj[Layers.SEGMENTATION].values
 
-        # checking if the segmentation masks are labeled 1 to n
-        unique_values = np.unique(segmentation)
-        assert np.all(
-            unique_values == np.arange(0, len(unique_values))
-        ), "Segmentation mask is not labeled 1 to n, which is required for mask growing to work properly. Set relabel=True when reading in the segmentation mask to avoid this error."
-
-        # getting the centroids of the cells
-        centroids = self._obj.pp.add_observations()[Layers.OBS].sel(features=[Features.Y, Features.X]).values
         # growing segmentation masks
-        masks_grown = _grow_masks(segmentation, centroids, iterations, num_neighbors=num_neighbors)
+        masks_grown = expand_labels(segmentation, iterations)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
