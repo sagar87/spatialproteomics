@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatial_data.se.segmentation import _remove_unlabeled_cells
+from spatial_data.pp.utils import _remove_unlabeled_cells
 
 
 def test_remove_unlabeled_cells(test_segmentation):
