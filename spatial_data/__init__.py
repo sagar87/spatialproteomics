@@ -42,7 +42,6 @@ from .pp import (
     percentage_positive,
     sum_intensity,
 )
-
 from .tl import TwoComponentGaussianMixture
 
 __all__ = [
