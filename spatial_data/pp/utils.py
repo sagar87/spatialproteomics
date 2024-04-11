@@ -2,7 +2,6 @@ from typing import List, Union
 
 import numpy as np
 from skimage.segmentation import find_boundaries
-import numpy as np
 
 from ..pl import _get_linear_colormap
 
@@ -190,7 +189,7 @@ def _relabel_cells(segmentation: np.ndarray):
     The mapping dictionary provides a mapping from the original values to the new values.
     """
     unique_values = np.unique(segmentation)  # Find unique values in the array
-    num_unique_values = len(unique_values)  # Get the number of unique values
+    # num_unique_values = len(unique_values)  # Get the number of unique values
 
     # Create a mapping from original values to new values
     value_map = {value: i for i, value in enumerate(unique_values)}

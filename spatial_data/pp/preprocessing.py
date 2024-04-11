@@ -1,4 +1,5 @@
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Optional, Union
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -17,10 +18,10 @@ from .utils import (
     _colorize,
     _label_segmentation_mask,
     _normalize,
+    _relabel_cells,
     _remove_segmentation_mask_labels,
     _remove_unlabeled_cells,
     _render_label,
-    _relabel_cells,
 )
 
 
@@ -637,13 +638,13 @@ class PreprocessingAccessor:
             restored = maximum(image_layer.values.squeeze(), footprint=selem)
         elif method == "medfilt2d":
             kernel_size = kwargs.get("kernel_size", 3)
-            
+
             if image_layer.values.ndim == 3:
                 restore_array = []
                 for i in range(image_layer.values.shape[0]):
                     restore_array.append(medfilt2d(image_layer.values[i].squeeze(), kernel_size))
                 restored = np.stack(restore_array, 0)
-            else:        
+            else:
                 restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
 
         if restored.ndim == 2:
