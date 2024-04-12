@@ -235,7 +235,7 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(self, segmentation: np.ndarray, relabel: bool = True, copy: bool = True) -> xr.Dataset:
+    def add_segmentation(self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
@@ -244,6 +244,10 @@ class PreprocessingAccessor:
         segmentation : np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
             that indicates the location of each cell.
+        mask_growth : int
+            The number of pixels by which the segmentation mask should be grown.
+        relabel : bool
+            If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
         copy : bool
             If true the segmentation mask is copied.
 
@@ -266,6 +270,9 @@ class PreprocessingAccessor:
 
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
+            
+        if mask_growth > 0:
+            segmentation = expand_labels(segmentation, mask_growth)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
