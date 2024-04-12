@@ -5,7 +5,6 @@ from spatial_data.constants import Dims
 
 
 def test_label_get_item_correct_inputs(dataset_labeled):
-    # import pdb; pdb.set_trace()
     # test that all cell types are present
     assert np.all(dataset_labeled.coords[Dims.LABELS].values == np.arange(1, 13))
     # indexing via integer
@@ -27,7 +26,6 @@ def test_label_get_item_correct_inputs(dataset_labeled):
 
 
 def test_label_get_item_wrong_inputs(dataset_labeled):
-    # import pdb; pdb.set_trace()
     # test that all cell types are present
     with pytest.raises(TypeError, match="Label indices must be valid integers"):
         dataset_labeled.la[1.5]

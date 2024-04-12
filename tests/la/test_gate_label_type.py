@@ -1,11 +1,6 @@
-# import pytest
-
 import numpy as np
 
 import spatial_data as sd
-
-# from spatial_data.constants import Dims, Layers
-
 
 def test_gate_cell_type_adds_graph(dataset_full):
 
@@ -30,12 +25,11 @@ def test_gate_cell_type_adds_graph(dataset_full):
     assert ds.attrs["label_name"][1] == "CT1"
     assert ds.attrs["label_id"][1] == 1
     assert ds.attrs["step"][1] == 1
-    # assert ds.attrs["num_cells"][1] == 626
 
     # add more cell types
     ds = ds.la.add_label_type("CT2")
     ds = ds.la.add_label_type("CT3")
-
+    
     ds = ds.la.gate_label_type("CT3", "CD8", 2e5, "_intensity")
 
     assert ds.attrs["channel"][3] == ["CD8"]
@@ -45,12 +39,9 @@ def test_gate_cell_type_adds_graph(dataset_full):
     assert ds.attrs["label_name"][3] == "CT3"
     assert ds.attrs["label_id"][3] == 3
     assert ds.attrs["step"][3] == 2
-    # assert ds.attrs["num_cells"][3] == 194
 
 
 def test_remove_label_type(full_zarr):
-    # tests simple case when there
-
     cell_type = "Vascular"
     channel = "CD31"
     intensity = 0.5
@@ -102,7 +93,6 @@ def test_remove_label_type(full_zarr):
 
     cell_type = "T cell CD8+"
     channel = "CD8"
-    # channel_show = ['CD8', 'CD3'] #, 'Granyzme B']
     intensity = 1.5
     intensity_channel = "_transformed"
     override = False
@@ -110,9 +100,7 @@ def test_remove_label_type(full_zarr):
 
     sdata = sdata.la.add_label_type(cell_type, "C1")
     sdata = sdata.la.gate_label_type(cell_type, channel, intensity, intensity_channel, override, parent)
-    # import pdb
 
-    # pdb.set_trace()
     assert sdata.attrs["channel"][3] == [channel]
     assert sdata.attrs["threshold"][3] == intensity
     assert sdata.attrs["intensity_key"][3] == intensity_channel
@@ -122,7 +110,6 @@ def test_remove_label_type(full_zarr):
     assert sdata.attrs["step"][3] == 3
 
     # removing CD8+ T cells should revert them to CD3+ T cells
-
     sdata = sdata.la.reset_label_type(cell_type)
 
     assert 3 not in sdata.attrs["channel"].keys()
@@ -146,9 +133,8 @@ def test_remove_label_type(full_zarr):
     assert sdata.attrs["label_id"][3] == 3
     assert sdata.attrs["step"][3] == 3
 
-    # now remove CD3+ T cell (parent class of CD8+ T cells) should
-    # delete all T cells including CD8+ T cells
-
+    # now remove CD3+ T cell (parent class of CD8+ T cells) 
+    # should delete all T cells including CD8+ T cells
     sdata = sdata.la.reset_label_type("T cell")
 
     assert 3 not in sdata.attrs["channel"].keys()
@@ -179,7 +165,6 @@ def test_remove_label_type(full_zarr):
 
     cell_type = "T cell CD8+"
     channel = "CD8"
-    # channel_show = ['CD8', 'CD3'] #, 'Granyzme B']
     intensity = 1.5
     intensity_channel = "_transformed"
     override = False
