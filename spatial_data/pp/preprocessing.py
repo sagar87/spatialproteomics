@@ -207,7 +207,8 @@ class PreprocessingAccessor:
         xarray.Dataset
             The updated image container with added channel(s).
         """
-        assert type(array) is np.ndarray, "Added channel(s) must be numpy arrays"
+        assert type(array) is np.ndarray, "Added channels must be numpy arrays."
+        assert array.ndim in [2, 3], "Added channels must be 2D or 3D arrays."
 
         if array.ndim == 2:
             array = np.expand_dims(array, 0)
@@ -215,13 +216,19 @@ class PreprocessingAccessor:
         if type(channels) is str:
             channels = [channels]
 
+        assert (
+            set(channels).intersection(set(self._obj.coords[Dims.CHANNELS].values)) == set()
+        ), "Can't add a channel that already exists."
+
         self_channels, self_x_dim, self_y_dim = self._obj[Layers.IMAGE].shape
         other_channels, other_x_dim, other_y_dim = array.shape
 
         assert (
             len(channels) == other_channels
         ), "The length of channels must match the number of channels in array (DxMxN)."
-        assert (self_x_dim == other_x_dim) & (self_y_dim == other_y_dim), "Dims do not match."
+        assert (self_x_dim == other_x_dim) & (
+            self_y_dim == other_y_dim
+        ), "Dimensions of the original image and the input array do not match."
 
         da = xr.DataArray(
             array,
