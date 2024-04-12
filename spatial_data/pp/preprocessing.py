@@ -797,16 +797,22 @@ class PreprocessingAccessor:
         obj = xr.merge([obj, da])
 
         # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
-        # getting all of the obs features that should be retained
-        obs_features = list(self._obj.coords[Dims.FEATURES].values)
-        # for some features, regionprops adds things like -0, -1, etc. (e. g. centroid-0, centroid-1)
-        # we capture such cases with regex and only retain the feature name
-        obs_features = sorted(list(set([re.sub(r"-\d+", "", feature) for feature in obs_features])))
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+        
+        
+        
+        # getting all of the obs features
+        obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
+        if obs_features != [Features.Y, Features.X]:
+            logger.warning(
+                "Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
+            )
         # removing the original obs and features from the object
         obj = obj.drop_vars(Layers.OBS)
         obj = obj.drop_dims(Dims.FEATURES)
-        # adding the obs back to the object
-        return obj.pp.add_observations(obs_features)
+        
+        # adding the default obs back to the object
+        return obj.pp.add_observations()
 
     def colorize(
         self,
