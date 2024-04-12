@@ -1,5 +1,6 @@
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -15,29 +16,68 @@ class ExternalAccessor:
 
     def cellpose(
         self,
-        channel: str,
-        key_added: Optional[str] = None,
+        key_added: Optional[str] = "_cellpose_segmentation",
         diameter: int = 0,
-        channels: list = [0, 0],
+        channel_settings: list = [0, 0],
         num_iterations: int = 2000,
         gpu: bool = True,
         model_type: str = "cyto3",
     ):
+        """
+        Segment cells using Cellpose.
+
+        Parameters
+        ----------
+        key_added : str, optional
+            Key to assign to the segmentation results.
+        diameter : int, optional
+            Expected cell diameter in pixels.
+        channel_settings : List[int], optional
+            Channels for Cellpose to use for segmentation.
+        num_iterations : int, optional
+            Maximum number of iterations for segmentation.
+        gpu : bool, optional
+            Whether to use GPU for segmentation.
+        model_type : str, optional
+            Type of Cellpose model to use.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing original data and segmentation mask.
+
+        Notes
+        -----
+        This method requires the 'cellpose' package to be installed.
+        """
+
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
 
-        mask, _ = model.eval(
-            self._obj.pp[channel]._image.values.squeeze(), diameter=diameter, channels=channels, niter=num_iterations
-        )
+        all_masks = []
+        for channel in self._obj.coords[Dims.CHANNELS]:
+            masks_pred, _, _, _ = model.eval(
+                self._obj.pp[channel]._image.values.squeeze(),
+                diameter=diameter,
+                channels=channel_settings,
+                niter=num_iterations,
+            )
+            all_masks.append(masks_pred)
 
-        if key_added is None:
-            key_added = f"_cellpose_{channel}"
+        if len(all_masks) == 1:
+            mask_tensor = np.expand_dims(all_masks[0], 1)
+        else:
+            mask_tensor = np.stack(all_masks, 0)
 
         da = xr.DataArray(
-            mask,
-            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-            dims=[Dims.Y, Dims.X],
+            mask_tensor,
+            coords=[
+                self._obj.coords[Dims.CHANNELS],
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+            ],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=key_added,
         )
 
