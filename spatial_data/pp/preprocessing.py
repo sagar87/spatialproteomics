@@ -8,6 +8,7 @@ from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
 from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
+from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
@@ -232,7 +233,9 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> xr.Dataset:
+    def add_segmentation(
+        self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True
+    ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
@@ -241,6 +244,10 @@ class PreprocessingAccessor:
         segmentation : np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
             that indicates the location of each cell.
+        mask_growth : int
+            The number of pixels by which the segmentation mask should be grown.
+        relabel : bool
+            If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
         copy : bool
             If true the segmentation mask is copied.
 
@@ -260,6 +267,12 @@ class PreprocessingAccessor:
 
         if copy:
             segmentation = segmentation.copy()
+
+        if relabel:
+            segmentation, _ = _relabel_cells(segmentation)
+
+        if mask_growth > 0:
+            segmentation = expand_labels(segmentation, mask_growth)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -757,6 +770,47 @@ class PreprocessingAccessor:
 
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
+
+    def grow_cells(self, iterations: int = 2):
+        """
+        Grows the cells in the segmentation mask.
+        """
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("The object does not contain a segmentation mask.")
+
+        # getting the segmentation mask
+        segmentation = self._obj[Layers.SEGMENTATION].values
+
+        # growing segmentation masks
+        masks_grown = expand_labels(segmentation, iterations)
+
+        # assigning the grown masks to the object
+        da = xr.DataArray(
+            masks_grown,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
+        )
+
+        # replacing the old segmentation mask with the new one
+        obj = self._obj.drop_vars(Layers.SEGMENTATION)
+        obj = xr.merge([obj, da])
+
+        # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+
+        # getting all of the obs features
+        obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
+        if obs_features != [Features.Y, Features.X]:
+            logger.warning(
+                "Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
+            )
+        # removing the original obs and features from the object
+        obj = obj.drop_vars(Layers.OBS)
+        obj = obj.drop_dims(Dims.FEATURES)
+
+        # adding the default obs back to the object
+        return obj.pp.add_observations()
 
     def colorize(
         self,
