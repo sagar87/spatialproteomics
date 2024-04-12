@@ -1,4 +1,5 @@
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Optional, Union
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -20,10 +21,10 @@ from .utils import (
     _colorize,
     _label_segmentation_mask,
     _normalize,
+    _relabel_cells,
     _remove_segmentation_mask_labels,
     _remove_unlabeled_cells,
     _render_label,
-    _relabel_cells,
 )
 
 

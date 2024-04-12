@@ -2,12 +2,6 @@ from typing import List, Union
 
 import numpy as np
 from skimage.segmentation import find_boundaries
-import pandas as pd
-import matplotlib.pyplot as plt
-from skimage.morphology import disk, dilation
-from sklearn.neighbors import kneighbors_graph
-from scipy.spatial.distance import cdist
-
 from ..pl import _get_linear_colormap
 
 
