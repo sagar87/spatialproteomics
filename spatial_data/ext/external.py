@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 import xarray as xr
 
@@ -10,6 +12,36 @@ class ExternalAccessor:
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
+
+    def cellpose(
+        self,
+        channel: str,
+        key_added: Optional[str] = None,
+        diameter: int = 0,
+        channels: list = [0, 0],
+        num_iterations: int = 2000,
+        gpu: bool = True,
+        model_type: str = "cyto3",
+    ):
+        from cellpose import models
+
+        model = models.Cellpose(gpu=gpu, model_type=model_type)
+
+        mask, _ = model.eval(
+            self._obj.pp[channel]._image.values.squeeze(), diameter=diameter, channels=channels, niter=num_iterations
+        )
+
+        if key_added is None:
+            key_added = f"_cellpose_{channel}"
+
+        da = xr.DataArray(
+            mask,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
 
     def stardist(
         self,
@@ -49,11 +81,11 @@ class ExternalAccessor:
             If the object already contains a segmentation mask.
 
         """
-        from stardist.models import StarDist2D
         import csbdeep.utils
+        from stardist.models import StarDist2D
 
         if Layers.SEGMENTATION in self._obj:
-            raise ValueError(f"The object already contains a segmentation mask. StarDist will not be executed.")
+            raise ValueError("The object already contains a segmentation mask. StarDist will not be executed.")
 
         # getting the nuclear image
         nuclear_img = self._obj.pp[nuclear_channel].to_array().values.squeeze()
