@@ -9,8 +9,6 @@ from skimage.measure import regionprops_table
 from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
 from skimage.segmentation import expand_labels
-import re
-
 
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
@@ -235,7 +233,9 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True) -> xr.Dataset:
+    def add_segmentation(
+        self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True
+    ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
@@ -270,7 +270,7 @@ class PreprocessingAccessor:
 
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
-            
+
         if mask_growth > 0:
             segmentation = expand_labels(segmentation, mask_growth)
 
@@ -798,9 +798,7 @@ class PreprocessingAccessor:
 
         # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
         # if anything other than the default obs were present, a warning is shown, as they will be removed
-        
-        
-        
+
         # getting all of the obs features
         obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
         if obs_features != [Features.Y, Features.X]:
@@ -810,7 +808,7 @@ class PreprocessingAccessor:
         # removing the original obs and features from the object
         obj = obj.drop_vars(Layers.OBS)
         obj = obj.drop_dims(Dims.FEATURES)
-        
+
         # adding the default obs back to the object
         return obj.pp.add_observations()
 
