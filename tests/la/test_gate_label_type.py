@@ -2,6 +2,7 @@ import numpy as np
 
 import spatial_data as sd
 
+
 def test_gate_cell_type_adds_graph(dataset_full):
 
     ds = dataset_full.pp.add_quantification(func=sd.arcsinh_mean_intensity)
@@ -29,7 +30,7 @@ def test_gate_cell_type_adds_graph(dataset_full):
     # add more cell types
     ds = ds.la.add_label_type("CT2")
     ds = ds.la.add_label_type("CT3")
-    
+
     ds = ds.la.gate_label_type("CT3", "CD8", 2e5, "_intensity")
 
     assert ds.attrs["channel"][3] == ["CD8"]
@@ -133,7 +134,7 @@ def test_remove_label_type(full_zarr):
     assert sdata.attrs["label_id"][3] == 3
     assert sdata.attrs["step"][3] == 3
 
-    # now remove CD3+ T cell (parent class of CD8+ T cells) 
+    # now remove CD3+ T cell (parent class of CD8+ T cells)
     # should delete all T cells including CD8+ T cells
     sdata = sdata.la.reset_label_type("T cell")
 

@@ -12,7 +12,6 @@ from spatial_data.container import load_image_data
 
 @pytest.fixture(scope="session")
 def data_dir(tmpdir_factory):
-    # img = compute_expensive_image()
     test_dir = os.path.join(os.path.dirname(__file__), "test_files")
     tmp_dir = tmpdir_factory.getbasetemp()
 
@@ -24,7 +23,6 @@ def data_dir(tmpdir_factory):
 
 @pytest.fixture(scope="session", name="data_dic")
 def load_files(data_dir):
-
     files = os.listdir(data_dir)
     files_loaded = {
         str(f).split("/")[-1].split(".")[0]: imread(os.path.join(str(data_dir), f)) for f in files if f.endswith("tiff")
@@ -49,7 +47,6 @@ def load_dataset(data_dic):
 
 @pytest.fixture(scope="session", name="dataset_full")
 def load_dataset_five_dim(data_dic):
-
     dataset = load_image_data(
         data_dic["input"],
         ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
@@ -60,7 +57,6 @@ def load_dataset_five_dim(data_dic):
 
 @pytest.fixture(scope="session", name="dataset_labeled")
 def load_labeled_dataset(data_dic):
-
     dataset = load_image_data(
         data_dic["input"],
         ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
@@ -73,7 +69,6 @@ def load_labeled_dataset(data_dic):
 
 @pytest.fixture(scope="session", name="dataset_segmentation")
 def load_dataset_segmentation(data_dic):
-
     dataset = load_image_data(
         data_dic["input"],
         ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
