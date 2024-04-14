@@ -202,6 +202,34 @@ def _relabel_cells(segmentation: np.ndarray):
 
 
 def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
+    """
+    Merge two segmentation masks based on specified criteria.
+
+    Parameters
+    ----------
+    s1 : numpy.ndarray
+        First segmentation mask.
+    s2 : numpy.ndarray
+        Second segmentation mask.
+    label1 : int, optional
+        Label for regions from the first mask in the final merged mask. Default is 1.
+    label2 : int, optional
+        Label for regions from the second mask in the final merged mask. Default is 2.
+    threshold : float, optional
+        Threshold for area ratio of intersection over union for merging regions. 
+        Default is 1.0, meaning all regions from the second mask are merged.
+
+    Returns
+    -------
+    numpy.ndarray
+        Merged segmentation mask.
+    dict
+        Mapping of labels from the merged mask to the original labels.
+
+    Notes
+    -----
+    This function assumes that `s1` and `s2` are 2D segmentation masks with integer labels.
+    """    
     s1 = s1.squeeze()
     s2 = s2.squeeze()
 
