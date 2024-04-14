@@ -148,8 +148,8 @@ class PreprocessingAccessor:
         }
 
         # handle case when there are cells in the image
-        if Dims.CELLS in self._obj.dims:
-            # num_cells = self._obj.dims[Dims.CELLS]
+        if Dims.CELLS in self._obj.sizes:
+            # num_cells = self._obj.sizes[Dims.CELLS]
 
             coords = self._obj[Layers.OBS]
             cells = (
@@ -254,8 +254,8 @@ class PreprocessingAccessor:
 
         y_dim, x_dim = segmentation.shape
 
-        assert (x_dim == self._obj.dims[Dims.X]) & (
-            y_dim == self._obj.dims[Dims.Y]
+        assert (x_dim == self._obj.sizes[Dims.X]) & (
+            y_dim == self._obj.sizes[Dims.Y]
         ), "The shape of segmentation mask does not match that of the image."
 
         if copy:
@@ -665,7 +665,7 @@ class PreprocessingAccessor:
             quantile = np.array(quantile)
         # Calulate quat
         lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-        print(lower, lower.shape)
+        # print(lower, lower.shape)
         filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
         if key_added is None:
