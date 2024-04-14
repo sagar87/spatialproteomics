@@ -1,7 +1,8 @@
 from typing import List, Union
 
 import numpy as np
-from skimage.segmentation import find_boundaries
+from skimage.measure import regionprops
+from skimage.segmentation import find_boundaries, relabel_sequential
 
 from ..pl import _get_linear_colormap
 
@@ -198,3 +199,35 @@ def _relabel_cells(segmentation: np.ndarray):
     segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
 
     return segmentation_relabeled, value_map
+
+
+def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
+    s1 = s1.squeeze()
+    s2 = s2.squeeze()
+
+    n2, fmap, bmap = relabel_sequential(s2, offset=s1.max() + 1)
+    s3 = s1.copy()
+    s3[np.logical_and(n2 > 0, s1 == 0)] = n2[np.logical_and(n2 > 0, s1 == 0)]
+
+    p1 = regionprops(s1)
+    p2 = regionprops(n2)
+    p3 = regionprops(s3)
+
+    l1 = [p.label for p in p1]
+    l2 = [p.label for p in p2]
+    l3 = [p.label for p in p3]
+
+    # compute intersections
+    i1 = list(set(l1) & set(l3))
+    i2 = list(set(l2) & set(l3))
+
+    area_ratio = np.array([p.area for p in p3 if p.label in i2]) / np.array([p.area for p in p2 if p.label in i2])
+    i2 = np.array(i2)[area_ratio >= threshold]
+    selected_cells = np.concatenate([np.array(i1), i2])
+
+    # make final mask
+    clean_mask = _remove_unlabeled_cells(s3, selected_cells)
+    final_mask, fmap, bmap = relabel_sequential(clean_mask)
+    mapping = dict(zip([fmap[i] for i in selected_cells], [label1] * len(i1) + [label2] * len(i2)))
+
+    return final_mask, mapping

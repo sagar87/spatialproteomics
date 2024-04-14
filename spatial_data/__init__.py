@@ -39,6 +39,7 @@ from .pp import (
     detect_peaks_num,
     is_positive,
     mean_intensity,
+    merge_segmentation,
     percentage_positive,
     sum_intensity,
 )
@@ -61,6 +62,7 @@ __all__ = [
     "arcsinh_mean_intensity",
     "arcsinh_var_intensity",
     "arcsinh_median_intensity",
+    "merge_segmentation",
     "detect_peaks_num",
     "percentage_positive",
     "is_positive",
