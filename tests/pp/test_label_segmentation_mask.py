@@ -1,7 +1,6 @@
 import numpy as np
 
-from spatial_data.la.label import _format_labels
-from spatial_data.pp.utils import _label_segmentation_mask
+from spatial_data.pp.utils import _label_segmentation_mask, _remove_unlabeled_cells
 
 
 def test_label_segmentation_mask(test_segmentation):
@@ -47,55 +46,34 @@ def test_label_segmentation_mask(test_segmentation):
     assert np.all(res[np.where(seg_mask == 9)] == 0)
 
 
-def test_formal_labels():
-    lab = np.array(
-        [
-            1,
-            2,
-            3,
-            4,
-            4,
-        ]
-    )
+def test_remove_unlabeled_cells(test_segmentation):
+    seg_mask = test_segmentation
+    # no cells should be removed
+    cells = np.array([1, 2, 3, 5, 7, 8, 9])
+    res = _remove_unlabeled_cells(seg_mask.copy(), cells)
 
-    res = _format_labels(lab)
-    assert np.all(res == lab)
+    assert 1 in res
+    assert 2 in res
+    assert 3 in res
+    assert 5 in res
+    assert 7 in res
+    assert 8 in res
+    assert 9 in res
 
-    lab = np.array(
-        [
-            1,
-            2,
-            0,
-            3,
-            3,
-        ]
-    )
+    # cells 5 and 7 should be removed
+    cells = np.array([1, 2, 3, 8, 9])
+    res = _remove_unlabeled_cells(seg_mask.copy(), cells)
 
-    res = _format_labels(lab)
-    assert np.all(res == np.array([2, 3, 1, 4, 4]))
+    assert 1 in res
+    assert 2 in res
+    assert 3 in res
+    assert 5 not in res
+    assert 7 not in res
+    assert 8 in res
+    assert 9 in res
 
-    lab = np.array(
-        [
-            1,
-            2,
-            2,
-            4,
-            4,
-        ]
-    )
+    # all cells should be removed
+    cells = np.array([])
+    res = _remove_unlabeled_cells(seg_mask.copy(), cells)
 
-    res = _format_labels(lab)
-    assert np.all(res == np.array([1, 2, 2, 3, 3]))
-
-    lab = np.array(
-        [
-            0,
-            0,
-            2,
-            4,
-            4,
-        ]
-    )
-
-    res = _format_labels(lab)
-    assert np.all(res == np.array([1, 1, 2, 3, 3]))
+    assert np.all(res == 0)

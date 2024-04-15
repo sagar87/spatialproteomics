@@ -207,7 +207,8 @@ class PreprocessingAccessor:
         xarray.Dataset
             The updated image container with added channel(s).
         """
-        assert type(array) is np.ndarray, "Added channel(s) must be numpy arrays"
+        assert type(array) is np.ndarray, "Added channels must be numpy arrays."
+        assert array.ndim in [2, 3], "Added channels must be 2D or 3D arrays."
 
         if array.ndim == 2:
             array = np.expand_dims(array, 0)
@@ -215,13 +216,19 @@ class PreprocessingAccessor:
         if type(channels) is str:
             channels = [channels]
 
+        assert (
+            set(channels).intersection(set(self._obj.coords[Dims.CHANNELS].values)) == set()
+        ), "Can't add a channel that already exists."
+
         self_channels, self_x_dim, self_y_dim = self._obj[Layers.IMAGE].shape
         other_channels, other_x_dim, other_y_dim = array.shape
 
         assert (
             len(channels) == other_channels
         ), "The length of channels must match the number of channels in array (DxMxN)."
-        assert (self_x_dim == other_x_dim) & (self_y_dim == other_y_dim), "Dims do not match."
+        assert (self_x_dim == other_x_dim) & (
+            self_y_dim == other_y_dim
+        ), "Dimensions of the original image and the input array do not match."
 
         da = xr.DataArray(
             array,
@@ -359,9 +366,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        channels: Union[str, list] = "all",
         func=sum_intensity,
-        remove_unlabeled=True,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -370,12 +375,8 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        channels : Union[str, list], optional
-            The name of the channel or a list of channel names to be added. Default is "all".
         func : Callable, optional
             The function used for quantification. Default is sum_intensity.
-        remove_unlabeled : bool, optional
-            Whether to remove unlabeled cells. Default is True.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -389,9 +390,9 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
 
-        if key_added in self._obj:
-            logger.warning(f"Found {key_added} in image container. Please add a different key.")
-            return self._obj
+        assert (
+            key_added not in self._obj
+        ), f"Found {key_added} in image container. Please add a different key or remove the previous quantification."
 
         if Dims.CELLS not in self._obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
@@ -401,7 +402,6 @@ class PreprocessingAccessor:
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_unlabeled_cells(segmentation, self._obj.coords[Dims.CELLS].values)
 
         image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
         props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
@@ -444,9 +444,16 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found. A segmentation mask is required to add quantification.")
 
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("The input must be a pandas DataFrame.")
+
         # pulls out the cell and channel coordinates from the image container
         cells = self._obj.coords[Dims.CELLS].values
         channels = self._obj.coords[Dims.CHANNELS].values
+
+        # ensuring that all cells and channels are actually in the dataframe
+        assert np.all([c in df.index for c in cells]), "Cells in the image container are not in the dataframe."
+        assert np.all([c in df.columns for c in channels]), "Channels in the image container are not in the dataframe."
 
         # create a data array from the dataframe
         da = xr.DataArray(
@@ -741,6 +748,11 @@ class PreprocessingAccessor:
 
     def filter_by_obs(self, col: str, func: Callable):
         """Returns the list of cells with the labels from items."""
+        # checking if the feature exists in obs
+        assert (
+            col in self._obj.coords[Dims.FEATURES].values
+        ), f"Feature {col} not found in obs. You can add it with pp.add_observations()."
+
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
