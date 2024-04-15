@@ -261,28 +261,6 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.colorize">
-<span class="sig-name descname"><span class="pre">colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">['#e6194B',</span> <span class="pre">'#3cb44b',</span> <span class="pre">'#ffe119',</span> <span class="pre">'#4363d8',</span> <span class="pre">'#f58231',</span> <span class="pre">'#911eb4',</span> <span class="pre">'#42d4f4',</span> <span class="pre">'#f032e6',</span> <span class="pre">'#bfef45',</span> <span class="pre">'#fabed4',</span> <span class="pre">'#469990',</span> <span class="pre">'#dcbeff',</span> <span class="pre">'#9A6324',</span> <span class="pre">'#fffac8',</span> <span class="pre">'#800000',</span> <span class="pre">'#aaffc3',</span> <span class="pre">'#808000',</span> <span class="pre">'#ffd8b1',</span> <span class="pre">'#000075',</span> <span class="pre">'#a9a9a9']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.colorize" title="Permalink to this definition"></a></dt>
-<dd><p>Colorizes a stack of images.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>colors</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of strings that denote the color of each channel. Default is [“C0”, “C1”, “C2”, “C3”].</p></li>
-<li><p><strong>background</strong> (<em>str</em><em>, </em><em>optional</em>) – Background color of the colorized image. Default is “black”.</p></li>
-<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Normalize the image prior to colorizing it. Default is True.</p></li>
-<li><p><strong>merge</strong> (<em>True</em><em>, </em><em>optional</em>) – Merge the channel dimension. Default is True.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The image container with the colorized image stored in Layers.PLOT.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.filter_by_obs">
 <span class="sig-name descname"><span class="pre">filter_by_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.filter_by_obs" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the list of cells with the labels from items.</p>
