@@ -4,7 +4,6 @@ import spatial_data as sd
 
 
 def test_gate_cell_type_adds_graph(dataset_full):
-
     ds = dataset_full.pp.add_quantification(func=sd.arcsinh_mean_intensity)
     ds = ds.la.add_label_type("CT1")
 

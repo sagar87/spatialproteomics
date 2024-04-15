@@ -366,9 +366,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        channels: Union[str, list] = "all",
         func=sum_intensity,
-        remove_unlabeled=True,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -377,12 +375,8 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        channels : Union[str, list], optional
-            The name of the channel or a list of channel names to be added. Default is "all".
         func : Callable, optional
             The function used for quantification. Default is sum_intensity.
-        remove_unlabeled : bool, optional
-            Whether to remove unlabeled cells. Default is True.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -396,9 +390,7 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
 
-        if key_added in self._obj:
-            logger.warning(f"Found {key_added} in image container. Please add a different key.")
-            return self._obj
+        assert key_added not in self._obj, f"Found {key_added} in image container. Please add a different key."
 
         if Dims.CELLS not in self._obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
@@ -408,7 +400,6 @@ class PreprocessingAccessor:
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_unlabeled_cells(segmentation, self._obj.coords[Dims.CELLS].values)
 
         image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
         props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
@@ -416,6 +407,10 @@ class PreprocessingAccessor:
         for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
             if k.startswith(func.__name__):
                 measurements.append(props[k])
+
+        print(f"Measurements length: {len(measurements)}")
+        print(measurements)
+        print(np.stack(measurements, -1).shape)
 
         da = xr.DataArray(
             np.stack(measurements, -1),
