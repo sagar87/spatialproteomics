@@ -2,6 +2,7 @@ from typing import List, Union
 
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 import numpy as np
+from skimage.segmentation import find_boundaries
 
 def _get_linear_colormap(colors: list, background: str):
     return [LinearSegmentedColormap.from_list(c, [background, c], N=256) for c in colors]
@@ -94,3 +95,22 @@ def _colorize(
     colored = np.stack([cmaps[i](img[i]) for i in range(num_channels)], 0)
 
     return colored
+
+
+def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
+    colored_mask = cmap_mask(mask)
+
+    mask_bool = mask > 0
+    mask_bound = np.bitwise_and(mask_bool, find_boundaries(mask, mode=mode))
+
+    # blend
+    if img is None:
+        img = np.zeros(mask.shape + (4,), np.float32)
+        img[..., -1] = 1
+
+    im = img.copy()
+
+    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
+    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
+
+    return im

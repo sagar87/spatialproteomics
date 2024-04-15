@@ -9,7 +9,7 @@ from matplotlib.patches import Patch
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
-from .utils import _colorize
+from .utils import _colorize, _get_listed_colormap, _render_label
 from .spectra import format_annotation_df, plot_expression_spectra
 
 
@@ -171,6 +171,81 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
     
+    
+    def imshow(
+        self,
+        legend_background: bool = False,
+        legend_label: bool = False,
+        legend_kwargs: dict = {"framealpha": 1},
+        downsample: int = 1,
+        ax=None,
+    ):
+        """
+        Plots the image.
+
+        Meant to be used in conjunction with plt.colorize and la.render_label.
+        See examples.
+
+        Parameters
+        ----------
+        legend_background : bool, optional
+            Show the label of the colorized image. Default is False.
+        legend_label : bool, optional
+            Show the labels. Default is False.
+        legend_kwargs : dict, optional
+            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
+        downsample : int, optional
+            Downsample factor for the image. Default is 1 (no downsampling).
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
+        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
+        """
+        # copying the input object to avoid colorizing the original object in place
+        obj = self._obj.copy()
+        if Layers.PLOT not in self._obj:
+            # if there are more than 20 channels, only the first one is plotted
+            if self._obj.dims[Dims.CHANNELS] > 20:
+                logger.warning("More than 20 channels are present in the image. Plotting first channel only.")
+                channel = str(self._obj.coords[Dims.CHANNELS].values[0])
+                obj = self._obj.pp[channel].pl.colorize(colors=["white"])
+            # if there are less than 20 channels, all are plotted
+            else:
+                obj = self._obj.pl.colorize()
+
+        if ax is None:
+            ax = plt.gca()
+
+        bounds = obj.pl._get_bounds()
+
+        ax.imshow(
+            obj[Layers.PLOT].values[::downsample, ::downsample],
+            origin="lower",
+            interpolation="none",
+            extent=bounds,
+        )
+
+        legend = []
+
+        if legend_background:
+            legend += obj.pl._legend_background()
+
+        if legend_label:
+            legend += obj.pl._legend_labels()
+
+        if legend_background or legend_label:
+            ax.legend(handles=legend, **legend_kwargs)
+
+        return obj
+    
 
     def annotate(
         self,
@@ -252,6 +327,80 @@ class PlotAccessor:
                 ax.text(x, y, s=f"{t:{format_string}}", **text_kwargs)
 
         return self._obj
+    
+    
+    def render_segmentation(
+        self,
+        alpha: float = 0,
+        alpha_boundary: float = 1,
+        mode: str = "inner",
+    ) -> xr.Dataset:
+        """
+        Render the segmentation layer of the data object.
+
+        This method renders the segmentation layer of the data object and returns an updated data object
+        with the rendered visualization. The rendered segmentation is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered segmentation. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
+        mode : str, optional
+            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered segmentation as a new plot layer.
+
+        Notes
+        -----
+        - The function extracts the segmentation layer and information about boundary pixels from the data object.
+        - It applies the specified alpha values and mode to render the segmentation.
+        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
+        """
+        assert Layers.SEGMENTATION in self._obj, "Add Segmentation first."
+
+        color_dict = {1: "white"}
+        cmap = _get_listed_colormap(color_dict)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_label(
+                segmentation,
+                cmap,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+        return xr.merge([self._obj, da])
 
     def scatter(
         self,
@@ -464,79 +613,6 @@ class PlotAccessor:
         my_circle = plt.Circle((0, 0), circle_radius, color="white")
         ax.add_artist(my_circle)
 
-    def imshow(
-        self,
-        legend_background: bool = False,
-        legend_label: bool = False,
-        legend_kwargs: dict = {"framealpha": 1},
-        downsample: int = 1,
-        ax=None,
-    ):
-        """
-        Plots the image.
-
-        Meant to be used in conjunction with plt.colorize and la.render_label.
-        See examples.
-
-        Parameters
-        ----------
-        legend_background : bool, optional
-            Show the label of the colorized image. Default is False.
-        legend_label : bool, optional
-            Show the labels. Default is False.
-        legend_kwargs : dict, optional
-            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
-        downsample : int, optional
-            Downsample factor for the image. Default is 1 (no downsampling).
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
-        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
-        """
-        # copying the input object to avoid colorizing the original object in place
-        obj = self._obj.copy()
-        if Layers.PLOT not in self._obj:
-            # if there are more than 20 channels, only the first one is plotted
-            if self._obj.dims[Dims.CHANNELS] > 20:
-                logger.warning("More than 20 channels are present in the image. Plotting first channel only.")
-                channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-                obj = self._obj.pp[channel].pl.colorize(colors=["white"])
-            # if there are less than 20 channels, all are plotted
-            else:
-                obj = self._obj.pl.colorize()
-
-        if ax is None:
-            ax = plt.gca()
-
-        bounds = obj.pl._get_bounds()
-
-        ax.imshow(
-            obj[Layers.PLOT].values[::downsample, ::downsample],
-            origin="lower",
-            interpolation="none",
-            extent=bounds,
-        )
-
-        legend = []
-
-        if legend_background:
-            legend += obj.pl._legend_background()
-
-        if legend_label:
-            legend += obj.pl._legend_labels()
-
-        if legend_background or legend_label:
-            ax.legend(handles=legend, **legend_kwargs)
-
-        return obj
 
     def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
         """
