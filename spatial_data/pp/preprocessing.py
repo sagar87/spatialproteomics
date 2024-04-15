@@ -390,7 +390,9 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
 
-        assert key_added not in self._obj, f"Found {key_added} in image container. Please add a different key."
+        assert (
+            key_added not in self._obj
+        ), f"Found {key_added} in image container. Please add a different key or remove the previous quantification."
 
         if Dims.CELLS not in self._obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
@@ -407,10 +409,6 @@ class PreprocessingAccessor:
         for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
             if k.startswith(func.__name__):
                 measurements.append(props[k])
-
-        print(f"Measurements length: {len(measurements)}")
-        print(measurements)
-        print(np.stack(measurements, -1).shape)
 
         da = xr.DataArray(
             np.stack(measurements, -1),
@@ -446,9 +444,16 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found. A segmentation mask is required to add quantification.")
 
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("The input must be a pandas DataFrame.")
+
         # pulls out the cell and channel coordinates from the image container
         cells = self._obj.coords[Dims.CELLS].values
         channels = self._obj.coords[Dims.CHANNELS].values
+
+        # ensuring that all cells and channels are actually in the dataframe
+        assert np.all([c in df.index for c in cells]), "Cells in the image container are not in the dataframe."
+        assert np.all([c in df.columns for c in channels]), "Channels in the image container are not in the dataframe."
 
         # create a data array from the dataframe
         da = xr.DataArray(
