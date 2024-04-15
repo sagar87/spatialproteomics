@@ -748,6 +748,11 @@ class PreprocessingAccessor:
 
     def filter_by_obs(self, col: str, func: Callable):
         """Returns the list of cells with the labels from items."""
+        # checking if the feature exists in obs
+        assert (
+            col in self._obj.coords[Dims.FEATURES].values
+        ), f"Feature {col} not found in obs. You can add it with pp.add_observations()."
+
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
