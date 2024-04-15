@@ -15,6 +15,7 @@ from ..la.label import _format_labels
 from ..pl import _get_listed_colormap
 from .intensity import sum_intensity
 from .utils import (
+    _autocrop,
     _colorize,
     _label_segmentation_mask,
     _normalize,
@@ -988,3 +989,7 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([self._obj, da])
+
+    def autocrop(self, channel=None, downsample=10):
+        slices = _autocrop(self._obj, channel=channel, downsample=downsample)
+        return self._obj.pp[slices[0], slices[1]]
