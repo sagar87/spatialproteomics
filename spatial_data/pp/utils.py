@@ -1,9 +1,11 @@
 from typing import List, Union
 
 import numpy as np
-from skimage.measure import regionprops
-from skimage.segmentation import find_boundaries, relabel_sequential
+from skimage.measure import label, regionprops
+from skimage.morphology import closing, square
+from skimage.segmentation import clear_border, find_boundaries, relabel_sequential
 
+from ..constants import Dims
 from ..pl import _get_linear_colormap
 
 
@@ -216,7 +218,7 @@ def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     label2 : int, optional
         Label for regions from the second mask in the final merged mask. Default is 2.
     threshold : float, optional
-        Threshold for area ratio of intersection over union for merging regions. 
+        Threshold for area ratio of intersection over union for merging regions.
         Default is 1.0, meaning all regions from the second mask are merged.
 
     Returns
@@ -229,7 +231,7 @@ def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     Notes
     -----
     This function assumes that `s1` and `s2` are 2D segmentation masks with integer labels.
-    """    
+    """
     s1 = s1.squeeze()
     s2 = s2.squeeze()
 
@@ -259,3 +261,24 @@ def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     mapping = dict(zip([fmap[i] for i in selected_cells], [label1] * len(i1) + [label2] * len(i2)))
 
     return final_mask, mapping
+
+
+def _autocrop(sdata, channel=None, downsample=10):
+    if channel is None:
+        channel = sdata.coords[Dims.CHANNELS].values.tolist()[0]
+    image = sdata.pp[channel].pp.downsample(downsample)._image.values.squeeze()
+
+    bw = closing(image > np.quantile(image, 0.8), square(20))
+    cleared = clear_border(bw)
+    label_image = label(cleared)
+    props = regionprops(label_image)
+    if len(props) == 0:
+        maxr, maxc = image.shape
+        minr, minc = 0, 0
+        downsample = 1
+    else:
+        max_idx = np.argmax([p.area for p in props])
+        region = props[max_idx]
+        minr, minc, maxr, maxc = region.bbox
+
+    return slice(downsample * minc, downsample * maxc), slice(downsample * minr, downsample * maxr)
