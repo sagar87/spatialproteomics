@@ -16,11 +16,8 @@ from ..la.label import _format_labels
 from ..pl import _get_listed_colormap
 from .intensity import sum_intensity
 from .utils import (
-    _colorize,
     _label_segmentation_mask,
-    _normalize,
     _relabel_cells,
-    _remove_segmentation_mask_labels,
     _remove_unlabeled_cells,
     _render_label,
 )
@@ -824,81 +821,6 @@ class PreprocessingAccessor:
         # adding the default obs back to the object
         return obj.pp.add_observations()
 
-    def colorize(
-        self,
-        colors: List[str] = [
-            "#e6194B",
-            "#3cb44b",
-            "#ffe119",
-            "#4363d8",
-            "#f58231",
-            "#911eb4",
-            "#42d4f4",
-            "#f032e6",
-            "#bfef45",
-            "#fabed4",
-            "#469990",
-            "#dcbeff",
-            "#9A6324",
-            "#fffac8",
-            "#800000",
-            "#aaffc3",
-            "#808000",
-            "#ffd8b1",
-            "#000075",
-            "#a9a9a9",
-        ],
-        background: str = "black",
-        normalize: bool = True,
-        merge: bool = True,
-    ) -> xr.Dataset:
-        """
-        Colorizes a stack of images.
-
-        Parameters
-        ----------
-        colors : List[str], optional
-            A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
-        background : str, optional
-            Background color of the colorized image. Default is "black".
-        normalize : bool, optional
-            Normalize the image prior to colorizing it. Default is True.
-        merge : True, optional
-            Merge the channel dimension. Default is True.
-
-        Returns
-        -------
-        xr.Dataset
-            The image container with the colorized image stored in Layers.PLOT.
-        """
-        if isinstance(colors, str):
-            colors = [colors]
-
-        image_layer = self._obj[Layers.IMAGE]
-        colored = _colorize(
-            image_layer.values,
-            colors=colors,
-            background=background,
-            normalize=normalize,
-        )
-        da = xr.DataArray(
-            colored,
-            coords=[
-                image_layer.coords[Dims.CHANNELS],
-                image_layer.coords[Dims.Y],
-                image_layer.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs={Attrs.IMAGE_COLORS: {k.item(): v for k, v in zip(image_layer.coords[Dims.CHANNELS], colors)}},
-        )
-
-        if merge:
-            da = da.sum(Dims.CHANNELS, keep_attrs=True)
-            da.values[da.values > 1] = 1.0
-
-        return xr.merge([self._obj, da])
 
     def render_segmentation(
         self,

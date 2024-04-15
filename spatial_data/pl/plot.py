@@ -9,6 +9,7 @@ from matplotlib.patches import Patch
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
+from .utils import _colorize
 from .spectra import format_annotation_df, plot_expression_spectra
 
 
@@ -55,15 +56,6 @@ class PlotAccessor:
             color="white",
         )
 
-        # unique_labels = np.unique(ds[Layers.LABELS].values)
-
-        # for label in unique_labels:
-        #     label_bool = (ds[Layers.LABELS].values == label).squeeze()
-        #     x = ds[Layers.OBS].loc[label_bool].loc[:, Dims.X].values
-        #     y = ds[Layers.OBS].loc[label_bool].loc[:, Dims.Y].values
-        #     ax.scatter(
-        #         x, y, color=ds[Layers.LABELS].attrs[Attrs.LABEL_COLORS][label]
-        #     )
 
     def _get_bounds(self):
         """Returns X/Y bounds of the dataset."""
@@ -101,6 +93,84 @@ class PlotAccessor:
         ]
 
         return elements
+
+
+    def colorize(
+        self,
+        colors: List[str] = [
+            "#e6194B",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#42d4f4",
+            "#f032e6",
+            "#bfef45",
+            "#fabed4",
+            "#469990",
+            "#dcbeff",
+            "#9A6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#a9a9a9",
+        ],
+        background: str = "black",
+        normalize: bool = True,
+        merge: bool = True,
+    ) -> xr.Dataset:
+        """
+        Colorizes a stack of images.
+
+        Parameters
+        ----------
+        colors : List[str], optional
+            A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
+        background : str, optional
+            Background color of the colorized image. Default is "black".
+        normalize : bool, optional
+            Normalize the image prior to colorizing it. Default is True.
+        merge : True, optional
+            Merge the channel dimension. Default is True.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container with the colorized image stored in Layers.PLOT.
+        """
+        if isinstance(colors, str):
+            colors = [colors]
+
+        image_layer = self._obj[Layers.IMAGE]
+        colored = _colorize(
+            image_layer.values,
+            colors=colors,
+            background=background,
+            normalize=normalize,
+        )
+        da = xr.DataArray(
+            colored,
+            coords=[
+                image_layer.coords[Dims.CHANNELS],
+                image_layer.coords[Dims.Y],
+                image_layer.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs={Attrs.IMAGE_COLORS: {k.item(): v for k, v in zip(image_layer.coords[Dims.CHANNELS], colors)}},
+        )
+
+        if merge:
+            da = da.sum(Dims.CHANNELS, keep_attrs=True)
+            da.values[da.values > 1] = 1.0
+
+        return xr.merge([self._obj, da])
+    
 
     def annotate(
         self,
@@ -170,12 +240,11 @@ class PlotAccessor:
                     raise ValueError("Layer does not have a cell dimension.")
 
                 dim = [d for d in dims if d != Dims.CELLS][0]
-                # import pdb; pdb.set_trace()
+
                 t = table.sel({Dims.CELLS: cell, dim: variable}).values
             else:
                 t = cell.values
 
-            # print(x,y, t)
             if cell in highlight:
                 ax.text(x, y, s=f"{t:{format_string}}", **highlight_kwargs)
             else:
@@ -406,7 +475,7 @@ class PlotAccessor:
         """
         Plots the image.
 
-        Meant to be used in conjunction with im.colorize and la.render_label.
+        Meant to be used in conjunction with plt.colorize and la.render_label.
         See examples.
 
         Parameters
@@ -432,18 +501,25 @@ class PlotAccessor:
         - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
         - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
+        # copying the input object to avoid colorizing the original object in place
+        obj = self._obj.copy()
         if Layers.PLOT not in self._obj:
-            logger.warning("No plot defined yet.")
-            channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-            self._obj = self._obj.pp[channel].pp.colorize(colors=["white"])
+            # if there are more than 20 channels, only the first one is plotted
+            if self._obj.dims[Dims.CHANNELS] > 20:
+                logger.warning("More than 20 channels are present in the image. Plotting first channel only.")
+                channel = str(self._obj.coords[Dims.CHANNELS].values[0])
+                obj = self._obj.pp[channel].pl.colorize(colors=["white"])
+            # if there are less than 20 channels, all are plotted
+            else:
+                obj = self._obj.pl.colorize()
 
         if ax is None:
             ax = plt.gca()
 
-        bounds = self._obj.pl._get_bounds()
+        bounds = obj.pl._get_bounds()
 
         ax.imshow(
-            self._obj[Layers.PLOT].values[::downsample, ::downsample],
+            obj[Layers.PLOT].values[::downsample, ::downsample],
             origin="lower",
             interpolation="none",
             extent=bounds,
@@ -452,15 +528,15 @@ class PlotAccessor:
         legend = []
 
         if legend_background:
-            legend += self._obj.pl._legend_background()
+            legend += obj.pl._legend_background()
 
         if legend_label:
-            legend += self._obj.pl._legend_labels()
+            legend += obj.pl._legend_labels()
 
         if legend_background or legend_label:
             ax.legend(handles=legend, **legend_kwargs)
 
-        return self._obj
+        return obj
 
     def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
         """
