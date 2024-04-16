@@ -142,6 +142,9 @@ class PlotAccessor:
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
         """
+        # check if a plot already exists
+        assert Layers.PLOT not in self._obj, "A plot layer already exists. If you want to plot the channel intensities and a segmentation mask, make sure to call pl.colorize() first, and then pl.render_segmentation() to render the segmentation on top of it. Alternatively, you can call pl.imshow(render_segmentation=True) to achieve the same effect."
+        
         if isinstance(colors, str):
             colors = [colors]
 
@@ -152,6 +155,7 @@ class PlotAccessor:
             background=background,
             normalize=normalize,
         )
+                
         da = xr.DataArray(
             colored,
             coords=[
@@ -178,6 +182,7 @@ class PlotAccessor:
         legend_label: bool = False,
         legend_kwargs: dict = {"framealpha": 1},
         downsample: int = 1,
+        render_segmentation: bool = False,
         ax=None,
     ):
         """
@@ -214,12 +219,15 @@ class PlotAccessor:
         if Layers.PLOT not in self._obj:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.dims[Dims.CHANNELS] > 20:
-                logger.warning("More than 20 channels are present in the image. Plotting first channel only.")
+                logger.warning("More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l")
                 channel = str(self._obj.coords[Dims.CHANNELS].values[0])
                 obj = self._obj.pp[channel].pl.colorize(colors=["white"])
             # if there are less than 20 channels, all are plotted
             else:
                 obj = self._obj.pl.colorize()
+                
+        if render_segmentation:
+            obj = obj.pl.render_segmentation()
 
         if ax is None:
             ax = plt.gca()
