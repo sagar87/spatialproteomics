@@ -321,41 +321,6 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.render_label">
-<span class="sig-name descname"><span class="pre">render_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_boundary</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.render_label" title="Permalink to this definition"></a></dt>
-<dd><p>Render the labeled cells in the data object.</p>
-<p>This method renders the labeled cells in the data object based on the label colors and segmentation.
-The rendered visualization is represented in RGBA format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value to control the transparency of the rendered labels. Default is 0.</p></li>
-<li><p><strong>alpha_boundary</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value for boundary pixels in the rendered labels. Default is 1.</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode for rendering the labels: “inner” for internal region, “boundary” for boundary pixels.
-Default is “inner”.</p></li>
-<li><p><strong>override_color</strong> (<em>any</em><em>, </em><em>optional</em>) – The color value to override the default label colors. Default is None.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The updated data object with the rendered labeled cells as a new plot layer.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>any</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>AssertionError</strong> – If the data object does not contain label information. Use ‘add_labels’ function to add labels first.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The function retrieves label colors from the data object and applies the specified alpha values and mode.</p></li>
-<li><p>It renders the labeled cells based on the label colors and the segmentation layer.</p></li>
-<li><p>The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.</p></li>
-<li><p>If ‘override_color’ is provided, all labels will be rendered using the specified color.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.restore">
 <span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wiener'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.restore" title="Permalink to this definition"></a></dt>
 <dd><p>Restores the image using a specified method.</p>
