@@ -186,6 +186,7 @@ class PlotAccessor:
         legend_label: bool = False,
         legend_kwargs: dict = {"framealpha": 1},
         downsample: int = 1,
+        render_intensities: bool = True,
         render_labels: bool = False,
         render_segmentation: bool = False,
         label_kwargs: dict = {},
@@ -221,9 +222,12 @@ class PlotAccessor:
         - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_labels'.
         - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
+        # check that at least one rendering element is specified
+        assert any([render_intensities, render_labels, render_segmentation]), "No rendering element specified. Please set at least one of 'render_intensities', 'render_labels', or 'render_segmentation' to True."
+        
         # copying the input object to avoid colorizing the original object in place
         obj = self._obj.copy()
-        if Layers.PLOT not in self._obj:
+        if Layers.PLOT not in self._obj and render_intensities:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.dims[Dims.CHANNELS] > 20:
                 logger.warning(
@@ -501,8 +505,8 @@ class PlotAccessor:
 
     def scatter(
         self,
-        legend_label=False,
-        size: float = 0.001,
+        legend_label:bool = True,
+        size: float = 1,
         alpha: float = 0.9,
         zorder=10,
         ax=None,
@@ -516,9 +520,9 @@ class PlotAccessor:
         Parameters
         ----------
         legend_label : bool, optional
-            Plots the legend of the labels. Default is False.
+            Plots the legend of the labels. Default is True.
         size : float, optional
-            Size of the dots in the scatter plot. Default is 0.001.
+            Size of the dots in the scatter plot. Default is 1.
         alpha : float, optional
             Alpha value for transparency of the dots in the scatter plot. Default is 0.9.
         zorder : int, optional
@@ -548,7 +552,6 @@ class PlotAccessor:
             ax = plt.gca()
 
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        # names_dict = self._obj.la._label_to_dict(Props.NAME)
         label_dict = self._obj.la._cells_to_label()
 
         for k, v in label_dict.items():
@@ -564,7 +567,6 @@ class PlotAccessor:
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
-        # scatter_plot(sub, cell_types, axes[r, c], s=size)
 
         if legend_label:
             legend = self._obj.pl._legend_labels()
