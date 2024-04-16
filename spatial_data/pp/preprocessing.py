@@ -600,8 +600,42 @@ class PreprocessingAccessor:
             self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
         )
 
-        # import pdb;pdb.set_trace()
         return xr.merge([self._obj.sel(cells=da.cells), da])
+
+    def drop_layers(self, layers: Union[str, list]) -> xr.Dataset:
+        """
+        Drops layers from the image container.
+
+        Parameters
+        ----------
+        layers : Union[str, list]
+            The name of the layer or a list of layer names to be dropped.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with dropped layers.
+        """
+        if type(layers) is str:
+            layers = [layers]
+
+        assert all(
+            [layer in self._obj.data_vars for layer in layers]
+        ), f"Some layers that you are trying to remove are not in the image container. Available layers are: {', '.join(self._obj.data_vars)}."
+
+        obj = self._obj.drop_vars(layers)
+
+        # iterating through the remaining layers to get the dims that should be kept
+        dims_to_keep = []
+        for layer in obj.data_vars:
+            dims_to_keep.extend(obj[layer].dims)
+
+        # removing all dims that are not in dims_to_keep
+        for dim in obj.dims:
+            if dim not in dims_to_keep:
+                obj = obj.drop_dims(dim)
+
+        return obj
 
     def restore(self, method="wiener", **kwargs):
         """
