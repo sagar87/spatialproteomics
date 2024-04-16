@@ -9,8 +9,13 @@ from matplotlib.patches import Patch
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
-from .utils import _colorize, _get_listed_colormap, _render_label
 from .spectra import format_annotation_df, plot_expression_spectra
+from .utils import (
+    _colorize,
+    _get_listed_colormap,
+    _label_segmentation_mask,
+    _render_labels,
+)
 
 
 def _set_up_subplots(num_plots, ncols=4, width=4, height=3):
@@ -56,7 +61,6 @@ class PlotAccessor:
             color="white",
         )
 
-
     def _get_bounds(self):
         """Returns X/Y bounds of the dataset."""
         xmin = self._obj.coords[Dims.X].values[0]
@@ -93,7 +97,6 @@ class PlotAccessor:
         ]
 
         return elements
-
 
     def colorize(
         self,
@@ -143,8 +146,10 @@ class PlotAccessor:
             The image container with the colorized image stored in Layers.PLOT.
         """
         # check if a plot already exists
-        assert Layers.PLOT not in self._obj, "A plot layer already exists. If you want to plot the channel intensities and a segmentation mask, make sure to call pl.colorize() first, and then pl.render_segmentation() to render the segmentation on top of it. Alternatively, you can call pl.imshow(render_segmentation=True) to achieve the same effect."
-        
+        assert (
+            Layers.PLOT not in self._obj
+        ), "A plot layer already exists. If you want to plot the channel intensities and a segmentation mask, make sure to call pl.colorize() first, and then pl.render_segmentation() to render the segmentation on top of it. Alternatively, you can call pl.imshow(render_segmentation=True) to achieve the same effect."
+
         if isinstance(colors, str):
             colors = [colors]
 
@@ -155,7 +160,7 @@ class PlotAccessor:
             background=background,
             normalize=normalize,
         )
-                
+
         da = xr.DataArray(
             colored,
             coords=[
@@ -174,21 +179,23 @@ class PlotAccessor:
             da.values[da.values > 1] = 1.0
 
         return xr.merge([self._obj, da])
-    
-    
+
     def imshow(
         self,
         legend_background: bool = False,
         legend_label: bool = False,
         legend_kwargs: dict = {"framealpha": 1},
         downsample: int = 1,
+        render_labels: bool = False,
         render_segmentation: bool = False,
+        label_kwargs: dict = {},
+        segmentation_kwargs: dict = {},
         ax=None,
     ):
         """
         Plots the image.
 
-        Meant to be used in conjunction with plt.colorize and la.render_label.
+        Meant to be used in conjunction with plt.colorize and la.render_labels.
         See examples.
 
         Parameters
@@ -211,7 +218,7 @@ class PlotAccessor:
 
         Notes
         -----
-        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
+        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_labels'.
         - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
         # copying the input object to avoid colorizing the original object in place
@@ -219,15 +226,20 @@ class PlotAccessor:
         if Layers.PLOT not in self._obj:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.dims[Dims.CHANNELS] > 20:
-                logger.warning("More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l")
+                logger.warning(
+                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l"
+                )
                 channel = str(self._obj.coords[Dims.CHANNELS].values[0])
                 obj = self._obj.pp[channel].pl.colorize(colors=["white"])
             # if there are less than 20 channels, all are plotted
             else:
                 obj = self._obj.pl.colorize()
-                
+
+        if render_labels:
+            obj = obj.pl.render_labels(**label_kwargs)
+
         if render_segmentation:
-            obj = obj.pl.render_segmentation()
+            obj = obj.pl.render_segmentation(**segmentation_kwargs)
 
         if ax is None:
             ax = plt.gca()
@@ -253,7 +265,6 @@ class PlotAccessor:
             ax.legend(handles=legend, **legend_kwargs)
 
         return obj
-    
 
     def annotate(
         self,
@@ -335,8 +346,7 @@ class PlotAccessor:
                 ax.text(x, y, s=f"{t:{format_string}}", **text_kwargs)
 
         return self._obj
-    
-    
+
     def render_segmentation(
         self,
         alpha: float = 0,
@@ -378,7 +388,7 @@ class PlotAccessor:
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_label(
+            rendered = _render_labels(
                 segmentation,
                 cmap,
                 self._obj[Layers.PLOT].values,
@@ -389,7 +399,7 @@ class PlotAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_label(
+            rendered = _render_labels(
                 segmentation,
                 cmap,
                 alpha=alpha,
@@ -408,6 +418,85 @@ class PlotAccessor:
             name=Layers.PLOT,
             attrs=attrs,
         )
+        return xr.merge([self._obj, da])
+
+    def render_labels(
+        self, alpha: float = 1, alpha_boundary: float = 1, mode: str = "inner", override_color: Union[str, None] = None
+    ) -> xr.Dataset:
+        """
+        Render the labeled cells in the data object.
+
+        This method renders the labeled cells in the data object based on the label colors and segmentation.
+        The rendered visualization is represented in RGBA format.
+
+        Parameters
+        ----------
+        alpha : float, optional
+            The alpha value to control the transparency of the rendered labels. Default is 0.
+        alpha_boundary : float, optional
+            The alpha value for boundary pixels in the rendered labels. Default is 1.
+        mode : str, optional
+            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
+            Default is "inner".
+        override_color : any, optional
+            The color value to override the default label colors. Default is None.
+
+        Returns
+        -------
+        any
+            The updated data object with the rendered labeled cells as a new plot layer.
+
+        Raises
+        ------
+        AssertionError
+            If the data object does not contain label information. Use 'add_labels' function to add labels first.
+
+        Notes
+        -----
+        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
+        - It renders the labeled cells based on the label colors and the segmentation layer.
+        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
+        - If 'override_color' is provided, all labels will be rendered using the specified color.
+        """
+        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
+        if override_color is not None:
+            color_dict = {k: override_color for k in color_dict.keys()}
+
+        cmap = _get_listed_colormap(color_dict)
+
+        cells_dict = self._obj.la._cells_to_label(relabel=True)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_labels(
+                mask,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+
         return xr.merge([self._obj, da])
 
     def scatter(
@@ -620,7 +709,6 @@ class PlotAccessor:
         )
         my_circle = plt.Circle((0, 0), circle_radius, color="white")
         ax.add_artist(my_circle)
-
 
     def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
         """

@@ -1,9 +1,5 @@
-from typing import List, Union
-
 import numpy as np
 from skimage.segmentation import find_boundaries
-
-from ..pl import _get_linear_colormap
 
 
 def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
@@ -23,25 +19,6 @@ def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode
     im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
 
     return im
-
-
-def _label_segmentation_mask(segmentation: np.ndarray, annotations: dict) -> np.ndarray:
-    """
-    Relabels a segmentation according to the annotations df (contains the columns type, cell).
-    """
-    labeled_segmentation = segmentation.copy()
-    all_cells = []
-
-    for k, v in annotations.items():
-        mask = np.isin(segmentation, v)
-        labeled_segmentation[mask] = k
-        all_cells.extend(v)
-
-    # remove cells that are not indexed
-    neg_mask = ~np.isin(segmentation, all_cells)
-    labeled_segmentation[neg_mask] = 0
-
-    return labeled_segmentation
 
 
 def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
@@ -106,3 +83,43 @@ def _relabel_cells(segmentation: np.ndarray):
     segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
 
     return segmentation_relabeled, value_map
+
+
+def _normalize(
+    img: np.ndarray,
+    pmin: float = 3.0,
+    pmax: float = 99.8,
+    eps: float = 1e-20,
+    clip: bool = False,
+    name: str = "normed",
+) -> np.ndarray:
+    """Performs a min max normalisation.
+
+    This function was adapted from the csbdeep package.
+
+    Parameters
+    ----------
+    dataarray: xr.DataArray
+        A xarray DataArray with an image field.
+    pmin: float
+        Lower quantile (min value) used to perform qunatile normalization.
+    pmax: float
+        Upper quantile (max value) used to perform qunatile normalization.
+    eps: float
+        Epsilon float added to prevent 0 division.
+    clip: bool
+        Ensures that normed image array contains no values greater than 1.
+
+    Returns
+    -------
+    xr.DataArray
+        A min-max normalized image.
+    """
+    perc = np.percentile(img, [pmin, pmax], axis=(1, 2)).T
+
+    norm = (img - np.expand_dims(perc[:, 0], (1, 2))) / (np.expand_dims(perc[:, 1] - perc[:, 0], (1, 2)) + eps)
+
+    if clip:
+        norm = np.clip(norm, 0, 1)
+
+    return norm
