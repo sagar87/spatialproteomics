@@ -223,8 +223,10 @@ class PlotAccessor:
         - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
         # check that at least one rendering element is specified
-        assert any([render_intensities, render_labels, render_segmentation]), "No rendering element specified. Please set at least one of 'render_intensities', 'render_labels', or 'render_segmentation' to True."
-        
+        assert any(
+            [render_intensities, render_labels, render_segmentation]
+        ), "No rendering element specified. Please set at least one of 'render_intensities', 'render_labels', or 'render_segmentation' to True."
+
         # copying the input object to avoid colorizing the original object in place
         obj = self._obj.copy()
         if Layers.PLOT not in self._obj and render_intensities:
@@ -505,7 +507,7 @@ class PlotAccessor:
 
     def scatter(
         self,
-        legend_label:bool = True,
+        legend_label: bool = True,
         size: float = 1,
         alpha: float = 0.9,
         zorder=10,
