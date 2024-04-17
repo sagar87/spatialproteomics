@@ -8,12 +8,13 @@ from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
 from skimage.morphology import disk
 from skimage.restoration import unsupervised_wiener
+from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import COLORS, Attrs, Dims, Features, Layers, Props
+from ..constants import COLORS, Dims, Features, Layers, Props
 from ..la.label import _format_labels
-from ..pl import _get_listed_colormap
 from .intensity import sum_intensity
+
 from .utils import (
     _autocrop,
     _colorize,
@@ -207,7 +208,8 @@ class PreprocessingAccessor:
         xarray.Dataset
             The updated image container with added channel(s).
         """
-        assert type(array) is np.ndarray, "Added channel(s) must be numpy arrays"
+        assert type(array) is np.ndarray, "Added channels must be numpy arrays."
+        assert array.ndim in [2, 3], "Added channels must be 2D or 3D arrays."
 
         if array.ndim == 2:
             array = np.expand_dims(array, 0)
@@ -215,13 +217,19 @@ class PreprocessingAccessor:
         if type(channels) is str:
             channels = [channels]
 
+        assert (
+            set(channels).intersection(set(self._obj.coords[Dims.CHANNELS].values)) == set()
+        ), "Can't add a channel that already exists."
+
         self_channels, self_x_dim, self_y_dim = self._obj[Layers.IMAGE].shape
         other_channels, other_x_dim, other_y_dim = array.shape
 
         assert (
             len(channels) == other_channels
         ), "The length of channels must match the number of channels in array (DxMxN)."
-        assert (self_x_dim == other_x_dim) & (self_y_dim == other_y_dim), "Dims do not match."
+        assert (self_x_dim == other_x_dim) & (
+            self_y_dim == other_y_dim
+        ), "Dimensions of the original image and the input array do not match."
 
         da = xr.DataArray(
             array,
@@ -233,7 +241,9 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_segmentation(self, segmentation: np.ndarray, copy: bool = True) -> xr.Dataset:
+    def add_segmentation(
+        self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True
+    ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
@@ -242,6 +252,10 @@ class PreprocessingAccessor:
         segmentation : np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
             that indicates the location of each cell.
+        mask_growth : int
+            The number of pixels by which the segmentation mask should be grown.
+        relabel : bool
+            If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
         copy : bool
             If true the segmentation mask is copied.
 
@@ -261,6 +275,12 @@ class PreprocessingAccessor:
 
         if copy:
             segmentation = segmentation.copy()
+
+        if relabel:
+            segmentation, _ = _relabel_cells(segmentation)
+
+        if mask_growth > 0:
+            segmentation = expand_labels(segmentation, mask_growth)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -347,9 +367,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        channels: Union[str, list] = "all",
         func=sum_intensity,
-        remove_unlabeled=True,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -358,12 +376,8 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        channels : Union[str, list], optional
-            The name of the channel or a list of channel names to be added. Default is "all".
         func : Callable, optional
             The function used for quantification. Default is sum_intensity.
-        remove_unlabeled : bool, optional
-            Whether to remove unlabeled cells. Default is True.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -377,9 +391,9 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found.")
 
-        if key_added in self._obj:
-            logger.warning(f"Found {key_added} in image container. Please add a different key.")
-            return self._obj
+        assert (
+            key_added not in self._obj
+        ), f"Found {key_added} in image container. Please add a different key or remove the previous quantification."
 
         if Dims.CELLS not in self._obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
@@ -389,7 +403,6 @@ class PreprocessingAccessor:
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_unlabeled_cells(segmentation, self._obj.coords[Dims.CELLS].values)
 
         image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
         props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
@@ -432,9 +445,16 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("No segmentation mask found. A segmentation mask is required to add quantification.")
 
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("The input must be a pandas DataFrame.")
+
         # pulls out the cell and channel coordinates from the image container
         cells = self._obj.coords[Dims.CELLS].values
         channels = self._obj.coords[Dims.CHANNELS].values
+
+        # ensuring that all cells and channels are actually in the dataframe
+        assert np.all([c in df.index for c in cells]), "Cells in the image container are not in the dataframe."
+        assert np.all([c in df.columns for c in channels]), "Channels in the image container are not in the dataframe."
 
         # create a data array from the dataframe
         da = xr.DataArray(
@@ -590,8 +610,42 @@ class PreprocessingAccessor:
             self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
         )
 
-        # import pdb;pdb.set_trace()
         return xr.merge([self._obj.sel(cells=da.cells), da])
+
+    def drop_layers(self, layers: Union[str, list]) -> xr.Dataset:
+        """
+        Drops layers from the image container.
+
+        Parameters
+        ----------
+        layers : Union[str, list]
+            The name of the layer or a list of layer names to be dropped.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with dropped layers.
+        """
+        if type(layers) is str:
+            layers = [layers]
+
+        assert all(
+            [layer in self._obj.data_vars for layer in layers]
+        ), f"Some layers that you are trying to remove are not in the image container. Available layers are: {', '.join(self._obj.data_vars)}."
+
+        obj = self._obj.drop_vars(layers)
+
+        # iterating through the remaining layers to get the dims that should be kept
+        dims_to_keep = []
+        for layer in obj.data_vars:
+            dims_to_keep.extend(obj[layer].dims)
+
+        # removing all dims that are not in dims_to_keep
+        for dim in obj.dims:
+            if dim not in dims_to_keep:
+                obj = obj.drop_dims(dim)
+
+        return obj
 
     def restore(self, method="wiener", **kwargs):
         """
@@ -729,6 +783,11 @@ class PreprocessingAccessor:
 
     def filter_by_obs(self, col: str, func: Callable):
         """Returns the list of cells with the labels from items."""
+        # checking if the feature exists in obs
+        assert (
+            col in self._obj.coords[Dims.FEATURES].values
+        ), f"Feature {col} not found in obs. You can add it with pp.add_observations()."
+
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
@@ -759,237 +818,48 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def colorize(
-        self,
-        colors: List[str] = [
-            "#e6194B",
-            "#3cb44b",
-            "#ffe119",
-            "#4363d8",
-            "#f58231",
-            "#911eb4",
-            "#42d4f4",
-            "#f032e6",
-            "#bfef45",
-            "#fabed4",
-            "#469990",
-            "#dcbeff",
-            "#9A6324",
-            "#fffac8",
-            "#800000",
-            "#aaffc3",
-            "#808000",
-            "#ffd8b1",
-            "#000075",
-            "#a9a9a9",
-        ],
-        background: str = "black",
-        normalize: bool = True,
-        merge: bool = True,
-    ) -> xr.Dataset:
+    def grow_cells(self, iterations: int = 2):
         """
-        Colorizes a stack of images.
-
-        Parameters
-        ----------
-        colors : List[str], optional
-            A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
-        background : str, optional
-            Background color of the colorized image. Default is "black".
-        normalize : bool, optional
-            Normalize the image prior to colorizing it. Default is True.
-        merge : True, optional
-            Merge the channel dimension. Default is True.
-
-        Returns
-        -------
-        xr.Dataset
-            The image container with the colorized image stored in Layers.PLOT.
+        Grows the cells in the segmentation mask.
         """
-        if isinstance(colors, str):
-            colors = [colors]
+        if Layers.SEGMENTATION not in self._obj:
+            raise ValueError("The object does not contain a segmentation mask.")
 
-        image_layer = self._obj[Layers.IMAGE]
-        colored = _colorize(
-            image_layer.values,
-            colors=colors,
-            background=background,
-            normalize=normalize,
-        )
-        da = xr.DataArray(
-            colored,
-            coords=[
-                image_layer.coords[Dims.CHANNELS],
-                image_layer.coords[Dims.Y],
-                image_layer.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs={Attrs.IMAGE_COLORS: {k.item(): v for k, v in zip(image_layer.coords[Dims.CHANNELS], colors)}},
-        )
-
-        if merge:
-            da = da.sum(Dims.CHANNELS, keep_attrs=True)
-            da.values[da.values > 1] = 1.0
-
-        return xr.merge([self._obj, da])
-
-    def render_segmentation(
-        self,
-        alpha: float = 0,
-        alpha_boundary: float = 1,
-        mode: str = "inner",
-    ) -> xr.Dataset:
-        """
-        Render the segmentation layer of the data object.
-
-        This method renders the segmentation layer of the data object and returns an updated data object
-        with the rendered visualization. The rendered segmentation is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered segmentation. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
-        mode : str, optional
-            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered segmentation as a new plot layer.
-
-        Notes
-        -----
-        - The function extracts the segmentation layer and information about boundary pixels from the data object.
-        - It applies the specified alpha values and mode to render the segmentation.
-        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
-        """
-        assert Layers.SEGMENTATION in self._obj, "Add Segmentation first."
-
-        color_dict = {1: "white"}
-        cmap = _get_listed_colormap(color_dict)
+        # getting the segmentation mask
         segmentation = self._obj[Layers.SEGMENTATION].values
-        segmentation = _remove_segmentation_mask_labels(segmentation, self._obj.coords[Dims.CELLS].values)
-        # mask = _label_segmentation_mask(segmentation, cells_dict)
 
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_label(
-                segmentation,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_label(
-                segmentation,
-                cmap,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
+        # growing segmentation masks
+        masks_grown = expand_labels(segmentation, iterations)
 
+        # assigning the grown masks to the object
         da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
-        )
-        return xr.merge([self._obj, da])
-
-    def render_label(
-        self, alpha: float = 0, alpha_boundary: float = 1, mode: str = "inner", override_color: Union[str, None] = None
-    ) -> xr.Dataset:
-        """
-        Render the labeled cells in the data object.
-
-        This method renders the labeled cells in the data object based on the label colors and segmentation.
-        The rendered visualization is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered labels. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered labels. Default is 1.
-        mode : str, optional
-            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-        override_color : any, optional
-            The color value to override the default label colors. Default is None.
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered labeled cells as a new plot layer.
-
-        Raises
-        ------
-        AssertionError
-            If the data object does not contain label information. Use 'add_labels' function to add labels first.
-
-        Notes
-        -----
-        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
-        - It renders the labeled cells based on the label colors and the segmentation layer.
-        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
-        - If 'override_color' is provided, all labels will be rendered using the specified color.
-        """
-        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
-
-        # TODO: Attribute class in constants.py
-        color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
-        if override_color is not None:
-            color_dict = {k: override_color for k in color_dict.keys()}
-
-        cmap = _get_listed_colormap(color_dict)
-
-        cells_dict = self._obj.la._cells_to_label(relabel=True)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        mask = _label_segmentation_mask(segmentation, cells_dict)
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_label(
-                mask,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_label(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
+            masks_grown,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
         )
 
-        return xr.merge([self._obj, da])
+        # replacing the old segmentation mask with the new one
+        obj = self._obj.drop_vars(Layers.SEGMENTATION)
+        obj = xr.merge([obj, da])
 
+        # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+
+        # getting all of the obs features
+        obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
+        if obs_features != [Features.Y, Features.X]:
+            logger.warning(
+                "Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
+            )
+        # removing the original obs and features from the object
+        obj = obj.drop_vars(Layers.OBS)
+        obj = obj.drop_dims(Dims.FEATURES)
+
+        # adding the default obs back to the object
+        return obj.pp.add_observations()
+ 
     def autocrop(self, channel=None, downsample=10):
         slices = _autocrop(self._obj, channel=channel, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
+
