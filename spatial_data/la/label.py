@@ -854,6 +854,10 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
+        if label not in self._obj.la:
+            logger.info(f"Did not find {label}.")
+            return self._obj
+
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
