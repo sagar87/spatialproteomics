@@ -198,12 +198,14 @@ instead of adding them to the image container.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification">
-<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channels:</span> <span class="pre">Union[str</span></em>, <em class="sig-param"><span class="pre">list]</span> <span class="pre">=</span> <span class="pre">'all'</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">remove_unlabeled=True</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
 <dd><p>Quantify channel intensities over the segmentation mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em><em>, </em><em>optional</em>) – The name of the channel or a list of channel names to be added. Default is “all”.</p></li>
 <li><p><strong>func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The function used for quantification. Default is sum_intensity.</p></li>
+<li><p><strong>remove_unlabeled</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove unlabeled cells. Default is True.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.</p></li>
 <li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.</p></li>
 </ul>
@@ -242,15 +244,13 @@ of the image container.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation">
-<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_growth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a segmentation mask (_segmentation) field to the xarray dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>segmentation</strong> (<em>np.ndarray</em>) – A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
 that indicates the location of each cell.</p></li>
-<li><p><strong>mask_growth</strong> (<em>int</em>) – The number of pixels by which the segmentation mask should be grown.</p></li>
-<li><p><strong>relabel</strong> (<em>bool</em>) – If true the segmentation mask is relabeled to have continuous numbers from 1 to n.</p></li>
 <li><p><strong>copy</strong> (<em>bool</em>) – If true the segmentation mask is copied.</p></li>
 <li><p><strong>Returns</strong> – </p></li>
 <li><p><strong>--------</strong> – </p></li>
@@ -261,15 +261,20 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.drop_layers">
-<span class="sig-name descname"><span class="pre">drop_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.drop_layers" title="Permalink to this definition"></a></dt>
-<dd><p>Drops layers from the image container.</p>
+<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.colorize">
+<span class="sig-name descname"><span class="pre">colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">['#e6194B',</span> <span class="pre">'#3cb44b',</span> <span class="pre">'#ffe119',</span> <span class="pre">'#4363d8',</span> <span class="pre">'#f58231',</span> <span class="pre">'#911eb4',</span> <span class="pre">'#42d4f4',</span> <span class="pre">'#f032e6',</span> <span class="pre">'#bfef45',</span> <span class="pre">'#fabed4',</span> <span class="pre">'#469990',</span> <span class="pre">'#dcbeff',</span> <span class="pre">'#9A6324',</span> <span class="pre">'#fffac8',</span> <span class="pre">'#800000',</span> <span class="pre">'#aaffc3',</span> <span class="pre">'#808000',</span> <span class="pre">'#ffd8b1',</span> <span class="pre">'#000075',</span> <span class="pre">'#a9a9a9']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.colorize" title="Permalink to this definition"></a></dt>
+<dd><p>Colorizes a stack of images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>layers</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the layer or a list of layer names to be dropped.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colors</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of strings that denote the color of each channel. Default is [“C0”, “C1”, “C2”, “C3”].</p></li>
+<li><p><strong>background</strong> (<em>str</em><em>, </em><em>optional</em>) – Background color of the colorized image. Default is “black”.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Normalize the image prior to colorizing it. Default is True.</p></li>
+<li><p><strong>merge</strong> (<em>True</em><em>, </em><em>optional</em>) – Merge the channel dimension. Default is True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The updated image container with dropped layers.</p>
+<dd class="field-even"><p>The image container with the colorized image stored in Layers.PLOT.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>xr.Dataset</p>
@@ -318,12 +323,6 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.grow_cells">
-<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
-<dd><p>Grows the cells in the segmentation mask.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.normalize">
 <span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.normalize" title="Permalink to this definition"></a></dt>
 <dd><p>Performs a percentile normalization on each channel.</p>
@@ -335,6 +334,71 @@ that indicates the location of each cell.</p></li>
 <dd class="field-even"><p>xr.Dataset</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.render_label">
+<span class="sig-name descname"><span class="pre">render_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_boundary</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.render_label" title="Permalink to this definition"></a></dt>
+<dd><p>Render the labeled cells in the data object.</p>
+<p>This method renders the labeled cells in the data object based on the label colors and segmentation.
+The rendered visualization is represented in RGBA format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value to control the transparency of the rendered labels. Default is 0.</p></li>
+<li><p><strong>alpha_boundary</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value for boundary pixels in the rendered labels. Default is 1.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode for rendering the labels: “inner” for internal region, “boundary” for boundary pixels.
+Default is “inner”.</p></li>
+<li><p><strong>override_color</strong> (<em>any</em><em>, </em><em>optional</em>) – The color value to override the default label colors. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated data object with the rendered labeled cells as a new plot layer.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the data object does not contain label information. Use ‘add_labels’ function to add labels first.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function retrieves label colors from the data object and applies the specified alpha values and mode.</p></li>
+<li><p>It renders the labeled cells based on the label colors and the segmentation layer.</p></li>
+<li><p>The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.</p></li>
+<li><p>If ‘override_color’ is provided, all labels will be rendered using the specified color.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.render_segmentation">
+<span class="sig-name descname"><span class="pre">render_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_boundary</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.render_segmentation" title="Permalink to this definition"></a></dt>
+<dd><p>Render the segmentation layer of the data object.</p>
+<p>This method renders the segmentation layer of the data object and returns an updated data object
+with the rendered visualization. The rendered segmentation is represented in RGBA format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value to control the transparency of the rendered segmentation. Default is 0.</p></li>
+<li><p><strong>alpha_boundary</strong> (<em>float</em><em>, </em><em>optional</em>) – The alpha value for boundary pixels in the rendered segmentation. Default is 1.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode for rendering the segmentation: “inner” for internal region, “boundary” for boundary pixels.
+Default is “inner”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated data object with the rendered segmentation as a new plot layer.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function extracts the segmentation layer and information about boundary pixels from the data object.</p></li>
+<li><p>It applies the specified alpha values and mode to render the segmentation.</p></li>
+<li><p>The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
