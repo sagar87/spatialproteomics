@@ -1,29 +1,9 @@
 import numpy as np
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
-from skimage.segmentation import clear_border, find_boundaries, relabel_sequential
+from skimage.segmentation import clear_border, relabel_sequential
 
 from ..constants import Dims
-from ..pl import _get_linear_colormap
-
-
-def _render_label(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mode="inner"):
-    colored_mask = cmap_mask(mask)
-
-    mask_bool = mask > 0
-    mask_bound = np.bitwise_and(mask_bool, find_boundaries(mask, mode=mode))
-
-    # blend
-    if img is None:
-        img = np.zeros(mask.shape + (4,), np.float32)
-        img[..., -1] = 1
-
-    im = img.copy()
-
-    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
-    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
-
-    return im
 
 
 def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
@@ -170,6 +150,7 @@ def _autocrop(sdata, channel=None, downsample=10):
 
     return slice(downsample * minc, downsample * maxc), slice(downsample * minr, downsample * maxr)
 
+
 def _normalize(
     img: np.ndarray,
     pmin: float = 3.0,
@@ -208,4 +189,3 @@ def _normalize(
         norm = np.clip(norm, 0, 1)
 
     return norm
-

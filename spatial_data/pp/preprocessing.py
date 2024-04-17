@@ -14,17 +14,7 @@ from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from ..la.label import _format_labels
 from .intensity import sum_intensity
-
-from .utils import (
-    _autocrop,
-    _colorize,
-    _label_segmentation_mask,
-    _normalize,
-    _relabel_cells,
-    _remove_segmentation_mask_labels,
-    _remove_unlabeled_cells,
-    _render_label,
-)
+from .utils import _autocrop, _normalize, _relabel_cells, _remove_unlabeled_cells
 
 
 @xr.register_dataset_accessor("pp")
@@ -858,8 +848,7 @@ class PreprocessingAccessor:
 
         # adding the default obs back to the object
         return obj.pp.add_observations()
- 
+
     def autocrop(self, channel=None, downsample=10):
         slices = _autocrop(self._obj, channel=channel, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
-
