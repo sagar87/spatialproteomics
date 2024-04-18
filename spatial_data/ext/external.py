@@ -57,10 +57,18 @@ class ExternalAccessor:
         This method requires the 'cellpose' package to be installed.
         """
 
-        # if return_xarray is true, check if a segmentation mask with the key already exists
-        assert (
-            not return_xarray or key_added not in self._obj
-        ), f"A segmentation mask with the key {key_added} already exists. You can either change the key with the key_added parameter, or return the predictions as a numpy array. To do this, set return_xarray to False. Alternatively, you can drop the existing segmentation mask from the object by using pp.drop_layers('{key_added}')."
+        if return_xarray:
+            # if return_xarray is true, check if a segmentation mask with the key already exists
+            assert (
+                key_added not in self._obj
+            ), f"A segmentation mask with the key {key_added} already exists. You can either change the key with the key_added parameter, or return the predictions as a numpy array. To do this, set return_xarray to False. Alternatively, you can drop the existing segmentation mask from the object by using pp.drop_layers('{key_added}')."
+
+            # if the number of channels is 1, we can add the segmentation to the original object
+            # if it is equal to the number of channels, we can also add it to the object
+            # if it is anything else, we force the user to return the predictions in the form of a numpy array
+            assert len(channels) == 1 or len(channels) == len(
+                self._obj.coords[Dims.CHANNELS].values
+            ), "You are trying to segment only a subset of the available channels. If you want to add the segmentation mask to the xarray object directly, you need to segment either all channels or only one channel. If you want to segment a subset of the channels, you need to return the predictions as a numpy array."
 
         from cellpose import models
 
@@ -71,17 +79,10 @@ class ExternalAccessor:
         elif channels is None:
             channels = self._obj.coords[Dims.CHANNELS].values
 
-        # if the number of channels is 1, we can add the segmentation to the original object
-        # if it is equal to the number of channels, we can also add it to the object
-        # if it is anything else, we force the user to return the predictions in the form of a numpy array
-        assert (
-            return_xarray or len(channels) == 1 or len(channels) == len(self._obj.coords[Dims.CHANNELS].values)
-        ), "You are trying to segment only a subset of the available channels. If you want to add the segmentation mask to the xarray object directly, you need to segment either all channels or only one channel. If you want to segment a subset of the channels, you need to return the predictions as a numpy array."
-
         all_masks = []
         for channel in channels:
             masks_pred, _, _, _ = model.eval(
-                self._obj.pp[channel.item()]._image.values.squeeze(),
+                self._obj.pp[channel]._image.values.squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
