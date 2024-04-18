@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import List, Optional
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -15,33 +16,155 @@ class ExternalAccessor:
 
     def cellpose(
         self,
-        channel: str,
-        key_added: Optional[str] = None,
+        key_added: Optional[str] = "_cellpose_segmentation",
         diameter: int = 0,
-        channels: list = [0, 0],
+        channel_settings: list = [0, 0],
         num_iterations: int = 2000,
         gpu: bool = True,
         model_type: str = "cyto3",
     ):
+        """
+        Segment cells using Cellpose.
+
+        Parameters
+        ----------
+        key_added : str, optional
+            Key to assign to the segmentation results.
+        diameter : int, optional
+            Expected cell diameter in pixels.
+        channel_settings : List[int], optional
+            Channels for Cellpose to use for segmentation.
+        num_iterations : int, optional
+            Maximum number of iterations for segmentation.
+        gpu : bool, optional
+            Whether to use GPU for segmentation.
+        model_type : str, optional
+            Type of Cellpose model to use.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing original data and segmentation mask.
+
+        Notes
+        -----
+        This method requires the 'cellpose' package to be installed.
+        """
+
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
 
-        mask, _ = model.eval(
-            self._obj.pp[channel]._image.values.squeeze(), diameter=diameter, channels=channels, niter=num_iterations
-        )
+        all_masks = []
+        for channel in self._obj.coords[Dims.CHANNELS]:
+            masks_pred, _, _, _ = model.eval(
+                self._obj.pp[channel.item()]._image.values.squeeze(),
+                diameter=diameter,
+                channels=channel_settings,
+                niter=num_iterations,
+            )
+            all_masks.append(masks_pred)
 
-        if key_added is None:
-            key_added = f"_cellpose_{channel}"
+        if len(all_masks) == 1:
+            mask_tensor = np.expand_dims(all_masks[0], 0)
+        else:
+            mask_tensor = np.stack(all_masks, 0)
 
         da = xr.DataArray(
-            mask,
-            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-            dims=[Dims.Y, Dims.X],
+            mask_tensor,
+            coords=[
+                self._obj.coords[Dims.CHANNELS],
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+            ],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=key_added,
         )
 
         return xr.merge([self._obj, da])
+
+    def cellpose_denoise(
+        self,
+        key_added: List[str] = ["_cellpose_denoise", "_cellpose_denoise_segmentation"],
+        diameter: int = 0,
+        channel_settings: list = [0, 0],
+        gpu: bool = True,
+        model_type: str = "cyto3",
+        restore_type: str = "denoise_cyto3",
+        **kwargs,
+    ):
+        """
+        Segment cells using Cellpose.
+
+        Parameters
+        ----------
+        key_added : str, optional
+            Key to assign to the segmentation results.
+        diameter : int, optional
+            Expected cell diameter in pixels.
+        channel_settings : List[int], optional
+            Channels for Cellpose to use for segmentation.
+        num_iterations : int, optional
+            Maximum number of iterations for segmentation.
+        gpu : bool, optional
+            Whether to use GPU for segmentation.
+        model_type : str, optional
+            Type of Cellpose model to use.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing original data and segmentation mask.
+
+        Notes
+        -----
+        This method requires the 'cellpose' package to be installed.
+        """
+
+        from cellpose import denoise
+
+        model = denoise.CellposeDenoiseModel(gpu=gpu, model_type=model_type, restore_type=restore_type)
+
+        all_masks = []
+        all_imags = []
+        for channel in self._obj.coords[Dims.CHANNELS]:
+            masks, flows, styles, imgs_dn = model.eval(
+                self._obj.pp[channel.item()]._image.values.squeeze(),
+                diameter=diameter,
+                channels=channel_settings,
+                **kwargs,
+            )
+            all_masks.append(masks)
+            all_imags.append(imgs_dn)
+
+        if len(all_masks) == 1:
+            mask_tensor = np.expand_dims(all_masks[0], 0)
+            img_tensor = np.expand_dims(all_imags[0], 0)
+        else:
+            mask_tensor = np.stack(all_masks, 0)
+            img_tensor = np.stack(all_imags, 0)
+
+        da = xr.DataArray(
+            mask_tensor,
+            coords=[
+                self._obj.coords[Dims.CHANNELS],
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+            ],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=key_added[1],
+        )
+        db = xr.DataArray(
+            img_tensor,
+            coords=[
+                self._obj.coords[Dims.CHANNELS],
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+            ],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=key_added[0],
+        )
+        return xr.merge([self._obj, da, db])
 
     def stardist(
         self,

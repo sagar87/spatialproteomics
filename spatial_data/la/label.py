@@ -854,10 +854,28 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
+        if label not in self._obj.la:
+            logger.info(f"Did not find {label}.")
+            return self._obj
+
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
-        self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
+        props = self._obj.coords[Dims.PROPS].values.tolist()
+        labels = self._obj.coords[Dims.LABELS].values.tolist()
+        array = self._obj._labels.values.copy()
+        array[labels.index(label), props.index(Props.COLOR)] = color
+
+        da = xr.DataArray(
+            array,
+            coords=[labels, props],
+            dims=[Dims.LABELS, Dims.PROPS],
+            name=Layers.LABELS,
+        )
+
+        # self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
+
+        return xr.merge([self._obj.drop_vars(Layers.LABELS), da])
 
     def neighborhood_graph(self, neighbors=10, radius=1.0, metric="euclidean"):
         """
