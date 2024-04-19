@@ -14,7 +14,7 @@ from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from ..la.label import _format_labels
 from .intensity import sum_intensity
-from .utils import _autocrop, _normalize, _relabel_cells, _remove_unlabeled_cells
+from .utils import _autocrop, _normalize, _relabel_cells, _remove_unlabeled_cells, _merge_segmentation
 
 
 @xr.register_dataset_accessor("pp")
@@ -852,3 +852,58 @@ class PreprocessingAccessor:
     def autocrop(self, channel=None, downsample=10):
         slices = _autocrop(self._obj, channel=channel, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
+
+    def merge_segmentation(self, array: np.ndarray, labels: Optional[Union[str, List[str]]] = None, threshold: float = 1.0):
+        # array = all of the arrays that will iteratively be merged to the existing segmentation mask
+        # ensuring that a segmentation mask already exists
+        assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
+        
+        # checking that the array is 2D or 3D
+        assert array.ndim in [2, 3], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
+        
+        # if the array is 2D, it gets expanded to 3D
+        if array.ndim == 2:
+            array = np.expand_dims(array, 0)
+            
+        # ensuring that the second and third dimension of the array match the segmentation mask
+        assert (array.shape[1] == self._obj.sizes[Dims.Y]) & (array.shape[2] == self._obj.sizes[Dims.X]), "The shape of the input array does not match the shape of the segmentation mask."
+        
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        
+        print(f"Number of cells before merging: {len(np.unique(segmentation))}")
+            
+        # iterating through the array to merge the segmentation masks
+        for i in range(array.shape[0]):
+            print(f"Iteration 1, inputs have the following number of cells: {len(np.unique(segmentation))}, {len(np.unique(array[i, :, :]))}")
+            segmentation = _merge_segmentation(array[i, :, :], segmentation, threshold=1.0)
+            
+        print(f"Number of cells after merging: {len(np.unique(segmentation))}")
+            
+        # assigning the new segmentation to the object
+        da = xr.DataArray(
+            segmentation,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
+        )
+
+        # replacing the old segmentation mask with the new one
+        obj = self._obj.drop_vars(Layers.SEGMENTATION)
+        obj = xr.merge([obj, da])
+
+        # after segmentation masks are altered, the obs features (e. g. centroids and areas) need to be updated
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+
+        # getting all of the obs features
+        obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
+        if obs_features != [Features.Y, Features.X]:
+            logger.warning(
+                "Mask merging requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
+            )
+            
+        # removing the original obs and features from the object
+        obj = obj.drop_vars(Layers.OBS)
+        obj = obj.drop_dims(Dims.FEATURES)
+
+        # adding the default obs back to the object
+        return obj.pp.add_observations()
