@@ -55,7 +55,6 @@ class PreprocessingAccessor:
         xarray.Dataset
             The subsetted image container.
         """
-        # print(indices)
         # argument handling
         if type(indices) is str:
             c_slice = [indices]
@@ -351,15 +350,25 @@ class PreprocessingAccessor:
         if return_xarray:
             return da
 
-        # if there are already observations, concatenate them
-        if Layers.OBS in self._obj:
-            logger.info("Found _obs in image container. Concatenating.")
-            da = xr.concat(
-                [self._obj[Layers.OBS].copy(), da],
-                dim=Dims.FEATURES,
-            )
+        obj = self._obj.copy()
 
-        return xr.merge([self._obj, da])
+        # if there are already observations, concatenate them
+        if Layers.OBS in obj:
+            # checking if the new number of cells matches with the old one
+            # if it does not match, we need to update the cell dimension, i. e. remove all old _obs
+            if len(label) != len(obj.coords[Dims.CELLS]):
+                logger.warning(
+                    "Found _obs with different number of cells in the image container. Removing all old _obs for continuity."
+                )
+                obj = obj.drop_layers(Layers.OBSERVATIONS)
+            else:
+                logger.info("Found _obs in image container. Concatenating.")
+                da = xr.concat(
+                    [obj[Layers.OBS].copy(), da],
+                    dim=Dims.FEATURES,
+                )
+
+        return xr.merge([obj, da])
 
     def add_quantification(
         self,
@@ -716,7 +725,6 @@ class PreprocessingAccessor:
             quantile = np.array(quantile)
         # Calulate quat
         lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-        # print(lower, lower.shape)
         filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
         if key_added is None:
@@ -874,6 +882,9 @@ class PreprocessingAccessor:
             3,
         ], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
 
+        # checking that the input type is int
+        assert array.dtype == int, "The input array must be of type int."
+
         # if the array is 2D, it gets expanded to 3D
         if array.ndim == 2:
             array = np.expand_dims(array, 0)
@@ -898,7 +909,7 @@ class PreprocessingAccessor:
             if labels is not None:
                 label_1, label_2 = labels[i - 1], labels[i]
             else:
-                label_1, label_2 = 1, 2
+                label_1, label_2 = i, i + 1
 
             segmentation, final_mapping = _merge_segmentation(
                 segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=1.0
@@ -915,7 +926,7 @@ class PreprocessingAccessor:
         if labels is not None:
             label_1, label_2 = labels[i], "Other"
         else:
-            label_1, label_2 = 1, 2
+            label_1, label_2 = i, i + 1
 
         segmentation, final_mapping = _merge_segmentation(
             segmentation, self._obj[Layers.SEGMENTATION].values, label1=label_1, label2=label_2, threshold=1.0
@@ -935,8 +946,11 @@ class PreprocessingAccessor:
             name=Layers.SEGMENTATION,
         )
 
-        # replacing the old segmentation mask with the new one
-        obj = self._obj.drop_vars(Layers.SEGMENTATION)
+        # replacing the old segmentation mask and obs with the new one
+        obj = self._obj.pp.drop_layers(Layers.SEGMENTATION)
+        if Layers.OBS in obj:
+            obj = obj.pp.drop_layers(Layers.OBS)
+
         obj = xr.merge([obj, da])
 
         # after segmentation masks are altered, the obs features (e. g. centroids and areas) need to be updated
@@ -948,10 +962,6 @@ class PreprocessingAccessor:
             logger.warning(
                 "Mask merging requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
             )
-
-        # removing the original obs and features from the object
-        obj = obj.drop_vars(Layers.OBS)
-        obj = obj.drop_dims(Dims.FEATURES)
 
         # adding the default obs back to the object
         obj = obj.pp.add_observations()
