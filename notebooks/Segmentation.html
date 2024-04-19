@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merging segmentation masks &mdash; Spatial-Data 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Spatial-Data
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Example%202.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Spatial-Data</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Merging segmentation masks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Segmentation.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Merging-segmentation-masks">
+<h1>Merging segmentation masks<a class="headerlink" href="#Merging-segmentation-masks" title="Permalink to this headline"></a></h1>
+<p>You can merge segmentation masks into one. The masks to be merged should always be ordererd by small to big. You can also add labels directly.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
+%autoreload 2
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
+import pandas as pd
+import matplotlib.pyplot as plt
+import xarray as xr
+xr.set_options(display_style=&#39;text&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.core.options.set_options at 0x7fffd5f58dc0&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr&#39;).pp[1000:1300, 1000:1300]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># segmenting on CD11c (dendritic cells) and CD68 (macrophages) and getting the result as a numpy array
+new_segmentations = ds.ext.cellpose(channels=[&#39;CD11c&#39;, &#39;CD68&#39;], return_xarray=False)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+TORCH CUDA version not installed/working.
+&gt;&gt;&gt;&gt; using CPU
+&gt;&gt; cyto3 &lt;&lt; model set to be used
+&gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
+channels set to [0, 0]
+~~~ ESTIMATING CELL DIAMETER(S) ~~~
+estimated cell diameter(s) in 19.42 sec
+&gt;&gt;&gt; diameter(s) =
+[ 20.95 ]
+~~~ FINDING MASKS ~~~
+&gt;&gt;&gt;&gt; TOTAL TIME 35.98 sec
+channels set to [0, 0]
+~~~ ESTIMATING CELL DIAMETER(S) ~~~
+estimated cell diameter(s) in 15.75 sec
+&gt;&gt;&gt; diameter(s) =
+[ 21.76 ]
+~~~ FINDING MASKS ~~~
+&gt;&gt;&gt;&gt; TOTAL TIME 29.31 sec
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>new_segmentations.shape
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(2, 301, 301)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (cells: 314, channels: 56, y: 301, x: 301, labels: 8,
+                    props: 2, features: 4)
+Coordinates:
+  * cells          (cells) int64 3185 3215 3236 3237 ... 4715 4718 4728 4729
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 3.145 0.101 1.386 ... 0.7508 0.4342
+    _arcsinh_sum   (cells, channels) float64 8.73 3.989 6.909 ... 5.641 5.032
+    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
+    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _obs           (cells, features) float64 1.085e+03 1.296e+03 6.0 ... 4.0 3.0
+    _raw_mean      (cells, channels) float64 57.93 0.5056 9.375 ... 4.117 2.24
+    _raw_sum       (cells, channels) float64 1.547e+04 135.0 ... 704.0 383.0
+    _segmentation  (y, x) int64 0 0 0 4319 4319 ... 4014 4014 3481 3481 3481</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
+merged_ds = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;])
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/pp/preprocessing.py:27: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+Found &#39;cells&#39; coordinate in &#39;_arcsinh_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_arcsinh_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_obs&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_raw_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_raw_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 56, y: 301, x: 301, labels: 8, props: 2,
+                    cells: 298, features: 2)
+Coordinates:
+  * channels       (channels) &lt;U11 &#39;DAPI&#39; &#39;Helios&#39; &#39;CD10&#39; ... &#39;CD79a&#39; &#39;Ki-67&#39;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
+  * props          (props) &lt;U6 &#39;_color&#39; &#39;_name&#39;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 292 293 294 295 296 297 298
+  * features       (features) &lt;U10 &#39;centroid-0&#39; &#39;centroid-1&#39;
+Data variables:
+    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
+    _labels        (labels, props) object &#39;C3&#39; ... &#39;B (PAX5)&#39;
+    _segmentation  (y, x) uint16 0 0 0 218 218 218 218 218 ... 0 0 0 0 0 16 16 0
+    _obs           (cells, features) float64 78.46 89.84 68.55 ... 150.4 58.48
+(298, 2)
+     cell           label
+0       1  Dendritic Cell
+1       2  Dendritic Cell
+2       3  Dendritic Cell
+3       4  Dendritic Cell
+4       5  Dendritic Cell
+..    ...             ...
+293   294           Other
+294   295           Other
+295   296           Other
+296   297           Other
+297   298           Other
+
+[298 rows x 2 columns]
+Empty DataFrame
+Columns: [cell, label]
+Index: []
+Empty DataFrame
+Columns: [cell, label]
+Index: []
+ADDING PROPS
+&lt;xarray.DataArray &#39;_labels&#39; (labels: 3, props: 1)&gt;
+array([[&#39;#FFFF00&#39;],
+       [&#39;#001E09&#39;],
+       [&#39;#6367A9&#39;]], dtype=&#39;&lt;U7&#39;)
+Coordinates:
+  * labels   (labels) int64 1 2 3
+  * props    (props) &lt;U6 &#39;_color&#39;
+===================
+&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 56, x: 301, y: 301, cells: 298, features: 4)
+Coordinates:
+  * channels       (channels) &lt;U11 &#39;DAPI&#39; &#39;Helios&#39; &#39;CD10&#39; ... &#39;CD79a&#39; &#39;Ki-67&#39;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 292 293 294 295 296 297 298
+  * features       (features) &lt;U16 &#39;_labels&#39; &#39;_original_labels&#39; ... &#39;centroid-1&#39;
+Data variables:
+    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
+    _segmentation  (y, x) uint16 0 0 0 218 218 218 218 218 ... 0 0 0 0 0 16 16 0
+    _obs           (cells, features) float64 1.0 1.0 78.46 ... 3.0 150.4 58.48
+ADDING PROPS
+&lt;xarray.DataArray &#39;_labels&#39; (labels: 3, props: 2)&gt;
+array([[&#39;#FFFF00&#39;, &#39;Dendritic Cell&#39;],
+       [&#39;#001E09&#39;, &#39;Macrophage&#39;],
+       [&#39;#6367A9&#39;, &#39;Other&#39;]], dtype=&#39;&lt;U14&#39;)
+Coordinates:
+  * labels   (labels) int64 1 2 3
+  * props    (props) &lt;U6 &#39;_color&#39; &#39;_name&#39;
+===================
+&lt;xarray.Dataset&gt;
+Dimensions:        (labels: 3, props: 1, channels: 56, x: 301, y: 301,
+                    cells: 298, features: 4)
+Coordinates:
+  * labels         (labels) int64 1 2 3
+  * props          (props) &lt;U6 &#39;_color&#39;
+  * channels       (channels) &lt;U11 &#39;DAPI&#39; &#39;Helios&#39; &#39;CD10&#39; ... &#39;CD79a&#39; &#39;Ki-67&#39;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 292 293 294 295 296 297 298
+  * features       (features) &lt;U16 &#39;_labels&#39; &#39;_original_labels&#39; ... &#39;centroid-1&#39;
+Data variables:
+    _labels        (labels, props) &lt;U7 &#39;#FFFF00&#39; &#39;#001E09&#39; &#39;#6367A9&#39;
+    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
+    _segmentation  (y, x) uint16 0 0 0 218 218 218 218 218 ... 0 0 0 0 0 16 16 0
+    _obs           (cells, features) float64 1.0 1.0 78.46 ... 3.0 150.4 58.48
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(16, 8))
+
+# original masks
+_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[0])
+
+# merged masks
+_ = merged_ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[1])
+_ = merged_ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[2])
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Segmentation_8_0.png" src="../_images/notebooks_Segmentation_8_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
