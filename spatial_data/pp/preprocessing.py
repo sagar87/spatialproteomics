@@ -14,7 +14,13 @@ from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from ..la.label import _format_labels
 from .intensity import sum_intensity
-from .utils import _autocrop, _normalize, _relabel_cells, _remove_unlabeled_cells, _merge_segmentation
+from .utils import (
+    _autocrop,
+    _merge_segmentation,
+    _normalize,
+    _relabel_cells,
+    _remove_unlabeled_cells,
+)
 
 
 @xr.register_dataset_accessor("pp")
@@ -853,32 +859,74 @@ class PreprocessingAccessor:
         slices = _autocrop(self._obj, channel=channel, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
 
-    def merge_segmentation(self, array: np.ndarray, labels: Optional[Union[str, List[str]]] = None, threshold: float = 1.0):
+    def merge_segmentation(
+        self, array: np.ndarray, labels: Optional[Union[str, List[str]]] = None, threshold: float = 1.0
+    ):
         # array = all of the arrays that will iteratively be merged to the existing segmentation mask
         # ensuring that a segmentation mask already exists
-        assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
-        
+        assert (
+            Layers.SEGMENTATION in self._obj
+        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
+
         # checking that the array is 2D or 3D
-        assert array.ndim in [2, 3], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
-        
+        assert array.ndim in [
+            2,
+            3,
+        ], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
+
         # if the array is 2D, it gets expanded to 3D
         if array.ndim == 2:
             array = np.expand_dims(array, 0)
-            
+
+        # if labels are provided, they need to match the number of arrays
+        if labels is not None:
+            assert (
+                len(labels) == array.shape[0]
+            ), f"The number of labels must match the number of arrays. You submitted {len(labels)} channels compared to {array.shape[0]} arrays."
+
         # ensuring that the second and third dimension of the array match the segmentation mask
-        assert (array.shape[1] == self._obj.sizes[Dims.Y]) & (array.shape[2] == self._obj.sizes[Dims.X]), "The shape of the input array does not match the shape of the segmentation mask."
-        
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        
-        print(f"Number of cells before merging: {len(np.unique(segmentation))}")
-            
+        assert (array.shape[1] == self._obj.sizes[Dims.Y]) & (
+            array.shape[2] == self._obj.sizes[Dims.X]
+        ), "The shape of the input array does not match the shape of the segmentation mask."
+
+        # merge big cells first, then small cells
+        i = 0
+        segmentation = array[i, :, :]
+
         # iterating through the array to merge the segmentation masks
-        for i in range(array.shape[0]):
-            print(f"Iteration 1, inputs have the following number of cells: {len(np.unique(segmentation))}, {len(np.unique(array[i, :, :]))}")
-            segmentation = _merge_segmentation(array[i, :, :], segmentation, threshold=1.0)
-            
-        print(f"Number of cells after merging: {len(np.unique(segmentation))}")
-            
+        for i in range(1, array.shape[0]):
+            if labels is not None:
+                label_1, label_2 = labels[i - 1], labels[i]
+            else:
+                label_1, label_2 = 1, 2
+
+            segmentation, final_mapping = _merge_segmentation(
+                segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=1.0
+            )
+
+            if i == 1:
+                # in the first iteration, we simply take the mapping we get from _merge_segmentation
+                mapping = final_mapping
+            else:
+                # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
+                mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
+
+        # finally, we merge the smallest cells, which we assume to be in the segmentation mask already
+        if labels is not None:
+            label_1, label_2 = labels[i], "Other"
+        else:
+            label_1, label_2 = 1, 2
+
+        segmentation, final_mapping = _merge_segmentation(
+            segmentation, self._obj[Layers.SEGMENTATION].values, label1=label_1, label2=label_2, threshold=1.0
+        )
+        # if there is only one array to merge, we can simply take the mapping obtained by _merge_segmentation as the final mapping
+        if array.shape[0] == 1:
+            mapping = final_mapping
+        else:
+            # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
+            mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
+
         # assigning the new segmentation to the object
         da = xr.DataArray(
             segmentation,
@@ -900,10 +948,17 @@ class PreprocessingAccessor:
             logger.warning(
                 "Mask merging requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
             )
-            
+
         # removing the original obs and features from the object
         obj = obj.drop_vars(Layers.OBS)
         obj = obj.drop_dims(Dims.FEATURES)
 
         # adding the default obs back to the object
-        return obj.pp.add_observations()
+        obj = obj.pp.add_observations()
+
+        # if labels are provided, they are added to the object
+        if labels is not None:
+            label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
+            obj = obj.pp.add_labels(label_df)
+
+        return obj

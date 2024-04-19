@@ -30,8 +30,8 @@ from .container import load_image_data
 from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
-from .pp import PreprocessingAccessor
 from .pp import (
+    PreprocessingAccessor,
     arcsinh_mean_intensity,
     arcsinh_median_intensity,
     arcsinh_sum_intensity,

@@ -70,7 +70,7 @@ def _relabel_cells(segmentation: np.ndarray):
     return segmentation_relabeled, value_map
 
 
-def _merge_segmentation(s1, s2, threshold=1.0):
+def _merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     """
     Merge two segmentation masks based on specified criteria.
 
@@ -125,8 +125,9 @@ def _merge_segmentation(s1, s2, threshold=1.0):
     # make final mask
     clean_mask = _remove_unlabeled_cells(s3, selected_cells)
     final_mask, fmap, bmap = relabel_sequential(clean_mask)
+    mapping = dict(zip([fmap[i] for i in selected_cells.astype(int)], [label1] * len(i1) + [label2] * len(i2)))
 
-    return final_mask
+    return final_mask, mapping
 
 
 def _autocrop(sdata, channel=None, downsample=10):
