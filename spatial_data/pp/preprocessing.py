@@ -883,7 +883,7 @@ class PreprocessingAccessor:
         ], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
 
         # checking that the input type is int
-        assert array.dtype == int, "The input array must be of type int."
+        assert np.issubdtype(array.dtype, np.integer), "The input array must be of type int."
 
         # if the array is 2D, it gets expanded to 3D
         if array.ndim == 2:
@@ -948,26 +948,31 @@ class PreprocessingAccessor:
 
         # replacing the old segmentation mask and obs with the new one
         obj = self._obj.pp.drop_layers(Layers.SEGMENTATION)
-        if Layers.OBS in obj:
-            obj = obj.pp.drop_layers(Layers.OBS)
+
+        # we need to remove all layers that have "cells" as part of their coordinates in order to keep the "cells" dimension synchronized with the segmentation mask
+        for layer in obj.data_vars:
+            if Dims.CELLS in obj[layer].dims:
+                obj = obj.pp.drop_layers(layer)
+                logger.warning(
+                    f"Found '{Dims.CELLS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
+                )
 
         obj = xr.merge([obj, da])
-
-        # after segmentation masks are altered, the obs features (e. g. centroids and areas) need to be updated
-        # if anything other than the default obs were present, a warning is shown, as they will be removed
-
-        # getting all of the obs features
-        obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
-        if obs_features != [Features.Y, Features.X]:
-            logger.warning(
-                "Mask merging requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
-            )
 
         # adding the default obs back to the object
         obj = obj.pp.add_observations()
 
         # if labels are provided, they are added to the object
         if labels is not None:
+            # we need to remove all layers that have "props" as part of their coordinates so we can overwrite it
+            for layer in obj.data_vars:
+                if Dims.PROPS in obj[layer].dims:
+                    obj = obj.pp.drop_layers(layer)
+                    logger.warning(
+                        f"Found '{Dims.PROPS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
+                    )
+                    
+            # creating and adding the new labels
             label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
             obj = obj.pp.add_labels(label_df)
 

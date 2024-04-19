@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_data.constants import Layers
+from spatial_data.constants import Dims, Layers
 
 
 def test_merge_segmentation_2d(dataset):
@@ -12,13 +12,13 @@ def test_merge_segmentation_2d(dataset):
     merged_2 = dataset.pp.merge_segmentation(merge_array, labels=["test_label"])
 
     # ensure that the dimensionality and the number of cells in the segmentation mask are synchronized
-    assert merged_1.dims["cells"] == len(np.unique(merged_1[Layers.SEGMENTATION].values)) - 1
-    assert merged_2.dims["cells"] == len(np.unique(merged_2[Layers.SEGMENTATION].values)) - 1
+    assert merged_1.dims[Dims.CELLS] == len(np.unique(merged_1[Layers.SEGMENTATION].values)) - 1
+    assert merged_2.dims[Dims.CELLS] == len(np.unique(merged_2[Layers.SEGMENTATION].values)) - 1
 
     # ensure that the number of cells afterwards is smaller than the number of cells in the original image
-    assert merged_1.dims["cells"] == merged_2.dims["cells"]
-    assert dataset.dims["cells"] > merged_1.dims["cells"]
-    assert dataset.dims["cells"] > merged_2.dims["cells"]
+    assert merged_1.dims[Dims.CELLS] == merged_2.dims[Dims.CELLS]
+    assert dataset.dims[Dims.CELLS] > merged_1.dims[Dims.CELLS]
+    assert dataset.dims[Dims.CELLS] > merged_2.dims[Dims.CELLS]
 
 
 def test_merge_segmentation_3d(dataset):
@@ -30,13 +30,13 @@ def test_merge_segmentation_3d(dataset):
     merged_2 = dataset.pp.merge_segmentation(merge_array, labels=["test_label_1", "test_label_2"])
 
     # ensure that the dimensionality and the number of cells in the segmentation mask are synchronized
-    assert merged_1.dims["cells"] == len(np.unique(merged_1[Layers.SEGMENTATION].values)) - 1
-    assert merged_2.dims["cells"] == len(np.unique(merged_2[Layers.SEGMENTATION].values)) - 1
+    assert merged_1.dims[Dims.CELLS] == len(np.unique(merged_1[Layers.SEGMENTATION].values)) - 1
+    assert merged_2.dims[Dims.CELLS] == len(np.unique(merged_2[Layers.SEGMENTATION].values)) - 1
 
     # ensure that the number of cells afterwards is smaller than the number of cells in the original image
-    assert merged_1.dims["cells"] == merged_2.dims["cells"]
-    assert dataset.dims["cells"] > merged_1.dims["cells"]
-    assert dataset.dims["cells"] > merged_2.dims["cells"]
+    assert merged_1.dims[Dims.CELLS] == merged_2.dims[Dims.CELLS]
+    assert dataset.dims[Dims.CELLS] > merged_1.dims[Dims.CELLS]
+    assert dataset.dims[Dims.CELLS] > merged_2.dims[Dims.CELLS]
 
 
 def test_merge_segmentation_wrong_dimensionality(dataset):
