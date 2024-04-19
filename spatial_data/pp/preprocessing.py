@@ -973,7 +973,6 @@ class PreprocessingAccessor:
 
             # creating and adding the new labels
             label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
-            print(label_df)
             obj = obj.pp.add_labels(label_df)
 
         return obj
