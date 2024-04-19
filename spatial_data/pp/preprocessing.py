@@ -559,7 +559,6 @@ class PreprocessingAccessor:
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
                 label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
-                # num_to_label = {v: k for k, v in label_to_num.items()}
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
@@ -971,9 +970,10 @@ class PreprocessingAccessor:
                     logger.warning(
                         f"Found '{Dims.PROPS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
                     )
-                    
+
             # creating and adding the new labels
             label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
+            print(label_df)
             obj = obj.pp.add_labels(label_df)
 
         return obj
