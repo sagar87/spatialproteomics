@@ -387,7 +387,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f58dc0&gt;
+&lt;xarray.core.options.set_options at 0x7fffd5f550d0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -429,18 +429,18 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 19.42 sec
+estimated cell diameter(s) in 20.81 sec
 &gt;&gt;&gt; diameter(s) =
 [ 20.95 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 35.98 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 36.41 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 15.75 sec
+estimated cell diameter(s) in 17.75 sec
 &gt;&gt;&gt; diameter(s) =
 [ 21.76 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 29.31 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 32.02 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -461,7 +461,7 @@ estimated cell diameter(s) in 15.75 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
@@ -469,7 +469,7 @@ estimated cell diameter(s) in 15.75 sec
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -495,7 +495,7 @@ Data variables:
     _segmentation  (y, x) int64 0 0 0 4319 4319 ... 4014 4014 3481 3481 3481</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
@@ -508,8 +508,6 @@ merged_ds = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic C
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/pp/preprocessing.py:27: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
 Found &#39;cells&#39; coordinate in &#39;_arcsinh_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
 Found &#39;cells&#39; coordinate in &#39;_arcsinh_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
 Found &#39;cells&#39; coordinate in &#39;_obs&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
@@ -519,7 +517,7 @@ Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(16, 8))
@@ -543,6 +541,50 @@ _ = merged_ds.pl.imshow(render_intensities=False, render_segmentation=True, rend
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Segmentation_8_0.png" src="../_images/notebooks_Segmentation_8_0.png" />
+</div>
+</div>
+<p>Alternatively, let us try to merge with a lower cutoff. This will keep cells which retain more than threshold (e. g. 60) percent of their volume after the merging.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
+merged_ds_2 = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], threshold=0.6)
+
+fig, ax = plt.subplots(1, 3, figsize=(16, 8))
+
+# adding colors to match the channel colors
+merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Other&#39;, &#39;C2&#39;)
+merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Dendritic Cell&#39;, &#39;C3&#39;)
+merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Macrophage&#39;, &#39;C4&#39;)
+
+# original masks
+_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[0])
+
+# merged masks
+_ = merged_ds_2.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[1])
+_ = merged_ds_2.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[2])
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Found &#39;cells&#39; coordinate in &#39;_arcsinh_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_arcsinh_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_obs&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_raw_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;cells&#39; coordinate in &#39;_raw_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Segmentation_10_1.png" src="../_images/notebooks_Segmentation_10_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
