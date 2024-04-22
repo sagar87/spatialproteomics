@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -16,18 +16,22 @@ class ExternalAccessor:
 
     def cellpose(
         self,
-        key_added: Optional[str] = "_cellpose_segmentation",
+        channels: Optional[Union[List[str], str]] = None,
+        key_added: Optional[str] = Layers.SEGMENTATION,
         diameter: int = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
         gpu: bool = True,
         model_type: str = "cyto3",
+        return_xarray: bool = True,
     ):
         """
         Segment cells using Cellpose.
 
         Parameters
         ----------
+        channels: List[str], optional
+            List of channels to use for segmentation. If None, all channels are used.
         key_added : str, optional
             Key to assign to the segmentation results.
         diameter : int, optional
@@ -40,6 +44,8 @@ class ExternalAccessor:
             Whether to use GPU for segmentation.
         model_type : str, optional
             Type of Cellpose model to use.
+        return_xarray: bool, optional
+            Whether to return the segmentation as an xarray DataArray or as a numpy array.
 
         Returns
         -------
@@ -51,14 +57,32 @@ class ExternalAccessor:
         This method requires the 'cellpose' package to be installed.
         """
 
+        if return_xarray:
+            # if return_xarray is true, check if a segmentation mask with the key already exists
+            assert (
+                key_added not in self._obj
+            ), f"A segmentation mask with the key {key_added} already exists. You can either change the key with the key_added parameter, or return the predictions as a numpy array. To do this, set return_xarray to False. Alternatively, you can drop the existing segmentation mask from the object by using pp.drop_layers('{key_added}')."
+
+            # if the number of channels is 1, we can add the segmentation to the original object
+            # if it is equal to the number of channels, we can also add it to the object
+            # if it is anything else, we force the user to return the predictions in the form of a numpy array
+            assert len(channels) == 1 or len(channels) == len(
+                self._obj.coords[Dims.CHANNELS].values
+            ), "You are trying to segment only a subset of the available channels. If you want to add the segmentation mask to the xarray object directly, you need to segment either all channels or only one channel. If you want to segment a subset of the channels, you need to return the predictions as a numpy array."
+
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
 
+        if isinstance(channels, str):
+            channels = [channels]
+        elif channels is None:
+            channels = self._obj.coords[Dims.CHANNELS].values
+
         all_masks = []
-        for channel in self._obj.coords[Dims.CHANNELS]:
+        for channel in channels:
             masks_pred, _, _, _ = model.eval(
-                self._obj.pp[channel.item()]._image.values.squeeze(),
+                self._obj.pp[channel]._image.values.squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
@@ -70,16 +94,29 @@ class ExternalAccessor:
         else:
             mask_tensor = np.stack(all_masks, 0)
 
-        da = xr.DataArray(
-            mask_tensor,
-            coords=[
-                self._obj.coords[Dims.CHANNELS],
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-            ],
-            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-            name=key_added,
-        )
+        if not return_xarray:
+            return mask_tensor
+
+        # if there is one channel, we can squeeze the mask tensor
+        if len(channels) == 1:
+            da = xr.DataArray(
+                mask_tensor.squeeze(),
+                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+                dims=[Dims.Y, Dims.X],
+                name=key_added,
+            )
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            da = xr.DataArray(
+                mask_tensor,
+                coords=[
+                    self._obj.coords[Dims.CHANNELS],
+                    self._obj.coords[Dims.Y],
+                    self._obj.coords[Dims.X],
+                ],
+                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+                name=key_added,
+            )
 
         return xr.merge([self._obj, da])
 

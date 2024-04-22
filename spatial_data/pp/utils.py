@@ -70,7 +70,7 @@ def _relabel_cells(segmentation: np.ndarray):
     return segmentation_relabeled, value_map
 
 
-def merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
+def _merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     """
     Merge two segmentation masks based on specified criteria.
 

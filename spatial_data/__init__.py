@@ -30,8 +30,8 @@ from .container import load_image_data
 from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
-from .pp import PreprocessingAccessor  # , colorize, normalize
 from .pp import (
+    PreprocessingAccessor,
     arcsinh_mean_intensity,
     arcsinh_median_intensity,
     arcsinh_sum_intensity,
@@ -39,7 +39,6 @@ from .pp import (
     detect_peaks_num,
     is_positive,
     mean_intensity,
-    merge_segmentation,
     percentage_positive,
     sum_intensity,
 )

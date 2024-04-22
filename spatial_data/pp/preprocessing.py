@@ -14,7 +14,13 @@ from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from ..la.label import _format_labels
 from .intensity import sum_intensity
-from .utils import _autocrop, _normalize, _relabel_cells, _remove_unlabeled_cells
+from .utils import (
+    _autocrop,
+    _merge_segmentation,
+    _normalize,
+    _relabel_cells,
+    _remove_unlabeled_cells,
+)
 
 
 @xr.register_dataset_accessor("pp")
@@ -49,7 +55,6 @@ class PreprocessingAccessor:
         xarray.Dataset
             The subsetted image container.
         """
-        # print(indices)
         # argument handling
         if type(indices) is str:
             c_slice = [indices]
@@ -104,6 +109,7 @@ class PreprocessingAccessor:
                     y_slice = indices[2]
 
         ds = self._obj.pp.get_channels(c_slice)
+
         return ds.pp.get_bbox(x_slice, y_slice)
 
     def get_bbox(self, x_slice: slice, y_slice: slice) -> xr.Dataset:
@@ -141,8 +147,6 @@ class PreprocessingAccessor:
 
         # handle case when there are cells in the image
         if Dims.CELLS in self._obj.sizes:
-            # num_cells = self._obj.sizes[Dims.CELLS]
-
             coords = self._obj[Layers.OBS]
             cells = (
                 (coords.loc[:, Features.X] >= x_start)
@@ -150,11 +154,6 @@ class PreprocessingAccessor:
                 & (coords.loc[:, Features.Y] >= y_start)
                 & (coords.loc[:, Features.Y] <= y_stop)
             ).values
-            # calculates the number of cells that were dropped due setting the bounding box
-            # lost_cells = num_cells - sum(cells)
-
-            # if lost_cells > 0:
-            # logger.warning(f"Dropped {lost_cells} cells.")
 
             # finalise query
             query[Dims.CELLS] = cells
@@ -328,6 +327,13 @@ class PreprocessingAccessor:
                 if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
                     logger.warning(f"Found {k} in _obs. Skipping.")
                     continue
+            # when looking at centroids, it could happen that the image has been cropped before
+            # in this case, the x and y coordinates do not necessarily start at 0
+            # to accomodate for this, we add the x and y coordinates to the centroids
+            if k == Features.X:
+                v += self._obj.coords[Dims.X].values[0]
+            if k == Features.Y:
+                v += self._obj.coords[Dims.Y].values[0]
             cols.append(k)
             data.append(v)
 
@@ -345,15 +351,25 @@ class PreprocessingAccessor:
         if return_xarray:
             return da
 
-        # if there are already observations, concatenate them
-        if Layers.OBS in self._obj:
-            logger.info("Found _obs in image container. Concatenating.")
-            da = xr.concat(
-                [self._obj[Layers.OBS].copy(), da],
-                dim=Dims.FEATURES,
-            )
+        obj = self._obj.copy()
 
-        return xr.merge([self._obj, da])
+        # if there are already observations, concatenate them
+        if Layers.OBS in obj:
+            # checking if the new number of cells matches with the old one
+            # if it does not match, we need to update the cell dimension, i. e. remove all old _obs
+            if len(label) != len(obj.coords[Dims.CELLS]):
+                logger.warning(
+                    "Found _obs with different number of cells in the image container. Removing all old _obs for continuity."
+                )
+                obj = obj.drop_layers(Layers.OBSERVATIONS)
+            else:
+                logger.info("Found _obs in image container. Concatenating.")
+                da = xr.concat(
+                    [obj[Layers.OBS].copy(), da],
+                    dim=Dims.FEATURES,
+                )
+
+        return xr.merge([obj, da])
 
     def add_quantification(
         self,
@@ -544,7 +560,6 @@ class PreprocessingAccessor:
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
                 label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
-                # num_to_label = {v: k for k, v in label_to_num.items()}
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
@@ -710,7 +725,6 @@ class PreprocessingAccessor:
             quantile = np.array(quantile)
         # Calulate quat
         lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-        # print(lower, lower.shape)
         filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
         if key_added is None:
@@ -852,3 +866,114 @@ class PreprocessingAccessor:
     def autocrop(self, channel=None, downsample=10):
         slices = _autocrop(self._obj, channel=channel, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
+
+    def merge_segmentation(
+        self, array: np.ndarray, labels: Optional[Union[str, List[str]]] = None, threshold: float = 1.0
+    ):
+        # array = all of the arrays that will iteratively be merged to the existing segmentation mask
+        # ensuring that a segmentation mask already exists
+        assert (
+            Layers.SEGMENTATION in self._obj
+        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
+
+        # checking that the array is 2D or 3D
+        assert array.ndim in [
+            2,
+            3,
+        ], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
+
+        # checking that the input type is int
+        assert np.issubdtype(array.dtype, np.integer), "The input array must be of type int."
+
+        # if the array is 2D, it gets expanded to 3D
+        if array.ndim == 2:
+            array = np.expand_dims(array, 0)
+
+        # if labels are provided, they need to match the number of arrays
+        if labels is not None:
+            assert (
+                len(labels) == array.shape[0]
+            ), f"The number of labels must match the number of arrays. You submitted {len(labels)} channels compared to {array.shape[0]} arrays."
+
+        # ensuring that the second and third dimension of the array match the segmentation mask
+        assert (array.shape[1] == self._obj.sizes[Dims.Y]) & (
+            array.shape[2] == self._obj.sizes[Dims.X]
+        ), "The shape of the input array does not match the shape of the segmentation mask."
+
+        # merge big cells first, then small cells
+        i = 0
+        segmentation = array[i, :, :]
+
+        # iterating through the array to merge the segmentation masks
+        for i in range(1, array.shape[0]):
+            if labels is not None:
+                label_1, label_2 = labels[i - 1], labels[i]
+            else:
+                label_1, label_2 = i, i + 1
+
+            segmentation, final_mapping = _merge_segmentation(
+                segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=threshold
+            )
+
+            if i == 1:
+                # in the first iteration, we simply take the mapping we get from _merge_segmentation
+                mapping = final_mapping
+            else:
+                # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
+                mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
+
+        # finally, we merge the smallest cells, which we assume to be in the segmentation mask already
+        if labels is not None:
+            label_1, label_2 = labels[i], "Other"
+        else:
+            label_1, label_2 = i, i + 1
+
+        segmentation, final_mapping = _merge_segmentation(
+            segmentation, self._obj[Layers.SEGMENTATION].values, label1=label_1, label2=label_2, threshold=threshold
+        )
+        # if there is only one array to merge, we can simply take the mapping obtained by _merge_segmentation as the final mapping
+        if array.shape[0] == 1:
+            mapping = final_mapping
+        else:
+            # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
+            mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
+
+        # assigning the new segmentation to the object
+        da = xr.DataArray(
+            segmentation,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=Layers.SEGMENTATION,
+        )
+
+        # replacing the old segmentation mask and obs with the new one
+        obj = self._obj.pp.drop_layers(Layers.SEGMENTATION)
+
+        # we need to remove all layers that have "cells" as part of their coordinates in order to keep the "cells" dimension synchronized with the segmentation mask
+        for layer in obj.data_vars:
+            if Dims.CELLS in obj[layer].dims:
+                obj = obj.pp.drop_layers(layer)
+                logger.warning(
+                    f"Found '{Dims.CELLS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
+                )
+
+        obj = xr.merge([obj, da])
+
+        # adding the default obs back to the object
+        obj = obj.pp.add_observations()
+
+        # if labels are provided, they are added to the object
+        if labels is not None:
+            # we need to remove all layers that have "props" as part of their coordinates so we can overwrite it
+            for layer in obj.data_vars:
+                if Dims.PROPS in obj[layer].dims:
+                    obj = obj.pp.drop_layers(layer)
+                    logger.warning(
+                        f"Found '{Dims.PROPS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
+                    )
+
+            # creating and adding the new labels
+            label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
+            obj = obj.pp.add_labels(label_df)
+
+        return obj
