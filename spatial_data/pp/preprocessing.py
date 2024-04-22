@@ -911,7 +911,7 @@ class PreprocessingAccessor:
                 label_1, label_2 = i, i + 1
 
             segmentation, final_mapping = _merge_segmentation(
-                segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=1.0
+                segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=threshold
             )
 
             if i == 1:
@@ -928,7 +928,7 @@ class PreprocessingAccessor:
             label_1, label_2 = i, i + 1
 
         segmentation, final_mapping = _merge_segmentation(
-            segmentation, self._obj[Layers.SEGMENTATION].values, label1=label_1, label2=label_2, threshold=1.0
+            segmentation, self._obj[Layers.SEGMENTATION].values, label1=label_1, label2=label_2, threshold=threshold
         )
         # if there is only one array to merge, we can simply take the mapping obtained by _merge_segmentation as the final mapping
         if array.shape[0] == 1:
