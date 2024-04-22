@@ -109,6 +109,7 @@ class PreprocessingAccessor:
                     y_slice = indices[2]
 
         ds = self._obj.pp.get_channels(c_slice)
+
         return ds.pp.get_bbox(x_slice, y_slice)
 
     def get_bbox(self, x_slice: slice, y_slice: slice) -> xr.Dataset:
@@ -146,8 +147,6 @@ class PreprocessingAccessor:
 
         # handle case when there are cells in the image
         if Dims.CELLS in self._obj.sizes:
-            # num_cells = self._obj.sizes[Dims.CELLS]
-
             coords = self._obj[Layers.OBS]
             cells = (
                 (coords.loc[:, Features.X] >= x_start)
@@ -155,11 +154,6 @@ class PreprocessingAccessor:
                 & (coords.loc[:, Features.Y] >= y_start)
                 & (coords.loc[:, Features.Y] <= y_stop)
             ).values
-            # calculates the number of cells that were dropped due setting the bounding box
-            # lost_cells = num_cells - sum(cells)
-
-            # if lost_cells > 0:
-            # logger.warning(f"Dropped {lost_cells} cells.")
 
             # finalise query
             query[Dims.CELLS] = cells
@@ -333,6 +327,13 @@ class PreprocessingAccessor:
                 if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
                     logger.warning(f"Found {k} in _obs. Skipping.")
                     continue
+            # when looking at centroids, it could happen that the image has been cropped before
+            # in this case, the x and y coordinates do not necessarily start at 0
+            # to accomodate for this, we add the x and y coordinates to the centroids
+            if k == Features.X:
+                v += self._obj.coords[Dims.X].values[0]
+            if k == Features.Y:
+                v += self._obj.coords[Dims.Y].values[0]
             cols.append(k)
             data.append(v)
 
