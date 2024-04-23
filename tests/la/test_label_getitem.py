@@ -6,7 +6,7 @@ from spatial_data.constants import Dims
 
 def test_label_get_item_correct_inputs(dataset_labeled):
     # test that all cell types are present
-    assert np.all(dataset_labeled.coords[Dims.LABELS].values == np.arange(1, 13))
+    assert np.all(dataset_labeled.coords[Dims.LABELS].values == np.arange(0, 12))
     # indexing via integer
     assert np.all(dataset_labeled.la[1].coords[Dims.LABELS].values == np.array([1]))
     # indexing via list of integers
@@ -18,11 +18,11 @@ def test_label_get_item_correct_inputs(dataset_labeled):
     assert np.all(dataset_labeled.la[:4].coords[Dims.LABELS].values == np.array([1, 2, 3]))
     assert np.all(dataset_labeled.la[9:].coords[Dims.LABELS].values == np.array([9, 10, 11]))
     # indexing via string
-    assert np.all(dataset_labeled.la["Cell type 1"].coords[Dims.LABELS].values == np.array([1]))
-    assert np.all(dataset_labeled.la["Cell type 5"].coords[Dims.LABELS].values == np.array([5]))
+    assert np.all(dataset_labeled.la["Cell type 1"].coords[Dims.LABELS].values == np.array([0]))
+    assert np.all(dataset_labeled.la["Cell type 5"].coords[Dims.LABELS].values == np.array([4]))
     # indexing via List[str]
-    assert np.all(dataset_labeled.la[["Cell type 1"]].coords[Dims.LABELS].values == np.array([1]))
-    assert np.all(dataset_labeled.la[["Cell type 1", "Cell type 5"]].coords[Dims.LABELS].values == np.array([1, 5]))
+    assert np.all(dataset_labeled.la[["Cell type 1"]].coords[Dims.LABELS].values == np.array([0]))
+    assert np.all(dataset_labeled.la[["Cell type 1", "Cell type 5"]].coords[Dims.LABELS].values == np.array([0, 4]))
 
 
 def test_label_get_item_wrong_inputs(dataset_labeled):
