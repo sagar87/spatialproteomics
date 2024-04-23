@@ -471,16 +471,6 @@ class LabelAccessor:
             AssertionError: If the quantification layer with the specified key is not found.
             AssertionError: If any of the markers specified in the marker dictionary are not present in the quantification layer.
         """
-
-    def predict_cell_types_argmax(
-        self,
-        marker_dict: dict,
-        key: str = Layers.INTENSITY,
-        overwrite_existing_labels: bool = False,
-        cell_col: str = "cell",
-        label_col: str = "label",
-    ):
-
         # asserting that a quantification with the key exists
         assert (
             key in self._obj
