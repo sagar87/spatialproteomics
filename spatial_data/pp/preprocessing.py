@@ -12,7 +12,7 @@ from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
-from ..la.label import _format_labels
+from ..la.utils import _format_labels
 from .intensity import sum_intensity
 from .utils import (
     _autocrop,
