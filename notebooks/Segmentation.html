@@ -586,7 +586,7 @@ Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_dict = {
@@ -608,7 +608,16 @@ merged_ds_2.pp.add_quantification().la.predict_cell_types_argmax(ct_dict).pl.ims
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class LabelAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -625,7 +634,7 @@ Coordinates:
   * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
   * rgba           (rgba) &lt;U1 &#x27;r&#x27; &#x27;g&#x27; &#x27;b&#x27; &#x27;a&#x27;
 Data variables:
-    _labels        (labels, props) object &#x27;#8CD0FF&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
+    _labels        (labels, props) object &#x27;#D790FF&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
     _image         (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
     _segmentation  (y, x) uint16 0 0 0 260 260 260 260 260 ... 0 0 0 0 0 18 18 0
     _obs           (cells, features) float64 1.0 1.078e+03 ... 1.058e+03
@@ -636,7 +645,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_11_1.png" src="../_images/notebooks_Segmentation_11_1.png" />
+<img alt="../_images/notebooks_Segmentation_11_2.png" src="../_images/notebooks_Segmentation_11_2.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
