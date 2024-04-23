@@ -387,7 +387,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f550d0&gt;
+&lt;xarray.core.options.set_options at 0x7fff127cfc10&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -429,18 +429,18 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 20.81 sec
+estimated cell diameter(s) in 17.20 sec
 &gt;&gt;&gt; diameter(s) =
 [ 20.95 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 36.41 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 31.00 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 17.75 sec
+estimated cell diameter(s) in 13.49 sec
 &gt;&gt;&gt; diameter(s) =
 [ 21.76 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 32.02 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 26.83 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -517,13 +517,12 @@ Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(16, 8))
 
 # adding colors to match the channel colors
-merged_ds = merged_ds.la.set_label_color(&#39;Other&#39;, &#39;C2&#39;)
 merged_ds = merged_ds.la.set_label_color(&#39;Dendritic Cell&#39;, &#39;C3&#39;)
 merged_ds = merged_ds.la.set_label_color(&#39;Macrophage&#39;, &#39;C4&#39;)
 
@@ -545,7 +544,7 @@ _ = merged_ds.pl.imshow(render_intensities=False, render_segmentation=True, rend
 </div>
 <p>Alternatively, let us try to merge with a lower cutoff. This will keep cells which retain more than threshold (e. g. 60) percent of their volume after the merging.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
@@ -554,7 +553,6 @@ merged_ds_2 = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic
 fig, ax = plt.subplots(1, 3, figsize=(16, 8))
 
 # adding colors to match the channel colors
-merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Other&#39;, &#39;C2&#39;)
 merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Dendritic Cell&#39;, &#39;C3&#39;)
 merged_ds_2 = merged_ds_2.la.set_label_color(&#39;Macrophage&#39;, &#39;C4&#39;)
 
@@ -587,13 +585,35 @@ Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re
 <img alt="../_images/notebooks_Segmentation_10_1.png" src="../_images/notebooks_Segmentation_10_1.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>merged_ds_2
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (labels: 3, props: 2, channels: 56, x: 301, y: 301,
+                    cells: 355, features: 3)
+Coordinates:
+  * labels         (labels) int64 0 1 2
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 349 350 351 352 353 354 355
+  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+Data variables:
+    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
+    _segmentation  (y, x) uint16 0 0 0 260 260 260 260 260 ... 0 0 0 0 0 18 18 0
+    _obs           (cells, features) float64 1.0 1.078e+03 ... 1.058e+03
+    _labels        (labels, props) object &#x27;#BC23FF&#x27; &#x27;Unlabeled&#x27; ... &#x27;Macrophage&#x27;</pre></div>
 </div>
 </section>
 
