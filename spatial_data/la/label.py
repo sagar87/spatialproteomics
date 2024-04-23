@@ -1,6 +1,7 @@
 from typing import Callable, List, Union
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 from skimage.segmentation import relabel_sequential
 
@@ -445,12 +446,90 @@ class LabelAccessor:
 
         return xr.merge([self._obj.drop_vars(Layers.LABELS), da])
 
+    def predict_cell_types_argmax(
+        self,
+        marker_dict: dict,
+        key: str = Layers.INTENSITY,
+        overwrite_existing_labels: bool = False,
+        cell_col: str = "cell",
+        label_col: str = "label",
+    ):
+        """
+        Predicts cell types based on the argmax classification of marker intensities.
 
-def predict_cell_types(self, marker_dict: dict, key: str = Layers.INTENSITY, overwrite_existing_labels: bool = False):
-    # first, we only want to get cells for which we do not have a classification yet (unless overwrite_existing_labels is True, in that case we reclassify all cells)
-    if not overwrite_existing_labels:
-        # TODO: this is incorrect
-        cells = self._obj.la._filter_cells_by_label(0)
-    else:
-        cells = self._obj.coords[Dims.CELLS].values
-    # preds = dict(zip(dapi_cells.coords['cells'].values, np.array(labels)[np.argmax(dapi_cells._arcsinh_median.values,1)]))
+        Parameters:
+            marker_dict (dict): A dictionary mapping marker names to marker values.
+            key (str, optional): The key of the quantification layer to use for classification. Defaults to Layers.INTENSITY.
+            overwrite_existing_labels (bool, optional): Whether to overwrite existing labels. Defaults to False.
+            cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
+            label_col (str, optional): The name of the column to store predicted cell types in the output dataframe. Defaults to "label".
+
+        Returns:
+            spatial_data.SpatialData: A new SpatialData object with the predicted cell types added as labels.
+
+        Raises:
+            AssertionError: If the quantification layer with the specified key is not found.
+            AssertionError: If any of the markers specified in the marker dictionary are not present in the quantification layer.
+        """
+
+    def predict_cell_types_argmax(
+        self,
+        marker_dict: dict,
+        key: str = Layers.INTENSITY,
+        overwrite_existing_labels: bool = False,
+        cell_col: str = "cell",
+        label_col: str = "label",
+    ):
+
+        # asserting that a quantification with the key exists
+        assert (
+            key in self._obj
+        ), f"Quantification layer with key {key} not found. Please run pp.add_quantification() before classifying cell types."
+        celltypes, markers = list(marker_dict.keys()), list(marker_dict.values())
+        # asserting that all markers are present in the quantification layer
+        markers_present = self._obj.coords[Dims.CHANNELS].values
+        assert (
+            len(set(markers) - set(markers_present)) == 0
+        ), f"The following markers were not found in quantification layer: {set(markers) - set(markers_present)}."
+
+        # only looking at the markers specified in the marker dice
+        obj = self._obj.pp[markers]
+        # getting the argmax for each cell
+        argmax_classification = np.argmax(obj[key].values, axis=1)
+
+        # translating the argmax classification into cell types
+        celltypes_argmax = np.array(celltypes)[argmax_classification]
+
+        # putting everything into a dataframe
+        celltype_prediction_df = pd.DataFrame(
+            zip(obj.coords[Dims.CELLS].values, celltypes_argmax), columns=[cell_col, label_col]
+        )
+
+        # if there already exist partial annotations, and overwrite is set to False, we merge the two dataframes
+        if Features.LABELS in obj.coords[Dims.FEATURES].values and not overwrite_existing_labels:
+            id_to_label_dict = obj.la._label_to_dict(Props.NAME)
+            existing_labels_numeric = obj[Layers.OBS].sel(features=Features.LABELS).values
+            # getting a boolean array that is 0 if there exists a label, and 1 if there is no label
+            ct_exists = np.where(existing_labels_numeric != 0, 1, 0)
+            existing_labels = [id_to_label_dict[x] for x in existing_labels_numeric]
+            celltype_prediction_df["ct_exists"] = ct_exists
+            celltype_prediction_df["old_ct_prediction"] = existing_labels
+
+            # keeping original predictions and using the argmax otherwise
+            celltype_prediction_df[label_col] = celltype_prediction_df.apply(
+                lambda row: row[label_col] if row["ct_exists"] == 0 else row["old_ct_prediction"], axis=1
+            )
+
+            # removing the intermediate columns
+            celltype_prediction_df = celltype_prediction_df.drop(columns=["ct_exists", "old_ct_prediction"])
+
+        # need to remove the old labels first
+        obs = obj[Layers.OBS]
+        # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
+        obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
+
+        # removing the old colors
+        obj = obj.pp.drop_layers(Layers.LABELS)
+
+        # adding the new labels
+        return obj.pp.add_labels(celltype_prediction_df)
