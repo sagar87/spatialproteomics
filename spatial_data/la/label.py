@@ -443,6 +443,14 @@ class LabelAccessor:
             name=Layers.LABELS,
         )
 
-        # self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
-
         return xr.merge([self._obj.drop_vars(Layers.LABELS), da])
+
+
+def predict_cell_types(self, marker_dict: dict, key: str = Layers.INTENSITY, overwrite_existing_labels: bool = False):
+    # first, we only want to get cells for which we do not have a classification yet (unless overwrite_existing_labels is True, in that case we reclassify all cells)
+    if not overwrite_existing_labels:
+        # TODO: this is incorrect
+        cells = self._obj.la._filter_cells_by_label(0)
+    else:
+        cells = self._obj.coords[Dims.CELLS].values
+    # preds = dict(zip(dapi_cells.coords['cells'].values, np.array(labels)[np.argmax(dapi_cells._arcsinh_median.values,1)]))

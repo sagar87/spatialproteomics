@@ -9,10 +9,6 @@ def _format_labels(labels):
     formatted_labels = labels.copy()
     unique_labels = np.unique(labels)
 
-    if 0 in unique_labels:
-        logger.warning("Found 0 in labels. Reindexing...")
-        formatted_labels += 1
-
     if ~np.all(np.diff(unique_labels) == 1):
         logger.warning("Labels are non-consecutive. Relabeling...")
         formatted_labels, _, _ = relabel_sequential(formatted_labels)

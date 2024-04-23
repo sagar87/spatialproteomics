@@ -11,7 +11,7 @@ from skimage.restoration import unsupervised_wiener
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Layers, Props
+from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .intensity import sum_intensity
 from .utils import (
@@ -559,7 +559,19 @@ class PreprocessingAccessor:
 
             if np.all([isinstance(i, str) for i in labels]):
                 unique_labels = np.unique(labels)
-                label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
+
+                # if zeroes are present in the labels, this means that there are unlabeled cells
+                # these should have a value of 0
+                # otherwise, we reindex the labels so they start at 1
+                if Labels.UNLABELED in unique_labels:
+                    # push unlabeled to the front of the list
+                    unique_labels = np.concatenate(
+                        ([Labels.UNLABELED], unique_labels[unique_labels != Labels.UNLABELED])
+                    )
+                    label_to_num = dict(zip(unique_labels, range(len(unique_labels))))
+                else:
+                    label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
+
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
@@ -568,26 +580,12 @@ class PreprocessingAccessor:
             formated_labels = _format_labels(labels)
             unique_labels = np.unique(formated_labels)
 
-        if np.all(formated_labels == labels):
-            da = xr.DataArray(
-                np.stack([formated_labels, labels], -1),
-                coords=[cells, [Features.LABELS, Features.ORIGINAL_LABELS]],
-                dims=[Dims.CELLS, Dims.FEATURES],
-                name=Layers.OBS,
-            )
-        else:
-            da = xr.DataArray(
-                np.stack([formated_labels, labels], -1),
-                coords=[
-                    cells,
-                    [
-                        Features.LABELS,
-                        Features.ORIGINAL_LABELS,
-                    ],
-                ],
-                dims=[Dims.CELLS, Dims.FEATURES],
-                name=Layers.OBS,
-            )
+        da = xr.DataArray(
+            np.stack([formated_labels], -1),
+            coords=[cells, [Features.LABELS]],
+            dims=[Dims.CELLS, Dims.FEATURES],
+            name=Layers.OBS,
+        )
 
         da = da.where(
             da.coords[Dims.CELLS].isin(
@@ -596,26 +594,24 @@ class PreprocessingAccessor:
             drop=True,
         )
 
-        self._obj = xr.merge([self._obj.sel(cells=da.cells), da])
+        obj = self._obj.copy()
+        obj = xr.merge([obj.sel(cells=da.cells), da])
 
         if colors is not None:
             assert len(colors) == len(unique_labels), "Colors has the same."
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
-        self._obj = self._obj.pp.add_properties(colors, Props.COLOR)
+        obj = obj.pp.add_properties(colors, Props.COLOR)
 
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
             names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
 
-        self._obj = self._obj.pp.add_properties(names, Props.NAME)
-        self._obj[Layers.SEGMENTATION].values = _remove_unlabeled_cells(
-            self._obj[Layers.SEGMENTATION].values, self._obj.coords[Dims.CELLS].values
-        )
+        obj = obj.pp.add_properties(names, Props.NAME)
 
-        return xr.merge([self._obj.sel(cells=da.cells), da])
+        return xr.merge([obj.sel(cells=da.cells), da])
 
     def drop_layers(self, layers: Union[str, list]) -> xr.Dataset:
         """
@@ -924,7 +920,8 @@ class PreprocessingAccessor:
 
         # finally, we merge the smallest cells, which we assume to be in the segmentation mask already
         if labels is not None:
-            label_1, label_2 = labels[i], "Other"
+            # the final label is unlabeled
+            label_1, label_2 = labels[i], Labels.UNLABELED
         else:
             label_1, label_2 = i, i + 1
 
