@@ -387,7 +387,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fff127cfc10&gt;
+&lt;xarray.core.options.set_options at 0x7fffd5f56b50&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -429,18 +429,18 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 18.41 sec
+estimated cell diameter(s) in 17.90 sec
 &gt;&gt;&gt; diameter(s) =
 [ 20.95 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 32.92 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 31.80 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 15.51 sec
+estimated cell diameter(s) in 13.52 sec
 &gt;&gt;&gt; diameter(s) =
 [ 21.76 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 28.96 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 25.80 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -586,16 +586,16 @@ Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_dict = {
     &quot;B&quot;: &quot;PAX5&quot;,
     &quot;T&quot;: &quot;CD3&quot;,
     &quot;Myeloid&quot;: &quot;CD11b&quot;,
-    &quot;Dendritic&quot;: &quot;CD11c&quot;,
+    # &quot;Dendritic&quot;: &quot;CD11c&quot;,
     &quot;Granulo&quot;: &quot;CD15&quot;,
-    &quot;Macro&quot;: &quot;CD68&quot;,
+    # &quot;Macro&quot;: &quot;CD68&quot;,
     &quot;Stroma PDPN&quot;: &quot;Podoplanin&quot;,
     &quot;Stroma CD31&quot;: &quot;CD31&quot;,
     &quot;Stroma CD34&quot;: &quot;CD34&quot;,
@@ -610,22 +610,21 @@ merged_ds_2.pp.add_quantification().la.predict_cell_types_argmax(ct_dict).pl.ims
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class LabelAccessor:
+[&#39;#549E79&#39; &#39;#7900D7&#39; &#39;#FDE8DC&#39; &#39;#FFB500&#39; &#39;#FFAA92&#39; &#39;#BA0900&#39;]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (labels: 7, props: 2, channels: 11, x: 301, y: 301,
+Dimensions:        (labels: 6, props: 2, channels: 9, x: 301, y: 301,
                     cells: 355, features: 3, rgba: 4)
 Coordinates:
-  * labels         (labels) int64 1 2 3 4 5 6 7
+  * labels         (labels) int64 1 2 3 4 5 6
   * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
   * channels       (channels) &lt;U11 &#x27;PAX5&#x27; &#x27;CD3&#x27; &#x27;CD11b&#x27; ... &#x27;CD34&#x27; &#x27;CD90&#x27; &#x27;CD56&#x27;
   * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
@@ -634,7 +633,7 @@ Coordinates:
   * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
   * rgba           (rgba) &lt;U1 &#x27;r&#x27; &#x27;g&#x27; &#x27;b&#x27; &#x27;a&#x27;
 Data variables:
-    _labels        (labels, props) object &#x27;#D790FF&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
+    _labels        (labels, props) object &#x27;#549E79&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
     _image         (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
     _segmentation  (y, x) uint16 0 0 0 260 260 260 260 260 ... 0 0 0 0 0 18 18 0
     _obs           (cells, features) float64 1.0 1.078e+03 ... 1.058e+03
@@ -648,12 +647,58 @@ Data variables:
 <img alt="../_images/notebooks_Segmentation_11_2.png" src="../_images/notebooks_Segmentation_11_2.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>merged_ds_2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>merged_ds_3 = merged_ds_2.pp.add_quantification().la.predict_cell_types_argmax(ct_dict)
+
+color_dict = {&quot;Dendritic Cell&quot;: &quot;deepskyblue&quot;, &quot;Macrophage&quot;: &quot;purple&quot;, &quot;Myeloid&quot;: &quot;pink&quot;, &quot;Stroma CD34&quot;: &quot;orange&quot;, &quot;Stroma CD90&quot;: &quot;yellow&quot;, &quot;T&quot;: &quot;darkgreen&quot;}
+for k, v in color_dict.items():
+    merged_ds_3 = merged_ds_3.la.set_label_color(k, v)
+
+merged_ds_3.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True)
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;#549E79&#39; &#39;#7B4F4B&#39; &#39;#4A3B53&#39; &#39;#B79762&#39; &#39;#6A3A4C&#39; &#39;#A05837&#39;]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (labels: 6, props: 2, channels: 9, x: 301, y: 301,
+                    cells: 355, features: 3, rgba: 4)
+Coordinates:
+  * labels         (labels) int64 1 2 3 4 5 6
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * channels       (channels) &lt;U11 &#x27;PAX5&#x27; &#x27;CD3&#x27; &#x27;CD11b&#x27; ... &#x27;CD34&#x27; &#x27;CD90&#x27; &#x27;CD56&#x27;
+  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 349 350 351 352 353 354 355
+  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+  * rgba           (rgba) &lt;U1 &#x27;r&#x27; &#x27;g&#x27; &#x27;b&#x27; &#x27;a&#x27;
+Data variables:
+    _image         (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
+    _segmentation  (y, x) uint16 0 0 0 260 260 260 260 260 ... 0 0 0 0 0 18 18 0
+    _obs           (cells, features) float64 1.0 1.078e+03 ... 1.058e+03
+    _intensity     (cells, channels) float64 31.0 9.86e+03 ... 2.084e+03 0.0
+    _labels        (labels, props) object &#x27;deepskyblue&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
+    _plot          (y, x, rgba) float32 0.0 0.0 0.0 1.0 0.0 ... 0.0 0.0 0.0 1.0</pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Segmentation_12_2.png" src="../_images/notebooks_Segmentation_12_2.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
