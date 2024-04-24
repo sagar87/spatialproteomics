@@ -352,6 +352,10 @@ class LabelAccessor:
         - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
         - If the label property already exists in the data object, it will be updated with the new property values.
         """
+        # checking that we already have properties
+        assert (
+            Layers.LABELS in self._obj
+        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or ext.astir()."
         # making sure the property does not exist already
         assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
 
@@ -553,13 +557,13 @@ class LabelAccessor:
             # removing the intermediate columns
             celltype_prediction_df = celltype_prediction_df.drop(columns=["ct_exists", "old_ct_prediction"])
 
-        # need to remove the old labels first
+        # need to remove the old labels first (if there are old labels)
         obs = obj[Layers.OBS]
-        # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
-        obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
-
-        # removing the old colors
-        obj = obj.pp.drop_layers(Layers.LABELS)
+        if Features.LABELS in obs.coords[Dims.FEATURES].values:
+            # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
+            obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
+            # removing the old colors
+            obj = obj.pp.drop_layers(Layers.LABELS)
 
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
