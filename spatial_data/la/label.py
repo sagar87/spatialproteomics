@@ -353,7 +353,7 @@ class LabelAccessor:
         """
         unique_labels = self._obj.coords[
             Dims.LABELS
-        ].values  # np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+        ].values
 
         if type(array) is list:
             array = np.array(array)
@@ -366,7 +366,6 @@ class LabelAccessor:
         )
 
         if Layers.LABELS in self._obj:
-            # import pdb;pdb.set_trace()
             da = xr.concat(
                 [self._obj[Layers.LABELS], da],
                 dim=Dims.PROPS,

@@ -601,6 +601,7 @@ class PreprocessingAccessor:
             assert len(colors) == len(unique_labels), "Colors has the same."
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
+            print(colors)
 
         obj = obj.pp.add_properties(colors, Props.COLOR)
 
