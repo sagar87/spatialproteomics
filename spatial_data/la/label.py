@@ -399,7 +399,7 @@ class LabelAccessor:
 
         self._obj[Layers.LABELS].loc[label, Props.NAME] = name
 
-    def set_label_color(self, label, color):
+    def set_label_colors(self, labels: Union[str, List[str]], colors: Union[str, List[str]]):
         """
         Set the color of a specific cell type label.
 
@@ -422,21 +422,39 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
-        if label not in self._obj.la:
-            logger.info(f"Did not find {label}.")
-            return self._obj
+        if isinstance(labels, str):
+            labels = [labels]
+        if isinstance(colors, str):
+            colors = [colors]
 
-        if isinstance(label, str):
+        # checking that there are as many colors as labels
+        assert len(labels) == len(colors), "The number of labels and colors must be the same."
+
+        # checking that a label layer is already present
+        assert (
+            Layers.LABELS in self._obj
+        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or ext.astir()."
+
+        # obtaining the current properties
+        props_layer = self._obj.coords[Dims.PROPS].values.tolist()
+        labels_layer = self._obj.coords[Dims.LABELS].values.tolist()
+        array = self._obj._labels.values.copy()
+
+        for label, color in zip(labels, colors):
+            # if the label does not exist in the object, a warning is thrown and we continue
+            if label not in self._obj.la:
+                logger.warning(f"Label {label} not found in the data object. Skipping.")
+                continue
+
+            # getting the id for the label
             label = self._obj.la._label_name_to_id(label)
 
-        props = self._obj.coords[Dims.PROPS].values.tolist()
-        labels = self._obj.coords[Dims.LABELS].values.tolist()
-        array = self._obj._labels.values.copy()
-        array[labels.index(label), props.index(Props.COLOR)] = color
+            # setting the new color for the given label
+            array[labels_layer.index(label), props_layer.index(Props.COLOR)] = color
 
         da = xr.DataArray(
             array,
-            coords=[labels, props],
+            coords=[labels_layer, props_layer],
             dims=[Dims.LABELS, Dims.PROPS],
             name=Layers.LABELS,
         )
