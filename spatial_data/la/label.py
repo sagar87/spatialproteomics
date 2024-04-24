@@ -351,9 +351,7 @@ class LabelAccessor:
         - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
         - If the label property already exists in the data object, it will be updated with the new property values.
         """
-        unique_labels = self._obj.coords[
-            Dims.LABELS
-        ].values
+        unique_labels = self._obj.coords[Dims.LABELS].values
 
         if type(array) is list:
             array = np.array(array)
@@ -457,7 +455,7 @@ class LabelAccessor:
         Predicts cell types based on the argmax classification of marker intensities.
 
         Parameters:
-            marker_dict (dict): A dictionary mapping marker names to marker values.
+            marker_dict (dict): A dictionary mapping cell types to markers.
             key (str, optional): The key of the quantification layer to use for classification. Defaults to Layers.INTENSITY.
             overwrite_existing_labels (bool, optional): Whether to overwrite existing labels. Defaults to False.
             cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
