@@ -23,11 +23,9 @@ def test_add_label_type(dataset_full):
 
     assert ds[Layers.LABELS].sel({Dims.PROPS: "_name", Dims.LABELS: 2}).values.item() == "Cell type 2"
     assert ds[Layers.LABELS].sel({Dims.PROPS: "_color", Dims.LABELS: 2}).values.item() == "k"
-    # import pdb; pdb.set_trace()
 
 
-def test_label_no_segmentationt(dataset_segmentation):
-
+def test_label_no_segmentation(dataset_segmentation):
     with pytest.raises(ValueError, match="No segmentation mask found."):
         dataset_segmentation.la.add_label_type("Cell type 1")
 

@@ -1,4 +1,4 @@
-from typing import Callable, List, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -92,14 +92,6 @@ class LabelAccessor:
             raise ValueError(f"Cell type {label} not found.")
 
         return label_names_reverse[label]
-
-    def filter_by_intensity(self, col: str, func: Callable, layer_key: str):
-        """Returns the list of cells with the labels from items."""
-        cells = self._obj[layer_key].sel({Dims.CHANNELS: col}).values.copy()
-        cells_bool = func(cells)
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        return self._obj.sel({Dims.CELLS: cells_sel})
 
     def __getitem__(self, indices):
         """
