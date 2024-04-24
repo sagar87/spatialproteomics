@@ -361,7 +361,7 @@ div.rendered_html tbody tr:hover {
 <h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
 <p>There are different ways to predict cell types, e. g. using astir or argmax. Here, we demonstrate how to filter data and then use argmax to get a quick initial prediction.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -387,7 +387,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f5f9d0&gt;
+&lt;xarray.core.options.set_options at 0x7fffd5f55760&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -480,17 +480,6 @@ ct_marker_dict
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class LabelAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/pp/preprocessing.py:27: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -511,32 +500,41 @@ ct_marker_dict
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># predicting the cell type using the argmay
 ds_with_ct_predictions = ds_processed.la.predict_cell_types_argmax(ct_marker_dict, key=&#39;_arcsinh_mean&#39;, overwrite_existing_labels=True)
 
 # adding colors to match the markers
-ct_color_dict = dict(zip(ct_dict.keys(), colors))
-for k, v in ct_color_dict.items():
-    ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_color(k, v)
+print(list(ct_dict.keys()), colors)
+ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_dict.keys()), colors)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 /g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
   class LabelAccessor:
-Did not find Stroma PDPN.
-Did not find Stroma CD31.
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class LabelAccessor:
+Label Stroma PDPN not found in the data object. Skipping.
+Label Stroma CD31 not found in the data object. Skipping.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;B&#39;, &#39;T&#39;, &#39;Myeloid&#39;, &#39;Dendritic&#39;, &#39;Granulo&#39;, &#39;Macro&#39;, &#39;Stroma PDPN&#39;, &#39;Stroma CD31&#39;, &#39;Stroma CD34&#39;, &#39;Stroma CD90&#39;, &#39;NK&#39;] [&#39;#e6194B&#39;, &#39;#3cb44b&#39;, &#39;#ffe119&#39;, &#39;#4363d8&#39;, &#39;#ffd8b1&#39;, &#39;#f58231&#39;, &#39;#911eb4&#39;, &#39;#fffac8&#39;, &#39;#469990&#39;, &#39;#fabed4&#39;, &#39;#9A6324&#39;]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ct predictions next to the processed image
@@ -551,7 +549,7 @@ ax[1].set_title(&quot;Cell Type Predictions&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
