@@ -166,27 +166,36 @@ class LabelAccessor:
         - 'indices' can be provided as slices, lists, tuples, or an integer.
         - The function then updates the data object to remove the deselected label indices.
         """
-        # REFACTOR
-        if type(indices) is slice:
+        if isinstance(indices, slice):
             l_start = indices.start if indices.start is not None else 1
             l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
-        elif type(indices) is list:
-            assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers."
-            sel = indices
-
-        elif type(indices) is tuple:
+        elif isinstance(indices, list):
+            assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers or strings."
+            if all([isinstance(i, int) for i in indices]):
+                sel = indices
+            else:
+                label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+                for idx in indices:
+                    if idx not in label_dict:
+                        raise ValueError(f"Label type {indices} not found.")
+                sel = [label_dict[idx] for idx in indices]
+        elif isinstance(indices, tuple):
             indices = list(indices)
             all_int = all([type(i) is int for i in indices])
             assert all_int, "All label indices must be integers."
             sel = indices
+        elif isinstance(indices, str):
+            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+            if indices not in label_dict:
+                raise ValueError(f"Label type {indices} not found.")
+            sel = [label_dict[indices]]
         else:
             assert type(indices) is int, "Label must be provided as slices, lists, tuple or int."
-
             sel = [indices]
 
-        total_labels = self._obj.dims[Dims.LABELS] + 1
-        inv_sel = [i for i in range(1, total_labels) if i not in sel]
+        inv_sel = [i for i in self._obj.coords[Dims.LABELS] if i not in sel]
+
         cells = self._obj.la._filter_cells_by_label(inv_sel)
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
@@ -343,6 +352,14 @@ class LabelAccessor:
         - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
         - If the label property already exists in the data object, it will be updated with the new property values.
         """
+        # making sure the property does not exist already
+        assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
+
+        # checking that the length of the array matches the number of labels
+        assert len(array) == len(
+            self._obj.coords[Dims.LABELS].values
+        ), "The length of the array must match the number of labels."
+
         unique_labels = self._obj.coords[Dims.LABELS].values
 
         if type(array) is list:
@@ -386,10 +403,26 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the name of the cell type label in the data object to the new 'name'.
         """
+        # checking that a label layer is already present
+        assert Layers.LABELS in self._obj, "No label layer found in the data object."
+        # checking if the old label exists
+        assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
+        # checking if the new label already exists
+        assert name not in self._obj[Layers.LABELS].sel({Dims.PROPS: Props.NAME}), f"Label name {name} already exists."
+
+        # getting the original labels
+        label_layer = self._obj[Layers.LABELS].copy()
+
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
-        self._obj[Layers.LABELS].loc[label, Props.NAME] = name
+        label_layer.loc[label, Props.NAME] = name
+
+        # removing the old label layer
+        obj = self._obj.pp.drop_layers(Layers.LABELS)
+
+        # adding the new label layer
+        return xr.merge([label_layer, obj])
 
     def set_label_colors(self, labels: Union[str, List[str]], colors: Union[str, List[str]]):
         """

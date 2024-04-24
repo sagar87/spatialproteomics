@@ -607,7 +607,11 @@ class PreprocessingAccessor:
         if names is not None:
             assert len(names) == len(unique_labels), "Names has the same."
         else:
-            names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
+            # if there is a 0 in unique labels, we need to add an unlabeled category
+            if 0 in unique_labels:
+                names = [Labels.UNLABELED, *[f"Cell type {i+1}" for i in range(len(unique_labels) - 1)]]
+            else:
+                names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
 
         obj = obj.pp.add_properties(names, Props.NAME)
 

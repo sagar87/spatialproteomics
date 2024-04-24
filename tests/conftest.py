@@ -63,7 +63,6 @@ def load_labeled_dataset(data_dic):
         segmentation=data_dic["segmentation"],
         labels=data_dic["labels"],
     )
-
     return dataset
 
 
