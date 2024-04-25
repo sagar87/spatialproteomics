@@ -45,11 +45,9 @@ class Dims(object):
     FEATURES = "features"
     PROPS = "props"
     NEIGHBORS = "neighbors"
-
     IMAGE = ["channels", "x", "y"]
     COLORED_IMAGE = ["channels", "x", "y", "rgba"]
     SEGMENTATION = ["x", "y"]
-    # COORDINATES = ["cell_idx", "coords"]
     DATA = ["cell_idx", "channels"]
 
 
@@ -66,39 +64,15 @@ class Props(object):
 
 class Features(object):
     LABELS = "_labels"
-    ORIGINAL_LABELS = "_original_labels"
-    X = "centroid-1"  # "_x"
-    Y = "centroid-0"  # "_y"
+    X = "centroid-1"
+    Y = "centroid-0"
 
 
-# COLORS = [
-#     "#000000",
-#     "#e6194b",
-#     "#3cb44b",
-#     "#ffe119",
-#     "#4363d8",
-#     "#f58231",
-#     "#911eb4",
-#     "#46f0f0",
-#     "#f032e6",
-#     "#bcf60c",
-#     "#fabebe",
-#     "#008080",
-#     "#e6beff",
-#     "#9a6324",
-#     "#fffac8",
-#     "#800000",
-#     "#aaffc3",
-#     "#808000",
-#     "#ffd8b1",
-#     "#000075",
-#     "#808080",
-#     "#ffffff",
-# ]
+class Labels(object):
+    UNLABELED = "Unlabeled"
 
 
 COLORS = [
-    # "#000000",  # remove the black, as often, we have black colored annotation
     "#FFFF00",
     "#1CE6FF",
     "#FF34FF",
@@ -134,7 +108,6 @@ COLORS = [
     "#000035",
     "#7B4F4B",
     "#A1C299",
-    "#300018",
     "#0AA6D8",
     "#013349",
     "#00846F",
@@ -145,7 +118,6 @@ COLORS = [
     "#CC0744",
     "#C0B9B2",
     "#C2FF99",
-    "#001E09",
     "#00489C",
     "#6F0062",
     "#0CBD66",
@@ -188,7 +160,6 @@ COLORS = [
     "#9B9700",
     "#549E79",
     "#FFF69F",
-    "#201625",
     "#72418F",
     "#BC23FF",
     "#99ADC0",

@@ -73,7 +73,4 @@ def load_image_data(
     else:
         dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
 
-    # data = dataset.se.quantify()
-    # dataset[Layers.DATA] = data
-
     return dataset

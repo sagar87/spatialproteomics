@@ -1,31 +1,12 @@
-from typing import Callable, List, Union
+from typing import List, Union
 
-import networkx as nx
 import numpy as np
+import pandas as pd
 import xarray as xr
 from skimage.segmentation import relabel_sequential
-from sklearn.neighbors import NearestNeighbors
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
-
-# from tqdm import tqdm
-
-
-def _format_labels(labels):
-    """Formats a label list."""
-    formatted_labels = labels.copy()
-    unique_labels = np.unique(labels)
-
-    if 0 in unique_labels:
-        logger.warning("Found 0 in labels. Reindexing ...")
-        formatted_labels += 1
-
-    if ~np.all(np.diff(unique_labels) == 1):
-        logger.warning("Labels are non-consecutive. Relabeling ...")
-        formatted_labels, _, _ = relabel_sequential(formatted_labels)
-
-    return formatted_labels
 
 
 @xr.register_dataset_accessor("la")
@@ -63,16 +44,12 @@ class LabelAccessor:
         """
         labels_layer = self._obj[Layers.LABELS]
         labels = self._obj.coords[Dims.LABELS]
-        # print(labels)
-        # print(labels_layer.loc[labels[1], prop])
+
         label_dict = {}
 
         for label in labels:
-            # print(label)
             current_row = labels_layer.loc[label, prop]
             label_dict[label.values.item()] = current_row.values.item()
-
-        # label_dict = {label.item(): labels_layer.loc[label, prop].item() for label in self._obj.coords[Dims.LABELS]}
 
         if relabel:
             return self._obj.la._relabel_dict(label_dict)
@@ -116,20 +93,11 @@ class LabelAccessor:
 
         return label_names_reverse[label]
 
-    def filter_by_intensity(self, col: str, func: Callable, layer_key: str):
-        """Returns the list of cells with the labels from items."""
-        cells = self._obj[layer_key].sel({Dims.CHANNELS: col}).values.copy()
-        cells_bool = func(cells)
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        return self._obj.sel({Dims.CELLS: cells_sel})
-
     def __getitem__(self, indices):
         """
         Sub selects labels.
         """
         # type checking
-        # TODO: Write more tests!
         if isinstance(indices, float):
             raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
 
@@ -198,27 +166,36 @@ class LabelAccessor:
         - 'indices' can be provided as slices, lists, tuples, or an integer.
         - The function then updates the data object to remove the deselected label indices.
         """
-        # REFACTOR
-        if type(indices) is slice:
+        if isinstance(indices, slice):
             l_start = indices.start if indices.start is not None else 1
             l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
-        elif type(indices) is list:
-            assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers."
-            sel = indices
-
-        elif type(indices) is tuple:
+        elif isinstance(indices, list):
+            assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers or strings."
+            if all([isinstance(i, int) for i in indices]):
+                sel = indices
+            else:
+                label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+                for idx in indices:
+                    if idx not in label_dict:
+                        raise ValueError(f"Label type {indices} not found.")
+                sel = [label_dict[idx] for idx in indices]
+        elif isinstance(indices, tuple):
             indices = list(indices)
             all_int = all([type(i) is int for i in indices])
             assert all_int, "All label indices must be integers."
             sel = indices
+        elif isinstance(indices, str):
+            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+            if indices not in label_dict:
+                raise ValueError(f"Label type {indices} not found.")
+            sel = [label_dict[indices]]
         else:
             assert type(indices) is int, "Label must be provided as slices, lists, tuple or int."
-
             sel = [indices]
 
-        total_labels = self._obj.dims[Dims.LABELS] + 1
-        inv_sel = [i for i in range(1, total_labels) if i not in sel]
+        inv_sel = [i for i in self._obj.coords[Dims.LABELS] if i not in sel]
+
         cells = self._obj.la._filter_cells_by_label(inv_sel)
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
@@ -299,68 +276,6 @@ class LabelAccessor:
 
         return obj
 
-    def get_gate_graph(self, pop: bool = False) -> nx.DiGraph:
-        """
-        Get the gating graph from the data object.
-
-        This method retrieves the gating graph from the data object, which represents the gating hierarchy
-        used to categorize cells into different cell types.
-
-        Parameters
-        ----------
-        pop : bool, optional
-            Whether to remove the gating graph from the data object after retrieval. Default is False.
-
-        Returns
-        -------
-        networkx.DiGraph
-            The gating graph representing the gating hierarchy of cell types.
-
-        Notes
-        -----
-        - The function looks for the 'graph' attribute in the data object to obtain the gating graph.
-        - If 'pop' is True, the gating graph is removed from the data object after retrieval.
-        """
-        if "graph" not in self._obj.attrs:
-            # initialize graph
-            graph = nx.DiGraph()
-            graph.add_node(
-                0,
-                label_name="Unlabeled",
-                label_id=0,
-                channel=None,
-                threshold=None,
-                intensity_key=None,
-                override=None,
-                step=0,
-                num_cells=self._obj.dims[Dims.CELLS],
-                gated_cells=set(self._obj.coords[Dims.CELLS].values),
-            )
-
-            return graph
-
-        # pop and initialise graph
-        obj = self._obj
-        if pop:
-            graph_dict = obj.attrs.pop("graph")
-        else:
-            graph_dict = obj.attrs["graph"]
-
-        graph = nx.from_dict_of_dicts(graph_dict, create_using=nx.DiGraph)
-
-        attrs_keys = list(obj.attrs.keys())
-        for key in attrs_keys:
-            if pop:
-                node_attributes = obj.attrs.pop(key)
-            else:
-                if key == "graph":
-                    continue
-                node_attributes = obj.attrs[key]
-
-            nx.set_node_attributes(graph, node_attributes, name=key)
-
-        return graph
-
     def remove_label_type(self, cell_type: Union[int, List[int]]) -> xr.Dataset:
         """
         Remove specific cell type label(s) from the data object.
@@ -411,349 +326,6 @@ class LabelAccessor:
 
         return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
 
-    def reset_label_type(self, label_id) -> xr.Dataset:
-        """
-        Reset the label type of cells to its parent label.
-
-        This method resets the label type of cells, identified by the given label_id, to its parent label.
-        The cells assigned to descendant labels of the provided label_id will also be updated to the parent label.
-
-        Parameters
-        ----------
-        label_id :
-            The cell type id or name to reset its cells' label type.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated data object with cells' label type reset to its parent label.
-
-        Raises
-        ------
-        ValueError
-            If the provided label_id is not found in the data object.
-
-        Notes
-        -----
-        - The function identifies the parent label of the provided label_id.
-        - It gathers all the descendant labels of the provided label_id, including itself.
-        - The cells assigned to the descendant labels will be updated to the parent label.
-        - The function also updates the gating graph and relevant attributes in the data object.
-        """
-
-        labels = self._obj.coords[Dims.LABELS]
-        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
-
-        if isinstance(label_id, str):
-            if label_id not in label_names_reverse:
-                raise ValueError(f"Cell type {label_id} not found.")
-
-            # overwrite label_id with the corresponding id
-            label_id = label_names_reverse[label_id]
-
-        if label_id not in labels:
-            raise ValueError(f"Cell type id {label_id} not found.")
-
-        graph = self._obj.la.get_gate_graph(pop=False)
-        gated_cells = nx.get_node_attributes(graph, "gated_cells")
-
-        descendants = sorted(nx.descendants(graph, label_id) | {label_id})
-        # if label_id == 2:
-        #     import pdb
-
-        #     pdb.set_trace()
-
-        cells_selected = []
-
-        for node in descendants:
-            cells_selected.append(gated_cells[node])
-
-        cells_selected = np.concatenate(cells_selected)
-
-        predecessor = [key for key in graph.predecessors(label_id)]
-        parent_id = predecessor[-1]
-
-        obs = self._obj[Layers.OBS]
-        obj = self._obj.drop_vars(Layers.OBS)
-
-        da = obs.copy()
-        da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = parent_id
-
-        updated_obj = xr.merge([obj, da])
-        updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
-        updated_labels = {k: v for k, v in updated_labels.items() if len(v) != 0}
-        updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-
-        for node in descendants:
-            graph.remove_node(node)
-
-        updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
-        updated_obj.attrs["num_cells"] = updated_label_counts
-        updated_obj.attrs["gated_cells"] = updated_labels
-        updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
-        for node_prop in [
-            "channel",
-            "threshold",
-            "intensity_key",
-            "override",
-            "label_name",
-            "label_id",
-            "step",
-        ]:
-            updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
-
-        return updated_obj
-
-    def gate_label_type(
-        self,
-        label_id: Union[int, str],
-        channel: Union[List[str], str],
-        threshold: Union[List[float], float],
-        intensity_key: str,
-        override: bool = False,
-        parent: Union[int, str] = 0,
-        op: str = "AND",
-        show_channel: Union[List[str], str] = None,
-    ):
-        """
-        Gate cells based on specified criteria and assign a cell type label.
-
-        This method gates cells in the data object based on the given channel and threshold.
-        Cells that meet the gating criteria will be assigned the provided cell type label.
-
-        Parameters
-        ----------
-        label_id :
-            The cell type id or name to assign to the gated cells.
-        channel :
-            The channel or list of channels to use for gating.
-        threshold :
-            The threshold or list of thresholds to use for gating.
-        intensity_key :
-            The key to use for the intensity layer.
-        override : bool, optional
-            Whether to override the existing descendant label types. Default is False.
-        parent : any, optional
-            The parent cell type id or name for gating hierarchy. Default is 0, indicating no parent label.
-        op : str, optional
-            The logical operator to apply when dealing with multiple channels:
-            "AND" for logical AND, "OR" for logical OR. Default is "AND".
-        show_channel : any, optional
-            The channel or list of channels to display in the gating result.
-            If None, the gating channel(s) will be used. Default is None.
-
-        Returns
-        -------
-        any
-            The updated data object with gated cells labeled with the specified cell type.
-
-        Raises
-        ------
-        ValueError
-            If the provided label_id or parent is not found in the data object.
-        ValueError
-            If the threshold array length does not match the number of channels.
-        ValueError
-            If the logical operator (op) is neither "AND" nor "OR".
-
-        Notes
-        -----
-        - The gating process is based on the specified channel(s) and threshold(s).
-        - The result of the gating operation is stored as new cell type labels.
-        - The gating operation can either override existing descendant labels or not.
-        - The gating process also updates the gating graph and relevant attributes in the data object.
-        """
-        labels = self._obj.coords[Dims.LABELS]
-        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
-
-        if isinstance(label_id, str):
-            if label_id not in label_names_reverse:
-                raise ValueError(f"Cell type {label_id} not found.")
-
-            # overwrite label_id with the corresponding id
-            label_id = label_names_reverse[label_id]
-
-        if isinstance(parent, str):
-            if parent not in label_names_reverse:
-                raise ValueError(f"Cell type {parent} not found.")
-
-            parent = label_names_reverse[parent]
-
-        if label_id not in labels:
-            raise ValueError(f"Cell type id {label_id} not found.")
-
-        if isinstance(channel, list):
-            num_channels = len(channel)
-            if isinstance(threshold, float) and num_channels > 1:
-                logger.warning("Caution, found more than 1 channel but only one threshold. Broadcasting.")
-                threshold = np.array([threshold] * num_channels).reshape(1, num_channels)
-            if isinstance(threshold, list):
-                if len(threshold) > num_channels or len(threshold) < num_channels:
-                    raise ValueError("Threshold array must have the same length as the number of channels.")
-
-                threshold = np.array(threshold).reshape(1, num_channels)
-
-        if isinstance(channel, str):
-            channel = [channel]
-        if isinstance(threshold, float):
-            threshold = np.array(threshold).reshape(1, 1)
-
-        label_names = self._obj.la._label_to_dict(Props.NAME)  # dict of label names per label id
-        labeled_cells = self._obj.la._cells_to_label(include_unlabeled=True)  # dict of cell ids per label
-        graph = self._obj.la.get_gate_graph(pop=False)  # gating graph
-        step = max(list(nx.get_node_attributes(graph, "step").values())) + 1  # keeps track of the current gating step
-
-        # should use filter
-        cells_bool = (self._obj[intensity_key].sel({Dims.CHANNELS: channel}) > threshold).values
-
-        if cells_bool.squeeze().ndim > 1:
-            if op == "AND":
-                cells_bool = np.all(cells_bool, axis=1)
-            elif op == "OR":
-                cells_bool = np.any(cells_bool, axis=1)
-            else:
-                raise ValueError("Operator (op) must  be either AND or OR.")
-
-        cells = self._obj.coords[Dims.CELLS].values
-        cells_gated = cells[cells_bool.squeeze()]
-
-        if override:
-            print("descendants", nx.descendants(graph, parent))
-            descendants = [parent] + list(nx.descendants(graph, parent))
-            cells_available = []
-
-            for descendant in descendants:
-                cells_available.append(labeled_cells[descendant])
-
-            cells_available = np.concatenate(cells_available)
-        else:
-            cells_available = labeled_cells[parent]
-
-        cells_selected = cells_gated[np.isin(cells_gated, cells_available)]
-        # print(cells_selected)
-
-        logger.info(
-            f"Gating yields {len(cells_selected)} of positive {len(cells_gated)} labels (availale cells {len(cells_available)})."
-        )
-
-        obs = self._obj[Layers.OBS]
-        obj = self._obj.drop_vars(Layers.OBS)
-
-        da = obs.copy()
-        da.loc[{Dims.CELLS: cells_selected, Dims.FEATURES: Features.LABELS}] = label_id
-
-        updated_obj = xr.merge([obj, da])
-        updated_labels = updated_obj.la._cells_to_label(include_unlabeled=True)
-        updated_labels = {k: v for k, v in updated_labels.items() if len(v) != 0}
-        updated_label_counts = {k: len(v) for k, v in updated_labels.items()}
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-
-        # update the graph
-        graph.add_node(
-            label_id,
-            label_id=label_id,
-            label_name=label_names[label_id],
-            parent=parent,
-            channel=channel,
-            threshold=threshold.squeeze().tolist(),
-            intensity_key=intensity_key,
-            override=override,
-            step=step,
-            op=op,
-            show_channel=show_channel if show_channel is not None else channel,
-        )
-        graph.add_edge(parent, label_id)
-
-        # save graph to the image container
-        # TODO: Refactor this
-
-        updated_obj.attrs["graph"] = nx.to_dict_of_dicts(graph)
-        updated_obj.attrs["num_cells"] = updated_label_counts
-        updated_obj.attrs["gated_cells"] = updated_labels
-        updated_obj.attrs["colors"] = {node: color_dict.get(node, "w") for node in graph.nodes}
-
-        for node_prop in [
-            "channel",
-            "threshold",
-            "intensity_key",
-            "override",
-            "label_name",
-            "label_id",
-            "step",
-            "op",
-            "parent",
-            "show_channel",
-        ]:
-            updated_obj.attrs[node_prop] = nx.get_node_attributes(graph, node_prop)
-
-        return updated_obj
-
-    def add_label_types_from_graph(self, graph):
-        """
-        Add label types and gate cells based on the provided gating graph.
-
-        This method adds label types to the data object based on the information in the provided gating graph.
-        It also gates cells for each step in the graph, applying the specified criteria from the graph.
-
-        Parameters
-        ----------
-        graph : networkx.DiGraph
-            The gating graph representing cell type hierarchies and gating steps.
-
-        Returns
-        -------
-        any
-            The updated data object with added label types and gated cells.
-
-        Notes
-        -----
-        - The function extracts relevant information from the gating graph, including label names, colors,
-        gating channels, thresholds, intensity keys, logical operators, parent labels, and override flags.
-        - It iterates over the steps in the graph and adds label types for each unique cell type encountered.
-        - For each step, the function gates cells based on the provided gating criteria for the respective cell type.
-        - The gating process updates the data object with the newly added label types and gated cells.
-        - The function assumes that the data object (`self._obj`) has relevant methods for adding label types
-        (`add_label_type`) and gating cells (`gate_label_type`) based on its existing implementation.
-        """
-        # unpack data
-        steps = {v: k for k, v in nx.get_node_attributes(graph, "step").items()}
-        label_names = nx.get_node_attributes(graph, "label_name")
-        channels = nx.get_node_attributes(graph, "channel")
-        colors = nx.get_node_attributes(graph, "colors")
-        parents = nx.get_node_attributes(graph, "parent")
-        ops = nx.get_node_attributes(graph, "op")
-        override = nx.get_node_attributes(graph, "override")
-        intensity_channels = nx.get_node_attributes(graph, "intensity_key")
-        thresholds = nx.get_node_attributes(graph, "threshold")
-
-        for step, cell_type in steps.items():
-            if step == 0:
-                continue
-
-            current_name = label_names[cell_type]
-            current_color = colors[cell_type]
-            current_channels = channels[cell_type]
-            current_thresholds = thresholds[cell_type]
-            current_key = intensity_channels[cell_type]
-            current_override = override[cell_type]
-            current_parent = parents[cell_type]
-            current_op = ops[cell_type]
-
-            if current_name not in self._obj.la:
-                self._obj = self._obj.la.add_label_type(current_name, current_color)
-
-            self._obj = self._obj.la.gate_label_type(
-                current_name,
-                current_channels,
-                current_thresholds,
-                current_key,
-                current_override,
-                current_parent,
-                current_op,
-            )
-        return self._obj
-
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
         """
         Add a label property for each unique cell type label.
@@ -780,9 +352,19 @@ class LabelAccessor:
         - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
         - If the label property already exists in the data object, it will be updated with the new property values.
         """
-        unique_labels = self._obj.coords[
-            Dims.LABELS
-        ].values  # np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+        # checking that we already have properties
+        assert (
+            Layers.LABELS in self._obj
+        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or ext.astir()."
+        # making sure the property does not exist already
+        assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
+
+        # checking that the length of the array matches the number of labels
+        assert len(array) == len(
+            self._obj.coords[Dims.LABELS].values
+        ), "The length of the array must match the number of labels."
+
+        unique_labels = self._obj.coords[Dims.LABELS].values
 
         if type(array) is list:
             array = np.array(array)
@@ -795,7 +377,6 @@ class LabelAccessor:
         )
 
         if Layers.LABELS in self._obj:
-            # import pdb;pdb.set_trace()
             da = xr.concat(
                 [self._obj[Layers.LABELS], da],
                 dim=Dims.PROPS,
@@ -826,12 +407,28 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the name of the cell type label in the data object to the new 'name'.
         """
+        # checking that a label layer is already present
+        assert Layers.LABELS in self._obj, "No label layer found in the data object."
+        # checking if the old label exists
+        assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
+        # checking if the new label already exists
+        assert name not in self._obj[Layers.LABELS].sel({Dims.PROPS: Props.NAME}), f"Label name {name} already exists."
+
+        # getting the original labels
+        label_layer = self._obj[Layers.LABELS].copy()
+
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
-        self._obj[Layers.LABELS].loc[label, Props.NAME] = name
+        label_layer.loc[label, Props.NAME] = name
 
-    def set_label_color(self, label, color):
+        # removing the old label layer
+        obj = self._obj.pp.drop_layers(Layers.LABELS)
+
+        # adding the new label layer
+        return xr.merge([label_layer, obj])
+
+    def set_label_colors(self, labels: Union[str, List[str]], colors: Union[str, List[str]]):
         """
         Set the color of a specific cell type label.
 
@@ -854,73 +451,119 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
-        if label not in self._obj.la:
-            logger.info(f"Did not find {label}.")
-            return self._obj
+        if isinstance(labels, str):
+            labels = [labels]
+        if isinstance(colors, str):
+            colors = [colors]
 
-        if isinstance(label, str):
+        # checking that there are as many colors as labels
+        assert len(labels) == len(colors), "The number of labels and colors must be the same."
+
+        # checking that a label layer is already present
+        assert (
+            Layers.LABELS in self._obj
+        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or ext.astir()."
+
+        # obtaining the current properties
+        props_layer = self._obj.coords[Dims.PROPS].values.tolist()
+        labels_layer = self._obj.coords[Dims.LABELS].values.tolist()
+        array = self._obj._labels.values.copy()
+
+        for label, color in zip(labels, colors):
+            # if the label does not exist in the object, a warning is thrown and we continue
+            if label not in self._obj.la:
+                logger.warning(f"Label {label} not found in the data object. Skipping.")
+                continue
+
+            # getting the id for the label
             label = self._obj.la._label_name_to_id(label)
 
-        props = self._obj.coords[Dims.PROPS].values.tolist()
-        labels = self._obj.coords[Dims.LABELS].values.tolist()
-        array = self._obj._labels.values.copy()
-        array[labels.index(label), props.index(Props.COLOR)] = color
+            # setting the new color for the given label
+            array[labels_layer.index(label), props_layer.index(Props.COLOR)] = color
 
         da = xr.DataArray(
             array,
-            coords=[labels, props],
+            coords=[labels_layer, props_layer],
             dims=[Dims.LABELS, Dims.PROPS],
             name=Layers.LABELS,
         )
 
-        # self._obj[Layers.LABELS].loc[label, Props.COLOR] = color
-
         return xr.merge([self._obj.drop_vars(Layers.LABELS), da])
 
-    def neighborhood_graph(self, neighbors=10, radius=1.0, metric="euclidean"):
+    def predict_cell_types_argmax(
+        self,
+        marker_dict: dict,
+        key: str = Layers.INTENSITY,
+        overwrite_existing_labels: bool = False,
+        cell_col: str = "cell",
+        label_col: str = "label",
+    ):
         """
-        Generate a neighborhood graph based on cell coordinates.
+        Predicts cell types based on the argmax classification of marker intensities.
 
-        This method creates a neighborhood graph for the cells in the data object based on their coordinates.
-        The neighborhood graph contains information about the 'neighbors' nearest cells to each cell.
+        Parameters:
+            marker_dict (dict): A dictionary mapping cell types to markers.
+            key (str, optional): The key of the quantification layer to use for classification. Defaults to Layers.INTENSITY.
+            overwrite_existing_labels (bool, optional): Whether to overwrite existing labels. Defaults to False.
+            cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
+            label_col (str, optional): The name of the column to store predicted cell types in the output dataframe. Defaults to "label".
 
-        Parameters
-        ----------
-        neighbors : int, optional
-            The number of neighbors to consider for each cell. Default is 10.
-        radius : float, optional
-            The radius within which to search for neighbors. Default is 1.0.
-        metric : str, optional
-            The distance metric to be used when calculating distances between cells. Default is "euclidean".
+        Returns:
+            spatial_data.SpatialData: A new SpatialData object with the predicted cell types added as labels.
 
-        Returns
-        -------
-        any
-            The updated data object with the neighborhood graph information.
-
-        Notes
-        -----
-        - The function extracts cell coordinates from the data object.
-        - It uses the 'neighbors', 'radius', and 'metric' parameters to generate the neighborhood graph.
-        - The neighborhood graph information is added to the data object as a new layer.
+        Raises:
+            AssertionError: If the quantification layer with the specified key is not found.
+            AssertionError: If any of the markers specified in the marker dictionary are not present in the quantification layer.
         """
-        cell_coords = self._obj.coords[Dims.CELLS].values
+        # asserting that a quantification with the key exists
+        assert (
+            key in self._obj
+        ), f"Quantification layer with key {key} not found. Please run pp.add_quantification() before classifying cell types."
+        celltypes, markers = list(marker_dict.keys()), list(marker_dict.values())
+        # asserting that all markers are present in the quantification layer
+        markers_present = self._obj.coords[Dims.CHANNELS].values
+        assert (
+            len(set(markers) - set(markers_present)) == 0
+        ), f"The following markers were not found in quantification layer: {set(markers) - set(markers_present)}."
 
-        # fit neighborhood tree
-        tree = NearestNeighbors(n_neighbors=neighbors, radius=radius, metric=metric)
-        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]].values
-        tree.fit(coords)
-        distances, nearest_neighbors = tree.kneighbors()
+        # only looking at the markers specified in the marker dice
+        obj = self._obj.pp[markers]
+        # getting the argmax for each cell
+        argmax_classification = np.argmax(obj[key].values, axis=1)
 
-        #
-        da = xr.DataArray(
-            cell_coords[nearest_neighbors],
-            coords=[
-                self._obj.coords[Dims.CELLS],
-                np.arange(neighbors),
-            ],
-            dims=[Dims.CELLS, Dims.NEIGHBORS],
-            name=Layers.NEIGHBORS,
+        # translating the argmax classification into cell types
+        celltypes_argmax = np.array(celltypes)[argmax_classification]
+
+        # putting everything into a dataframe
+        celltype_prediction_df = pd.DataFrame(
+            zip(obj.coords[Dims.CELLS].values, celltypes_argmax), columns=[cell_col, label_col]
         )
 
-        return xr.merge([self._obj, da])
+        # if there already exist partial annotations, and overwrite is set to False, we merge the two dataframes
+        if Features.LABELS in obj.coords[Dims.FEATURES].values and not overwrite_existing_labels:
+            id_to_label_dict = obj.la._label_to_dict(Props.NAME)
+            existing_labels_numeric = obj[Layers.OBS].sel(features=Features.LABELS).values
+            # getting a boolean array that is 0 if there exists a label, and 1 if there is no label
+            ct_exists = np.where(existing_labels_numeric != 0, 1, 0)
+            existing_labels = [id_to_label_dict[x] for x in existing_labels_numeric]
+            celltype_prediction_df["ct_exists"] = ct_exists
+            celltype_prediction_df["old_ct_prediction"] = existing_labels
+
+            # keeping original predictions and using the argmax otherwise
+            celltype_prediction_df[label_col] = celltype_prediction_df.apply(
+                lambda row: row[label_col] if row["ct_exists"] == 0 else row["old_ct_prediction"], axis=1
+            )
+
+            # removing the intermediate columns
+            celltype_prediction_df = celltype_prediction_df.drop(columns=["ct_exists", "old_ct_prediction"])
+
+        # need to remove the old labels first (if there are old labels)
+        obs = obj[Layers.OBS]
+        if Features.LABELS in obs.coords[Dims.FEATURES].values:
+            # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
+            obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
+            # removing the old colors
+            obj = obj.pp.drop_layers(Layers.LABELS)
+
+        # adding the new labels
+        return obj.pp.add_labels(celltype_prediction_df)

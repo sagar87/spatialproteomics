@@ -74,7 +74,13 @@ def _render_labels(mask, cmap_mask, img=None, alpha=0.2, alpha_boundary=1.0, mod
 def _get_listed_colormap(color_dict: dict):
     sorted_labels = sorted(color_dict.keys())
     colors = [color_dict[k] for k in sorted_labels]
-    cmap = ListedColormap(["black"] + colors, N=len(colors) + 1)
+
+    # adding black background if we don't have any unlabeled (0) cells
+    if 0 in sorted_labels:
+        cmap = ListedColormap(colors, N=len(colors))
+    else:
+        cmap = ListedColormap(["black"] + colors, N=len(colors) + 1)
+
     return cmap
 
 

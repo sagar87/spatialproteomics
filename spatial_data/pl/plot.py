@@ -74,6 +74,9 @@ class PlotAccessor:
         """Returns legend handles for the background."""
         color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
 
+        # removing unlabeled cells (label = 0)
+        color_dict = {k: v for k, v in color_dict.items() if k != 0}
+
         elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
         return elements
 
@@ -81,6 +84,10 @@ class PlotAccessor:
         """Returns legend handles for the labels."""
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
         names_dict = self._obj.la._label_to_dict(Props.NAME)
+
+        # removing unlabeled cells (label = 0)
+        color_dict = {k: v for k, v in color_dict.items() if k != 0}
+        names_dict = {k: v for k, v in names_dict.items() if k != 0}
 
         elements = [
             Line2D(
