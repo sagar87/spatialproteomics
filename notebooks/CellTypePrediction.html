@@ -361,7 +361,7 @@ div.rendered_html tbody tr:hover {
 <h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
 <p>There are different ways to predict cell types, e. g. using astir or argmax. Here, we demonstrate how to filter data and then use argmax to get a quick initial prediction.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -387,7 +387,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f55760&gt;
+&lt;xarray.core.options.set_options at 0x7fff12860040&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -500,7 +500,7 @@ ct_marker_dict
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># predicting the cell type using the argmay
@@ -517,10 +517,6 @@ ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_dict
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class LabelAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class LabelAccessor:
 Label Stroma PDPN not found in the data object. Skipping.
 Label Stroma CD31 not found in the data object. Skipping.
 </pre></div></div>
@@ -534,7 +530,7 @@ Label Stroma CD31 not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ct predictions next to the processed image
@@ -549,7 +545,7 @@ ax[1].set_title(&quot;Cell Type Predictions&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -562,6 +558,109 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_CellTypePrediction_8_1.png" src="../_images/notebooks_CellTypePrediction_8_1.png" />
+</div>
+</div>
+</section>
+<section id="Marker-Binarization">
+<h1>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this headline"></a></h1>
+<p>For some (functional) markers, we want to binarize them (i. e. is a cell positive or negative for that marker). This can be achieved with the <code class="docutils literal notranslate"><span class="pre">la.add_binarization</span></code> function.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># these thresholds are the percentiles, so they are between 0 and 100
+threshold_dict = {
+    &quot;PAX5&quot;: 80,
+    &quot;CD3&quot;: 50
+}
+
+ds_with_binarization = ds_with_ct_predictions.la.add_binarization(threshold_dict, layer_key=&#39;_arcsinh_mean&#39;)
+ds_with_binarization
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatial-data/spatial_data/la/label.py:13: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatial_data.la.label.LabelAccessor&#39;&gt; under name &#39;la&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class LabelAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (labels: 9, props: 2, cells: 12560, channels: 11,
+                    features: 6, x: 3000, y: 3000)
+Coordinates:
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;PAX5&#x27; &#x27;CD3&#x27; &#x27;CD11b&#x27; ... &#x27;CD34&#x27; &#x27;CD90&#x27; &#x27;CD56&#x27;
+  * features       (features) &lt;U14 &#x27;CD3_binarized&#x27; ... &#x27;centroid-1&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 0.007447 2.46 ... 0.9805 0.0
+    _arcsinh_sum   (cells, channels) float64 1.138 7.689 3.606 ... 6.204 0.0
+    _obs           (cells, features) float64 1.0 0.0 9.0 ... 2.249e+03 2.237e+03
+    _raw_mean      (cells, channels) float64 0.03723 29.06 0.4894 ... 5.727 0.0
+    _raw_sum       (cells, channels) float64 7.0 5.463e+03 ... 1.237e+03 0.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _image         (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
+    _labels        (labels, props) object &#x27;#e6194B&#x27; &#x27;B&#x27; ... &#x27;#3cb44b&#x27; &#x27;T&#x27;</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the binarization next to the marker intensities
+fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+_ = ds_with_binarization.pp[[&#39;PAX5&#39;, &#39;CD3&#39;]].pl.imshow(render_intensities=True, render_labels=False, legend_background=True, ax=ax[0])
+_ = ds_with_binarization.pl.scatter(feature=&#39;PAX5_binarized&#39;, size=0.1, color_scheme={0: &#39;gray&#39;, 1: &#39;darkred&#39;}, ax=ax[1])
+_ = ds_with_binarization.pl.scatter(feature=&#39;CD3_binarized&#39;, size=0.1, color_scheme={0: &#39;gray&#39;, 1: &#39;green&#39;}, ax=ax[2])
+
+ax[0].set_title(&quot;Markers&quot;)
+ax[1].set_title(&quot;PAX5 binarization&quot;)
+ax[2].set_title(&quot;CD3 binarization&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/utils.py:494: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;CD3 binarization&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_CellTypePrediction_11_2.png" src="../_images/notebooks_CellTypePrediction_11_2.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 </section>
