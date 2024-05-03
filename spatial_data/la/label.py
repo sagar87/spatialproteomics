@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -92,6 +92,21 @@ class LabelAccessor:
             raise ValueError(f"Cell type {label} not found.")
 
         return label_names_reverse[label]
+
+    def _filter_by_intensity(
+        self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY, return_int_array: bool = True
+    ):
+        """Returns the list of cells with the labels from items."""
+        cells = self._obj[layer_key].sel({Dims.CHANNELS: channel}).values.copy()
+        cells_bool = func(cells)
+
+        if return_int_array:
+            # turning the boolean array into a numeric array (where 0 is False, 1 is True)
+            return cells_bool.astype(int)
+
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        return self._obj.sel({Dims.CELLS: cells_sel})
 
     def __getitem__(self, indices):
         """
@@ -567,3 +582,20 @@ class LabelAccessor:
 
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
+
+    def add_binarization(self, threshold_dict: dict, layer_key: str = Layers.INTENSITY):
+        channels = list(threshold_dict.keys())
+
+        # checking that the channels are present in the data object
+        assert all(
+            [channel in self._obj.coords[Dims.CHANNELS].values for channel in channels]
+        ), "One or more channels not found in the data object."
+
+        obj = self._obj.copy()
+        for channel, percentile_threshold in threshold_dict.items():
+            # computing the percentile specified in the threshold dict
+            threshold = np.percentile(obj[layer_key].sel({Dims.CHANNELS: channel}).values, percentile_threshold)
+            positive_cells = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
+            obj = obj.pp.add_feature(f"{channel}_binarized", positive_cells)
+
+        return obj

@@ -329,7 +329,7 @@ class PreprocessingAccessor:
                     continue
             # when looking at centroids, it could happen that the image has been cropped before
             # in this case, the x and y coordinates do not necessarily start at 0
-            # to accomodate for this, we add the x and y coordinates to the centroids
+            # to accommodate for this, we add the x and y coordinates to the centroids
             if k == Features.X:
                 v += self._obj.coords[Dims.X].values[0]
             if k == Features.Y:
@@ -370,6 +370,58 @@ class PreprocessingAccessor:
                 )
 
         return xr.merge([obj, da])
+
+    def add_feature(self, feature_name: str, feature_values: Union[list, np.ndarray]):
+        """
+        Adds a feature to the image container.
+
+        Parameters
+        ----------
+        feature_name : str
+            The name of the feature to be added.
+        feature_values :
+            The values of the feature to be added.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the added feature.
+        """
+        # checking if the feature already exists
+        assert feature_name not in self._obj.coords[Dims.FEATURES].values, f"Feature {feature_name} already exists."
+
+        # checking if feature_values is a list or a numpy array
+        assert type(feature_values) in [list, np.ndarray], "Feature values must be a list or a numpy array."
+
+        # if feature_values is a list, we convert it to a numpy array
+        if type(feature_values) is list:
+            feature_values = np.array(feature_values)
+
+        # collapsing the feature_values to a 1D array
+        feature_values = feature_values.flatten()
+
+        # checking if the length of the feature_values matches the number of cells
+        assert len(feature_values) == len(
+            self._obj.coords[Dims.CELLS]
+        ), "Length of feature values must match the number of cells."
+
+        # adding a new dimension to obtain a 2D array as required by xarray
+        feature_values = np.expand_dims(feature_values, 1)
+
+        # create a data array with the feature
+        da = xr.DataArray(
+            feature_values,
+            coords=[self._obj.coords[Dims.CELLS], [feature_name]],
+            dims=[Dims.CELLS, Dims.FEATURES],
+            name=Layers.OBS,
+        )
+
+        da = xr.concat(
+            [self._obj[Layers.OBS].copy(), da],
+            dim=Dims.FEATURES,
+        )
+
+        return xr.merge([self._obj, da])
 
     def add_quantification(
         self,
