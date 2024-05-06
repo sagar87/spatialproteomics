@@ -20,6 +20,7 @@ from .utils import (
     _normalize,
     _relabel_cells,
     _remove_unlabeled_cells,
+    handle_disconnected_cells,
 )
 
 
@@ -231,7 +232,12 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, da])
 
     def add_segmentation(
-        self, segmentation: np.ndarray, mask_growth: int = 0, relabel: bool = True, copy: bool = True
+        self,
+        segmentation: np.ndarray,
+        mask_growth: int = 0,
+        relabel: bool = True,
+        copy: bool = True,
+        handle_disconnected: str = "keep_largest",
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
@@ -261,6 +267,9 @@ class PreprocessingAccessor:
         assert (x_dim == self._obj.sizes[Dims.X]) & (
             y_dim == self._obj.sizes[Dims.Y]
         ), "The shape of segmentation mask does not match that of the image."
+
+        # checking if there are any disconnected cells in the input
+        handle_disconnected_cells(segmentation, mode=handle_disconnected)
 
         if copy:
             segmentation = segmentation.copy()
@@ -874,7 +883,7 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2):
+    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "keep_largest"):
         """
         Grows the cells in the segmentation mask.
         """
@@ -886,6 +895,9 @@ class PreprocessingAccessor:
 
         # growing segmentation masks
         masks_grown = expand_labels(segmentation, iterations)
+
+        # checking if there are any disconnected segmentation masks
+        handle_disconnected_cells(masks_grown, mode=handle_disconnected)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
@@ -920,7 +932,11 @@ class PreprocessingAccessor:
         return self._obj.pp[slices[0], slices[1]]
 
     def merge_segmentation(
-        self, array: np.ndarray, labels: Optional[Union[str, List[str]]] = None, threshold: float = 1.0
+        self,
+        array: np.ndarray,
+        labels: Optional[Union[str, List[str]]] = None,
+        threshold: float = 1.0,
+        handle_disconnected: str = "relabel",
     ):
         # array = all of the arrays that will iteratively be merged to the existing segmentation mask
         # ensuring that a segmentation mask already exists
@@ -990,6 +1006,9 @@ class PreprocessingAccessor:
         else:
             # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
             mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
+
+        # checking if there are any disconnected cells in the input
+        handle_disconnected_cells(segmentation, mode=handle_disconnected)
 
         # assigning the new segmentation to the object
         da = xr.DataArray(

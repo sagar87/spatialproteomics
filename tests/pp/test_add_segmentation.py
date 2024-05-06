@@ -49,3 +49,11 @@ def test_add_segmentation_mask_growth(data_dic, dataset_segmentation):
     assert segmented["_segmentation"].values.shape == segmented_grown["_segmentation"].values.shape
     assert np.sum(segmented_grown["_segmentation"].values - segmented["_segmentation"].values) != 0
     assert np.all(areas_grown >= areas)
+
+
+# def test_add_segmentation_disconnected_cells(data_dic, dataset_segmentation):
+#    corrupted_segmentation = data_dic["segmentation"]
+#
+#    #corrupted_segmentation[10, 10] = -1
+#    #with pytest.raises(AssertionError, match="A segmentation mask may not contain negative numbers."):
+#    #    dataset_segmentation.pp.add_segmentation(corrupted_segmentation)

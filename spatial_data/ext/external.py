@@ -5,6 +5,7 @@ import pandas as pd
 import xarray as xr
 
 from ..constants import Dims, Layers
+from ..pp.utils import handle_disconnected_cells
 
 
 @xr.register_dataset_accessor("ext")
@@ -21,9 +22,12 @@ class ExternalAccessor:
         diameter: int = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
+        cellprob_threshold: float = 0.0,
+        flow_threshold: float = 0.4,
         gpu: bool = True,
         model_type: str = "cyto3",
         return_xarray: bool = True,
+        handle_disconnected: str = "keep_largest",
     ):
         """
         Segment cells using Cellpose.
@@ -86,7 +90,13 @@ class ExternalAccessor:
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
+                cellprob_threshold=cellprob_threshold,
+                flow_threshold=flow_threshold,
             )
+
+            # checking if there are any disconnected cells in the input
+            handle_disconnected_cells(masks_pred, handle_disconnected)
+
             all_masks.append(masks_pred)
 
         if len(all_masks) == 1:
@@ -210,6 +220,7 @@ class ExternalAccessor:
         normalize: bool = True,
         nuclear_channel: str = "DAPI",
         predict_big: bool = False,
+        handle_disconnected: str = "keep_largest",
         **kwargs,
     ) -> xr.Dataset:
         """
@@ -262,6 +273,9 @@ class ExternalAccessor:
             labels, _ = model.predict_instances_big(nuclear_img, scale=scale, **kwargs)
         else:
             labels, _ = model.predict_instances(nuclear_img, scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
+
+        # checking if there are any disconnected cells in the input
+        handle_disconnected_cells(labels, handle_disconnected)
 
         # Adding the segmentation mask  and centroids to the xarray dataset
         return self._obj.pp.add_segmentation(labels).pp.add_observations()
