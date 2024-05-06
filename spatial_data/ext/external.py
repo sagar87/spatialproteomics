@@ -21,6 +21,8 @@ class ExternalAccessor:
         diameter: int = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
+        cellprob_threshold: float = 0.0,
+        flow_threshold: float = 0.4,
         gpu: bool = True,
         model_type: str = "cyto3",
         return_xarray: bool = True,
@@ -86,6 +88,8 @@ class ExternalAccessor:
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
+                cellprob_threshold=cellprob_threshold,
+                flow_threshold=flow_threshold,
             )
             all_masks.append(masks_pred)
 
