@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -7,6 +7,7 @@ from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
+from ..pp.intensity import percentage_positive
 
 
 @xr.register_dataset_accessor("la")
@@ -92,6 +93,21 @@ class LabelAccessor:
             raise ValueError(f"Cell type {label} not found.")
 
         return label_names_reverse[label]
+
+    def _filter_by_intensity(
+        self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY, return_int_array: bool = True
+    ):
+        """Returns the list of cells with the labels from items."""
+        cells = self._obj[layer_key].sel({Dims.CHANNELS: channel}).values.copy()
+        cells_bool = func(cells)
+
+        if return_int_array:
+            # turning the boolean array into a numeric array (where 0 is False, 1 is True)
+            return cells_bool.astype(int)
+
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        return self._obj.sel({Dims.CELLS: cells_sel})
 
     def __getitem__(self, indices):
         """
@@ -526,10 +542,10 @@ class LabelAccessor:
             len(set(markers) - set(markers_present)) == 0
         ), f"The following markers were not found in quantification layer: {set(markers) - set(markers_present)}."
 
-        # only looking at the markers specified in the marker dice
-        obj = self._obj.pp[markers]
+        # only looking at the markers specified in the marker dict
+        obj = self._obj.copy()
         # getting the argmax for each cell
-        argmax_classification = np.argmax(obj[key].values, axis=1)
+        argmax_classification = np.argmax(obj.pp[markers][key].values, axis=1)
 
         # translating the argmax classification into cell types
         celltypes_argmax = np.array(celltypes)[argmax_classification]
@@ -567,3 +583,44 @@ class LabelAccessor:
 
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
+
+    def add_binarization(
+        self, threshold_dict: dict, cell_type: Optional[str] = None, layer_key: str = "_percentage_positive_intensity"
+    ):
+        """This method computes the percentage of positive cells for each channel and adds a binary feature for each channel based on the threshold. If a cell_type is specified, the binarization is only applied to this cell type."""
+        channels = list(threshold_dict.keys())
+
+        # checking that the channels are present in the data object
+        assert all(
+            [channel in self._obj.coords[Dims.CHANNELS].values for channel in channels]
+        ), f"One or more channels not found in the data object. Available channels are: {self._obj.coords[Dims.CHANNELS]}"
+
+        # check if this key already exists
+        if layer_key in self._obj:
+            logger.warning(f"Layer with key {layer_key} already exists. Using existing expression matrix.")
+            obj = self._obj.copy()
+        else:
+            obj = self._obj.pp.add_quantification(func=percentage_positive, key_added=layer_key)
+
+        # if a cell type is specified, we get the and from the cell type and the binarization, which will result in only positive cells of that specific cell type
+        # to get this, we first need a binary vector that tells us if a cell is of the specified cell type
+        if cell_type is not None:
+            # TODO: verify if this works and add an and gate
+            # getting the cell type id
+            cell_type_id = obj.la._label_name_to_id(cell_type)
+            # getting all of the cells that should have a 1 in the binary vector
+            cells_of_specified_cell_type = obj.la[cell_type_id].cells.values
+            # creating a boolean mask indicating whether each element of cells is in cells_subset
+            ct_mask = np.isin(obj.cells.values, cells_of_specified_cell_type)
+            # converting the boolean mask to integers (0 for False, 1 for True)
+            ct_indicator_array = ct_mask.astype(int)
+
+        for channel, threshold in threshold_dict.items():
+            positive_cells = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
+            if cell_type is None:
+                obj = obj.pp.add_feature(f"{channel}_binarized", positive_cells)
+            else:
+                # here we multiply the two binary arrays together, which is essentially equivalent to an and gate, only retaining binarized values for the cell type in question
+                obj = obj.pp.add_feature(f"{cell_type}_{channel}_binarized", positive_cells * ct_indicator_array)
+
+        return obj

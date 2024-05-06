@@ -512,7 +512,7 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
-    def scatter(
+    def scatter_labels(
         self,
         legend_label: bool = True,
         size: float = 1,
@@ -580,6 +580,76 @@ class PlotAccessor:
         if legend_label:
             legend = self._obj.pl._legend_labels()
             ax.legend(handles=legend, **legend_kwargs).set_zorder(102)
+
+        return self._obj
+
+    def scatter(
+        self,
+        feature: str,
+        layer_key: str = Layers.OBS,
+        legend_label: bool = True,
+        size: float = 1,
+        alpha: float = 0.9,
+        zorder=10,
+        ax=None,
+        legend_kwargs: dict = {"framealpha": 1},
+        scatter_kws: dict = {},
+        color_scheme: dict = None,
+    ) -> xr.Dataset:
+        """
+        Plots a scatter plot of an arbitrary element of the _obs-
+        """
+        if ax is None:
+            ax = plt.gca()
+
+        # check if the layer exists
+        assert layer_key in self._obj, f"Layer {layer_key} not found in the data object."
+
+        layer = self._obj[layer_key]
+
+        # check that the feature exists
+        assert feature in layer.coords[Dims.FEATURES], f"Feature {feature} not found in the layer {layer_key}."
+
+        # check if the layer contains X and Y coordinates
+        assert Features.X in layer.coords[Dims.FEATURES], f"Feature {Features.X} not found in the layer {layer_key}."
+        assert Features.Y in layer.coords[Dims.FEATURES], f"Feature {Features.Y} not found in the layer {layer_key}."
+
+        x = layer.loc[:, Features.X]
+        y = layer.loc[:, Features.Y]
+
+        if color_scheme is None:
+            # Default color scheme
+            unique_values = np.unique(layer.sel(features=feature))
+            assert (
+                len(unique_values) <= 10
+            ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
+            colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
+            color_dict = {val: color for val, color in zip(unique_values, colors)}
+        else:
+            color_dict = color_scheme
+            # check if all unique values are present in the color scheme
+            assert set(np.unique(layer.sel(features=feature))) <= set(
+                color_dict.keys()
+            ), f"Not all values are present in the color scheme. Make sure the following keys are in your color_scheme: {np.unique(layer.sel(features=feature))}."
+
+        # Assigning colors based on feature values
+        colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
+
+        ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+
+        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin, xmax])
+
+        ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
+
+        if legend_label:
+            # Creating legend labels based on unique feature values
+            legend_handles = [
+                plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
+                for val, color in color_dict.items()
+            ]
+            ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
 
         return self._obj
 
