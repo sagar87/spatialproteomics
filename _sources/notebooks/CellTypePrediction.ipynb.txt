@@ -11,7 +11,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 2,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -21,16 +21,16 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 3,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "<xarray.core.options.set_options at 0x7fffe713eb50>"
+       "<xarray.core.options.set_options at 0x7fffd572f610>"
       ]
      },
-     "execution_count": 2,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -45,7 +45,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 4,
    "metadata": {},
    "outputs": [
     {
@@ -65,7 +65,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 47,
+   "execution_count": 5,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -82,7 +82,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 48,
+   "execution_count": 6,
    "metadata": {},
    "outputs": [
     {
@@ -91,7 +91,7 @@
        "Text(0.5, 1.0, 'Processed')"
       ]
      },
-     "execution_count": 48,
+     "execution_count": 6,
      "metadata": {},
      "output_type": "execute_result"
     },
@@ -121,7 +121,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 49,
+   "execution_count": 7,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -130,7 +130,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 50,
+   "execution_count": 10,
    "metadata": {},
    "outputs": [
     {
@@ -147,12 +147,12 @@
     "ds_with_ct_predictions = ds_processed.la.predict_cell_types_argmax(ct_marker_dict, key='_arcsinh_mean', overwrite_existing_labels=True)\n",
     "\n",
     "# adding colors to match the markers\n",
-    "ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_dict.keys()), colors_celltypes)"
+    "ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_marker_dict.keys()), colors_celltypes)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 51,
+   "execution_count": 11,
    "metadata": {},
    "outputs": [
     {
@@ -161,7 +161,7 @@
        "Text(0.5, 1.0, 'Cell Type Predictions')"
       ]
      },
-     "execution_count": 51,
+     "execution_count": 11,
      "metadata": {},
      "output_type": "execute_result"
     },
@@ -185,6 +185,211 @@
     "\n",
     "ax[0].set_title(\"Markers\")\n",
     "ax[1].set_title(\"Cell Type Predictions\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Getting observations from the xarray object is very easy. However, since the cell types are stored as integers, the method `la.get_obs(celltypes_to_str=True)` allows you to export the obs in a more readable format."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<pre>&lt;xarray.DataArray &#x27;_obs&#x27; (cells: 12560, features: 4)&gt;\n",
+       "array([[9.00000000e+00, 3.00000000e+00, 6.13329787e+02, 7.68420213e+02],\n",
+       "       [4.00000000e+00, 5.00000000e+00, 7.69098446e+02, 7.07544041e+02],\n",
+       "       [9.00000000e+00, 2.00000000e+00, 7.74528409e+02, 6.44284091e+02],\n",
+       "       ...,\n",
+       "       [9.00000000e+00, 2.00000000e+00, 2.26591085e+03, 2.23199225e+03],\n",
+       "       [1.00000000e+00, 7.00000000e+00, 2.28148069e+03, 2.21842489e+03],\n",
+       "       [1.00000000e+00, 7.00000000e+00, 2.24906944e+03, 2.23656481e+03]])\n",
+       "Coordinates:\n",
+       "  * cells     (cells) int64 1 2 3 4 5 6 ... 12555 12556 12557 12558 12559 12560\n",
+       "  * features  (features) &lt;U10 &#x27;_labels&#x27; &#x27;_original_&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</pre>"
+      ],
+      "text/plain": [
+       "<xarray.DataArray '_obs' (cells: 12560, features: 4)>\n",
+       "array([[9.00000000e+00, 3.00000000e+00, 6.13329787e+02, 7.68420213e+02],\n",
+       "       [4.00000000e+00, 5.00000000e+00, 7.69098446e+02, 7.07544041e+02],\n",
+       "       [9.00000000e+00, 2.00000000e+00, 7.74528409e+02, 6.44284091e+02],\n",
+       "       ...,\n",
+       "       [9.00000000e+00, 2.00000000e+00, 2.26591085e+03, 2.23199225e+03],\n",
+       "       [1.00000000e+00, 7.00000000e+00, 2.28148069e+03, 2.21842489e+03],\n",
+       "       [1.00000000e+00, 7.00000000e+00, 2.24906944e+03, 2.23656481e+03]])\n",
+       "Coordinates:\n",
+       "  * cells     (cells) int64 1 2 3 4 5 6 ... 12555 12556 12557 12558 12559 12560\n",
+       "  * features  (features) <U10 '_labels' '_original_' 'centroid-0' 'centroid-1'"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# getting the obs table directly from the xarray object\n",
+    "ds_with_ct_predictions['_obs']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th>features</th>\n",
+       "      <th>cells</th>\n",
+       "      <th>_labels</th>\n",
+       "      <th>_original_</th>\n",
+       "      <th>centroid-0</th>\n",
+       "      <th>centroid-1</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>T</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>613.329787</td>\n",
+       "      <td>768.420213</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>Macro</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>769.098446</td>\n",
+       "      <td>707.544041</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>T</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>774.528409</td>\n",
+       "      <td>644.284091</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>T</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>775.902878</td>\n",
+       "      <td>592.744604</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>Myeloid</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>668.844749</td>\n",
+       "      <td>729.310502</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12555</th>\n",
+       "      <td>12556</td>\n",
+       "      <td>B</td>\n",
+       "      <td>7.0</td>\n",
+       "      <td>2340.362319</td>\n",
+       "      <td>1846.492754</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12556</th>\n",
+       "      <td>12557</td>\n",
+       "      <td>Stroma CD90</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>2216.324138</td>\n",
+       "      <td>2296.089655</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12557</th>\n",
+       "      <td>12558</td>\n",
+       "      <td>T</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>2265.910853</td>\n",
+       "      <td>2231.992248</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12558</th>\n",
+       "      <td>12559</td>\n",
+       "      <td>B</td>\n",
+       "      <td>7.0</td>\n",
+       "      <td>2281.480687</td>\n",
+       "      <td>2218.424893</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12559</th>\n",
+       "      <td>12560</td>\n",
+       "      <td>B</td>\n",
+       "      <td>7.0</td>\n",
+       "      <td>2249.069444</td>\n",
+       "      <td>2236.564815</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>12560 rows × 5 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "features  cells      _labels  _original_   centroid-0   centroid-1\n",
+       "0             1            T         3.0   613.329787   768.420213\n",
+       "1             2        Macro         5.0   769.098446   707.544041\n",
+       "2             3            T         2.0   774.528409   644.284091\n",
+       "3             4            T         3.0   775.902878   592.744604\n",
+       "4             5      Myeloid         5.0   668.844749   729.310502\n",
+       "...         ...          ...         ...          ...          ...\n",
+       "12555     12556            B         7.0  2340.362319  1846.492754\n",
+       "12556     12557  Stroma CD90         5.0  2216.324138  2296.089655\n",
+       "12557     12558            T         2.0  2265.910853  2231.992248\n",
+       "12558     12559            B         7.0  2281.480687  2218.424893\n",
+       "12559     12560            B         7.0  2249.069444  2236.564815\n",
+       "\n",
+       "[12560 rows x 5 columns]"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# getting the obs with get_obs() to get human readable cell type annotations in a pandas data frame\n",
+    "ds_with_ct_predictions.la.get_obs()"
    ]
   },
   {
