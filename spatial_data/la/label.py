@@ -624,3 +624,11 @@ class LabelAccessor:
                 obj = obj.pp.add_feature(f"{cell_type}_{channel}_binarized", positive_cells * ct_indicator_array)
 
         return obj
+
+    def get_obs(self, celltypes_to_str: bool = True):
+        """This method returns the observation table as a pandas dataframe."""
+        obs = self._obj[Layers.OBS].to_pandas().reset_index()
+        if celltypes_to_str:
+            label_dict = self._obj.la._label_to_dict(Props.NAME)
+            obs[Features.LABELS] = obs[Features.LABELS].apply(lambda x: label_dict[x])
+        return obs
