@@ -5,6 +5,7 @@ import pandas as pd
 import xarray as xr
 
 from ..constants import Dims, Layers
+from ..pp.utils import handle_disconnected_cells
 
 
 @xr.register_dataset_accessor("ext")
@@ -26,6 +27,7 @@ class ExternalAccessor:
         gpu: bool = True,
         model_type: str = "cyto3",
         return_xarray: bool = True,
+        handle_disconnected: str = "keep_largest",
     ):
         """
         Segment cells using Cellpose.
@@ -91,6 +93,10 @@ class ExternalAccessor:
                 cellprob_threshold=cellprob_threshold,
                 flow_threshold=flow_threshold,
             )
+
+            # checking if there are any disconnected cells in the input
+            handle_disconnected_cells(masks_pred, handle_disconnected)
+
             all_masks.append(masks_pred)
 
         if len(all_masks) == 1:
@@ -214,6 +220,7 @@ class ExternalAccessor:
         normalize: bool = True,
         nuclear_channel: str = "DAPI",
         predict_big: bool = False,
+        handle_disconnected: str = "keep_largest",
         **kwargs,
     ) -> xr.Dataset:
         """
@@ -266,6 +273,9 @@ class ExternalAccessor:
             labels, _ = model.predict_instances_big(nuclear_img, scale=scale, **kwargs)
         else:
             labels, _ = model.predict_instances(nuclear_img, scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
+
+        # checking if there are any disconnected cells in the input
+        handle_disconnected_cells(labels, handle_disconnected)
 
         # Adding the segmentation mask  and centroids to the xarray dataset
         return self._obj.pp.add_segmentation(labels).pp.add_observations()

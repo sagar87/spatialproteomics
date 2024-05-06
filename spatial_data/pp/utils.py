@@ -1,8 +1,10 @@
 import numpy as np
+import scipy.ndimage
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.segmentation import clear_border, relabel_sequential
 
+from ..base_logger import logger
 from ..constants import Dims
 
 
@@ -189,3 +191,94 @@ def _normalize(
         norm = np.clip(norm, 0, 1)
 
     return norm
+
+
+def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error"):
+    """
+    This method checks for disconnected cells in a segmentation mask.
+    It returns True if there are disconnected cells, and False otherwise.
+    handle can be 'error', 'warning', or 'ignore'.
+    """
+    # Label connected components in the entire segmentation mask
+    labeled_mask, num_features = scipy.ndimage.label(segmentation, structure=np.ones((3, 3)))
+
+    # Count the number of objects for each cell
+    num_objects_per_cell = np.bincount(labeled_mask[segmentation != 0].ravel())[1:]
+
+    # Find cells with more than one object
+    cells_with_multiple_objects = np.where(num_objects_per_cell != 1)[0] + 1
+
+    if len(cells_with_multiple_objects) > 0:
+        if handle == "error":
+            example_cell = cells_with_multiple_objects[0]
+            raise ValueError(f"Found disconnected masks in the segmentation. Example cell: {example_cell}.")
+        elif handle == "warning":
+            logger.warning("Found disconnected masks in the segmentation.")
+        return True
+
+    return False
+
+
+def handle_disconnected_cells(segmentation: np.ndarray, mode: str = "ignore"):
+    """This method handles disconnected cells in a segmentation mask. It can either completely remove any disconnected components, do nothing, only keep the largest or relabel."""
+    assert mode in [
+        "ignore",
+        "remove",
+        "relabel",
+        "keep_largest",
+    ], f"Could not recognize mode {mode}. Please choose one of 'ignore', 'remove', 'relabel', 'keep_largest'."
+
+    # checking if there are any disconnected cells
+    # if not, we simply do nothing
+    contains_disconnected_components = _check_for_disconnected_cells(segmentation, "warning")
+    if not contains_disconnected_components:
+        return segmentation
+
+    if mode == "ignore":
+        return segmentation
+
+    elif mode == "remove":
+        num_removed_cells = 0
+        for cell in sorted(np.unique(segmentation))[1:]:
+            binary_mask = np.where(segmentation == cell, 1, 0)
+            _, num_features = scipy.ndimage.label(binary_mask, structure=np.ones((3, 3)))
+            if num_features != 1:
+                segmentation[segmentation == cell] = 0
+                num_removed_cells += 1
+        logger.warning(f"Removed {num_removed_cells} disconnected cells from the segmentation mask.")
+
+    elif mode == "keep_largest":
+        for cell in sorted(np.unique(segmentation))[1:]:
+            binary_mask = np.where(segmentation == cell, 1, 0)
+            new_labels, num_features = scipy.ndimage.label(binary_mask, structure=np.ones((3, 3)))
+            if num_features != 1:
+                # Count the occurrences of each label excluding 0
+                unique_labels, counts = np.unique(new_labels[new_labels != 0], return_counts=True)
+                # Find the label with the most occurrences
+                most_common_label = unique_labels[np.argmax(counts)]
+                # Get all labels except the most common one
+                other_labels = [label for label in unique_labels if label != most_common_label]
+                # Create a mask to set every entity with this label to 0 and everything else to 1
+                mask = np.where(np.isin(new_labels, other_labels), 1, 0)
+                # Set segmentation to 0 for all positions where mask is 1
+                segmentation = np.where(mask == 1, 0, segmentation)
+        logger.warning("Kept largest component of each disconnected cell.")
+
+    elif mode == "relabel":
+        max_cell_id = np.max(segmentation)
+        for cell in sorted(np.unique(segmentation))[1:]:
+            binary_mask = np.where(segmentation == cell, 1, 0)
+            new_labels, num_features = scipy.ndimage.label(binary_mask, structure=np.ones((3, 3)))
+            if num_features != 1:
+                # Count the occurrences of each label excluding 0
+                unique_labels, counts = np.unique(new_labels[new_labels != 0], return_counts=True)
+                for i, unique_label in enumerate(unique_labels):
+                    # for the first entity, we simply keep the original label
+                    if i == 0:
+                        continue
+                    # for any other entity, we give it a new ID
+                    max_cell_id += 1
+                    segmentation = np.where(new_labels == unique_label, max_cell_id, segmentation)
+        logger.warning("Relabeled all cells to avoid disconnected cells.")
+
+    return segmentation

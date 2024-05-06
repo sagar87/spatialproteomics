@@ -7,11 +7,6 @@ import xarray as xr
 from .constants import Dims, Layers
 
 
-def hello_world(test):
-    return f"Hello World {test}"
-
-
-# TODO: Should also accept labels
 def load_image_data(
     image: np.ndarray,
     channel_coords: Union[str, List[str]],
