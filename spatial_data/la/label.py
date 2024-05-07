@@ -624,4 +624,3 @@ class LabelAccessor:
                 obj = obj.pp.add_feature(f"{cell_type}_{channel}_binarized", positive_cells * ct_indicator_array)
 
         return obj
-

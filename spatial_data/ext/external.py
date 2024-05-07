@@ -374,3 +374,37 @@ class ExternalAccessor:
 
         # adding the labels to the xarray object
         return self._obj.pp.add_labels(assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col)
+
+    def convert_to_anndata(
+        self,
+        expression_matrix_key: str = Layers.INTENSITY,
+        obs_key: str = Layers.OBS,
+        additional_layers: Optional[dict] = None,
+        additional_uns: Optional[dict] = None,
+    ):
+        import anndata
+
+        # checking that the expression matrix key is present in the object
+        assert (
+            expression_matrix_key in self._obj
+        ), f"Expression matrix key {expression_matrix_key} not found in the object. Set the expression matrix key with the expression_matrix_key argument."
+
+        expression_matrix = self._obj[expression_matrix_key].values
+        adata = anndata.AnnData(expression_matrix)
+        if additional_layers:
+            for key, layer in additional_layers.items():
+                # checking that the additional layer is present in the object
+                assert layer in self._obj, f"Layer {layer} not found in the object."
+                adata.layers[key] = self._obj[layer].values
+        adata.var_names = self._obj.coords[Dims.CHANNELS].values
+
+        if obs_key in self._obj:
+            adata.obs = pd.DataFrame(self._obj[obs_key], columns=self._obj.coords[Dims.FEATURES])
+
+        if additional_uns:
+            for key, layer in additional_uns.items():
+                # checking that the additional layer is present in the object
+                assert layer in self._obj, f"Layer {layer} not found in the object."
+                adata.uns[key] = self._obj.pp.get_layer_as_df(layer)
+
+        return adata

@@ -1050,19 +1050,18 @@ class PreprocessingAccessor:
 
         return obj
 
-
     def get_layer_as_df(self, layer: str = Layers.OBS, celltypes_to_str: bool = True):
         """This method converts a layer of the image container to a pandas dataframe."""
         data_array = self._obj[layer]
-        
+
         dims = data_array.dims
         coords = data_array.coords
         c1, c2 = coords[dims[0]].values, coords[dims[1]].values
         df = pd.DataFrame(data_array.values, index=c1, columns=c2)
-        
+
         # special case: when exporting obs, we can convert celltypes to strings
         if celltypes_to_str and layer == Layers.OBS and Features.LABELS in df.columns:
             label_dict = self._obj.la._label_to_dict(Props.NAME)
             df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
-            
+
         return df
