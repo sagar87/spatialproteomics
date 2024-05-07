@@ -50,8 +50,13 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Example%202.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatial_data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#1.-Getting-Started">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#2.-Image-Processing">2. Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#6.-Plotting">6. Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
@@ -399,7 +404,7 @@ xr.set_options(display_style=&#39;text&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
 </pre></div>
 </div>
 </div>
@@ -566,7 +571,7 @@ plt.tight_layout()
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

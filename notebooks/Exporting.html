@@ -49,8 +49,13 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Example%202.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatial_data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#1.-Getting-Started">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#2.-Image-Processing">2. Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#6.-Plotting">6. Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
@@ -370,7 +375,7 @@ div.rendered_html tbody tr:hover {
 <h1>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Permalink to this headline"></a></h1>
 <p>Once you are happy with your analysis, you will likely want to export the results. The easiest way to do this is by using the <code class="docutils literal notranslate"><span class="pre">zarr</span></code> format, but <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">anndata</span></code>, and <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> are also supported.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -387,21 +392,21 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7ffcc226d7c0&gt;
+&lt;xarray.core.options.set_options at 0x7fff127d7fa0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading a test file which we will export later
 # notice how easy it is to load the file from a zarr using xarray
-ds = xr.load_dataset(&#39;../../tests/test_files/test2.zarr&#39;)
+ds = xr.load_dataset(&#39;../../data/tmp.zarr&#39;)
 ds
 </pre></div>
 </div>
@@ -418,30 +423,31 @@ ds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (cells: 12560, channels: 56, y: 3000, x: 3000, labels: 8,
-                    props: 2, features: 4)
+Dimensions:                         (cells: 12560, channels: 56, y: 3000,
+                                     x: 3000, labels: 9, props: 2, features: 7)
 Coordinates:
-  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
-  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * cells                           (cells) int64 1 2 3 4 ... 12558 12559 12560
+  * channels                        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;Ki-67&#x27;
+  * features                        (features) &lt;U14 &#x27;CD3_binarized&#x27; ... &#x27;cent...
+  * labels                          (labels) int64 1 2 3 4 5 6 7 8 9
+  * props                           (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x                               (x) int64 0 1 2 3 4 ... 2996 2997 2998 2999
+  * y                               (y) int64 0 1 2 3 4 ... 2996 2997 2998 2999
 Data variables:
-    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
-    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
-    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
-    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
-    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
-    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
-    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
+    _arcsinh_mean                   (cells, channels) float64 3.111 ... 0.4174
+    _arcsinh_sum                    (cells, channels) float64 8.346 ... 5.224
+    _image                          (channels, y, x) uint8 4 4 4 4 5 ... 2 2 2 2
+    _labels                         (labels, props) object &#x27;#C8A1A1&#x27; &#x27;B&#x27; ... &#x27;T&#x27;
+    _obs                            (cells, features) float64 1.0 ... 2.237e+03
+    _percentage_positive_intensity  (cells, channels) float64 1.0 0.0 ... 1.0
+    _raw_mean                       (cells, channels) float64 56.02 ... 2.148
+    _raw_sum                        (cells, channels) float64 1.053e+04 ... 4...
+    _segmentation                   (y, x) int64 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>
 <section id="Zarr">
@@ -793,14 +799,6 @@ resolution: 0
  - dtype = int64
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 
 
@@ -813,7 +811,7 @@ resolution: 0
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

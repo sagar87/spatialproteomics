@@ -50,8 +50,13 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Example%202.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatial_data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#1.-Getting-Started">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#2.-Image-Processing">2. Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html#6.-Plotting">6. Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
@@ -371,7 +376,7 @@ div.rendered_html tbody tr:hover {
 <h1>Merging segmentation masks<a class="headerlink" href="#Merging-segmentation-masks" title="Permalink to this headline"></a></h1>
 <p>You can merge segmentation masks into one. The masks to be merged should always be ordererd by small to big. You can also add labels directly.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -380,7 +385,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatial_data
@@ -392,23 +397,23 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7ffce76eae80&gt;
+&lt;xarray.core.options.set_options at 0x7fffd5f57250&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr&#39;).pp[1000:1300, 1000:1300]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;).pp[1000:1300, 1000:1300]
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
@@ -417,138 +422,6 @@ xr.set_options(display_style=&#39;text&#39;)
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 /home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[7], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> ds <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">xr</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">load_dataset</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">/g/huber/projects/CITEseq/CODEX/BNHL_TMA/bhnl_labeled_zarr/166_4_I2_LK_labeled.zarr</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">)</span><span style="color: rgb(98,98,98)">.</span>pp[<span style="color: rgb(98,98,98)">1000</span>:<span style="color: rgb(98,98,98)">1300</span>, <span style="color: rgb(98,98,98)">1000</span>:<span style="color: rgb(98,98,98)">1300</span>]
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/api.py:279</span>, in <span class="ansi-cyan-fg">load_dataset</span><span class="ansi-blue-fg">(filename_or_obj, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">    276</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">cache has no effect in this context</span><span style="color: rgb(175,0,0)">&#34;</span>)
-<span class="ansi-green-intense-fg ansi-bold">    278</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> open_dataset(filename_or_obj, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> ds:
-<span class="ansi-green-fg">--&gt; 279</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">ds</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">load</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/dataset.py:861</span>, in <span class="ansi-cyan-fg">Dataset.load</span><span class="ansi-blue-fg">(self, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">    859</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> k, v <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>variables<span style="color: rgb(98,98,98)">.</span>items():
-<span class="ansi-green-intense-fg ansi-bold">    860</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> k <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> lazy_data:
-<span class="ansi-green-fg">--&gt; 861</span>         <span class="ansi-yellow-bg">v</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">load</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    863</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/variable.py:523</span>, in <span class="ansi-cyan-fg">Variable.load</span><span class="ansi-blue-fg">(self, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">    521</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data <span style="color: rgb(98,98,98)">=</span> as_compatible_data(loaded_data)
-<span class="ansi-green-intense-fg ansi-bold">    522</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span style="color: rgb(0,135,0)">isinstance</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data, indexing<span style="color: rgb(98,98,98)">.</span>ExplicitlyIndexed):
-<span class="ansi-green-fg">--&gt; 523</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_data</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_duck_array</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    524</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> is_duck_array(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data):
-<span class="ansi-green-intense-fg ansi-bold">    525</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>asarray(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_data)
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexing.py:699</span>, in <span class="ansi-cyan-fg">MemoryCachedArray.get_duck_array</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    698</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">get_duck_array</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">--&gt; 699</span>     <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_ensure_cached</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    700</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>array<span style="color: rgb(98,98,98)">.</span>get_duck_array()
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexing.py:693</span>, in <span class="ansi-cyan-fg">MemoryCachedArray._ensure_cached</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    692</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">_ensure_cached</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">--&gt; 693</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>array <span style="color: rgb(98,98,98)">=</span> as_indexable(<span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">array</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_duck_array</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>)
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexing.py:667</span>, in <span class="ansi-cyan-fg">CopyOnWriteArray.get_duck_array</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    666</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">get_duck_array</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">--&gt; 667</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">array</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_duck_array</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexing.py:554</span>, in <span class="ansi-cyan-fg">LazilyIndexedArray.get_duck_array</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    553</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">get_duck_array</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">--&gt; 554</span>     array <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">array</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg">]</span>
-<span class="ansi-green-intense-fg ansi-bold">    555</span>     <span style="color: rgb(95,135,135)"># self.array[self.key] is now a numpy array when</span>
-<span class="ansi-green-intense-fg ansi-bold">    556</span>     <span style="color: rgb(95,135,135)"># self.array is a BackendArray subclass</span>
-<span class="ansi-green-intense-fg ansi-bold">    557</span>     <span style="color: rgb(95,135,135)"># and self.key is BasicIndexer((slice(None, None, None),))</span>
-<span class="ansi-green-intense-fg ansi-bold">    558</span>     <span style="color: rgb(95,135,135)"># so we need the explicit check for ExplicitlyIndexed</span>
-<span class="ansi-green-intense-fg ansi-bold">    559</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(array, ExplicitlyIndexed):
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/zarr.py:92</span>, in <span class="ansi-cyan-fg">ZarrArrayWrapper.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
-<span class="ansi-green-intense-fg ansi-bold">     90</span> array <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_array
-<span class="ansi-green-intense-fg ansi-bold">     91</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(key, indexing<span style="color: rgb(98,98,98)">.</span>BasicIndexer):
-<span class="ansi-green-fg">---&gt; 92</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">array</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">tuple</span><span class="ansi-yellow-bg">]</span>
-<span class="ansi-green-intense-fg ansi-bold">     93</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span style="color: rgb(0,135,0)">isinstance</span>(key, indexing<span style="color: rgb(98,98,98)">.</span>VectorizedIndexer):
-<span class="ansi-green-intense-fg ansi-bold">     94</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> array<span style="color: rgb(98,98,98)">.</span>vindex[
-<span class="ansi-green-intense-fg ansi-bold">     95</span>         indexing<span style="color: rgb(98,98,98)">.</span>_arrayize_vectorized_indexer(key, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>shape)<span style="color: rgb(98,98,98)">.</span>tuple
-<span class="ansi-green-intense-fg ansi-bold">     96</span>     ]
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/core.py:794</span>, in <span class="ansi-cyan-fg">Array.__getitem__</span><span class="ansi-blue-fg">(self, selection)</span>
-<span class="ansi-green-intense-fg ansi-bold">    792</span>     result <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>vindex[selection]
-<span class="ansi-green-intense-fg ansi-bold">    793</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> is_pure_orthogonal_indexing(pure_selection, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>ndim):
-<span class="ansi-green-fg">--&gt; 794</span>     result <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_orthogonal_selection</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">pure_selection</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    795</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
-<span class="ansi-green-intense-fg ansi-bold">    796</span>     result <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>get_basic_selection(pure_selection, fields<span style="color: rgb(98,98,98)">=</span>fields)
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/core.py:1076</span>, in <span class="ansi-cyan-fg">Array.get_orthogonal_selection</span><span class="ansi-blue-fg">(self, selection, out, fields)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1073</span> <span style="color: rgb(95,135,135)"># setup indexer</span>
-<span class="ansi-green-intense-fg ansi-bold">   1074</span> indexer <span style="color: rgb(98,98,98)">=</span> OrthogonalIndexer(selection, <span style="color: rgb(0,135,0)">self</span>)
-<span class="ansi-green-fg">-&gt; 1076</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_get_selection</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">indexer</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">indexer</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">out</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">out</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/core.py:1339</span>, in <span class="ansi-cyan-fg">Array._get_selection</span><span class="ansi-blue-fg">(self, indexer, out, fields)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1336</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> math<span style="color: rgb(98,98,98)">.</span>prod(out_shape) <span style="color: rgb(98,98,98)">&gt;</span> <span style="color: rgb(98,98,98)">0</span>:
-<span class="ansi-green-intense-fg ansi-bold">   1337</span>     <span style="color: rgb(95,135,135)"># allow storage to get multiple items at once</span>
-<span class="ansi-green-intense-fg ansi-bold">   1338</span>     lchunk_coords, lchunk_selection, lout_selection <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">zip</span>(<span style="color: rgb(98,98,98)">*</span>indexer)
-<span class="ansi-green-fg">-&gt; 1339</span>     <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_chunk_getitems</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">   1340</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lchunk_coords</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1341</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lchunk_selection</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1342</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">out</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1343</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lout_selection</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1344</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">drop_axes</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">indexer</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">drop_axes</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1345</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">fields</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1346</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1347</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> out<span style="color: rgb(98,98,98)">.</span>shape:
-<span class="ansi-green-intense-fg ansi-bold">   1348</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> out
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/core.py:2173</span>, in <span class="ansi-cyan-fg">Array._chunk_getitems</span><span class="ansi-blue-fg">(self, lchunk_coords, lchunk_selection, out, lout_selection, drop_axes, fields)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2171</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">isinstance</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_meta_array, np<span style="color: rgb(98,98,98)">.</span>ndarray):
-<span class="ansi-green-intense-fg ansi-bold">   2172</span>         contexts <span style="color: rgb(98,98,98)">=</span> ConstantMap(ckeys, constant<span style="color: rgb(98,98,98)">=</span>Context(meta_array<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_meta_array))
-<span class="ansi-green-fg">-&gt; 2173</span>     cdatas <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">chunk_store</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">getitems</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">ckeys</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">contexts</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">contexts</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2175</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> ckey, chunk_select, out_select <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">zip</span>(ckeys, lchunk_selection, lout_selection):
-<span class="ansi-green-intense-fg ansi-bold">   2176</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ckey <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> cdatas:
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/_storage/store.py:161</span>, in <span class="ansi-cyan-fg">BaseStore.getitems</span><span class="ansi-blue-fg">(self, keys, contexts)</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">getitems</span>(
-<span class="ansi-green-intense-fg ansi-bold">    137</span>     <span style="color: rgb(0,135,0)">self</span>, keys: Sequence[<span style="color: rgb(0,135,0)">str</span>], <span style="color: rgb(98,98,98)">*</span>, contexts: Mapping[<span style="color: rgb(0,135,0)">str</span>, Context]
-<span class="ansi-green-intense-fg ansi-bold">    138</span> ) <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">&gt;</span> Mapping[<span style="color: rgb(0,135,0)">str</span>, Any]:
-<span class="ansi-green-intense-fg ansi-bold">    139</span> <span style="color: rgb(188,188,188)">    </span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;Retrieve data from multiple keys.</span>
-<span class="ansi-green-intense-fg ansi-bold">    140</span>
-<span class="ansi-green-intense-fg ansi-bold">    141</span> <span style="color: rgb(175,0,0)">    Parameters</span>
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">    159</span> <span style="color: rgb(175,0,0)">    keys and/or to utilize the contexts.</span>
-<span class="ansi-green-intense-fg ansi-bold">    160</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
-<span class="ansi-green-fg">--&gt; 161</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> {k: <span style="color: rgb(0,135,0)">self</span>[k] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> k <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> keys <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> k <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span>}
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/_storage/store.py:161</span>, in <span class="ansi-cyan-fg">&lt;dictcomp&gt;</span><span class="ansi-blue-fg">(.0)</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">getitems</span>(
-<span class="ansi-green-intense-fg ansi-bold">    137</span>     <span style="color: rgb(0,135,0)">self</span>, keys: Sequence[<span style="color: rgb(0,135,0)">str</span>], <span style="color: rgb(98,98,98)">*</span>, contexts: Mapping[<span style="color: rgb(0,135,0)">str</span>, Context]
-<span class="ansi-green-intense-fg ansi-bold">    138</span> ) <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">&gt;</span> Mapping[<span style="color: rgb(0,135,0)">str</span>, Any]:
-<span class="ansi-green-intense-fg ansi-bold">    139</span> <span style="color: rgb(188,188,188)">    </span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;Retrieve data from multiple keys.</span>
-<span class="ansi-green-intense-fg ansi-bold">    140</span>
-<span class="ansi-green-intense-fg ansi-bold">    141</span> <span style="color: rgb(175,0,0)">    Parameters</span>
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">    159</span> <span style="color: rgb(175,0,0)">    keys and/or to utilize the contexts.</span>
-<span class="ansi-green-intense-fg ansi-bold">    160</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
-<span class="ansi-green-fg">--&gt; 161</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> {k: <span style="color: rgb(0,135,0)">self</span>[k] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> k <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> keys <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-bg">k</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(175,0,255)">in</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span>}
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/zarr/storage.py:1173</span>, in <span class="ansi-cyan-fg">DirectoryStore.__contains__</span><span class="ansi-blue-fg">(self, key)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1171</span> key <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_normalize_key(key)
-<span class="ansi-green-intense-fg ansi-bold">   1172</span> file_path <span style="color: rgb(98,98,98)">=</span> os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>join(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>path, key)
-<span class="ansi-green-fg">-&gt; 1173</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">os</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">path</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">isfile</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">file_path</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/genericpath.py:30</span>, in <span class="ansi-cyan-fg">isfile</span><span class="ansi-blue-fg">(path)</span>
-<span class="ansi-green-intense-fg ansi-bold">     28</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;Test whether a path is a regular file&#34;&#34;&#34;</span>
-<span class="ansi-green-intense-fg ansi-bold">     29</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">---&gt; 30</span>     st <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">os</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">stat</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">path</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     31</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> (<span class="ansi-bold" style="color: rgb(215,95,95)">OSError</span>, <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>):
-<span class="ansi-green-intense-fg ansi-bold">     32</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>
-
-<span class="ansi-red-fg">KeyboardInterrupt</span>:
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -927,7 +800,7 @@ Data variables:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
