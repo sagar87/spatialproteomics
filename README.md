@@ -5,7 +5,7 @@
 Spatial data is a light weight wrapper around `xarray` with the intention to facilitate the processing, exploration and analysis of highly multiplexed immunohistochemistry data.
 
 <p align="center" width="100%">
-    <img width="50%" src="docs/preview.png">
+    <img width="50%" src="docs/preview2.png">
 </p>
 
 ## Principles
