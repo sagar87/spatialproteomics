@@ -5,7 +5,7 @@ packages = [
 ]
 version = "0.3.0"
 description = ""
-authors = ["Harald Vohringer"]
+authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"

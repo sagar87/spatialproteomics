@@ -2,7 +2,7 @@ __pycache__
 .pytest_cache
 format.sh
 tests/test_files/test2.zarr
-docs/notebooks/tmp.zarr
+data
 Dev.ipynb
 Dev-checkpoint.ipynb
 .ipynb_checkpoints

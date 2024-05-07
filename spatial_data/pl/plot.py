@@ -189,8 +189,8 @@ class PlotAccessor:
 
     def imshow(
         self,
-        legend_background: bool = False,
-        legend_label: bool = False,
+        legend_background: bool = True,
+        legend_label: bool = True,
         legend_kwargs: dict = {"framealpha": 1},
         downsample: int = 1,
         render_intensities: bool = True,
@@ -268,10 +268,10 @@ class PlotAccessor:
 
         legend = []
 
-        if legend_background:
+        if legend_background and render_intensities:
             legend += obj.pl._legend_background()
 
-        if legend_label:
+        if legend_label and render_labels:
             legend += obj.pl._legend_labels()
 
         if legend_background or legend_label:
