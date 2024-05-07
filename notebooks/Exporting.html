@@ -484,35 +484,194 @@ ds.to_zarr(&quot;tmp.zarr&quot;)
 <h1>Exporting Tables to CSV<a class="headerlink" href="#Exporting-Tables-to-CSV" title="Permalink to this headline"></a></h1>
 <p>Let’s say you want to export some tables as csvs. This can be done with pandas.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds[&quot;_arcsinh_mean&quot;]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = ds.pp.get_layer_as_df(&quot;_arcsinh_mean&quot;)
+df.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray &#x27;_arcsinh_mean&#x27; (cells: 12560, channels: 56)&gt;
-array([[3.1113318 , 0.        , 1.39104035, ..., 0.42827631, 0.528275  ,
-        0.4582596 ],
-       [2.80498506, 0.        , 1.16832115, ..., 2.02908251, 0.42634428,
-        0.52842933],
-       [3.38021961, 0.        , 1.73394497, ..., 0.57174597, 0.72733529,
-        0.49741472],
-       ...,
-       [3.19334124, 0.        , 1.35344852, ..., 0.4051073 , 0.92614581,
-        0.43286647],
-       [3.43748239, 0.        , 1.5590982 , ..., 0.43428781, 1.39939674,
-        0.47313597],
-       [3.21632852, 0.        , 1.3602909 , ..., 0.39690411, 1.32359853,
-        0.41740323]])
-Coordinates:
-  * cells     (cells) int64 1 2 3 4 5 6 ... 12555 12556 12557 12558 12559 12560
-  * channels  (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>DAPI</th>
+      <th>Helios</th>
+      <th>CD10</th>
+      <th>TCF7/TCF1</th>
+      <th>PD-L1</th>
+      <th>BCL-6</th>
+      <th>FOXP3</th>
+      <th>CD69</th>
+      <th>Perforin</th>
+      <th>CD19</th>
+      <th>...</th>
+      <th>CD68</th>
+      <th>CD31</th>
+      <th>CD45</th>
+      <th>CD3</th>
+      <th>Cytokeratin</th>
+      <th>CD45RO</th>
+      <th>CD8</th>
+      <th>Granyzme B</th>
+      <th>CD79a</th>
+      <th>Ki-67</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>3.111332</td>
+      <td>0.0</td>
+      <td>1.391040</td>
+      <td>1.532299</td>
+      <td>1.700792</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.026824</td>
+      <td>0.029783</td>
+      <td>...</td>
+      <td>0.345229</td>
+      <td>0.000000</td>
+      <td>2.018150</td>
+      <td>2.460342</td>
+      <td>0.595998</td>
+      <td>1.719421</td>
+      <td>0.714288</td>
+      <td>0.428276</td>
+      <td>0.528275</td>
+      <td>0.458260</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2.804985</td>
+      <td>0.0</td>
+      <td>1.168321</td>
+      <td>0.000000</td>
+      <td>1.395341</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.847262</td>
+      <td>0.002073</td>
+      <td>...</td>
+      <td>1.559274</td>
+      <td>0.000000</td>
+      <td>1.294762</td>
+      <td>0.303109</td>
+      <td>0.642876</td>
+      <td>1.328594</td>
+      <td>0.799208</td>
+      <td>2.029083</td>
+      <td>0.426344</td>
+      <td>0.528429</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3.380220</td>
+      <td>0.0</td>
+      <td>1.733945</td>
+      <td>0.666575</td>
+      <td>2.020150</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.066995</td>
+      <td>1.397469</td>
+      <td>0.013636</td>
+      <td>...</td>
+      <td>0.822320</td>
+      <td>0.000000</td>
+      <td>1.412199</td>
+      <td>2.153628</td>
+      <td>0.763425</td>
+      <td>2.767838</td>
+      <td>1.036900</td>
+      <td>0.571746</td>
+      <td>0.727335</td>
+      <td>0.497415</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2.987283</td>
+      <td>0.0</td>
+      <td>1.297533</td>
+      <td>0.607904</td>
+      <td>1.572571</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.003597</td>
+      <td>0.960472</td>
+      <td>0.004317</td>
+      <td>...</td>
+      <td>0.297740</td>
+      <td>0.000000</td>
+      <td>1.242867</td>
+      <td>2.149749</td>
+      <td>0.583574</td>
+      <td>2.473159</td>
+      <td>0.804046</td>
+      <td>0.425201</td>
+      <td>0.427177</td>
+      <td>0.436378</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>3.120023</td>
+      <td>0.0</td>
+      <td>1.542808</td>
+      <td>0.000000</td>
+      <td>1.928561</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.155537</td>
+      <td>1.463069</td>
+      <td>0.010959</td>
+      <td>...</td>
+      <td>0.872304</td>
+      <td>0.079369</td>
+      <td>1.005996</td>
+      <td>0.212105</td>
+      <td>0.894870</td>
+      <td>2.299642</td>
+      <td>0.743329</td>
+      <td>0.518868</td>
+      <td>1.011288</td>
+      <td>0.488958</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 56 columns</p>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># exporting as csv
+df.to_csv(&quot;tmp.csv&quot;)
+</pre></div>
+</div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
