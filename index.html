@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Spatial-data’s documentation! &mdash; Spatial-Data 0.1.0 documentation</title>
+  <title>Welcome to spatial_data’s documentation! &mdash; Spatial-Data 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -43,15 +43,23 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external.html">The external (<code class="code docutils literal notranslate"><span class="pre">ext</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%202.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Extracting.html">Extracting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html">Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Zarr">Zarr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
 </ul>
 
         </div>
@@ -68,7 +76,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>Welcome to Spatial-data’s documentation!</li>
+      <li>Welcome to spatial_data’s documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,13 +111,13 @@
 }
 </style>
 <section id="welcome-to-spatial-data-s-documentation">
-<h1>Welcome to Spatial-data’s documentation!<a class="headerlink" href="#welcome-to-spatial-data-s-documentation" title="Permalink to this headline"></a></h1>
+<h1>Welcome to spatial_data’s documentation!<a class="headerlink" href="#welcome-to-spatial-data-s-documentation" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external.html">The external (<code class="code docutils literal notranslate"><span class="pre">ext</span></code>) accessor</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -134,6 +142,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Slicing.html#Slicing-labels">Slicing labels</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Plotting.html#Channel-overlays">Channel overlays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Plotting.html#Rendering-segmentation">Rendering segmentation</a></li>
@@ -147,6 +156,13 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Extracting.html#Inspecting-the-expression-of-specific-cells">Inspecting the expression of specific cells</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html">Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Zarr">Zarr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
 </ul>
 </div>
 </section>
@@ -169,7 +185,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

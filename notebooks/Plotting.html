@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting spatial data &mdash; Spatial-Data 0.1.0 documentation</title>
+  <title>Plotting spatial data &mdash; Spatial-Data 0.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Extracting data" href="Extracting.html" />
-    <link rel="prev" title="Slicing spatial data" href="Slicing.html" />
+    <link rel="prev" title="Merging segmentation masks" href="Segmentation.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -46,13 +46,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../external.html">The external (<code class="code docutils literal notranslate"><span class="pre">ext</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Example%202.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting spatial data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Channel-overlays">Channel overlays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Rendering-segmentation">Rendering segmentation</a></li>
@@ -62,6 +63,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Zarr">Zarr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
 </ul>
 
         </div>
@@ -779,14 +787,14 @@ _ = (ds
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Slicing.html" class="btn btn-neutral float-left" title="Slicing spatial data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Segmentation.html" class="btn btn-neutral float-left" title="Merging segmentation masks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Extracting.html" class="btn btn-neutral float-right" title="Extracting data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

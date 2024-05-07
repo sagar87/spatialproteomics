@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Spatial-data's documentation!
+Welcome to spatial_data's documentation!
 =======================================
 
 
@@ -12,8 +12,9 @@ Welcome to Spatial-data's documentation!
    :caption: Contents:
 
    preprocessing
+   label
    plot
-   labels
+   external
 
 .. toctree::
    :maxdepth: 2
@@ -22,8 +23,11 @@ Welcome to Spatial-data's documentation!
    notebooks/Example 2
    notebooks/Example 1
    notebooks/Slicing
+   notebooks/Segmentation
    notebooks/Plotting
    notebooks/Extracting
+   notebooks/CellTypePrediction
+   notebooks/Exporting
 
 
 Indices and tables

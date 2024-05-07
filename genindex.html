@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Spatial-Data 0.1.0 documentation</title>
+  <title>Index &mdash; Spatial-Data 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -41,15 +41,23 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="labels.html">The labels (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external.html">The external (<code class="code docutils literal notranslate"><span class="pre">ext</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%202.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Example%201.html">Importing data and saving data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Extracting.html">Extracting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html">Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Zarr">Zarr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Exporting.html#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
 </ul>
 
         </div>
@@ -83,6 +91,7 @@
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -96,7 +105,7 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.add_box">add_box() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.add_box">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.add_box">add_box() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
       <li><a href="preprocessing.html#spatial_data.pp.preprocessing.PreprocessingAccessor.add_channel">add_channel() (spatial_data.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
@@ -116,7 +125,9 @@
 </li>
       <li><a href="preprocessing.html#spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation">add_segmentation() (spatial_data.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.annotate">annotate() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.annotate">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.annotate">annotate() (spatial_data.pl.plot.PlotAccessor method)</a>
+</li>
+      <li><a href="external.html#spatial_data.ext.external.ExternalAccessor.astir">astir() (spatial_data.ext.external.ExternalAccessor method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -124,7 +135,7 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.bar">bar() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.bar">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.bar">bar() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -132,11 +143,15 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.channel_histogram">channel_histogram() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.channel_histogram">[1]</a>
+      <li><a href="external.html#spatial_data.ext.external.ExternalAccessor.cellpose">cellpose() (spatial_data.ext.external.ExternalAccessor method)</a>
+</li>
+      <li><a href="external.html#spatial_data.ext.external.ExternalAccessor.cellpose_denoise">cellpose_denoise() (spatial_data.ext.external.ExternalAccessor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.colorize">colorize() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.colorize">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.channel_histogram">channel_histogram() (spatial_data.pl.plot.PlotAccessor method)</a>
+</li>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.colorize">colorize() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -144,11 +159,19 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.draw_edges">draw_edges() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.draw_edges">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.draw_edges">draw_edges() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing.html#spatial_data.pp.preprocessing.PreprocessingAccessor.drop_layers">drop_layers() (spatial_data.pp.preprocessing.PreprocessingAccessor method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="external.html#spatial_data.ext.external.ExternalAccessor">ExternalAccessor (class in spatial_data.ext.external)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -180,7 +203,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.imshow">imshow() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.imshow">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.imshow">imshow() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -192,9 +215,11 @@
     module
 
       <ul>
-        <li><a href="api.html#module-spatial_data.la.label">spatial_data.la.label</a>, <a href="labels.html#module-spatial_data.la.label">[1]</a>
+        <li><a href="external.html#module-spatial_data.ext.external">spatial_data.ext.external</a>
 </li>
-        <li><a href="api.html#module-spatial_data.pl.plot">spatial_data.pl.plot</a>, <a href="plot.html#module-spatial_data.pl.plot">[1]</a>
+        <li><a href="labels.html#module-spatial_data.la.label">spatial_data.la.label</a>
+</li>
+        <li><a href="plot.html#module-spatial_data.pl.plot">spatial_data.pl.plot</a>
 </li>
         <li><a href="preprocessing.html#module-spatial_data.pp.preprocessing">spatial_data.pp.preprocessing</a>
 </li>
@@ -213,11 +238,11 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.pie">pie() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.pie">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.pie">pie() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor">PlotAccessor (class in spatial_data.pl.plot)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor">PlotAccessor (class in spatial_data.pl.plot)</a>
 </li>
       <li><a href="preprocessing.html#spatial_data.pp.preprocessing.PreprocessingAccessor">PreprocessingAccessor (class in spatial_data.pp.preprocessing)</a>
 </li>
@@ -227,11 +252,11 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.render_labels">render_labels() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.render_labels">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.render_labels">render_labels() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.render_segmentation">render_segmentation() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.render_segmentation">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.render_segmentation">render_segmentation() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
       <li><a href="preprocessing.html#spatial_data.pp.preprocessing.PreprocessingAccessor.restore">restore() (spatial_data.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
@@ -241,26 +266,33 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.scatter">scatter() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.scatter">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.scatter">scatter() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.scatter_labels">scatter_labels() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.scatter_labels">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.scatter_labels">scatter_labels() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
+      <li>
+    spatial_data.ext.external
+
+      <ul>
+        <li><a href="external.html#module-spatial_data.ext.external">module</a>
+</li>
+      </ul></li>
       <li>
     spatial_data.la.label
 
       <ul>
-        <li><a href="api.html#module-spatial_data.la.label">module</a>, <a href="labels.html#module-spatial_data.la.label">[1]</a>
-</li>
-      </ul></li>
-      <li>
-    spatial_data.pl.plot
-
-      <ul>
-        <li><a href="api.html#module-spatial_data.pl.plot">module</a>, <a href="plot.html#module-spatial_data.pl.plot">[1]</a>
+        <li><a href="labels.html#module-spatial_data.la.label">module</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    spatial_data.pl.plot
+
+      <ul>
+        <li><a href="plot.html#module-spatial_data.pl.plot">module</a>
+</li>
+      </ul></li>
       <li>
     spatial_data.pp.preprocessing
 
@@ -268,9 +300,11 @@
         <li><a href="preprocessing.html#module-spatial_data.pp.preprocessing">module</a>
 </li>
       </ul></li>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.spectra">spectra() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra">spectra() (spatial_data.pl.plot.PlotAccessor method)</a>
 </li>
-      <li><a href="api.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">spectra_with_annotation() (spatial_data.pl.plot.PlotAccessor method)</a>, <a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">[1]</a>
+      <li><a href="plot.html#spatial_data.pl.plot.PlotAccessor.spectra_with_annotation">spectra_with_annotation() (spatial_data.pl.plot.PlotAccessor method)</a>
+</li>
+      <li><a href="external.html#spatial_data.ext.external.ExternalAccessor.stardist">stardist() (spatial_data.ext.external.ExternalAccessor method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -284,7 +318,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
