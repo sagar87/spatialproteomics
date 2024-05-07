@@ -408,3 +408,38 @@ class ExternalAccessor:
                 adata.uns[key] = self._obj.pp.get_layer_as_df(layer)
 
         return adata
+
+    def convert_to_spatialdata(
+        self, image_key: str = Layers.IMAGE, segmentation_key: str = Layers.SEGMENTATION, **kwargs
+    ):
+        import spatialdata
+
+        markers = self._obj.coords[Dims.CHANNELS].values
+        cells = self._obj.coords[Dims.CELLS].values
+        image = spatialdata.models.Image2DModel.parse(
+            self._obj[image_key].values, transformations=None, dims=("c", "x", "y"), c_coords=markers
+        )
+        segmentation = spatialdata.models.Labels2DModel.parse(
+            self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
+        )
+
+        adata = self._obj.ext.convert_to_anndata(**kwargs)
+
+        # the anndata object within the spatialdata object requires some additional slots, which are created here
+        adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
+
+        obs_df = pd.DataFrame(
+            {
+                "id": cells,
+                "region": pd.Series(["segmentation"] * len(cells)).astype(
+                    pd.api.types.CategoricalDtype(categories=["segmentation"])
+                ),
+            }
+        )
+        adata.obs = obs_df
+
+        spatial_data_object = spatialdata.SpatialData(
+            images={"image": image}, labels={"segmentation": segmentation}, table=adata
+        )
+
+        return spatial_data_object
