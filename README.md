@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/spat-data.svg)](https://badge.fury.io/py/spat-data)
 
-Spatial data is a light weight wrapper around `xarray` with the intention to facilitate the data exploration and analysis of highly multiplexed immunohistochemistry data.
+Spatial data is a light weight wrapper around `xarray` with the intention to facilitate the processing, exploration and analysis of highly multiplexed immunohistochemistry data.
 
 <p align="center" width="100%">
     <img width="50%" src="docs/preview.png">
@@ -10,36 +10,15 @@ Spatial data is a light weight wrapper around `xarray` with the intention to fac
 
 ## Principles
 
-Multiplexed imaging data comprises at least 3 dimensions (i.e. `channels`, `x`, and `y`) and has often additional data associated such as a segmentation and cell type annotatons which implictly introduce new dimensions such as `cells` and `labels`. In `spatial-data`, we use `xarray` to create a data structure that keeps all of these data dimension in sync. This enables us to subset the data efficiently and perform reproducible exploratory data analyses in Juyter Notebooks as `spatial-data` comes with exteneded plotting functions.
+Multiplexed imaging data comprises at least 3 dimensions (i.e. `channels`, `x`, and `y`) and has often additional data such as segmentation masks or cell type annotations associated with it. In `spatial-data`, we use `xarray` to create a data structure that keeps all of these data dimension in sync. This data structure can then be used to apply all sorts of operations to the data. Users can segment cells, perform different image processing steps, quantify protein expression, predict cell types, and perform a variety of plotting. By providing researchers with those tools, `spatial-data` can be used to quickly explort highly multiplexed spatial proteomics data directly within jupyter notebooks.
 
 
 ## Installation
 
-To install `spatial-data` first create `Python 3.8` environment and install the package using 
+To install `spatial-data` first create a python environment and install the package using 
 
 ```
 pip install spat-data
 ```
 
-and check the documentation for further information https://sagar87.github.io/spatial-data/.
-
-
-## History
-
-
-## 0.2.2
-
-* Updated data import tutorial.
-* Updated RTD theme to make it wider.
-* Added slicing tutorial.
-* Added plotting tutorial.
-* Implemented neighborhood graph calculation.
-* Implemented `draw_edges` function.
-* Added data extraction tutorial.
-
-## 0.2.1
-
-* `.im` selector accepts arguments in form of `[channel, xmin:xmax]`
-* `.im` selector does not break when `Dims.CELLS` is not present
-
-
+Check the documentation for further information https://sagar87.github.io/spatial-data/.

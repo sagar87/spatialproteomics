@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "Spatial-Data"
-copyright = "2022, Harald Vohringer, Matthias Meyer-Bender"
+copyright = "2022, Harald Vohringer"
 author = "Harald Vohringer, Matthias Meyer-Bender"
 
 # The full version, including alpha/beta/rc tags
