@@ -374,3 +374,72 @@ class ExternalAccessor:
 
         # adding the labels to the xarray object
         return self._obj.pp.add_labels(assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col)
+
+    def convert_to_anndata(
+        self,
+        expression_matrix_key: str = Layers.INTENSITY,
+        obs_key: str = Layers.OBS,
+        additional_layers: Optional[dict] = None,
+        additional_uns: Optional[dict] = None,
+    ):
+        import anndata
+
+        # checking that the expression matrix key is present in the object
+        assert (
+            expression_matrix_key in self._obj
+        ), f"Expression matrix key {expression_matrix_key} not found in the object. Set the expression matrix key with the expression_matrix_key argument."
+
+        expression_matrix = self._obj[expression_matrix_key].values
+        adata = anndata.AnnData(expression_matrix)
+        if additional_layers:
+            for key, layer in additional_layers.items():
+                # checking that the additional layer is present in the object
+                assert layer in self._obj, f"Layer {layer} not found in the object."
+                adata.layers[key] = self._obj[layer].values
+        adata.var_names = self._obj.coords[Dims.CHANNELS].values
+
+        if obs_key in self._obj:
+            adata.obs = pd.DataFrame(self._obj[obs_key], columns=self._obj.coords[Dims.FEATURES])
+
+        if additional_uns:
+            for key, layer in additional_uns.items():
+                # checking that the additional layer is present in the object
+                assert layer in self._obj, f"Layer {layer} not found in the object."
+                adata.uns[key] = self._obj.pp.get_layer_as_df(layer)
+
+        return adata
+
+    def convert_to_spatialdata(
+        self, image_key: str = Layers.IMAGE, segmentation_key: str = Layers.SEGMENTATION, **kwargs
+    ):
+        import spatialdata
+
+        markers = self._obj.coords[Dims.CHANNELS].values
+        cells = self._obj.coords[Dims.CELLS].values
+        image = spatialdata.models.Image2DModel.parse(
+            self._obj[image_key].values, transformations=None, dims=("c", "x", "y"), c_coords=markers
+        )
+        segmentation = spatialdata.models.Labels2DModel.parse(
+            self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
+        )
+
+        adata = self._obj.ext.convert_to_anndata(**kwargs)
+
+        # the anndata object within the spatialdata object requires some additional slots, which are created here
+        adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
+
+        obs_df = pd.DataFrame(
+            {
+                "id": cells,
+                "region": pd.Series(["segmentation"] * len(cells)).astype(
+                    pd.api.types.CategoricalDtype(categories=["segmentation"])
+                ),
+            }
+        )
+        adata.obs = obs_df
+
+        spatial_data_object = spatialdata.SpatialData(
+            images={"image": image}, labels={"segmentation": segmentation}, table=adata
+        )
+
+        return spatial_data_object
