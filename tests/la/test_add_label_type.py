@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_data.constants import Dims, Layers
+from spatial_proteomics.constants import Dims, Layers
 
 
 def test_add_label_type(dataset_full):

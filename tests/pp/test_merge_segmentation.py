@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_data.constants import Dims, Layers
+from spatial_proteomics.constants import Dims, Layers
 
 
 def test_merge_segmentation_2d(dataset):

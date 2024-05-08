@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_data.constants import Dims, Features, Layers
+from spatial_proteomics.constants import Dims, Features, Layers
 
 
 def test_image_slicing_two_coordinates(dataset):

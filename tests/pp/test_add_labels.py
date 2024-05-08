@@ -1,6 +1,6 @@
 import pandas as pd
 
-from spatial_data.constants import Dims, Features, Labels, Layers
+from spatial_proteomics.constants import Dims, Features, Labels, Layers
 
 
 def test_add_labels_correct_annotation(dataset):

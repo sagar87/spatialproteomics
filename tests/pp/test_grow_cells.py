@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatial_data.constants import Dims, Layers
+from spatial_proteomics.constants import Dims, Layers
 
 
 def test_grow_cells(dataset):
