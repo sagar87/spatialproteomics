@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatial_data.pp.utils import handle_disconnected_cells
+from spatialproteomics.pp.utils import handle_disconnected_cells
 
 
 def test_handle_disconnected_cells():

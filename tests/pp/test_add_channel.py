@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_data.constants import Layers
+from spatialproteomics.constants import Layers
 
 
 def test_add_channel_existing_channel(dataset):

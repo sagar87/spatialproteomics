@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_data.constants import Layers
+from spatialproteomics.constants import Layers
 
 
 def test_colorize(dataset):

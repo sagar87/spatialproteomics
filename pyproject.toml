@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "spat-data"
+name = "spatialproteomics"
 packages = [
-    { include = "spatial_data" },
+    { include = "spatialproteomics" },
 ]
-version = "0.3.0"
+version = "0.1.0"
 description = ""
 authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
 

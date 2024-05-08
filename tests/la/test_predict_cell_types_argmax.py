@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spatial_data.constants import Dims, Labels, Layers, Props
+from spatialproteomics.constants import Dims, Labels, Layers, Props
 
 
 def test_predict_cell_types_argmax(dataset_full):

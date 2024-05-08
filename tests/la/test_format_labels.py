@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatial_data.la.utils import _format_labels
+from spatialproteomics.la.utils import _format_labels
 
 
 def test_format_labels_no_reformatting_necessary():

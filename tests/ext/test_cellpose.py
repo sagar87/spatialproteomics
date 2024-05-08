@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_data.constants import Layers
+from spatialproteomics.constants import Layers
 
 
 def test_cellpose_subset_of_markers(dataset_full):

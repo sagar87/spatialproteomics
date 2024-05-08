@@ -1,11 +1,9 @@
 import numpy as np
 import scipy.ndimage
-from skimage.measure import label, regionprops
-from skimage.morphology import closing, square
-from skimage.segmentation import clear_border, relabel_sequential
+from skimage.measure import regionprops
+from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
-from ..constants import Dims
 
 
 def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
@@ -130,27 +128,6 @@ def _merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
     mapping = dict(zip([fmap[i] for i in selected_cells.astype(int)], [label1] * len(i1) + [label2] * len(i2)))
 
     return final_mask, mapping
-
-
-def _autocrop(sdata, channel=None, downsample=10):
-    if channel is None:
-        channel = sdata.coords[Dims.CHANNELS].values.tolist()[0]
-    image = sdata.pp[channel].pp.downsample(downsample)._image.values.squeeze()
-
-    bw = closing(image > np.quantile(image, 0.8), square(20))
-    cleared = clear_border(bw)
-    label_image = label(cleared)
-    props = regionprops(label_image)
-    if len(props) == 0:
-        maxr, maxc = image.shape
-        minr, minc = 0, 0
-        downsample = 1
-    else:
-        max_idx = np.argmax([p.area for p in props])
-        region = props[max_idx]
-        minr, minc, maxr, maxc = region.bbox
-
-    return slice(downsample * minc, downsample * maxc), slice(downsample * minr, downsample * maxr)
 
 
 def _normalize(

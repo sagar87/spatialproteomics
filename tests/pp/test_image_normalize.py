@@ -1,7 +1,7 @@
 import xarray as xr
 
-from spatial_data.constants import Layers
-from spatial_data.pp.utils import _normalize
+from spatialproteomics.constants import Layers
+from spatialproteomics.pp.utils import _normalize
 
 
 def test_image_normalize(dataset_full):

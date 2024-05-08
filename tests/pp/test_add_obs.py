@@ -1,6 +1,6 @@
 import xarray as xr
 
-from spatial_data.constants import Dims, Layers
+from spatialproteomics.constants import Dims, Layers
 
 
 def test_add_obs_centroids(dataset):
