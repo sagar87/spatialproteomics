@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The preprocessing (pp) accessor &mdash; Spatial-Data 0.3.0 documentation</title>
+  <title>The preprocessing (pp) accessor &mdash; spatial_proteomics 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The label (la) accessor" href="label.html" />
-    <link rel="prev" title="Welcome to spatial_data’s documentation!" href="index.html" />
+    <link rel="prev" title="Welcome to the documentation of spatial_proteomics!" href="index.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Spatial-Data
+            <a href="index.html" class="icon icon-home"> spatial_proteomics
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -49,10 +49,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ExampleWorkflow.html">Example Workflow with spatial_data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ExampleWorkflow.html">Example Workflow with spatial_proteomics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Slicing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Segmentation.html">Merging segmentation masks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting spatial data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Extracting.html">Extracting data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
@@ -65,7 +65,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Spatial-Data</a>
+          <a href="index.html">spatial_proteomics</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -110,13 +110,13 @@
 <section id="the-preprocessing-pp-accessor">
 <h1>The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor<a class="headerlink" href="#the-preprocessing-pp-accessor" title="Permalink to this headline"></a></h1>
 <p>The preprocessing accessor provides several to subset image data.</p>
-<span class="target" id="module-spatial_data.pp.preprocessing"></span><dl class="py class">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_data.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PreprocessingAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor" title="Permalink to this definition"></a></dt>
+<span class="target" id="module-spatial_proteomics.pp.preprocessing"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatial_proteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PreprocessingAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor" title="Permalink to this definition"></a></dt>
 <dd><p>The image accessor enables fast indexing and preprocesses image.data</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_channel">
-<span class="sig-name descname"><span class="pre">add_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_channel" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_channel">
+<span class="sig-name descname"><span class="pre">add_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_channel" title="Permalink to this definition"></a></dt>
 <dd><p>Adds channel(s) to an existing image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -135,8 +135,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_feature">
-<span class="sig-name descname"><span class="pre">add_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_feature" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_feature">
+<span class="sig-name descname"><span class="pre">add_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_feature" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a feature to the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -155,8 +155,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_labels">
-<span class="sig-name descname"><span class="pre">add_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'label'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_labels" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_labels">
+<span class="sig-name descname"><span class="pre">add_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'label'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_labels" title="Permalink to this definition"></a></dt>
 <dd><p>Adds labels to the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -178,8 +178,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_observations">
-<span class="sig-name descname"><span class="pre">add_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('label',</span> <span class="pre">'centroid')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_observations" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_observations">
+<span class="sig-name descname"><span class="pre">add_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('label',</span> <span class="pre">'centroid')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_observations" title="Permalink to this definition"></a></dt>
 <dd><p>Adds properties derived from the mask to the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -200,8 +200,8 @@ instead of adding them to the image container.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_properties">
-<span class="sig-name descname"><span class="pre">add_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_labels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_properties" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_properties">
+<span class="sig-name descname"><span class="pre">add_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_labels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Adds properties to the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -221,8 +221,8 @@ instead of adding them to the image container.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification">
-<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_quantification">
+<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
 <dd><p>Quantify channel intensities over the segmentation mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -242,8 +242,8 @@ instead of adding them to the image container.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification_from_dataframe">
-<span class="sig-name descname"><span class="pre">add_quantification_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_intensity'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_quantification_from_dataframe" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_quantification_from_dataframe">
+<span class="sig-name descname"><span class="pre">add_quantification_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_intensity'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_quantification_from_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Adds an observation table to the image container. Columns of the
 dataframe have to match the channel coordinates of the image
 container, and the index of the dataframe has to match the cell coordinates
@@ -265,8 +265,8 @@ of the image container.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation">
-<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_growth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'keep_largest'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation">
+<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_growth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'keep_largest'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a segmentation mask (_segmentation) field to the xarray dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -285,8 +285,8 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.drop_layers">
-<span class="sig-name descname"><span class="pre">drop_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.drop_layers" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.drop_layers">
+<span class="sig-name descname"><span class="pre">drop_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.drop_layers" title="Permalink to this definition"></a></dt>
 <dd><p>Drops layers from the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -302,14 +302,14 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.filter_by_obs">
-<span class="sig-name descname"><span class="pre">filter_by_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.filter_by_obs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs">
+<span class="sig-name descname"><span class="pre">filter_by_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the list of cells with the labels from items.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.get_bbox">
-<span class="sig-name descname"><span class="pre">get_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_slice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">slice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_slice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">slice</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.get_bbox" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_bbox">
+<span class="sig-name descname"><span class="pre">get_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_slice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">slice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_slice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">slice</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_bbox" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the bounds of the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -325,8 +325,8 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.get_channels">
-<span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.get_channels" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_channels">
+<span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_channels" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a single channel as a numpy array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -342,20 +342,20 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.get_layer_as_df">
-<span class="sig-name descname"><span class="pre">get_layer_as_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_obs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celltypes_to_str</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.get_layer_as_df" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_layer_as_df">
+<span class="sig-name descname"><span class="pre">get_layer_as_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_obs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celltypes_to_str</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.get_layer_as_df" title="Permalink to this definition"></a></dt>
 <dd><p>This method converts a layer of the image container to a pandas dataframe.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.grow_cells">
-<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'keep_largest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.grow_cells">
+<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'keep_largest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
 <dd><p>Grows the cells in the segmentation mask.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.normalize">
-<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.normalize" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.normalize">
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.normalize" title="Permalink to this definition"></a></dt>
 <dd><p>Performs a percentile normalization on each channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -368,8 +368,8 @@ that indicates the location of each cell.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="spatial_data.pp.preprocessing.PreprocessingAccessor.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wiener'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_data.pp.preprocessing.PreprocessingAccessor.restore" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="spatial_proteomics.pp.preprocessing.PreprocessingAccessor.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wiener'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial_proteomics.pp.preprocessing.PreprocessingAccessor.restore" title="Permalink to this definition"></a></dt>
 <dd><p>Restores the image using a specified method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -395,14 +395,14 @@ that indicates the location of each cell.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to spatial_data’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to the documentation of spatial_proteomics!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="label.html" class="btn btn-neutral float-right" title="The label (la) accessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Harald Vohringer.</p>
+    <p>&#169; Copyright 2022, Harald Vohringer, Matthias Meyer-Bender.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
