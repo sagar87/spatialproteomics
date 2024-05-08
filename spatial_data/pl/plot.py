@@ -11,6 +11,7 @@ from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
 from .spectra import format_annotation_df, plot_expression_spectra
 from .utils import (
+    _autocrop,
     _colorize,
     _get_listed_colormap,
     _label_segmentation_mask,
@@ -1023,3 +1024,7 @@ class PlotAccessor:
                 ax.set_yscale("log")
 
         return self._obj
+
+    def autocrop(self, channel=None, downsample=10):
+        slices = _autocrop(self._obj, channel=channel, downsample=downsample)
+        return self._obj.pp[slices[0], slices[1]]

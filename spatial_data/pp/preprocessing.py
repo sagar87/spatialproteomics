@@ -15,7 +15,6 @@ from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .intensity import sum_intensity
 from .utils import (
-    _autocrop,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -926,10 +925,6 @@ class PreprocessingAccessor:
 
         # adding the default obs back to the object
         return obj.pp.add_observations()
-
-    def autocrop(self, channel=None, downsample=10):
-        slices = _autocrop(self._obj, channel=channel, downsample=downsample)
-        return self._obj.pp[slices[0], slices[1]]
 
     def merge_segmentation(
         self,
