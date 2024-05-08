@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example Workflow with spatial_proteomics &mdash; spatial_proteomics 0.1.0 documentation</title>
+  <title>Example Workflow with spatialproteomics &mdash; spatial_proteomics 0.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -51,7 +51,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Workflow with spatial_proteomics</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Workflow with spatialproteomics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#1.-Getting-Started">1. Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#2.-Image-Processing">2. Image Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
@@ -83,7 +83,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Example Workflow with spatial_proteomics</li>
+      <li>Example Workflow with spatialproteomics</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/ExampleWorkflow.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -371,9 +371,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Example-Workflow-with-spatial_proteomics">
-<h1>Example Workflow with spatial_proteomics<a class="headerlink" href="#Example-Workflow-with-spatial_proteomics" title="Permalink to this headline"></a></h1>
-<p>Welcome to spatial_proteomics! In this notebook, we will go through an example workflow by looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatial_proteomics object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>StarDist</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results</p>
+<section id="Example-Workflow-with-spatialproteomics">
+<h1>Example Workflow with spatialproteomics<a class="headerlink" href="#Example-Workflow-with-spatialproteomics" title="Permalink to this headline"></a></h1>
+<p>Welcome to spatialproteomics! In this notebook, we will go through an example workflow by looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatialproteomics object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>StarDist</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -381,7 +381,7 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%load_ext autoreload
 %autoreload 2
 
-import spatial_proteomics as sp
+import spatialproteomics as sp
 from skimage.io import imread
 import matplotlib.pyplot as plt
 </pre></div>
@@ -398,7 +398,7 @@ The autoreload extension is already loaded. To reload it, use:
 </div>
 <section id="1.-Getting-Started">
 <h2>1. Getting Started<a class="headerlink" href="#1.-Getting-Started" title="Permalink to this headline"></a></h2>
-<p>Before we can get started with spatial_proteomics, we first need to read in the image. This can be done with the <em>skimage</em> or <em>tifffile</em> libraries.</p>
+<p>Before we can get started with <em>spatialproteomics</em>, we first need to read in the image. This can be done with the <em>skimage</em> or <em>tifffile</em> libraries.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -418,12 +418,12 @@ image.shape
 (5, 500, 500)
 </pre></div></div>
 </div>
-<p>We can see that our image has 5 channels and has a size of 500 by 500 pixels. Next, we want to create a spatial_proteomics object and store the image within the object. To do this, we also need to feed in the names of the channels.</p>
+<p>We can see that our image has 5 channels and has a size of 500 by 500 pixels. Next, we want to create a <em>spatialproteomics</em> object and store the image within the object. To do this, we also need to feed in the names of the channels.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object = sp.load_image_data(image, channel_coords=[&#39;DAPI&#39;, &#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object = sp.load_image_data(image, channel_coords=[&#39;DAPI&#39;, &#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;])
 </pre></div>
 </div>
 </div>
@@ -432,7 +432,7 @@ image.shape
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object
 </pre></div>
 </div>
 </div>
@@ -866,7 +866,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = spatial_proteomics_object.pl.imshow()  # pl: the plotting module
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = sp_object.pl.imshow()  # pl: the plotting module
 </pre></div>
 </div>
 </div>
@@ -891,7 +891,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = spatial_proteomics_object.pp[&#39;DAPI&#39;].pl.imshow()  # we can use pp[channels] to subset the spatial_proteomics_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = sp_object.pp[&#39;DAPI&#39;].pl.imshow()  # we can use pp[channels] to subset the spatialproteomics object
 </pre></div>
 </div>
 </div>
@@ -916,7 +916,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = spatial_proteomics_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow() # pp: the preprocessing module
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow() # pp: the preprocessing module
 </pre></div>
 </div>
 </div>
@@ -945,7 +945,7 @@ Data variables:
 percentiles = [0.2, 0.6, 0.6, 0.6, 0.6]
 
 # filtering and smoothing the data
-spatial_proteomics_object = spatial_proteomics_object.pp.filter(percentiles).pp.restore(&#39;medfilt2d&#39;, kernel_size=3)
+sp_object = sp_object.pp.filter(percentiles).pp.restore(&#39;medfilt2d&#39;, kernel_size=3)
 </pre></div>
 </div>
 </div>
@@ -955,8 +955,8 @@ spatial_proteomics_object = spatial_proteomics_object.pp.filter(percentiles).pp.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-_ = spatial_proteomics_object.pp[&#39;DAPI&#39;].pl.imshow(ax=ax[0])
-_ = spatial_proteomics_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow(ax=ax[1])
+_ = sp_object.pp[&#39;DAPI&#39;].pl.imshow(ax=ax[0])
+_ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow(ax=ax[1])
 </pre></div>
 </div>
 </div>
@@ -986,7 +986,7 @@ _ = spatial_proteomics_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object = spatial_proteomics_object.ext.stardist()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object = sp_object.ext.stardist()
 </pre></div>
 </div>
 </div>
@@ -1047,7 +1047,7 @@ Warning: No properties were added.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object
 </pre></div>
 </div>
 </div>
@@ -1498,7 +1498,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = spatial_proteomics_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = sp_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True)
 <br/></pre></div>
 </div>
 </div>
@@ -1523,9 +1523,9 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># filtering out cells with less than 20 or more than 150 pixels
-spatial_proteomics_object = spatial_proteomics_object.pp.add_observations(&quot;area&quot;).pp.filter_by_obs(&#39;area&#39;, func=lambda x: (x &gt; 20) &amp; (x &lt; 150))
+sp_object = sp_object.pp.add_observations(&quot;area&quot;).pp.filter_by_obs(&#39;area&#39;, func=lambda x: (x &gt; 20) &amp; (x &lt; 150))
 # plotting the result
-_ = spatial_proteomics_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True)
+_ = sp_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True)
 </pre></div>
 </div>
 </div>
@@ -1550,7 +1550,7 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># expanding the masks
-spatial_proteomics_object = spatial_proteomics_object.pp.grow_cells(iterations=2)
+sp_object = sp_object.pp.grow_cells(iterations=2)
 </pre></div>
 </div>
 </div>
@@ -1570,8 +1570,8 @@ Mask growing requires recalculation of the observations. All features other than
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the resulting segmentation masks
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-_ = spatial_proteomics_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True, ax=ax[0])
-_ = spatial_proteomics_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pp[200:300, 200:300].pl.imshow(render_segmentation=True, ax=ax[1])
+_ = sp_object.pp[&#39;DAPI&#39;].pp[200:300, 200:300].pl.imshow(render_segmentation=True, ax=ax[0])
+_ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pp[200:300, 200:300].pl.imshow(render_segmentation=True, ax=ax[1])
 </pre></div>
 </div>
 </div>
@@ -1599,8 +1599,8 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[79]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object = spatial_proteomics_object.pp.add_quantification(func=sp.pp.arcsinh_mean_intensity)
-spatial_proteomics_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object = sp_object.pp.add_quantification(func=sp.pp.arcsinh_mean_intensity)
+sp_object
 </pre></div>
 </div>
 </div>
@@ -2064,7 +2064,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># this dictionary maps from cell types to markers
 marker_dict = {&#39;T_h&#39;: &#39;CD4&#39;, &#39;T_tox&#39;: &#39;CD8&#39;, &#39;T_reg&#39;: &#39;FOXP3&#39;, &#39;T_fh&#39;: &#39;BCL6&#39;}
-spatial_proteomics_object = spatial_proteomics_object.la.predict_cell_types_argmax(marker_dict)
+sp_object = sp_object.la.predict_cell_types_argmax(marker_dict)
 </pre></div>
 </div>
 </div>
@@ -2072,7 +2072,7 @@ spatial_proteomics_object = spatial_proteomics_object.la.predict_cell_types_argm
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatial_proteomics_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object
 </pre></div>
 </div>
 </div>
@@ -2542,7 +2542,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setting the colors for the cell types
-spatial_proteomics_object = spatial_proteomics_object.la.set_label_colors([&#39;T_h&#39;, &#39;T_tox&#39;, &#39;T_reg&#39;, &#39;T_fh&#39;], [&#39;red&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;blue&#39;])
+sp_object = sp_object.la.set_label_colors([&#39;T_h&#39;, &#39;T_tox&#39;, &#39;T_reg&#39;, &#39;T_fh&#39;], [&#39;red&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;blue&#39;])
 </pre></div>
 </div>
 </div>
@@ -2551,8 +2551,8 @@ spatial_proteomics_object = spatial_proteomics_object.la.set_label_colors([&#39;
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-_ = spatial_proteomics_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow(ax=ax[0])
-_ = spatial_proteomics_object.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, ax=ax[1])
+_ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow(ax=ax[0])
+_ = sp_object.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, ax=ax[1])
 </pre></div>
 </div>
 </div>
