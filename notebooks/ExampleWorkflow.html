@@ -51,13 +51,15 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Workflow with spatial_data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#1.-Getting-Started">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#2.-Image-Processing">2. Image Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#6.-Plotting">6. Plotting</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Workflow with spatial_data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Getting-Started">1. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Image-Processing">2. Image Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Cell-Segmentation">3. Cell Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Plotting">6. Plotting</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing spatial data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting spatial data</a></li>
@@ -65,10 +67,6 @@
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Zarr">Zarr</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-to-AnnData">Exporting to AnnData</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
 </ul>
 
         </div>
@@ -398,9 +396,8 @@ The autoreload extension is already loaded. To reload it, use:
   %reload_ext autoreload
 </pre></div></div>
 </div>
-</section>
 <section id="1.-Getting-Started">
-<h1>1. Getting Started<a class="headerlink" href="#1.-Getting-Started" title="Permalink to this headline"></a></h1>
+<h2>1. Getting Started<a class="headerlink" href="#1.-Getting-Started" title="Permalink to this headline"></a></h2>
 <p>Before we can get started with spatial_data, we first need to read in the image. This can be done with the <em>skimage</em> or <em>tifffile</em> libraries.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
@@ -862,7 +859,7 @@ Data variables:
 </div>
 </section>
 <section id="2.-Image-Processing">
-<h1>2. Image Processing<a class="headerlink" href="#2.-Image-Processing" title="Permalink to this headline"></a></h1>
+<h2>2. Image Processing<a class="headerlink" href="#2.-Image-Processing" title="Permalink to this headline"></a></h2>
 <p>Highly multiplexed fluorescence imaging techniques frequently suffer from poor signal-to-noise ratio. To alleviate this problem, you can filter out low intensity pixels, thereby boosting the contrast of the image. While there are automated methods to determine the thresholds for such operations, it is difficult to come up with one that works in all cases. Here, we therefore set the thresholds based on manual inspection.</p>
 <p>Let’s start by looking at the data set in the current form.</p>
 <div class="nbinput docutils container">
@@ -978,7 +975,7 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 </div>
 </section>
 <section id="3.-Cell-Segmentation">
-<h1>3. Cell Segmentation<a class="headerlink" href="#3.-Cell-Segmentation" title="Permalink to this headline"></a></h1>
+<h2>3. Cell Segmentation<a class="headerlink" href="#3.-Cell-Segmentation" title="Permalink to this headline"></a></h2>
 <p>Great, this is our preprocessing done. Next, we can perform cell segmentation. Since we only have a universal nuclear marker at hand (and no universal membrane marker), we will segment the nuclei and then simply extend the segmentation masks by two pixels in every direction. We are going to use <em>StarDist</em> for this purpose, which is implemented in the external (ext) module.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[58]:
@@ -1581,7 +1578,7 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 </div>
 </section>
 <section id="4.-Quantifying-Protein-Expression-per-Cell">
-<h1>4. Quantifying Protein Expression per Cell<a class="headerlink" href="#4.-Quantifying-Protein-Expression-per-Cell" title="Permalink to this headline"></a></h1>
+<h2>4. Quantifying Protein Expression per Cell<a class="headerlink" href="#4.-Quantifying-Protein-Expression-per-Cell" title="Permalink to this headline"></a></h2>
 <p>Now that we have sensible segmentation masks, we can quantify the protein expression in each cell. There are multiple ways to do this, but taking the median intensity and then applying an arcsinh-transform has been proven to work pretty well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[79]:
@@ -2044,7 +2041,7 @@ Data variables:
 <p>As you can see, this introduced a new layer called <code class="docutils literal notranslate"><span class="pre">_intensity</span></code>. We can now use this to predict cell types.</p>
 </section>
 <section id="5.-Cell-Type-Prediction">
-<h1>5. Cell Type Prediction<a class="headerlink" href="#5.-Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
+<h2>5. Cell Type Prediction<a class="headerlink" href="#5.-Cell-Type-Prediction" title="Permalink to this headline"></a></h2>
 <p>There are several ways to predict cell types. Since we filtered our data beforehand, we can simply take the argmax of the cell type specific channels to get an idea of the cell types we are looking at. Methods related to cell type prediction are all implemented in the label (la) module.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[81]:
@@ -2523,7 +2520,7 @@ Data variables:
 <p>This added a couple of things. For one, <code class="docutils literal notranslate"><span class="pre">_obs</span></code> now contains a feature called <code class="docutils literal notranslate"><span class="pre">_labels</span></code>. Furthermore, the <code class="docutils literal notranslate"><span class="pre">_labels</span></code> layer assigns each cell type to a color, which can be useful for plotting.</p>
 </section>
 <section id="6.-Plotting">
-<h1>6. Plotting<a class="headerlink" href="#6.-Plotting" title="Permalink to this headline"></a></h1>
+<h2>6. Plotting<a class="headerlink" href="#6.-Plotting" title="Permalink to this headline"></a></h2>
 <p>Finally, let’s do some plotting of the predicted cell types next to the markers. Before plotting, we can set some colors for the cell types (labels).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
@@ -2560,6 +2557,7 @@ utils.py (494): The return type of `Dataset.dims` will be changed to return a se
 </div>
 </div>
 <p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! If you have any additional questions, check out the other notebooks for details.</p>
+</section>
 </section>
 
 

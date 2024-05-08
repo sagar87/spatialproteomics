@@ -8,7 +8,7 @@ Welcome to spatial_data's documentation!
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    preprocessing
