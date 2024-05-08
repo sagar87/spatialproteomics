@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_proteomics.constants import Layers
+from spatialproteomics.constants import Layers
 
 
 def test_imshow(dataset_labeled):

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spatial_proteomics.constants import Layers
+from spatialproteomics.constants import Layers
 
 
 def test_add_quantification(dataset):

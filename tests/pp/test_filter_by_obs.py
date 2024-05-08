@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_proteomics.constants import Dims, Layers
+from spatialproteomics.constants import Dims, Layers
 
 
 def test_filter_by_obs(dataset):

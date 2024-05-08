@@ -1,8 +1,8 @@
 import pytest
 import xarray as xr
 
-from spatial_proteomics.constants import Layers
-from spatial_proteomics.container import load_image_data
+from spatialproteomics.constants import Layers
+from spatialproteomics.container import load_image_data
 
 
 def test_load_data_proper_five_channel_input(data_dic):

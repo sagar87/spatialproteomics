@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "spatial_proteomics"
+name = "spatialproteomics"
 packages = [
-    { include = "spatial_proteomics" },
+    { include = "spatialproteomics" },
 ]
 version = "0.1.0"
 description = ""

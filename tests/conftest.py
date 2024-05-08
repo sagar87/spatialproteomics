@@ -7,7 +7,7 @@ import pytest
 import xarray as xr
 from skimage.io import imread
 
-from spatial_proteomics.container import load_image_data
+from spatialproteomics.container import load_image_data
 
 
 @pytest.fixture(scope="session")

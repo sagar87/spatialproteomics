@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_proteomics.constants import Dims
+from spatialproteomics.constants import Dims
 
 
 def test_remove_label_type(dataset_labeled):

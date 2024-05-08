@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatial_proteomics.pl.utils import _label_segmentation_mask
+from spatialproteomics.pl.utils import _label_segmentation_mask
 
 
 def test_label_segmentation_mask(test_segmentation):
