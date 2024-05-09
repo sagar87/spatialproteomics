@@ -110,6 +110,126 @@
 <section id="the-external-ext-accessor">
 <h1>The external (<code class="code docutils literal notranslate"><span class="pre">ext</span></code>) accessor<a class="headerlink" href="#the-external-ext-accessor" title="Permalink to this headline"></a></h1>
 <p>The external accessor contains methods that utilise third-party tools to enable operations such as segmentation or cell type prediction.</p>
+<span class="target" id="module-spatialproteomics.ext.external"></span><dl class="py class">
+<dt class="sig sig-object py" id="spatialproteomics.ext.external.ExternalAccessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatialproteomics.ext.external.</span></span><span class="sig-name descname"><span class="pre">ExternalAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.ext.external.ExternalAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>The external accessor enables the application of external tools such as StarDist or Astir</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.ext.external.ExternalAccessor.astir">
+<span class="sig-name descname"><span class="pre">astir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init_epochs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_id_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_type_col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell_type'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.ext.external.ExternalAccessor.astir" title="Permalink to this definition"></a></dt>
+<dd><p>This method predicts cell types from an expression matrix using the Astir algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>marker_dict</strong> (<em>dict</em>) – Dictionary mapping markers to cell types. Can also include cell states. Example: {“cell_type”: {‘B’: [‘PAX5’], ‘T’: [‘CD3’], ‘Myeloid’: [‘CD11b’]}}</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – Layer to use as expression matrix.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Certainty threshold for astir to assign a cell type. Defaults to 0.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed. Defaults to 42.</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate. Defaults to 0.001.</p></li>
+<li><p><strong>batch_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Batch size. Defaults to 64.</p></li>
+<li><p><strong>n_init</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of initializations. Defaults to 5.</p></li>
+<li><p><strong>n_init_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of epochs for each initialization. Defaults to 5.</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of epochs. Defaults to 500.</p></li>
+<li><p><strong>cell_id_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name for cell IDs. Defaults to “cell_id”.</p></li>
+<li><p><strong>cell_type_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name for cell types. Defaults to “cell_type”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no expression matrix was present or the image is not of type uint8.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A DataArray with the assigned cell types.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.ext.external.ExternalAccessor.cellpose">
+<span class="sig-name descname"><span class="pre">cellpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellprob_threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cyto3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.ext.external.ExternalAccessor.cellpose" title="Permalink to this definition"></a></dt>
+<dd><p>Segment cells using Cellpose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of channels to use for segmentation. If None, all channels are used.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
+<li><p><strong>diameter</strong> (<em>int</em><em>, </em><em>optional</em>) – Expected cell diameter in pixels.</p></li>
+<li><p><strong>channel_settings</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Channels for Cellpose to use for segmentation.</p></li>
+<li><p><strong>num_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations for segmentation.</p></li>
+<li><p><strong>gpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use GPU for segmentation.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of Cellpose model to use.</p></li>
+<li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the segmentation as an xarray DataArray or as a numpy array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataset containing original data and segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method requires the ‘cellpose’ package to be installed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.ext.external.ExternalAccessor.cellpose_denoise">
+<span class="sig-name descname"><span class="pre">cellpose_denoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">['_cellpose_denoise',</span> <span class="pre">'_cellpose_denoise_segmentation']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cyto3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restore_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'denoise_cyto3'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.ext.external.ExternalAccessor.cellpose_denoise" title="Permalink to this definition"></a></dt>
+<dd><p>Segment cells using Cellpose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
+<li><p><strong>diameter</strong> (<em>int</em><em>, </em><em>optional</em>) – Expected cell diameter in pixels.</p></li>
+<li><p><strong>channel_settings</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Channels for Cellpose to use for segmentation.</p></li>
+<li><p><strong>num_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations for segmentation.</p></li>
+<li><p><strong>gpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use GPU for segmentation.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of Cellpose model to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataset containing original data and segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method requires the ‘cellpose’ package to be installed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.ext.external.ExternalAccessor.stardist">
+<span class="sig-name descname"><span class="pre">stardist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_tiles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuclear_channel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'DAPI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predict_big</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.ext.external.ExternalAccessor.stardist" title="Permalink to this definition"></a></dt>
+<dd><p>Apply StarDist algorithm to perform instance segmentation on the nuclear image.</p>
+<dl class="simple">
+<dt>scale<span class="classifier">float, optional</span></dt><dd><p>Scaling factor for the StarDist model (default is 3).</p>
+</dd>
+<dt>n_tiles<span class="classifier">int, optional</span></dt><dd><p>Number of tiles to split the image into for prediction (default is 12).</p>
+</dd>
+<dt>normalize<span class="classifier">bool, optional</span></dt><dd><p>Flag indicating whether to normalize the nuclear image (default is True).</p>
+</dd>
+<dt>nuclear_channel<span class="classifier">str, optional</span></dt><dd><p>Name of the nuclear channel in the image (default is “DAPI”).</p>
+</dd>
+<dt>predict_big<span class="classifier">bool, optional</span></dt><dd><p>Flag indicating whether to use the ‘predict_instances_big’ method for large images (default is False).</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs<span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to be passed to the StarDist prediction method.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>obj<span class="classifier">xr.Dataset</span></dt><dd><p>Xarray dataset containing the segmentation mask and centroids.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the object already contains a segmentation mask.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
