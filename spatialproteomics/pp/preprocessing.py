@@ -15,6 +15,7 @@ from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .intensity import sum_intensity
 from .utils import (
+    _get_disconnected_cell,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -1060,3 +1061,6 @@ class PreprocessingAccessor:
             df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
 
         return df
+
+    def get_disconnected_cell(self):
+        return _get_disconnected_cell(self._obj[Layers.SEGMENTATION])

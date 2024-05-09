@@ -184,9 +184,13 @@ def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error
         return False
     else:
         if handle == "error":
-            raise ValueError("Found disconnected masks in the segmentation.")
+            raise ValueError(
+                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to see which cell is disconnected."
+            )
         elif handle == "warning":
-            logger.warning("Found disconnected masks in the segmentation.")
+            logger.warning(
+                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to see which cell is disconnected."
+            )
         return True
 
 
@@ -253,3 +257,11 @@ def handle_disconnected_cells(segmentation: np.ndarray, mode: str = "ignore"):
         logger.warning("Relabeled all cells to avoid disconnected cells.")
 
     return segmentation
+
+
+def _get_disconnected_cell(segmentation):
+    for cell in sorted(np.unique(segmentation))[1:]:
+        binary_mask = np.where(segmentation == cell, 1, 0)
+        _, num_features = scipy.ndimage.label(binary_mask)
+        if num_features != 1:
+            return cell
