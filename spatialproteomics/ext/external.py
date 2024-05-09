@@ -27,7 +27,7 @@ class ExternalAccessor:
         gpu: bool = True,
         model_type: str = "cyto3",
         return_xarray: bool = True,
-        handle_disconnected: str = "keep_largest",
+        handle_disconnected: str = "ignore",
     ):
         """
         Segment cells using Cellpose.
@@ -220,7 +220,7 @@ class ExternalAccessor:
         normalize: bool = True,
         nuclear_channel: str = "DAPI",
         predict_big: bool = False,
-        handle_disconnected: str = "keep_largest",
+        handle_disconnected: str = "ignore",
         **kwargs,
     ) -> xr.Dataset:
         """

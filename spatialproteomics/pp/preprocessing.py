@@ -15,6 +15,7 @@ from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .intensity import sum_intensity
 from .utils import (
+    _get_disconnected_cell,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -236,7 +237,7 @@ class PreprocessingAccessor:
         mask_growth: int = 0,
         relabel: bool = True,
         copy: bool = True,
-        handle_disconnected: str = "keep_largest",
+        handle_disconnected: str = "ignore",
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
@@ -882,7 +883,7 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "keep_largest"):
+    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore"):
         """
         Grows the cells in the segmentation mask.
         """
@@ -1060,3 +1061,6 @@ class PreprocessingAccessor:
             df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
 
         return df
+
+    def get_disconnected_cell(self):
+        return _get_disconnected_cell(self._obj[Layers.SEGMENTATION])

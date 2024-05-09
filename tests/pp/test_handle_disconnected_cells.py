@@ -1,6 +1,6 @@
 import numpy as np
 
-from spatialproteomics.pp.utils import handle_disconnected_cells
+from spatialproteomics.pp.utils import _get_disconnected_cell, handle_disconnected_cells
 
 
 def test_handle_disconnected_cells():
@@ -54,3 +54,17 @@ def test_handle_disconnected_cells_relabel():
     arr_target = np.array([[0, 0, 0, 1, 0], [0, 3, 0, 2, 0], [0, 3, 0, 2, 0], [0, 0, 0, 0, 0]])
 
     assert np.all(arr_processed == arr_target), f"Processed array: {arr_processed}"
+
+
+def test_get_disconnected_cell():
+    arr = np.array([[0, 0, 0, 0, 0], [0, 1, 0, 2, 0], [0, 1, 0, 2, 0], [0, 0, 0, 0, 0]])
+
+    # should not flag anything
+    disconnected_cell = _get_disconnected_cell(arr)
+    assert disconnected_cell is None
+
+    arr = np.array([[0, 0, 0, 1, 0], [0, 1, 0, 2, 0], [0, 1, 0, 2, 0], [0, 0, 0, 0, 0]])
+
+    # should flag 1
+    disconnected_cell = _get_disconnected_cell(arr)
+    assert disconnected_cell == 1
