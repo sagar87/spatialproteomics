@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.ndimage
-from skimage.measure import regionprops
+from skimage.measure import label, regionprops
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
@@ -176,24 +176,18 @@ def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error
     It returns True if there are disconnected cells, and False otherwise.
     handle can be 'error', 'warning', or 'ignore'.
     """
-    # Label connected components in the entire segmentation mask
-    labeled_mask, num_features = scipy.ndimage.label(segmentation, structure=np.ones((3, 3)))
+    relabeled_mask = label(segmentation)
+    num_cells = len(np.unique(segmentation))
+    num_cells_relabeled = len(np.unique(relabeled_mask))
 
-    # Count the number of objects for each cell
-    num_objects_per_cell = np.bincount(labeled_mask[segmentation != 0].ravel())[1:]
-
-    # Find cells with more than one object
-    cells_with_multiple_objects = np.where(num_objects_per_cell != 1)[0] + 1
-
-    if len(cells_with_multiple_objects) > 0:
+    if num_cells == num_cells_relabeled:
+        return False
+    else:
         if handle == "error":
-            example_cell = cells_with_multiple_objects[0]
-            raise ValueError(f"Found disconnected masks in the segmentation. Example cell: {example_cell}.")
+            raise ValueError("Found disconnected masks in the segmentation.")
         elif handle == "warning":
             logger.warning("Found disconnected masks in the segmentation.")
         return True
-
-    return False
 
 
 def handle_disconnected_cells(segmentation: np.ndarray, mode: str = "ignore"):
