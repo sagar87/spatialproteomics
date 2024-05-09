@@ -236,7 +236,7 @@ class PreprocessingAccessor:
         mask_growth: int = 0,
         relabel: bool = True,
         copy: bool = True,
-        handle_disconnected: str = "keep_largest",
+        handle_disconnected: str = "ignore",
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
@@ -882,7 +882,7 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "keep_largest"):
+    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore"):
         """
         Grows the cells in the segmentation mask.
         """

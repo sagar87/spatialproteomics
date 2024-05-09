@@ -21,11 +21,11 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "spatial_proteomics"
-copyright = "2022, Harald Vohringer, Matthias Meyer-Bender"
+copyright = "2024, Harald Vohringer, Matthias Meyer-Bender"
 author = "Harald Vohringer, Matthias Meyer-Bender"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+release = "0.4.0"
 
 
 # -- General configuration ---------------------------------------------------
