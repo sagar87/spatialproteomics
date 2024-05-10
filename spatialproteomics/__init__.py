@@ -27,7 +27,6 @@ from .constants import (
     Yellow,
 )
 from .container import load_image_data
-from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import (
@@ -42,7 +41,7 @@ from .pp import (
     percentage_positive,
     sum_intensity,
 )
-from .tl import TwoComponentGaussianMixture
+from .tl import ToolAccessor
 
 __all__ = [
     "load_image_data",
@@ -50,7 +49,7 @@ __all__ = [
     "LabelAccessor",
     "PlotAccessor",
     "SegmentationAccessor",
-    "ExternalAccessor",
+    "ToolAccessor",
     "Layers",
     "Dims",
     "Features",
@@ -65,7 +64,6 @@ __all__ = [
     "detect_peaks_num",
     "percentage_positive",
     "is_positive",
-    "TwoComponentGaussianMixture",
     "Apricot",
     "Beige",
     "Black",

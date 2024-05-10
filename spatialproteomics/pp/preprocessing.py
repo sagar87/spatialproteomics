@@ -942,7 +942,7 @@ class PreprocessingAccessor:
         # ensuring that a segmentation mask already exists
         assert (
             Layers.SEGMENTATION in self._obj
-        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
+        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or tl.stardist()/tl.cellpose()."
 
         # checking that the array is 2D or 3D
         assert array.ndim in [

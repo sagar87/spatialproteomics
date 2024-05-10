@@ -371,7 +371,7 @@ class LabelAccessor:
         # checking that we already have properties
         assert (
             Layers.LABELS in self._obj
-        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or ext.astir()."
+        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or tl.astir()."
         # making sure the property does not exist already
         assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
 
@@ -478,7 +478,7 @@ class LabelAccessor:
         # checking that a label layer is already present
         assert (
             Layers.LABELS in self._obj
-        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or ext.astir()."
+        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or tl.astir()."
 
         # obtaining the current properties
         props_layer = self._obj.coords[Dims.PROPS].values.tolist()

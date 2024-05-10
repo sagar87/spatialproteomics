@@ -8,9 +8,9 @@ from ..constants import Dims, Layers
 from ..pp.utils import handle_disconnected_cells
 
 
-@xr.register_dataset_accessor("ext")
-class ExternalAccessor:
-    """The external accessor enables the application of external tools such as StarDist or Astir"""
+@xr.register_dataset_accessor("tl")
+class ToolAccessor:
+    """The tool accessor enables the application of external tools such as StarDist or Astir"""
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
@@ -424,7 +424,7 @@ class ExternalAccessor:
             self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
         )
 
-        adata = self._obj.ext.convert_to_anndata(**kwargs)
+        adata = self._obj.tl.convert_to_anndata(**kwargs)
 
         # the anndata object within the spatialdata object requires some additional slots, which are created here
         adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
