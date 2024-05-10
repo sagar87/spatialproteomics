@@ -70,3 +70,21 @@ def test_image_slicing_one_channel_coordinate_list(dataset_full):
     assert "Hoechst" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
     assert "CD4" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
     assert Layers.SEGMENTATION in sub
+
+
+def test_image_slicing_dict_keys(dataset_full):
+    sub = dataset_full.pp[{"Hoechst": "dummy1", "CD4": "dummy2"}.keys()]
+
+    assert Layers.IMAGE in sub
+    assert "Hoechst" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
+    assert "CD4" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
+    assert Layers.SEGMENTATION in sub
+
+
+def test_image_slicing_dict_values(dataset_full):
+    sub = dataset_full.pp[{"dummy1": "Hoechst", "dummy2": "CD4"}.values()]
+
+    assert Layers.IMAGE in sub
+    assert "Hoechst" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
+    assert "CD4" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
+    assert Layers.SEGMENTATION in sub
