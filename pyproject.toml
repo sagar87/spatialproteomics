@@ -4,7 +4,8 @@ packages = [
     { include = "spatialproteomics" },
 ]
 version = "0.4.0"
-description = ""
+description = "spatialproteomics provides tools for the analysis of highly multiplexed immunofluorescence data"
+readme = "README.md"
 authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
 
 [tool.poetry.dependencies]
