@@ -56,7 +56,11 @@ class PreprocessingAccessor:
         xarray.Dataset
             The subsetted image container.
         """
-        # argument handling
+        # unfortunately python does not have type(indices) is dict_keys, hence the slightly convoluted syntax
+        # basically it just checks if the user provided a dict_values or dict_keys and turns them into a list if that is the case
+        if type(indices) is {}.keys().__class__ or type(indices) is {}.values().__class__:
+            indices = list(indices)
+
         if type(indices) is str:
             c_slice = [indices]
             x_slice = slice(None)

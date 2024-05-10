@@ -220,6 +220,7 @@ class ExternalAccessor:
         normalize: bool = True,
         nuclear_channel: str = "DAPI",
         predict_big: bool = False,
+        image_key: str = Layers.IMAGE,
         handle_disconnected: str = "ignore",
         **kwargs,
     ) -> xr.Dataset:
@@ -259,7 +260,7 @@ class ExternalAccessor:
             raise ValueError("The object already contains a segmentation mask. StarDist will not be executed.")
 
         # getting the nuclear image
-        nuclear_img = self._obj.pp[nuclear_channel].to_array().values.squeeze()
+        nuclear_img = self._obj.pp[nuclear_channel][image_key].values.squeeze()
 
         # normalizing the image
         if normalize:
