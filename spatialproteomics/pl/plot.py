@@ -239,7 +239,7 @@ class PlotAccessor:
         obj = self._obj.copy()
         if Layers.PLOT not in self._obj and render_intensities:
             # if there are more than 20 channels, only the first one is plotted
-            if self._obj.dims[Dims.CHANNELS] > 20:
+            if self._obj.sizes[Dims.CHANNELS] > 20:
                 logger.warning(
                     "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l"
                 )
@@ -341,7 +341,7 @@ class PlotAccessor:
             y = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y}).values
             if variable != "cell":
                 table = self._obj[layer_key]
-                dims = table.dims
+                dims = table.sizes
                 if len(dims) != 2:
                     raise ValueError("Layer does not have the dimension.")
                 if Dims.CELLS not in dims:
@@ -922,8 +922,8 @@ class PlotAccessor:
         """
         coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
         neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
-        cell_dim = self._obj.dims[Dims.CELLS]
-        neighbor_dim = self._obj.dims[Dims.NEIGHBORS]
+        cell_dim = self._obj.sizes[Dims.CELLS]
+        neighbor_dim = self._obj.sizes[Dims.NEIGHBORS]
 
         # set up edgelist
         origin = coords.values
