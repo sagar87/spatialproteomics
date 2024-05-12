@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,73 +16,62 @@ from .utils import (
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _set_up_subplots,
 )
-
-
-def _set_up_subplots(num_plots, ncols=4, width=4, height=3):
-    """Set up subplots for plotting multiple factors."""
-
-    if num_plots == 1:
-        fig, ax = plt.subplots()
-        return fig, ax
-
-    nrows, reminder = divmod(num_plots, ncols)
-
-    if num_plots < ncols:
-        nrows = 1
-        ncols = num_plots
-    else:
-        nrows, reminder = divmod(num_plots, ncols)
-
-        if nrows == 0:
-            nrows = 1
-        if reminder > 0:
-            nrows += 1
-
-    fig, axes = plt.subplots(nrows, ncols, figsize=(width * ncols, height * nrows))
-    _ = [ax.axis("off") for ax in axes.flatten()[num_plots:]]
-    return fig, axes
 
 
 @xr.register_dataset_accessor("pl")
 class PlotAccessor:
     """Adds plotting functions to the image container."""
-
+    
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def _graph_overlay(self, ax=None):
-        graph = self._obj.se.get_graph()
-        x = self._obj[Layers.OBS].loc[:, Dims.X].values
-        y = self._obj[Layers.OBS].loc[:, Dims.Y].values
-        ax.triplot(
-            x,
-            y,
-            graph.simplices,
-            color="white",
-        )
-
     def _get_bounds(self):
-        """Returns X/Y bounds of the dataset."""
-        xmin = self._obj.coords[Dims.X].values[0]
-        ymin = self._obj.coords[Dims.Y].values[0]
-        xmax = self._obj.coords[Dims.X].values[-1]
-        ymax = self._obj.coords[Dims.Y].values[-1]
+            """
+            Get the bounds of the object.
 
-        return [xmin, xmax, ymin, ymax]
+            Returns
+            -------
+            list
+                A list containing the minimum and maximum values for the x and y coordinates.
+            """
+            xmin = self._obj.coords[Dims.X].values[0]
+            ymin = self._obj.coords[Dims.Y].values[0]
+            xmax = self._obj.coords[Dims.X].values[-1]
+            ymax = self._obj.coords[Dims.Y].values[-1]
 
-    def _legend_background(self, **kwargs):
-        """Returns legend handles for the background."""
-        color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
+            return [xmin, xmax, ymin, ymax]
 
-        # removing unlabeled cells (label = 0)
-        color_dict = {k: v for k, v in color_dict.items() if k != 0}
+    def _create_channel_legend(self, **kwargs):
+            """
+            Create a legend for the channels in the plot layer. Used when rendering intensities. 
 
-        elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
-        return elements
+            Returns:
+                elements (list): A list of Patch objects representing the legend elements.
+            """
+            
+            # checking if the plot layer exists
+            assert Layers.PLOT in self._obj, "No plot layer found. Please call pl.colorize() first."
+            # checking if the image colors attribute exists
+            assert Attrs.IMAGE_COLORS in self._obj[Layers.PLOT].attrs, "No image colors found. Please call pl.colorize() first."
+            
+            color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
 
-    def _legend_labels(self):
-        """Returns legend handles for the labels."""
+            # removing unlabeled cells (label = 0)
+            color_dict = {k: v for k, v in color_dict.items() if k != 0}
+
+            elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
+            return elements
+
+    def _create_label_legend(self):
+        """
+        Create a legend for the cell type labels.
+
+        Returns:
+            elements (list): A list of Line2D objects representing the legend elements.
+        """
+        # getting colors and names for each cell type label
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
         names_dict = self._obj.la._label_to_dict(Props.NAME)
 
@@ -152,6 +141,10 @@ class PlotAccessor:
         -------
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
+            
+        Example Usage
+        --------------
+        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.imshow()
         """
         # check if a plot already exists
         assert (
@@ -190,45 +183,44 @@ class PlotAccessor:
 
     def imshow(
         self,
-        legend_background: bool = True,
-        legend_label: bool = True,
-        legend_kwargs: dict = {"framealpha": 1},
-        downsample: int = 1,
         render_intensities: bool = True,
-        render_labels: bool = False,
         render_segmentation: bool = False,
-        label_kwargs: dict = {},
-        segmentation_kwargs: dict = {},
+        render_labels: bool = False,
         ax=None,
-    ):
+        show_channel_legend: bool = True,
+        show_label_legend: bool = True,
+        downsample: int = 1,
+        legend_kwargs: dict = {"framealpha": 1},
+        segmentation_kwargs: dict = {},
+        label_kwargs: dict = {},
+    ) -> xr.Dataset:
         """
-        Plots the image.
+        Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
 
-        Meant to be used in conjunction with plt.colorize and la.render_labels.
-        See examples.
+        Parameters:
+        - render_intensities (bool): Whether to render channel intensities. Default is True.
+        - render_segmentation (bool): Whether to render segmentation. Default is False.
+        - render_labels (bool): Whether to render labels. Default is False.
+        - ax: The matplotlib axes to plot on. If None, the current axes will be used.
+        - show_channel_legend (bool): Whether to show the channel legend. Default is True.
+        - show_label_legend (bool): Whether to show the label legend. Default is True.
+        - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
+        - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
+        - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
 
-        Parameters
-        ----------
-        legend_background : bool, optional
-            Show the label of the colorized image. Default is False.
-        legend_label : bool, optional
-            Show the labels. Default is False.
-        legend_kwargs : dict, optional
-            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
-        downsample : int, optional
-            Downsample factor for the image. Default is 1 (no downsampling).
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
+        Returns:
+        - obj (xr.Dataset): The modified dataset object.
 
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
+        Raises:
+        - AssertionError: If no rendering element is specified.
 
-        Notes
-        -----
-        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_labels'.
-        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
+        Note:
+        - This method displays an image with optional rendering elements such as intensities, labels, and segmentation.
+        - The `render_intensities`, `render_labels`, and `render_segmentation` parameters control which rendering elements are displayed.
+        - The `ax` parameter allows specifying a specific matplotlib axes to plot on. If None, the current axes will be used.
+        - The `show_channel_legend` and `show_label_legend` parameters control whether to show the channel and label legends, respectively.
+        - The `legend_kwargs`, `segmentation_kwargs`, and `label_kwargs` parameters allow configuring the appearance of the legend, segmentation, and labels, respectively.
         """
         # check that at least one rendering element is specified
         assert any(
@@ -269,17 +261,153 @@ class PlotAccessor:
 
         legend = []
 
-        if legend_background and render_intensities:
-            legend += obj.pl._legend_background()
+        if show_channel_legend and render_intensities:
+            legend += obj.pl._create_channel_legend()
 
-        if legend_label and render_labels:
-            legend += obj.pl._legend_labels()
+        if show_label_legend and render_labels:
+            legend += obj.pl._create_label_legend()
 
-        if legend_background or legend_label:
+        if show_channel_legend or show_label_legend:
             ax.legend(handles=legend, **legend_kwargs)
 
         return obj
 
+    
+    def render_segmentation(
+        self,
+        alpha: float = 0.0,
+        alpha_boundary: float = 1.0,
+        mode: str = "inner",
+    ) -> xr.Dataset:
+        """
+        Renders the segmentation mask with optional alpha blending and boundary rendering.
+
+        Parameters:
+            alpha (float, optional): The alpha value for blending the segmentation mask with the plot. Default is 0.0.
+            alpha_boundary (float, optional): The alpha value for rendering the boundary of the segmentation mask. Default is 1.0.
+            mode (str, optional): The mode for rendering the segmentation mask. Possible values are "inner" and "outer". Default is "inner".
+
+        Returns:
+            xr.Dataset: The modified xarray Dataset.
+
+        Raises:
+            AssertionError: If no segmentation layer is found in the object.
+
+        Note:
+            - The segmentation mask must be added to the object before calling this method.
+            - The segmentation mask is expected to have a single channel with integer labels.
+            - The rendered segmentation mask will be added as a new layer to the object.
+        """
+        assert Layers.SEGMENTATION in self._obj, "No segmentation layer found. Please add a segmentation mask before calling this method."
+
+        color_dict = {1: "white"}
+        cmap = _get_listed_colormap(color_dict)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_labels(
+                segmentation,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_labels(
+                segmentation,
+                cmap,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+        return xr.merge([self._obj, da])
+
+    def render_labels(
+        self, alpha: float = 1.0, alpha_boundary: float = 1.0, mode: str = "inner", override_color: Optional[str] = None
+    ) -> xr.Dataset:
+        """
+        Renders cell type labels on the plot.
+
+        Parameters:
+            alpha (float, optional): The transparency of the labels. Defaults to 1.0.
+            alpha_boundary (float, optional): The transparency of the label boundaries. Defaults to 1.0.
+            mode (str, optional): The mode of rendering. Can be "inner" or "outer". Defaults to "inner".
+            override_color (str, optional): The color to override the label colors. Defaults to None.
+
+        Returns:
+            xr.Dataset: The modified dataset with rendered labels.
+
+        Raises:
+            AssertionError: If no labels are found in the object.
+
+        Notes:
+            - This method requires labels to be present in the object. Add labels first using `la.predict_cell_types_argmax()` or `tl.astir()`.
+            - The `mode` parameter determines whether the labels are rendered inside or outside the label boundaries.
+            - The `override_color` parameter can be used to override the label colors with a single color.
+        """
+    def render_labels(
+        self, alpha: float = 1.0, alpha_boundary: float = 1.0, mode: str = "inner", override_color: Optional[str] = None
+    ) -> xr.Dataset:
+        
+        assert Layers.LABELS in self._obj, "No labels found in the object. Add labels first, for example by using la.predict_cell_types_argmax() or tl.astir()."
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
+        
+        if override_color is not None:
+            color_dict = {k: override_color for k in color_dict.keys()}
+
+        cmap = _get_listed_colormap(color_dict)
+
+        cells_dict = self._obj.la._cells_to_label(relabel=True)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_labels(
+                mask,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+
+        return xr.merge([self._obj, da])
+    
+    
     def annotate(
         self,
         variable: str = "cell",
@@ -292,7 +420,7 @@ class PlotAccessor:
         ax=None,
     ) -> xr.Dataset:
         """
-        Annotates cells with their respective number on the plot.
+        Annotates cells with their respective ID on the plot.
 
         Parameters
         ----------
@@ -361,202 +489,41 @@ class PlotAccessor:
 
         return self._obj
 
-    def render_segmentation(
-        self,
-        alpha: float = 0,
-        alpha_boundary: float = 1,
-        mode: str = "inner",
-    ) -> xr.Dataset:
-        """
-        Render the segmentation layer of the data object.
-
-        This method renders the segmentation layer of the data object and returns an updated data object
-        with the rendered visualization. The rendered segmentation is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered segmentation. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered segmentation. Default is 1.
-        mode : str, optional
-            The mode for rendering the segmentation: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered segmentation as a new plot layer.
-
-        Notes
-        -----
-        - The function extracts the segmentation layer and information about boundary pixels from the data object.
-        - It applies the specified alpha values and mode to render the segmentation.
-        - The rendered segmentation is represented in RGBA format and added as a new plot layer to the data object.
-        """
-        assert Layers.SEGMENTATION in self._obj, "Add Segmentation first."
-
-        color_dict = {1: "white"}
-        cmap = _get_listed_colormap(color_dict)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_labels(
-                segmentation,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_labels(
-                segmentation,
-                cmap,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
-        )
-        return xr.merge([self._obj, da])
-
-    def render_labels(
-        self, alpha: float = 1, alpha_boundary: float = 1, mode: str = "inner", override_color: Union[str, None] = None
-    ) -> xr.Dataset:
-        """
-        Render the labeled cells in the data object.
-
-        This method renders the labeled cells in the data object based on the label colors and segmentation.
-        The rendered visualization is represented in RGBA format.
-
-        Parameters
-        ----------
-        alpha : float, optional
-            The alpha value to control the transparency of the rendered labels. Default is 0.
-        alpha_boundary : float, optional
-            The alpha value for boundary pixels in the rendered labels. Default is 1.
-        mode : str, optional
-            The mode for rendering the labels: "inner" for internal region, "boundary" for boundary pixels.
-            Default is "inner".
-        override_color : any, optional
-            The color value to override the default label colors. Default is None.
-
-        Returns
-        -------
-        any
-            The updated data object with the rendered labeled cells as a new plot layer.
-
-        Raises
-        ------
-        AssertionError
-            If the data object does not contain label information. Use 'add_labels' function to add labels first.
-
-        Notes
-        -----
-        - The function retrieves label colors from the data object and applies the specified alpha values and mode.
-        - It renders the labeled cells based on the label colors and the segmentation layer.
-        - The rendered visualization is represented in RGBA format and added as a new plot layer to the data object.
-        - If 'override_color' is provided, all labels will be rendered using the specified color.
-        """
-        assert Layers.LABELS in self._obj, "Add labels via the add_labels function first."
-
-        color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
-        if override_color is not None:
-            color_dict = {k: override_color for k in color_dict.keys()}
-
-        cmap = _get_listed_colormap(color_dict)
-
-        cells_dict = self._obj.la._cells_to_label(relabel=True)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        mask = _label_segmentation_mask(segmentation, cells_dict)
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_labels(
-                mask,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
-        else:
-            attrs = {}
-            rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
-
-        da = xr.DataArray(
-            rendered,
-            coords=[
-                self._obj.coords[Dims.Y],
-                self._obj.coords[Dims.X],
-                ["r", "g", "b", "a"],
-            ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
-            name=Layers.PLOT,
-            attrs=attrs,
-        )
-
-        return xr.merge([self._obj, da])
 
     def scatter_labels(
         self,
-        legend_label: bool = True,
-        size: float = 1,
+        legend: bool = True,
+        size: float = 1.0,
         alpha: float = 0.9,
-        zorder=10,
-        ax=None,
-        colorize: bool = True,
+        zorder: int = 10,
+        ax = None,
         legend_kwargs: dict = {"framealpha": 1},
-        scatter_kws: dict = {},
+        scatter_kwargs: dict = {},
     ) -> xr.Dataset:
         """
-        Plots a scatter plot of labels.
+        Scatter plot of labeled cells.
 
-        Parameters
-        ----------
-        legend_label : bool, optional
-            Plots the legend of the labels. Default is True.
+        Parameters:
+        -----------
+        legend : bool, optional
+            Whether to show the legend. Default is True.
         size : float, optional
-            Size of the dots in the scatter plot. Default is 1.
+            Size of the scatter markers. Default is 1.0.
         alpha : float, optional
-            Alpha value for transparency of the dots in the scatter plot. Default is 0.9.
+            Transparency of the scatter markers. Default is 0.9.
         zorder : int, optional
-            The z-order of the scatter plot. Default is 10.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-        colorize : bool, optional
-            Whether to colorize the dots based on label colors. Default is True.
+            The z-order of the scatter markers. Default is 10.
+        ax : matplotlib.axes.Axes, optional
+            The axes on which to plot the scatter. If not provided, the current axes will be used.
         legend_kwargs : dict, optional
-            Keyword arguments passed to the matplotlib legend function. Default is {"framealpha": 1}.
-        scatter_kws : dict, optional
-            Additional keyword arguments to be passed to the matplotlib scatter function.
+            Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        scatter_kwargs : dict, optional
+            Additional keyword arguments for configuring the scatter plot.
 
-        Returns
-        -------
+        Returns:
+        --------
         xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function plots a scatter plot of labels from the data object.
-        - The size, alpha, and zorder parameters control the appearance of the scatter plot.
-        - You can colorize the dots based on label colors using the 'colorize' parameter.
-        - The legend of the labels can be displayed using the 'legend_label' parameter.
+            The modified spatialproteomics object.
         """
         if ax is None:
             ax = plt.gca()
@@ -564,95 +531,115 @@ class PlotAccessor:
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
         label_dict = self._obj.la._cells_to_label()
 
-        for k, v in label_dict.items():
-            label_subset = self._obj.la[k]
+        for celltype in label_dict.keys():
+            label_subset = self._obj.la[celltype]
             obs_layer = label_subset[Layers.OBS]
             x = obs_layer.loc[:, Features.X]
             y = obs_layer.loc[:, Features.Y]
-            if colorize:
-                ax.scatter(x.values, y.values, s=size, c=color_dict[k], alpha=alpha, zorder=zorder, **scatter_kws)
-            else:
-                ax.scatter(x.values, y.values, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+            ax.scatter(x.values, y.values, s=size, c=color_dict[celltype], alpha=alpha, zorder=zorder, **scatter_kwargs)
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
 
-        if legend_label:
-            legend = self._obj.pl._legend_labels()
+        if legend:
+            legend = self._obj.pl._create_label_legend()
             ax.legend(handles=legend, **legend_kwargs).set_zorder(102)
 
         return self._obj
 
     def scatter(
-        self,
-        feature: str,
-        layer_key: str = Layers.OBS,
-        legend_label: bool = True,
-        size: float = 1,
-        alpha: float = 0.9,
-        zorder=10,
-        ax=None,
-        legend_kwargs: dict = {"framealpha": 1},
-        scatter_kws: dict = {},
-        color_scheme: dict = None,
-    ) -> xr.Dataset:
-        """
-        Plots a scatter plot of an arbitrary element of the _obs-
-        """
-        if ax is None:
-            ax = plt.gca()
+            self,
+            feature: str,
+            palette: dict = None,
+            legend: bool = True,
+            layer_key: str = Layers.OBS,
+            size: float = 1.0,
+            alpha: float = 0.9,
+            zorder: int = 10,
+            ax = None,
+            legend_kwargs: dict = {"framealpha": 1},
+            scatter_kws: dict = {},
+        ) -> xr.Dataset:
+            """
+            Create a scatter plot of some feature. At the moment, only categorical features are supported.
 
-        # check if the layer exists
-        assert layer_key in self._obj, f"Layer {layer_key} not found in the data object."
+            Parameters:
+            - feature (str): The feature to be plotted.
+            - palette (dict, optional): A dictionary mapping feature values to colors. If not provided, a default palette will be used.
+            - legend (bool, optional): Whether to show the legend. Default is True.
+            - layer_key (str, optional): The key of the layer to be plotted. Default is Layers.OBS.
+            - size (float, optional): The size of the scatter points. Default is 1.0.
+            - alpha (float, optional): The transparency of the scatter points. Default is 0.9.
+            - zorder (int, optional): The z-order of the scatter points. Default is 10.
+            - ax (object, optional): The matplotlib axes object to plot on. If not provided, the current axes will be used.
+            - legend_kwargs (dict, optional): Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+            - scatter_kws (dict, optional): Additional keyword arguments for configuring the scatter plot. Default is {}.
 
-        layer = self._obj[layer_key]
+            Returns:
+            - xr.Dataset: The original data object.
 
-        # check that the feature exists
-        assert feature in layer.coords[Dims.FEATURES], f"Feature {feature} not found in the layer {layer_key}."
+            Raises:
+            - AssertionError: If the layer_key is not found in the data object.
+            - AssertionError: If the feature is not found in the specified layer.
+            - AssertionError: If the X or Y coordinates are not found in the specified layer.
+            - AssertionError: If the number of unique feature values is greater than 10 and no color_scheme is provided.
+            - AssertionError: If not all unique feature values are present in the provided palette.
 
-        # check if the layer contains X and Y coordinates
-        assert Features.X in layer.coords[Dims.FEATURES], f"Feature {Features.X} not found in the layer {layer_key}."
-        assert Features.Y in layer.coords[Dims.FEATURES], f"Feature {Features.Y} not found in the layer {layer_key}."
+            """
+            if ax is None:
+                ax = plt.gca()
 
-        x = layer.loc[:, Features.X]
-        y = layer.loc[:, Features.Y]
+            # check if the layer exists
+            assert layer_key in self._obj, f"Layer {layer_key} not found in the data object."
 
-        if color_scheme is None:
-            # Default color scheme
-            unique_values = np.unique(layer.sel(features=feature))
-            assert (
-                len(unique_values) <= 10
-            ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
-            colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
-            color_dict = {val: color for val, color in zip(unique_values, colors)}
-        else:
-            color_dict = color_scheme
-            # check if all unique values are present in the color scheme
-            assert set(np.unique(layer.sel(features=feature))) <= set(
-                color_dict.keys()
-            ), f"Not all values are present in the color scheme. Make sure the following keys are in your color_scheme: {np.unique(layer.sel(features=feature))}."
+            layer = self._obj[layer_key]
 
-        # Assigning colors based on feature values
-        colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
+            # check that the feature exists
+            assert feature in layer.coords[Dims.FEATURES], f"Feature {feature} not found in the layer {layer_key}."
 
-        ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+            # check if the layer contains X and Y coordinates
+            assert Features.X in layer.coords[Dims.FEATURES], f"Feature {Features.X} not found in the layer {layer_key}."
+            assert Features.Y in layer.coords[Dims.FEATURES], f"Feature {Features.Y} not found in the layer {layer_key}."
 
-        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
-        ax.set_ylim([ymin, ymax])
-        ax.set_xlim([xmin, xmax])
+            x = layer.loc[:, Features.X]
+            y = layer.loc[:, Features.Y]
 
-        ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
+            if palette is None:
+                # Default palette
+                unique_values = np.unique(layer.sel(features=feature))
+                assert (
+                    len(unique_values) <= 10
+                ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
+                colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
+                color_dict = {val: color for val, color in zip(unique_values, colors)}
+            else:
+                color_dict = palette
+                # check if all unique values are present in the palette
+                assert set(np.unique(layer.sel(features=feature))) <= set(
+                    color_dict.keys()
+                ), f"Not all values are present in the palette. Make sure the following keys are in your palette: {np.unique(layer.sel(features=feature))}."
 
-        if legend_label:
-            # Creating legend labels based on unique feature values
-            legend_handles = [
-                plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
-                for val, color in color_dict.items()
-            ]
-            ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
+            # Assigning colors based on feature values
+            colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
 
-        return self._obj
+            ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+
+            xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+            ax.set_ylim([ymin, ymax])
+            ax.set_xlim([xmin, xmax])
+
+            ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
+
+            if legend:
+                # Creating legend labels based on unique feature values
+                legend_handles = [
+                    plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
+                    for val, color in color_dict.items()
+                ]
+                ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
+
+            return self._obj
 
     def add_box(
         self,
@@ -681,7 +668,7 @@ class PlotAccessor:
         Returns
         -------
         xr.Dataset
-            The updated image container.
+            The updated spatialproteomics object.
 
         Notes
         -----
@@ -700,331 +687,21 @@ class PlotAccessor:
         ax.hlines(xmin=xmin, xmax=xmax, y=ymax, color=color, linewidth=linewidth)
         ax.vlines(ymin=ymin, ymax=ymax, x=xmin, color=color, linewidth=linewidth)
         ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
+        
         return self._obj
 
-    def bar(self, ax=None, bar_kwargs: dict = {}):
+
+    def autocrop(self, downsample: int = 10, key: str = Layers.IMAGE):
         """
-        Plots a bar plot of present labels.
+        Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 
-        Parameters
-        ----------
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-        bar_kwargs : dict, optional
-            Keyword arguments passed to the matplotlib bar function.
+        Parameters:
+        - downsample (int): The downsampling factor for the image. Default is 10.
+        - key (str): The key of the image to be cropped. Default is Layers.IMAGE.
 
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function plots a bar plot of present labels in the data object.
-        - The appearance of the bar plot can be customized using 'bar_kwargs'.
+        Returns:
+        - obj.pp (object): The cropped image.
         """
-        if ax is None:
-            ax = plt.gca()
-
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        names_dict = self._obj.la._label_to_dict(Props.NAME)
-
-        obs_layer = self._obj[Layers.OBS]
-        label_array = obs_layer.loc[:, Features.LABELS].values
-        x, y = np.unique(label_array, return_counts=True)
-        query = ~(x == 0)
-
-        ax.bar(x[query], y[query], color=[color_dict[i] for i in x[query]], **bar_kwargs)
-        ax.set_xticks(x[query])
-        ax.set_xticklabels([names_dict[i] for i in x[query]], rotation=90)
-        ax.set_ylabel("Label Frequency")
-        ax.set_xlabel("Label")
-
-        return self._obj
-
-    def pie(
-        self,
-        wedgeprops={"linewidth": 7, "edgecolor": "white"},
-        circle_radius=0.2,
-        labels=True,
-        ax=None,
-    ):
-        """
-        Plots a pie chart of label frequencies.
-
-        Parameters
-        ----------
-        wedgeprops : dict, optional
-            Keyword arguments passed to the matplotlib pie function for wedge properties.
-        circle_radius : float, optional
-            The radius of the inner circle in the pie chart. Default is 0.2.
-        labels : bool, optional
-            Whether to display labels on the pie chart. Default is True.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        - The function plots a pie chart of label frequencies in the data object.
-        - The appearance of the pie chart can be customized using 'wedgeprops' and 'circle_radius'.
-        - Labels on the pie chart can be shown or hidden using the 'labels' parameter.
-        """
-        if ax is None:
-            ax = plt.gca()
-
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        names_dict = self._obj.la._label_to_dict(Props.NAME)
-
-        obs_layer = self._obj[Layers.OBS]
-        label_array = obs_layer.loc[:, Features.LABELS].values
-        x, y = np.unique(label_array, return_counts=True)
-
-        ax.pie(
-            y,
-            labels=[names_dict[i] for i in x] if labels else None,
-            colors=[color_dict[i] for i in x],
-            wedgeprops=wedgeprops,
-        )
-        my_circle = plt.Circle((0, 0), circle_radius, color="white")
-        ax.add_artist(my_circle)
-
-    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
-        """
-        Plots the spectra of cells.
-
-        Parameters
-        ----------
-        cells : Union[List[int], int]
-            The cell ID(s) whose spectra will be plotted.
-        layers_key : str, optional
-            The key representing the layer in the data object for plotting spectra. Default is "intensity".
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, a new figure and axis will be created.
-
-        Returns
-        -------
-        xr.Dataset
-            The selected data array for the plotted cells.
-
-        Notes
-        -----
-        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
-        """
-        if type(cells) is int:
-            cells = [cells]
-
-        da = self._obj[layers_key].sel({"cells": cells})
-        num_cells = len(cells)
-
-        fig, axes = _set_up_subplots(num_cells, ncols=ncols, width=width, height=height)
-
-        # fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
-
-        if num_cells > 1:
-            for i, ax in zip(range(da.values.shape[0]), axes.flatten()):
-                ax.bar(np.arange(da.values.shape[1]), da.values[i])
-                ax.set_xticks(np.arange(da.values.shape[1]))
-                ax.set_xticklabels(da.channels.values, rotation=90)
-                ax.set_title(f"Cell {da.cells.values[i]}")
-        else:
-            axes.bar(np.arange(da.values.squeeze().shape[0]), da.values.squeeze())
-            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))
-            axes.set_xticklabels(da.channels.values, rotation=90)
-            axes.set_title(f"Cell {da.cells.values[0]}")
-
-        # if ax is isinstance(ax, np.ndarray):
-        # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
-
-        return da
-
-    def spectra_with_annotation(
-        self,
-        cells: Union[List[int], None] = None,
-        layers_key="intensity",
-        format_df=None,
-        plot_kwargs: dict = {
-            "width": 12,
-            "height": 2,
-            "hspace": 1.0,
-            "wspace": 0.0001,
-            "xticks": True,
-        },
-    ):
-        """
-        Plots the spectra of cells with annotation.
-
-        Parameters
-        ----------
-        cells : Union[List[int], None], optional
-            The cell ID(s) whose spectra will be plotted. If None, all cells will be plotted.
-        layers_key : str, optional
-            The key representing the layer in the data object for plotting spectra. Default is "intensity".
-        format_df : pd.DataFrame or None, optional
-            A DataFrame containing annotation information for the plotted cells. Default is None (no annotation).
-        plot_kwargs : dict, optional
-            Additional keyword arguments for setting up subplots and plot appearance.
-
-        Returns
-        -------
-        xr.Dataset
-            The image container.
-
-        Notes
-        -----
-        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
-        - Annotates the spectra using the provided 'format_df' DataFrame.
-        """
-
-        if cells is None:
-            cells = self._obj.coords[Dims.CELLS].values.tolist()
-
-        # da = self._obj.se.quantify_cells(cells)
-        da = self._obj[layers_key].sel({"cells": cells})
-        annot = format_annotation_df(format_df, da)
-
-        plot_expression_spectra(
-            da.values,
-            annot,
-            titles=[f"{i}" for i in da.coords[Dims.CELLS]],
-            **plot_kwargs,
-        )
-
-        return self._obj
-
-    def draw_edges(self, color="white", linewidths=0.5, zorder=0, ax=None):
-        """
-        Draws edges connecting neighboring cells.
-
-        Parameters
-        ----------
-        color : str, optional
-            The color of the edges. Default is "white".
-        linewidths : float, optional
-            The linewidth of the edges. Default is 0.5.
-        zorder : int, optional
-            The z-order of the edges in the plot. Default is 0.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function draws edges connecting neighboring cells in the plot.
-        - The appearance of the edges can be customized using 'color' and 'linewidths'.
-        """
-        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
-        neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
-        cell_dim = self._obj.dims[Dims.CELLS]
-        neighbor_dim = self._obj.dims[Dims.NEIGHBORS]
-
-        # set up edgelist
-        origin = coords.values
-        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(cell_dim, neighbor_dim, 2)
-
-        # line segments
-        all_lines = []
-        for k in range(target.shape[1]):
-            lines = [[i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))]
-            all_lines.extend(lines)
-
-        # Line collection
-        # REFACTOR
-        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=zorder)
-        if ax is None:
-            ax = plt.gca()
-
-        ax.add_collection(lc)
-        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
-        ax.set_ylim([ymin, ymax])
-        ax.set_xlim([xmin, xmax])
-
-        return self._obj
-
-    def channel_histogram(
-        self,
-        intensity_key: str,
-        bins: int = 50,
-        ncols: int = 4,
-        width: float = 4,
-        height: float = 3,
-        log_scale: bool = False,
-        ax=None,
-        **kwargs,
-    ):
-        """
-        Plots histograms of intensity values for each channel.
-
-        Parameters
-        ----------
-        intensity_key : str
-            The key representing the intensity values in the data object.
-        bins : int, optional
-            The number of bins for histogram bins. Default is 50.
-        ncols : int, optional
-            The number of columns for subplot arrangement. Default is 4.
-        width : float, optional
-            The width of the figure. Default is 4.
-        height : float, optional
-            The height of the figure. Default is 3.
-        log_scale : bool, optional
-            Whether to use a logarithmic scale for the y-axis. Default is False.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, subplots will be created.
-        **kwargs : dict, optional
-            Additional keyword arguments passed to the matplotlib hist function.
-
-        Returns
-        -------
-        xr.Dataset
-            The image container.
-
-        Notes
-        -----
-        - The function plots histograms of intensity values for each channel using the 'intensity_key' from the data object.
-        - The histograms are arranged in subplots with 'ncols' columns.
-        - Additional keyword arguments can be passed to customize the appearance of the histograms.
-        """
-        intensities = self._obj[intensity_key]
-        channels = self._obj.coords[Dims.CHANNELS].values
-        num_channels = len(channels)
-
-        # if num_channels > 1 and ax is not None:
-        #     logger.warning("More than one channel. Plotting on first axis.")
-        #     # assert np.prod(ax.shape) >= num_channels, "Must provide at least one axis for each channel to plot."
-        # else:
-        #     if ax is None:
-        #         ax = plt.gca()
-
-        if num_channels > 1:
-
-            fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
-
-            for ch, ax in zip(channels, axes.flatten()):
-                data = intensities.sel({Dims.CHANNELS: ch}).values
-                ax.hist(data, bins=bins, **kwargs)
-                ax.set_title(ch)
-                if log_scale:
-                    ax.set_yscale("log")
-        else:
-            if ax is None:
-                ax = plt.gca()
-            ch = channels[0]
-            data = intensities.sel({Dims.CHANNELS: ch}).values
-            ax.hist(data, bins=bins, **kwargs)
-            ax.set_title(ch)
-            if log_scale:
-                ax.set_yscale("log")
-
-        return self._obj
-
-    def autocrop(self, downsample=10):
-        slices = _autocrop(self._obj, downsample=downsample)
+        img = self._obj.pp.downsample(downsample)[key].values.squeeze()
+        slices = _autocrop(img)
         return self._obj.pp[slices[0], slices[1]]

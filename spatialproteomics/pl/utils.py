@@ -6,6 +6,7 @@ from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.segmentation import clear_border, find_boundaries
 import xarray as xr
+import matplotlib.pyplot as plt
 
 from ..constants import Dims
 from ..pp.utils import _normalize
@@ -163,25 +164,66 @@ def _label_segmentation_mask(segmentation: np.ndarray, ct_to_cells_dict: dict) -
     return labeled_segmentation
 
 
-def _autocrop(obj: xr.Dataset, downsample: int = 10):
+def _set_up_subplots(num_plots: int = 1, ncols: int = 4, width: int = 4, height: int = 3):
     """
-    Crop the input image so that the background surrounding the tissue/TMA gets removed.
+    Set up subplots for plotting multiple figures.
 
     Parameters:
-        obj (xr.Dataset): The input dataset containing the image.
-        downsample (int, optional): The downsampling factor. Defaults to 10.
+    - num_plots (int): The number of plots to be displayed.
+    - ncols (int): The number of columns in the subplot grid.
+    - width (int): The width of each subplot figure.
+    - height (int): The height of each subplot figure.
 
     Returns:
-        tuple: A tuple of two slices representing the cropped region of the image.
-    """
-    image = obj.pp.downsample(downsample)._image.values.squeeze()
+    - fig: The matplotlib figure object.
+    - axes: The axes objects for the subplots.
 
-    bw = closing(image > np.quantile(image, 0.8), square(20))
+    If `num_plots` is 1, a single subplot is created and returned.
+    If `num_plots` is greater than 1, a grid of subplots is created with the specified number of columns (`ncols`).
+    The number of rows (`nrows`) is calculated based on the number of plots and the number of columns.
+    The size of each subplot figure is determined by `width` and `height`.
+    The excess subplots beyond `num_plots` are turned off to hide them.
+    """
+    if num_plots == 1:
+        fig, ax = plt.subplots()
+        return fig, ax
+
+    nrows, reminder = divmod(num_plots, ncols)
+
+    if num_plots < ncols:
+        nrows = 1
+        ncols = num_plots
+    else:
+        nrows, reminder = divmod(num_plots, ncols)
+
+        if nrows == 0:
+            nrows = 1
+        if reminder > 0:
+            nrows += 1
+
+    fig, axes = plt.subplots(nrows, ncols, figsize=(width * ncols, height * nrows))
+    _ = [ax.axis("off") for ax in axes.flatten()[num_plots:]]
+    return fig, axes
+
+
+def _autocrop(img: np.ndarray):
+    """
+    Crop an image based on the regions of interest so that the background around the tissue/TMA gets cropped away.
+
+    Parameters:
+        img (np.ndarray): The input image as a NumPy array.
+
+    Returns:
+        tuple: A tuple containing two slices representing the cropped image.
+    """
+    
+    bw = closing(img > np.quantile(img, 0.8), square(20))
     cleared = clear_border(bw)
     label_image = label(cleared)
     props = regionprops(label_image)
+    
     if len(props) == 0:
-        maxr, maxc = image.shape
+        maxr, maxc = img.shape
         minr, minc = 0, 0
         downsample = 1
     else:
