@@ -223,7 +223,7 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
     Returns:
         tuple: A tuple containing two slices representing the cropped image.
     """
-    
+
     bw = closing(img > np.quantile(img, 0.8), square(20))
     cleared = clear_border(bw)
     label_image = label(cleared)
@@ -238,4 +238,6 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
         region = props[max_idx]
         minr, minc, maxr, maxc = region.bbox
 
-    return slice(downsample * minc - padding, downsample * maxc + padding), slice(downsample * minr - padding, downsample * maxr + padding)
+    return slice(downsample * minc - padding, downsample * maxc + padding), slice(
+        downsample * minr - padding, downsample * maxr + padding
+    )

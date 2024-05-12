@@ -686,7 +686,9 @@ class PlotAccessor:
 
         return self._obj
 
-    def autocrop(self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None) -> xr.Dataset:
+    def autocrop(
+        self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None
+    ) -> xr.Dataset:
         """
         Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 
