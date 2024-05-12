@@ -25,13 +25,10 @@ Black = "#000000"
 class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"
-    COORDINATES = "_coordinates"
-    LABELS = "_labels"
-    DATA = "_data"
-    PLOT = "_plot"
+    PROPERTIES = "_properties"
     OBS = "_obs"
-    NEIGHBORS = "_neighbors"
     INTENSITY = "_intensity"
+    PLOT = "_plot"
 
 
 class Dims(object):

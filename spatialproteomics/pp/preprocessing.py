@@ -13,7 +13,7 @@ from skimage.segmentation import expand_labels
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
-from .intensity import sum_intensity
+from .intensity import arcsinh_median_intensity
 from .utils import (
     _get_disconnected_cell,
     _merge_segmentation,
@@ -430,7 +430,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        func=sum_intensity,
+        func=arcsinh_median_intensity,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -440,7 +440,7 @@ class PreprocessingAccessor:
         Parameters
         ----------
         func : Callable, optional
-            The function used for quantification. Default is sum_intensity.
+            The function used for quantification. Default is arcsinh_median_intensity.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -561,15 +561,15 @@ class PreprocessingAccessor:
             array.reshape(-1, 1),
             coords=[unique_labels.astype(int), [prop]],
             dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.LABELS,
+            name=Layers.PROPERTIES,
         )
 
         if return_xarray:
             return da
 
-        if Layers.LABELS in self._obj:
+        if Layers.PROPERTIES in self._obj:
             da = xr.concat(
-                [self._obj[Layers.LABELS], da],
+                [self._obj[Layers.PROPERTIES], da],
                 dim=Dims.PROPS,
             )
 
