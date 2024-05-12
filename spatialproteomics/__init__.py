@@ -27,7 +27,6 @@ from .constants import (
     Yellow,
 )
 from .container import load_image_data
-from .ext import ExternalAccessor
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import (
@@ -36,13 +35,12 @@ from .pp import (
     arcsinh_median_intensity,
     arcsinh_sum_intensity,
     arcsinh_var_intensity,
-    detect_peaks_num,
     is_positive,
     mean_intensity,
     percentage_positive,
     sum_intensity,
 )
-from .tl import TwoComponentGaussianMixture
+from .tl import ToolAccessor
 
 __all__ = [
     "load_image_data",
@@ -50,7 +48,7 @@ __all__ = [
     "LabelAccessor",
     "PlotAccessor",
     "SegmentationAccessor",
-    "ExternalAccessor",
+    "ToolAccessor",
     "Layers",
     "Dims",
     "Features",
@@ -62,10 +60,8 @@ __all__ = [
     "arcsinh_var_intensity",
     "arcsinh_median_intensity",
     "merge_segmentation",
-    "detect_peaks_num",
     "percentage_positive",
     "is_positive",
-    "TwoComponentGaussianMixture",
     "Apricot",
     "Beige",
     "Black",

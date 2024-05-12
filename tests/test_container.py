@@ -11,7 +11,7 @@ def test_load_data_proper_five_channel_input(data_dic):
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
     assert Layers.SEGMENTATION not in dataset
-    assert Layers.LABELS not in dataset
+    assert Layers.PROPERTIES not in dataset
 
     dataset = load_image_data(
         data_dic["input"],
@@ -22,7 +22,7 @@ def test_load_data_proper_five_channel_input(data_dic):
     assert type(dataset) is xr.Dataset
     assert Layers.IMAGE in dataset
     assert Layers.SEGMENTATION in dataset
-    assert Layers.LABELS not in dataset
+    assert Layers.PROPERTIES not in dataset
 
 
 def test_load_data_proper_input_one_channel_input(data_dic):

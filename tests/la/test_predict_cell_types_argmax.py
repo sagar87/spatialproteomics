@@ -43,16 +43,16 @@ def test_predict_cell_types_argmax_without_overwriting_existing_annotations(data
 
     # at this point, there should be some assigned and some unassigned cells
     assert np.all(np.unique(ds.coords["labels"].values) == np.array([0, 1]))
-    assert "CT1" in ds[Layers.LABELS].sel(props=Props.NAME).values
-    assert Labels.UNLABELED in ds[Layers.LABELS].sel(props=Props.NAME).values
+    assert "CT1" in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
+    assert Labels.UNLABELED in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
 
     ct_dict = {"T_CD4": "CD4", "T_CD8": "CD8"}
     ds = ds.la.predict_cell_types_argmax(ct_dict)
 
     # checking that we have all cell types and no unassigned cells
-    assert "CT1" in ds[Layers.LABELS].sel(props=Props.NAME).values
-    assert "T_CD4" in ds[Layers.LABELS].sel(props=Props.NAME).values
-    assert "T_CD8" in ds[Layers.LABELS].sel(props=Props.NAME).values
-    assert Labels.UNLABELED not in ds[Layers.LABELS].sel(props=Props.NAME).values
+    assert "CT1" in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
+    assert "T_CD4" in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
+    assert "T_CD8" in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
+    assert Labels.UNLABELED not in ds[Layers.PROPERTIES].sel(props=Props.NAME).values
     # this check implicitly checks if there are unassigned (0) cells left
     assert np.all(np.unique(ds.coords["labels"].values) == np.array([1, 2, 3]))

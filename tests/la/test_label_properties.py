@@ -39,7 +39,7 @@ def test_set_label_name(dataset_labeled):
 
 def test_set_label_colors(dataset_labeled):
     ds = dataset_labeled.la.set_label_colors("Cell type 1", "black")
-    colors = ds[Layers.LABELS].sel(props=Props.COLOR).values
+    colors = ds[Layers.PROPERTIES].sel(props=Props.COLOR).values
 
     # ensuring black is now a color
     assert "black" in colors
@@ -48,7 +48,7 @@ def test_set_label_colors(dataset_labeled):
 def test_set_label_colors_multiple_colors(dataset_labeled):
     # adding multiple colors
     ds = dataset_labeled.la.set_label_colors(["Cell type 1", "Cell type 2"], ["black", "white"])
-    colors = ds[Layers.LABELS].sel(props=Props.COLOR).values
+    colors = ds[Layers.PROPERTIES].sel(props=Props.COLOR).values
     assert "black" in colors
     assert "white" in colors
 

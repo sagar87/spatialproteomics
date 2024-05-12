@@ -1,5 +1,5 @@
-from .gaussian import TwoComponentGaussianMixture
+from .tool import ToolAccessor
 
 __all__ = [
-    "TwoComponentGaussianMixture",
+    "ToolAccessor",
 ]
