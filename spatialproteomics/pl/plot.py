@@ -230,7 +230,7 @@ class PlotAccessor:
         obj = self._obj.copy()
         if Layers.PLOT not in self._obj and render_intensities:
             # if there are more than 20 channels, only the first one is plotted
-            if self._obj.dims[Dims.CHANNELS] > 20:
+            if self._obj.sizes[Dims.CHANNELS] > 20:
                 logger.warning(
                     "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l"
                 )
@@ -270,6 +270,87 @@ class PlotAccessor:
             ax.legend(handles=legend, **legend_kwargs)
 
         return obj
+
+    def annotate(
+        self,
+        variable: str = "cell",
+        layer_key: str = Layers.OBS,
+        highlight: list = [],
+        text_kwargs: dict = {"color": "w", "fontsize": 12},
+        highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
+        bbox: Union[List, None] = None,
+        format_string: str = "",
+        ax=None,
+    ) -> xr.Dataset:
+        """
+        Annotates cells with their respective number on the plot.
+
+        Parameters
+        ----------
+        variable : str, optional
+            The feature in the observation table to be used for cell annotation. Default is "cell".
+        layer_key : str, optional
+            The key representing the layer in the data object. Default is Layers.OBS.
+        highlight : list, optional
+            A list containing cell IDs to be highlighted in the plot.
+        text_kwargs : dict, optional
+            Keyword arguments passed to matplotlib's text function for normal cell annotations.
+        highlight_kwargs : dict, optional
+            Similar to 'text_kwargs' but specifically for the cell IDs passed via 'highlight'.
+        bbox : Union[List, None], optional
+            A list containing bounding box coordinates [xmin, xmax, ymin, ymax] to annotate cells only within the box.
+            Default is None, which annotates all cells.
+        format_string : str, optional
+            The format string used to format the cell annotation text. Default is "" (no formatting).
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function annotates cells with their respective values from the selected feature.
+        - You can highlight specific cells in the plot using the 'highlight' parameter.
+        - Bounding box coordinates can be provided via 'bbox' to annotate cells only within the specified box.
+        - 'format_string' can be used to format the cell annotation text (e.g., "{t:.2f}" for float formatting).
+        """
+        if ax is None:
+            ax = plt.gca()
+
+        if bbox is None:
+            cells = self._obj.coords[Dims.CELLS]
+        else:
+            assert len(bbox) == 4, "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
+            sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
+            cells = sub.coords[Dims.CELLS]
+
+        for cell in cells:
+            x = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.X}).values
+            y = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y}).values
+            if variable != "cell":
+                table = self._obj[layer_key]
+                dims = table.sizes
+                if len(dims) != 2:
+                    raise ValueError("Layer does not have the dimension.")
+                if Dims.CELLS not in dims:
+                    raise ValueError("Layer does not have a cell dimension.")
+
+                dim = [d for d in dims if d != Dims.CELLS][0]
+
+                t = table.sel({Dims.CELLS: cell, dim: variable}).values
+            else:
+                t = cell.values
+
+            if cell in highlight:
+                ax.text(x, y, s=f"{t:{format_string}}", **highlight_kwargs)
+            else:
+
+                ax.text(x, y, s=f"{t:{format_string}}", **text_kwargs)
+
+        return self._obj
 
     def render_segmentation(
         self,
@@ -404,87 +485,6 @@ class PlotAccessor:
         )
 
         return xr.merge([self._obj, da])
-
-    def annotate(
-        self,
-        variable: str = "cell",
-        layer_key: str = Layers.OBS,
-        highlight: list = [],
-        text_kwargs: dict = {"color": "w", "fontsize": 12},
-        highlight_kwargs: dict = {"color": "w", "fontsize": 16, "fontweight": "bold"},
-        bbox: Union[List, None] = None,
-        format_string: str = "",
-        ax=None,
-    ) -> xr.Dataset:
-        """
-        Annotates cells with their respective ID on the plot.
-
-        Parameters
-        ----------
-        variable : str, optional
-            The feature in the observation table to be used for cell annotation. Default is "cell".
-        layer_key : str, optional
-            The key representing the layer in the data object. Default is Layers.OBS.
-        highlight : list, optional
-            A list containing cell IDs to be highlighted in the plot.
-        text_kwargs : dict, optional
-            Keyword arguments passed to matplotlib's text function for normal cell annotations.
-        highlight_kwargs : dict, optional
-            Similar to 'text_kwargs' but specifically for the cell IDs passed via 'highlight'.
-        bbox : Union[List, None], optional
-            A list containing bounding box coordinates [xmin, xmax, ymin, ymax] to annotate cells only within the box.
-            Default is None, which annotates all cells.
-        format_string : str, optional
-            The format string used to format the cell annotation text. Default is "" (no formatting).
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function annotates cells with their respective values from the selected feature.
-        - You can highlight specific cells in the plot using the 'highlight' parameter.
-        - Bounding box coordinates can be provided via 'bbox' to annotate cells only within the specified box.
-        - 'format_string' can be used to format the cell annotation text (e.g., "{t:.2f}" for float formatting).
-        """
-        if ax is None:
-            ax = plt.gca()
-
-        if bbox is None:
-            cells = self._obj.coords[Dims.CELLS]
-        else:
-            assert len(bbox) == 4, "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
-            sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
-            cells = sub.coords[Dims.CELLS]
-
-        for cell in cells:
-            x = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.X}).values
-            y = self._obj[Layers.OBS].sel({Dims.CELLS: cell, Dims.FEATURES: Features.Y}).values
-            if variable != "cell":
-                table = self._obj[layer_key]
-                dims = table.dims
-                if len(dims) != 2:
-                    raise ValueError("Layer does not have the dimension.")
-                if Dims.CELLS not in dims:
-                    raise ValueError("Layer does not have a cell dimension.")
-
-                dim = [d for d in dims if d != Dims.CELLS][0]
-
-                t = table.sel({Dims.CELLS: cell, dim: variable}).values
-            else:
-                t = cell.values
-
-            if cell in highlight:
-                ax.text(x, y, s=f"{t:{format_string}}", **highlight_kwargs)
-            else:
-
-                ax.text(x, y, s=f"{t:{format_string}}", **text_kwargs)
-
-        return self._obj
 
     def scatter_labels(
         self,
@@ -686,9 +686,261 @@ class PlotAccessor:
 
         return self._obj
 
+    def pie(
+        self,
+        wedgeprops={"linewidth": 7, "edgecolor": "white"},
+        circle_radius=0.2,
+        labels=True,
+        ax=None,
+    ):
+        """
+        Plots a pie chart of label frequencies.
+
+        Parameters
+        ----------
+        wedgeprops : dict, optional
+            Keyword arguments passed to the matplotlib pie function for wedge properties.
+        circle_radius : float, optional
+            The radius of the inner circle in the pie chart. Default is 0.2.
+        labels : bool, optional
+            Whether to display labels on the pie chart. Default is True.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function plots a pie chart of label frequencies in the data object.
+        - The appearance of the pie chart can be customized using 'wedgeprops' and 'circle_radius'.
+        - Labels on the pie chart can be shown or hidden using the 'labels' parameter.
+        """
+        if ax is None:
+            ax = plt.gca()
+
+        color_dict = self._obj.la._label_to_dict(Props.COLOR)
+        names_dict = self._obj.la._label_to_dict(Props.NAME)
+
+        obs_layer = self._obj[Layers.OBS]
+        label_array = obs_layer.loc[:, Features.LABELS].values
+        x, y = np.unique(label_array, return_counts=True)
+
+        ax.pie(
+            y,
+            labels=[names_dict[i] for i in x] if labels else None,
+            colors=[color_dict[i] for i in x],
+            wedgeprops=wedgeprops,
+        )
+        my_circle = plt.Circle((0, 0), circle_radius, color="white")
+        ax.add_artist(my_circle)
+
+    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
+        """
+        Plots the spectra of cells.
+
+        Parameters
+        ----------
+        cells : Union[List[int], int]
+            The cell ID(s) whose spectra will be plotted.
+        layers_key : str, optional
+            The key representing the layer in the data object for plotting spectra. Default is "intensity".
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, a new figure and axis will be created.
+
+        Returns
+        -------
+        xr.Dataset
+            The selected data array for the plotted cells.
+
+        Notes
+        -----
+        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
+        """
+        if type(cells) is int:
+            cells = [cells]
+
+        da = self._obj[layers_key].sel({"cells": cells})
+        num_cells = len(cells)
+
+        fig, axes = _set_up_subplots(num_cells, ncols=ncols, width=width, height=height)
+
+        # fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
+
+        if num_cells > 1:
+            for i, ax in zip(range(da.values.shape[0]), axes.flatten()):
+                ax.bar(np.arange(da.values.shape[1]), da.values[i])
+                ax.set_xticks(np.arange(da.values.shape[1]))
+                ax.set_xticklabels(da.channels.values, rotation=90)
+                ax.set_title(f"Cell {da.cells.values[i]}")
+        else:
+            axes.bar(np.arange(da.values.squeeze().shape[0]), da.values.squeeze())
+            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))
+            axes.set_xticklabels(da.channels.values, rotation=90)
+            axes.set_title(f"Cell {da.cells.values[0]}")
+
+        # if ax is isinstance(ax, np.ndarray):
+        # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
+
+        return da
+
+    def spectra_with_annotation(
+        self,
+        cells: Union[List[int], None] = None,
+        layers_key="intensity",
+        format_df=None,
+        plot_kwargs: dict = {
+            "width": 12,
+            "height": 2,
+            "hspace": 1.0,
+            "wspace": 0.0001,
+            "xticks": True,
+        },
+    ):
+        """
+        Plots the spectra of cells with annotation.
+
+        Parameters
+        ----------
+        cells : Union[List[int], None], optional
+            The cell ID(s) whose spectra will be plotted. If None, all cells will be plotted.
+        layers_key : str, optional
+            The key representing the layer in the data object for plotting spectra. Default is "intensity".
+        format_df : pd.DataFrame or None, optional
+            A DataFrame containing annotation information for the plotted cells. Default is None (no annotation).
+        plot_kwargs : dict, optional
+            Additional keyword arguments for setting up subplots and plot appearance.
+
+        Returns
+        -------
+        xr.Dataset
+            The image container.
+
+        Notes
+        -----
+        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
+        - Annotates the spectra using the provided 'format_df' DataFrame.
+        """
+
+        if cells is None:
+            cells = self._obj.coords[Dims.CELLS].values.tolist()
+
+        # da = self._obj.se.quantify_cells(cells)
+        da = self._obj[layers_key].sel({"cells": cells})
+        annot = format_annotation_df(format_df, da)
+
+        plot_expression_spectra(
+            da.values,
+            annot,
+            titles=[f"{i}" for i in da.coords[Dims.CELLS]],
+            **plot_kwargs,
+        )
+
+        return self._obj
+
+    def draw_edges(self, color="white", linewidths=0.5, zorder=0, ax=None):
+        """
+        Draws edges connecting neighboring cells.
+
+        Parameters
+        ----------
+        color : str, optional
+            The color of the edges. Default is "white".
+        linewidths : float, optional
+            The linewidth of the edges. Default is 0.5.
+        zorder : int, optional
+            The z-order of the edges in the plot. Default is 0.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function draws edges connecting neighboring cells in the plot.
+        - The appearance of the edges can be customized using 'color' and 'linewidths'.
+        """
+        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
+        neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
+        cell_dim = self._obj.sizes[Dims.CELLS]
+        neighbor_dim = self._obj.sizes[Dims.NEIGHBORS]
+
+        # set up edgelist
+        origin = coords.values
+        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(cell_dim, neighbor_dim, 2)
+
+        # line segments
+        all_lines = []
+        for k in range(target.shape[1]):
+            lines = [[i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))]
+            all_lines.extend(lines)
+
+        # Line collection
+        # REFACTOR
+        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=zorder)
+        if ax is None:
+            ax = plt.gca()
+
+        ax.add_collection(lc)
+        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin, xmax])
+
+        return self._obj
+
+    def channel_histogram(
+        self,
+        intensity_key: str,
+        bins: int = 50,
+        ncols: int = 4,
+        width: float = 4,
+        height: float = 3,
+        log_scale: bool = False,
+        ax=None,
+        **kwargs,
+    ):
+
+        intensities = self._obj[intensity_key]
+        channels = self._obj.coords[Dims.CHANNELS].values
+        num_channels = len(channels)
+
+        # if num_channels > 1 and ax is not None:
+        #     logger.warning("More than one channel. Plotting on first axis.")
+        #     # assert np.prod(ax.shape) >= num_channels, "Must provide at least one axis for each channel to plot."
+        # else:
+        #     if ax is None:
+        #         ax = plt.gca()
+
+        if num_channels > 1:
+
+            fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
+
+            for ch, ax in zip(channels, axes.flatten()):
+                data = intensities.sel({Dims.CHANNELS: ch}).values
+                ax.hist(data, bins=bins, **kwargs)
+                ax.set_title(ch)
+                if log_scale:
+                    ax.set_yscale("log")
+        else:
+            if ax is None:
+                ax = plt.gca()
+            ch = channels[0]
+            data = intensities.sel({Dims.CHANNELS: ch}).values
+            ax.hist(data, bins=bins, **kwargs)
+            ax.set_title(ch)
+            if log_scale:
+                ax.set_yscale("log")
+
+        return self._obj      
+      
     def autocrop(
         self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None
     ) -> xr.Dataset:
+
         """
         Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 

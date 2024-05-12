@@ -43,7 +43,7 @@ class LabelAccessor:
 
         if isinstance(indices, slice):
             l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
+            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
 
         if isinstance(indices, (list, tuple)):
@@ -94,7 +94,7 @@ class LabelAccessor:
         """
         if isinstance(indices, slice):
             l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.dims[Dims.LABELS]
+            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.LABELS]
             sel = [i for i in range(l_start, l_stop)]
         elif isinstance(indices, list):
             assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers or strings."
