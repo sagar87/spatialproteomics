@@ -145,7 +145,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.annotate">
 <span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_obs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">12}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'color':</span> <span class="pre">'w',</span> <span class="pre">'fontsize':</span> <span class="pre">16,</span> <span class="pre">'fontweight':</span> <span class="pre">'bold'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.annotate" title="Permalink to this definition"></a></dt>
-<dd><p>Annotates cells with their respective ID on the plot.</p>
+<dd><p>Annotates cells with their respective number on the plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -215,6 +215,33 @@ Default is None, which annotates all cells.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.draw_edges">
+<span class="sig-name descname"><span class="pre">draw_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.draw_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Draws edges connecting neighboring cells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color of the edges. Default is “white”.</p></li>
+<li><p><strong>linewidths</strong> (<em>float</em><em>, </em><em>optional</em>) – The linewidth of the edges. Default is 0.5.</p></li>
+<li><p><strong>zorder</strong> (<em>int</em><em>, </em><em>optional</em>) – The z-order of the edges in the plot. Default is 0.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em><em>, </em><em>optional</em>) – The matplotlib axis to plot on. If not provided, the current axis will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function draws edges connecting neighboring cells in the plot.</p></li>
+<li><p>The appearance of the edges can be customized using ‘color’ and ‘linewidths’.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.imshow">
 <span class="sig-name descname"><span class="pre">imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">render_intensities</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_channel_legend</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_label_legend</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.imshow" title="Permalink to this definition"></a></dt>
 <dd><p>Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.</p>
@@ -239,6 +266,34 @@ Default is None, which annotates all cells.</p></li>
 - The <cite>ax</cite> parameter allows specifying a specific matplotlib axes to plot on. If None, the current axes will be used.
 - The <cite>show_channel_legend</cite> and <cite>show_label_legend</cite> parameters control whether to show the channel and label legends, respectively.
 - The <cite>legend_kwargs</cite>, <cite>segmentation_kwargs</cite>, and <cite>label_kwargs</cite> parameters allow configuring the appearance of the legend, segmentation, and labels, respectively.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.pie">
+<span class="sig-name descname"><span class="pre">pie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wedgeprops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'edgecolor':</span> <span class="pre">'white',</span> <span class="pre">'linewidth':</span> <span class="pre">7}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.pie" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a pie chart of label frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wedgeprops</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to the matplotlib pie function for wedge properties.</p></li>
+<li><p><strong>circle_radius</strong> (<em>float</em><em>, </em><em>optional</em>) – The radius of the inner circle in the pie chart. Default is 0.2.</p></li>
+<li><p><strong>labels</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display labels on the pie chart. Default is True.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em><em>, </em><em>optional</em>) – The matplotlib axis to plot on. If not provided, the current axis will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function plots a pie chart of label frequencies in the data object.</p></li>
+<li><p>The appearance of the pie chart can be customized using ‘wedgeprops’ and ‘circle_radius’.</p></li>
+<li><p>Labels on the pie chart can be shown or hidden using the ‘labels’ parameter.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -353,6 +408,58 @@ Default is None, which annotates all cells.</p></li>
 <dt>xr.Dataset</dt><dd><p>The modified spatialproteomics object.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.spectra">
+<span class="sig-name descname"><span class="pre">spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.spectra" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the spectra of cells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cells</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>int</em><em>]</em>) – The cell ID(s) whose spectra will be plotted.</p></li>
+<li><p><strong>layers_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key representing the layer in the data object for plotting spectra. Default is “intensity”.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em><em>, </em><em>optional</em>) – The matplotlib axis to plot on. If not provided, a new figure and axis will be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The selected data array for the plotted cells.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function plots the spectra of the specified cell(s) using the ‘layers_key’ from the data object.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.spectra_with_annotation">
+<span class="sig-name descname"><span class="pre">spectra_with_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'height':</span> <span class="pre">2,</span> <span class="pre">'hspace':</span> <span class="pre">1.0,</span> <span class="pre">'width':</span> <span class="pre">12,</span> <span class="pre">'wspace':</span> <span class="pre">0.0001,</span> <span class="pre">'xticks':</span> <span class="pre">True}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.spectra_with_annotation" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the spectra of cells with annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cells</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – The cell ID(s) whose spectra will be plotted. If None, all cells will be plotted.</p></li>
+<li><p><strong>layers_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key representing the layer in the data object for plotting spectra. Default is “intensity”.</p></li>
+<li><p><strong>format_df</strong> (<em>pd.DataFrame</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – A DataFrame containing annotation information for the plotted cells. Default is None (no annotation).</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments for setting up subplots and plot appearance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function plots the spectra of the specified cell(s) using the ‘layers_key’ from the data object.</p></li>
+<li><p>Annotates the spectra using the provided ‘format_df’ DataFrame.</p></li>
+</ul>
 </dd></dl>
 
 </dd></dl>
