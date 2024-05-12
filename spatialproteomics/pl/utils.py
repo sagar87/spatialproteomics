@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -211,17 +211,19 @@ def _set_up_subplots(num_plots: int = 1, ncols: int = 4, width: int = 4, height:
     return fig, axes
 
 
-def _autocrop(img: np.ndarray):
+def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
     """
     Crop an image based on the regions of interest so that the background around the tissue/TMA gets cropped away.
 
     Parameters:
         img (np.ndarray): The input image as a NumPy array.
+        padding (int, optional): The padding to be added around the cropped image in pixels. Defaults to 50.
+        downsample (int, optional): The downsample factor to be used for the cropping. Defaults to 10.
 
     Returns:
         tuple: A tuple containing two slices representing the cropped image.
     """
-
+    
     bw = closing(img > np.quantile(img, 0.8), square(20))
     cleared = clear_border(bw)
     label_image = label(cleared)
@@ -236,4 +238,4 @@ def _autocrop(img: np.ndarray):
         region = props[max_idx]
         minr, minc, maxr, maxc = region.bbox
 
-    return slice(downsample * minc, downsample * maxc), slice(downsample * minr, downsample * maxr)
+    return slice(downsample * minc - padding, downsample * maxc + padding), slice(downsample * minr - padding, downsample * maxr + padding)

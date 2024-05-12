@@ -686,17 +686,21 @@ class PlotAccessor:
 
         return self._obj
 
-    def autocrop(self, downsample: int = 10, key: str = Layers.IMAGE):
+    def autocrop(self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None) -> xr.Dataset:
         """
         Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 
         Parameters:
+        - padding (int): The padding to be added around the cropped image in pixels. Default is 50.
         - downsample (int): The downsampling factor for the image. Default is 10.
         - key (str): The key of the image to be cropped. Default is Layers.IMAGE.
+        - channel (str, optional): The channel used for cropping. Default is None, which defaults to using the first available channel.
 
         Returns:
         - obj.pp (object): The cropped image.
         """
-        img = self._obj.pp.downsample(downsample)[key].values.squeeze()
-        slices = _autocrop(img)
+        if channel is None:
+            channel = self._obj.coords[Dims.CHANNELS].values.tolist()[0]
+        img = self._obj.pp[channel].pp.downsample(downsample)[key].values.squeeze()
+        slices = _autocrop(img, downsample=downsample, padding=padding)
         return self._obj.pp[slices[0], slices[1]]
