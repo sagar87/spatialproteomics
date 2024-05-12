@@ -47,7 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
@@ -390,14 +390,16 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffe40ebb20&gt;
+&lt;xarray.core.options.set_options at 0x7fffd5f58190&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
+ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
+ds = ds.pp.drop_layers(&quot;_labels&quot;)
 </pre></div>
 </div>
 </div>
@@ -406,9 +408,9 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
@@ -416,32 +418,23 @@ xr.set_options(display_style=&#39;text&#39;)
 <h2>Channel overlays<a class="headerlink" href="#Channel-overlays" title="Permalink to this headline"></a></h2>
 <p>The slicing capabilities of <code class="docutils literal notranslate"><span class="pre">xarray</span></code> make data visualisation very easy. The general pattern is here to first select the channels, image regions and labels of interest, and then to use the plotting functions that are available via the <code class="docutils literal notranslate"><span class="pre">.pl</span></code> accessor. In the following we show some examples.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.imshow()
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/utils.py:494: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-  warnings.warn(
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_4_1.png" src="../_images/notebooks_Plotting_4_1.png" />
+<img alt="../_images/notebooks_Plotting_4_0.png" src="../_images/notebooks_Plotting_4_0.png" />
 </div>
 </div>
 <p>If we want different colors, we can specify those using the <code class="docutils literal notranslate"><span class="pre">pl.colorize</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.colorize([&#39;white&#39;]).pl.imshow()
@@ -457,7 +450,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">pl.colorize</span></code> function allows us to make image overlays quickly by first selecting the channels of interest. We illustrate this by first selecting the CD4 and CD8 channels and then assigning the colors <code class="docutils literal notranslate"><span class="pre">C2</span></code> (<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> color for green) and <code class="docutils literal notranslate"><span class="pre">C3</span></code> (red), respectively.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow()
@@ -473,13 +466,13 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <p>All plotting functions accept <code class="docutils literal notranslate"><span class="pre">matplotlib.Axes</span></code> via the <code class="docutils literal notranslate"><span class="pre">ax</span></code> argument. This enables to easily modify plots using the normal <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> API.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
 ax = plt.gca()
 
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow(legend_background=True, ax=ax)
+_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow(ax=ax)
 ax.set_title(&#39;CD3 and PAX5&#39;)
 ax.set_ylabel(&#39;Y&#39;)
 ax.set_xlabel(&#39;X&#39;)
@@ -487,7 +480,7 @@ ax.set_xlabel(&#39;X&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -507,7 +500,7 @@ Text(0.5, 0, &#39;X&#39;)
 <h2>Rendering segmentation<a class="headerlink" href="#Rendering-segmentation" title="Permalink to this headline"></a></h2>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">pl.render_segmentation()</span></code> accessor we can visualize the segmentation.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -517,7 +510,7 @@ _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
      .pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
      .pl.render_segmentation()
-     .pl.imshow(legend_background=True, ax=ax)
+     .pl.imshow(ax=ax)
     )
 </pre></div>
 </div>
@@ -531,7 +524,7 @@ _ = (ds
 </div>
 <p>An easier syntax is to simple set <code class="docutils literal notranslate"><span class="pre">render_segmentation=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">pl.imshow()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -544,20 +537,11 @@ _ = (ds
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/utils.py:494: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-  warnings.warn(
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_15_1.png" src="../_images/notebooks_Plotting_15_1.png" />
+<img alt="../_images/notebooks_Plotting_15_0.png" src="../_images/notebooks_Plotting_15_0.png" />
 </div>
 </div>
 </section>
@@ -565,7 +549,7 @@ _ = (ds
 <h2>Rendering labels<a class="headerlink" href="#Rendering-labels" title="Permalink to this headline"></a></h2>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">pl.render_labels()</span></code> accessor we can visualize the segmentation. The <code class="docutils literal notranslate"><span class="pre">pl.render_labels</span></code> accessor accepts the keyword arguments <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha_boundary</span></code> which control the intensity of the displayed segmentation mask and the boundaries.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -575,7 +559,7 @@ _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
      .pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
      .pl.render_labels(alpha=.4, alpha_boundary=1)
-     .pl.imshow(legend_background=True, legend_label=True, ax=ax)
+     .pl.imshow(ax=ax)
     )
 </pre></div>
 </div>
@@ -589,7 +573,7 @@ _ = (ds
 </div>
 <p>An easier syntax is to simply use <code class="docutils literal notranslate"><span class="pre">pl.imshow()</span></code> again. This enables you to plot labels and segmentation masks.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -611,7 +595,7 @@ _ = (ds
 </div>
 <p>You can also overlay them on top of the intensities while still retaining full control over the <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> function.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -624,26 +608,17 @@ _ = (ds
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/utils.py:494: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-  warnings.warn(
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_21_1.png" src="../_images/notebooks_Plotting_21_1.png" />
+<img alt="../_images/notebooks_Plotting_21_0.png" src="../_images/notebooks_Plotting_21_0.png" />
 </div>
 </div>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor we can also subset cell labels, rather than displaying all of them. Note that in the following plot, we also passed the <code class="docutils literal notranslate"><span class="pre">legend_label</span></code> argument which displays shown cell type labels.</p>
 <p>NOTE: THIS CURRENTLY DOES NOT WORK WHEN ALSO SETTING <code class="docutils literal notranslate"><span class="pre">render_segmentation=</span> <span class="pre">True</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -657,20 +632,11 @@ _ = (ds
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/utils.py:494: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-  warnings.warn(
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_23_1.png" src="../_images/notebooks_Plotting_23_1.png" />
+<img alt="../_images/notebooks_Plotting_23_0.png" src="../_images/notebooks_Plotting_23_0.png" />
 </div>
 </div>
 </section>
@@ -678,13 +644,13 @@ _ = (ds
 <h2>Scatter plots<a class="headerlink" href="#Scatter-plots" title="Permalink to this headline"></a></h2>
 <p>Rendering labels on the image might be to intense if the section to visualise is very large. In such cases we may want to fall back to a simple scatter plot.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
 ax = plt.gca()
 
-_ = ds.pl.scatter(legend_label=True, ax=ax, size=5)
+_ = ds.pl.scatter_labels(ax=ax, size=5)
 </pre></div>
 </div>
 </div>
@@ -697,13 +663,13 @@ _ = ds.pl.scatter(legend_label=True, ax=ax, size=5)
 </div>
 <p>Note that we can also sub select cells to highlight certain celltypes using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
 ax = plt.gca()
 
-_ = ds.la[[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;]].pl.scatter(legend_label=True, ax=ax, size=5)
+_ = ds.la[[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;]].pl.scatter_labels(ax=ax, size=5)
 </pre></div>
 </div>
 </div>
@@ -719,7 +685,7 @@ _ = ds.la[[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;]].pl.scatter(legend_label=True,
 <h2>Annotating cells<a class="headerlink" href="#Annotating-cells" title="Permalink to this headline"></a></h2>
 <p>We can also directly annotate cells on the plots.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -730,7 +696,7 @@ _ = (ds
      .pl.colorize(colors=[&#39;C0&#39;, &#39;C1&#39;, &#39;C3&#39;])
      .la[&#39;B (PAX5)&#39;]
      .pl.render_labels(alpha=0.5)
-     .pl.imshow(legend_label=True, legend_background=True, ax=ax)
+     .pl.imshow(ax=ax)
      .pl.annotate()
     )
 </pre></div>
@@ -745,7 +711,7 @@ _ = (ds
 </div>
 <p>This also works on scatter plots.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
@@ -754,7 +720,7 @@ ax = plt.gca()
 _ = (ds
      .pp[1000:1500, 500:1000]
      .la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;]
-     .pl.scatter(legend_label=True, ax=ax, size=30)
+     .pl.scatter_labels(ax=ax, size=30)
      .la[&#39;B (PAX5)&#39;] # only show annotation for cell type for
      .pl.annotate(text_kwargs=dict(color=&#39;black&#39;))
     )

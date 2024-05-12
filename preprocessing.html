@@ -45,7 +45,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tools.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
@@ -222,12 +222,12 @@ instead of adding them to the image container.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_quantification">
-<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">sum_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">arcsinh_median_intensity&gt;</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_intensity'</span></em>, <em class="sig-param"><span class="pre">return_xarray=False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_quantification" title="Permalink to this definition"></a></dt>
 <dd><p>Quantify channel intensities over the segmentation mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The function used for quantification. Default is sum_intensity.</p></li>
+<li><p><strong>func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The function used for quantification. Default is arcsinh_median_intensity.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.</p></li>
 <li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.</p></li>
 </ul>
