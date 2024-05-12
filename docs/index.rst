@@ -14,7 +14,7 @@ Welcome to the documentation of spatialproteomics!
    preprocessing
    label
    plot
-   tools
+   tool
 
 .. toctree::
    :maxdepth: 2

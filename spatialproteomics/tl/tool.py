@@ -10,7 +10,7 @@ from ..pp.utils import handle_disconnected_cells
 
 @xr.register_dataset_accessor("tl")
 class ToolAccessor:
-    """The tool accessor enables the application of external tools such as StarDist or Astir"""
+    """The tool accessor enables the application of external tools such as StarDist or Astir."""
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
@@ -383,6 +383,37 @@ class ToolAccessor:
         additional_layers: Optional[dict] = None,
         additional_uns: Optional[dict] = None,
     ):
+        """
+        Convert the spatialproteomics object to an anndata.AnnData object. The resulting AnnData object does not store the original image or segmentation mask.
+
+        Parameters:
+        ----------
+        expression_matrix_key : str, optional
+            The key of the expression matrix in the spatialproteomics object. Default is Layers.INTENSITY.
+        obs_key : str, optional
+            The key of the observation data in the spatialproteomics object. Default is Layers.OBS.
+        additional_layers : dict, optional
+            Additional layers to include in the anndata.AnnData object. The keys are the names of the layers and the values are the corresponding keys in the spatialproteomics object.
+        additional_uns : dict, optional
+            Additional uns data to include in the anndata.AnnData object. The keys are the names of the uns data and the values are the corresponding keys in the spatialproteomics object.
+
+        Returns:
+        -------
+        adata : anndata.AnnData
+            The converted anndata.AnnData object.
+
+        Raises:
+        ------
+        AssertionError
+            If the expression matrix key or additional layers are not found in the spatialproteomics object.
+
+        Notes:
+        ------
+        - The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.
+        - If additional layers are specified, they are extracted from the spatialproteomics object and added to the anndata.AnnData object.
+        - If obs_key is present in the spatialproteomics object, it is used to create the obs DataFrame of the anndata.AnnData object.
+        - If additional_uns is specified, the corresponding uns data is extracted from the spatialproteomics object and added to the anndata.AnnData object.
+        """
         import anndata
 
         # checking that the expression matrix key is present in the object
@@ -413,6 +444,17 @@ class ToolAccessor:
     def convert_to_spatialdata(
         self, image_key: str = Layers.IMAGE, segmentation_key: str = Layers.SEGMENTATION, **kwargs
     ):
+        """
+        Convert the spatialproteomics object to a spatialdata object.
+
+        Parameters:
+            image_key (str): The key of the image data in the object. Defaults to Layers.IMAGE.
+            segmentation_key (str): The key of the segmentation data in the object. Defaults to Layers.SEGMENTATION.
+            **kwargs: Additional keyword arguments to be passed to the convert_to_anndata method.
+
+        Returns:
+            spatial_data_object (spatialdata.SpatialData): The converted spatialdata object.
+        """
         import spatialdata
 
         markers = self._obj.coords[Dims.CHANNELS].values
