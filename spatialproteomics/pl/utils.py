@@ -1,18 +1,16 @@
-from typing import List, Optional, Union
+from typing import List
 
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.segmentation import clear_border, find_boundaries
-import xarray as xr
-import matplotlib.pyplot as plt
 
-from ..constants import Dims
 from ..pp.utils import _normalize
 
 
-def _get_linear_colormap(palette: list, background: str = 'black'):
+def _get_linear_colormap(palette: list, background: str = "black"):
     """
     Create a list of linear segmented colormaps based on the given palette.
 
@@ -64,16 +62,16 @@ def _get_listed_colormap(palette: dict):
 
 def _colorize(
     img: np.ndarray,
-    palette: List[str] = ["C1", "C2", "C3", "C4", "C5"],
+    colors: List[str] = ["C1", "C2", "C3", "C4", "C5"],
     background: str = "black",
     normalize: bool = True,
 ) -> np.ndarray:
     """
-    Apply colorization to an image based on a given palette.
+    Apply colorization to an image based on a given colors.
 
     Parameters:
         img (np.ndarray): The input image to be colorized.
-        palette (List[str], optional): The list of colors to be used for colorization. Defaults to ["C1", "C2", "C3", "C4", "C5"].
+        colors (List[str], optional): The list of colors to be used for colorization. Defaults to ["C1", "C2", "C3", "C4", "C5"].
         background (str, optional): The background color. Defaults to "black".
         normalize (bool, optional): Whether to normalize the image before colorization. Defaults to True.
 
@@ -83,14 +81,14 @@ def _colorize(
     Raises:
         AssertionError: If the length of the palette is less than the number of channels in the image.
     """
-    
+
     num_channels = img.shape[0]
 
     assert (
-        len(palette) >= num_channels
+        len(colors) >= num_channels
     ), "Length of colors must at least be greater or equal the number of channels of the image."
 
-    cmaps = _get_linear_colormap(palette[:num_channels], background)
+    cmaps = _get_linear_colormap(colors[:num_channels], background)
 
     if normalize:
         img = _normalize(img)
@@ -100,7 +98,14 @@ def _colorize(
     return colored
 
 
-def _render_labels(segmentation: np.ndarray, cmap: list, img: np.ndarray = None, alpha: float = 0.2, alpha_boundary: float = 1.0, mode: str = "inner") -> np.ndarray:
+def _render_labels(
+    segmentation: np.ndarray,
+    cmap: list,
+    img: np.ndarray = None,
+    alpha: float = 0.2,
+    alpha_boundary: float = 1.0,
+    mode: str = "inner",
+) -> np.ndarray:
     """
     Render labels on an image.
 
@@ -141,7 +146,7 @@ def _label_segmentation_mask(segmentation: np.ndarray, ct_to_cells_dict: dict) -
     segmentation : np.ndarray
         The segmentation mask as a numpy array.
     ct_to_cells_dict : dict
-        A dictionary mapping each cell type ID (1, 2, ...) to a list of cell IDs. E. g. {1: [1, 2, 3, 4], ...}. 
+        A dictionary mapping each cell type ID (1, 2, ...) to a list of cell IDs. E. g. {1: [1, 2, 3, 4], ...}.
         Can be computed with la._cells_to_label().
 
     Returns
@@ -216,12 +221,12 @@ def _autocrop(img: np.ndarray):
     Returns:
         tuple: A tuple containing two slices representing the cropped image.
     """
-    
+
     bw = closing(img > np.quantile(img, 0.8), square(20))
     cleared = clear_border(bw)
     label_image = label(cleared)
     props = regionprops(label_image)
-    
+
     if len(props) == 0:
         maxr, maxc = img.shape
         minr, minc = 0, 0

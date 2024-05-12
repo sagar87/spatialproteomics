@@ -1,68 +1,67 @@
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from matplotlib.collections import LineCollection
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
-from .spectra import format_annotation_df, plot_expression_spectra
 from .utils import (
     _autocrop,
     _colorize,
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
-    _set_up_subplots,
 )
 
 
 @xr.register_dataset_accessor("pl")
 class PlotAccessor:
     """Adds plotting functions to the image container."""
-    
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
     def _get_bounds(self):
-            """
-            Get the bounds of the object.
+        """
+        Get the bounds of the object.
 
-            Returns
-            -------
-            list
-                A list containing the minimum and maximum values for the x and y coordinates.
-            """
-            xmin = self._obj.coords[Dims.X].values[0]
-            ymin = self._obj.coords[Dims.Y].values[0]
-            xmax = self._obj.coords[Dims.X].values[-1]
-            ymax = self._obj.coords[Dims.Y].values[-1]
+        Returns
+        -------
+        list
+            A list containing the minimum and maximum values for the x and y coordinates.
+        """
+        xmin = self._obj.coords[Dims.X].values[0]
+        ymin = self._obj.coords[Dims.Y].values[0]
+        xmax = self._obj.coords[Dims.X].values[-1]
+        ymax = self._obj.coords[Dims.Y].values[-1]
 
-            return [xmin, xmax, ymin, ymax]
+        return [xmin, xmax, ymin, ymax]
 
     def _create_channel_legend(self, **kwargs):
-            """
-            Create a legend for the channels in the plot layer. Used when rendering intensities. 
+        """
+        Create a legend for the channels in the plot layer. Used when rendering intensities.
 
-            Returns:
-                elements (list): A list of Patch objects representing the legend elements.
-            """
-            
-            # checking if the plot layer exists
-            assert Layers.PLOT in self._obj, "No plot layer found. Please call pl.colorize() first."
-            # checking if the image colors attribute exists
-            assert Attrs.IMAGE_COLORS in self._obj[Layers.PLOT].attrs, "No image colors found. Please call pl.colorize() first."
-            
-            color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
+        Returns:
+            elements (list): A list of Patch objects representing the legend elements.
+        """
 
-            # removing unlabeled cells (label = 0)
-            color_dict = {k: v for k, v in color_dict.items() if k != 0}
+        # checking if the plot layer exists
+        assert Layers.PLOT in self._obj, "No plot layer found. Please call pl.colorize() first."
+        # checking if the image colors attribute exists
+        assert (
+            Attrs.IMAGE_COLORS in self._obj[Layers.PLOT].attrs
+        ), "No image colors found. Please call pl.colorize() first."
 
-            elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
-            return elements
+        color_dict = self._obj[Layers.PLOT].attrs[Attrs.IMAGE_COLORS]
+
+        # removing unlabeled cells (label = 0)
+        color_dict = {k: v for k, v in color_dict.items() if k != 0}
+
+        elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
+        return elements
 
     def _create_label_legend(self):
         """
@@ -141,7 +140,7 @@ class PlotAccessor:
         -------
         xr.Dataset
             The image container with the colorized image stored in Layers.PLOT.
-            
+
         Example Usage
         --------------
         >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.imshow()
@@ -272,7 +271,6 @@ class PlotAccessor:
 
         return obj
 
-    
     def render_segmentation(
         self,
         alpha: float = 0.0,
@@ -298,7 +296,9 @@ class PlotAccessor:
             - The segmentation mask is expected to have a single channel with integer labels.
             - The rendered segmentation mask will be added as a new layer to the object.
         """
-        assert Layers.SEGMENTATION in self._obj, "No segmentation layer found. Please add a segmentation mask before calling this method."
+        assert (
+            Layers.SEGMENTATION in self._obj
+        ), "No segmentation layer found. Please add a segmentation mask before calling this method."
 
         color_dict = {1: "white"}
         cmap = _get_listed_colormap(color_dict)
@@ -361,14 +361,12 @@ class PlotAccessor:
             - The `mode` parameter determines whether the labels are rendered inside or outside the label boundaries.
             - The `override_color` parameter can be used to override the label colors with a single color.
         """
-    def render_labels(
-        self, alpha: float = 1.0, alpha_boundary: float = 1.0, mode: str = "inner", override_color: Optional[str] = None
-    ) -> xr.Dataset:
-        
-        assert Layers.LABELS in self._obj, "No labels found in the object. Add labels first, for example by using la.predict_cell_types_argmax() or tl.astir()."
+        assert (
+            Layers.LABELS in self._obj
+        ), "No labels found in the object. Add labels first, for example by using la.predict_cell_types_argmax() or tl.astir()."
 
         color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
-        
+
         if override_color is not None:
             color_dict = {k: override_color for k in color_dict.keys()}
 
@@ -406,8 +404,7 @@ class PlotAccessor:
         )
 
         return xr.merge([self._obj, da])
-    
-    
+
     def annotate(
         self,
         variable: str = "cell",
@@ -489,14 +486,13 @@ class PlotAccessor:
 
         return self._obj
 
-
     def scatter_labels(
         self,
         legend: bool = True,
         size: float = 1.0,
         alpha: float = 0.9,
         zorder: int = 10,
-        ax = None,
+        ax=None,
         legend_kwargs: dict = {"framealpha": 1},
         scatter_kwargs: dict = {},
     ) -> xr.Dataset:
@@ -549,97 +545,97 @@ class PlotAccessor:
         return self._obj
 
     def scatter(
-            self,
-            feature: str,
-            palette: dict = None,
-            legend: bool = True,
-            layer_key: str = Layers.OBS,
-            size: float = 1.0,
-            alpha: float = 0.9,
-            zorder: int = 10,
-            ax = None,
-            legend_kwargs: dict = {"framealpha": 1},
-            scatter_kws: dict = {},
-        ) -> xr.Dataset:
-            """
-            Create a scatter plot of some feature. At the moment, only categorical features are supported.
+        self,
+        feature: str,
+        palette: dict = None,
+        legend: bool = True,
+        layer_key: str = Layers.OBS,
+        size: float = 1.0,
+        alpha: float = 0.9,
+        zorder: int = 10,
+        ax=None,
+        legend_kwargs: dict = {"framealpha": 1},
+        scatter_kws: dict = {},
+    ) -> xr.Dataset:
+        """
+        Create a scatter plot of some feature. At the moment, only categorical features are supported.
 
-            Parameters:
-            - feature (str): The feature to be plotted.
-            - palette (dict, optional): A dictionary mapping feature values to colors. If not provided, a default palette will be used.
-            - legend (bool, optional): Whether to show the legend. Default is True.
-            - layer_key (str, optional): The key of the layer to be plotted. Default is Layers.OBS.
-            - size (float, optional): The size of the scatter points. Default is 1.0.
-            - alpha (float, optional): The transparency of the scatter points. Default is 0.9.
-            - zorder (int, optional): The z-order of the scatter points. Default is 10.
-            - ax (object, optional): The matplotlib axes object to plot on. If not provided, the current axes will be used.
-            - legend_kwargs (dict, optional): Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
-            - scatter_kws (dict, optional): Additional keyword arguments for configuring the scatter plot. Default is {}.
+        Parameters:
+        - feature (str): The feature to be plotted.
+        - palette (dict, optional): A dictionary mapping feature values to colors. If not provided, a default palette will be used.
+        - legend (bool, optional): Whether to show the legend. Default is True.
+        - layer_key (str, optional): The key of the layer to be plotted. Default is Layers.OBS.
+        - size (float, optional): The size of the scatter points. Default is 1.0.
+        - alpha (float, optional): The transparency of the scatter points. Default is 0.9.
+        - zorder (int, optional): The z-order of the scatter points. Default is 10.
+        - ax (object, optional): The matplotlib axes object to plot on. If not provided, the current axes will be used.
+        - legend_kwargs (dict, optional): Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        - scatter_kws (dict, optional): Additional keyword arguments for configuring the scatter plot. Default is {}.
 
-            Returns:
-            - xr.Dataset: The original data object.
+        Returns:
+        - xr.Dataset: The original data object.
 
-            Raises:
-            - AssertionError: If the layer_key is not found in the data object.
-            - AssertionError: If the feature is not found in the specified layer.
-            - AssertionError: If the X or Y coordinates are not found in the specified layer.
-            - AssertionError: If the number of unique feature values is greater than 10 and no color_scheme is provided.
-            - AssertionError: If not all unique feature values are present in the provided palette.
+        Raises:
+        - AssertionError: If the layer_key is not found in the data object.
+        - AssertionError: If the feature is not found in the specified layer.
+        - AssertionError: If the X or Y coordinates are not found in the specified layer.
+        - AssertionError: If the number of unique feature values is greater than 10 and no color_scheme is provided.
+        - AssertionError: If not all unique feature values are present in the provided palette.
 
-            """
-            if ax is None:
-                ax = plt.gca()
+        """
+        if ax is None:
+            ax = plt.gca()
 
-            # check if the layer exists
-            assert layer_key in self._obj, f"Layer {layer_key} not found in the data object."
+        # check if the layer exists
+        assert layer_key in self._obj, f"Layer {layer_key} not found in the data object."
 
-            layer = self._obj[layer_key]
+        layer = self._obj[layer_key]
 
-            # check that the feature exists
-            assert feature in layer.coords[Dims.FEATURES], f"Feature {feature} not found in the layer {layer_key}."
+        # check that the feature exists
+        assert feature in layer.coords[Dims.FEATURES], f"Feature {feature} not found in the layer {layer_key}."
 
-            # check if the layer contains X and Y coordinates
-            assert Features.X in layer.coords[Dims.FEATURES], f"Feature {Features.X} not found in the layer {layer_key}."
-            assert Features.Y in layer.coords[Dims.FEATURES], f"Feature {Features.Y} not found in the layer {layer_key}."
+        # check if the layer contains X and Y coordinates
+        assert Features.X in layer.coords[Dims.FEATURES], f"Feature {Features.X} not found in the layer {layer_key}."
+        assert Features.Y in layer.coords[Dims.FEATURES], f"Feature {Features.Y} not found in the layer {layer_key}."
 
-            x = layer.loc[:, Features.X]
-            y = layer.loc[:, Features.Y]
+        x = layer.loc[:, Features.X]
+        y = layer.loc[:, Features.Y]
 
-            if palette is None:
-                # Default palette
-                unique_values = np.unique(layer.sel(features=feature))
-                assert (
-                    len(unique_values) <= 10
-                ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
-                colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
-                color_dict = {val: color for val, color in zip(unique_values, colors)}
-            else:
-                color_dict = palette
-                # check if all unique values are present in the palette
-                assert set(np.unique(layer.sel(features=feature))) <= set(
-                    color_dict.keys()
-                ), f"Not all values are present in the palette. Make sure the following keys are in your palette: {np.unique(layer.sel(features=feature))}."
+        if palette is None:
+            # Default palette
+            unique_values = np.unique(layer.sel(features=feature))
+            assert (
+                len(unique_values) <= 10
+            ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
+            colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
+            color_dict = {val: color for val, color in zip(unique_values, colors)}
+        else:
+            color_dict = palette
+            # check if all unique values are present in the palette
+            assert set(np.unique(layer.sel(features=feature))) <= set(
+                color_dict.keys()
+            ), f"Not all values are present in the palette. Make sure the following keys are in your palette: {np.unique(layer.sel(features=feature))}."
 
-            # Assigning colors based on feature values
-            colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
+        # Assigning colors based on feature values
+        colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
 
-            ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+        ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
 
-            xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
-            ax.set_ylim([ymin, ymax])
-            ax.set_xlim([xmin, xmax])
+        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
+        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin, xmax])
 
-            ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
+        ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
 
-            if legend:
-                # Creating legend labels based on unique feature values
-                legend_handles = [
-                    plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
-                    for val, color in color_dict.items()
-                ]
-                ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
+        if legend:
+            # Creating legend labels based on unique feature values
+            legend_handles = [
+                plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
+                for val, color in color_dict.items()
+            ]
+            ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
 
-            return self._obj
+        return self._obj
 
     def add_box(
         self,
@@ -687,9 +683,8 @@ class PlotAccessor:
         ax.hlines(xmin=xmin, xmax=xmax, y=ymax, color=color, linewidth=linewidth)
         ax.vlines(ymin=ymin, ymax=ymax, x=xmin, color=color, linewidth=linewidth)
         ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
-        
-        return self._obj
 
+        return self._obj
 
     def autocrop(self, downsample: int = 10, key: str = Layers.IMAGE):
         """
