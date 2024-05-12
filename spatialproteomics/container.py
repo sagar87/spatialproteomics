@@ -14,7 +14,6 @@ def load_image_data(
     labels: Union[None, pd.DataFrame] = None,
     cell_col: str = "cell",
     label_col: str = "label",
-    copy_segmentation: bool = False,
     copy_image: bool = False,
 ):
     """Creates a image container.
@@ -60,7 +59,7 @@ def load_image_data(
     dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
 
     if segmentation is not None:
-        dataset = dataset.pp.add_segmentation(segmentation, copy=copy_segmentation)
+        dataset = dataset.pp.add_segmentation(segmentation)
 
         if labels is not None:
             dataset = dataset.pp.add_labels(labels, cell_col=cell_col, label_col=label_col)

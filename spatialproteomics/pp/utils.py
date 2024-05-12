@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import numpy as np
 import scipy.ndimage
 from skimage.measure import label, regionprops
@@ -6,8 +8,20 @@ from skimage.segmentation import relabel_sequential
 from ..base_logger import logger
 
 
-def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
+def merge(images: List[np.ndarray], proj: str = "sum", alpha: float = 0.5):
+    """
+    Merge multiple images into a single image using different projection methods.
 
+    Parameters:
+    - images (List[np.ndarray]): A list of images to be merged.
+    - proj (str, optional): The projection method to be used. Default is "sum".
+        - "sum": Sum the pixel values of the images.
+        - "blend": Blend the images using alpha blending.
+    - alpha (float, optional): The alpha value used in blending. Default is 0.5.
+
+    Returns:
+    - im_combined (np.ndarray): The merged image.
+    """
     if proj == "sum":
         im_combined = np.sum(np.stack(images, axis=3), axis=3)
         im_combined[im_combined > 1] = 1
@@ -27,19 +41,32 @@ def merge(images, colors=["C1", "C2", "C3", "C4", "C5"], proj="sum", alpha=0.5):
     return im_combined
 
 
-def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray, copy: bool = True) -> np.ndarray:
-    """Removes all cells from the segmentation that are not in cells."""
-    if copy:
-        segmentation = segmentation.copy()
-    bool_mask = ~np.isin(segmentation, cells)
-    segmentation[bool_mask] = 0
-
-    return segmentation
-
-
-def _relabel_cells(segmentation: np.ndarray):
+def _remove_unlabeled_cells(segmentation: np.ndarray, cells: np.ndarray) -> np.ndarray:
     """
-    Relabels cells in a segmentation array.
+    Remove unlabeled cells from the segmentation mask.
+
+    Parameters:
+    ----------
+    segmentation : np.ndarray
+        The segmentation array representing the labeled cells.
+    cells : np.ndarray
+        The array of cell labels to keep.
+
+    Returns:
+    -------
+    np.ndarray
+        The updated segmentation array with unlabeled cells removed.
+    """
+    segmentation_copy = segmentation.copy()
+    bool_mask = ~np.isin(segmentation_copy, cells)
+    segmentation_copy[bool_mask] = 0
+
+    return segmentation_copy
+
+
+def _relabel_cells(segmentation: np.ndarray) -> Tuple[np.ndarray, dict]:
+    """
+    This method relabels cells in the segmentation array, so that non-consecutive labels are turned into labels from 1 to n again.
 
     Parameters:
     ----------
@@ -48,29 +75,22 @@ def _relabel_cells(segmentation: np.ndarray):
 
     Returns:
     -------
-    tuple[np.ndarray, dict]
+    Tuple[np.ndarray, dict]
         A tuple containing the relabeled segmentation array and a mapping dictionary.
-
-    Notes:
-    ------
-    This method relabels cells in the segmentation array, so that non-consecutive labels are turned into labels from 1 to n again.
-    This is important since CellSeg's mask growing relies on this assumption.
-
-    The mapping dictionary provides a mapping from the original values to the new values.
     """
-    unique_values = np.unique(segmentation)  # Find unique values in the array
-    # num_unique_values = len(unique_values)  # Get the number of unique values
+    # find unique cell IDs
+    unique_values = np.unique(segmentation)
 
-    # Create a mapping from original values to new values
+    # create a mapping from original values to new values
     value_map = {value: i for i, value in enumerate(unique_values)}
 
-    # Map the original array to the new values using the mapping
+    # map the original array to the new values using the mapping
     segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
 
     return segmentation_relabeled, value_map
 
 
-def _merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
+def _merge_segmentation(s1: np.ndarray, s2: np.ndarray, label1: int = 1, label2: int = 2, threshold: float = 1.0):
     """
     Merge two segmentation masks based on specified criteria.
 
@@ -80,9 +100,9 @@ def _merge_segmentation(s1, s2, label1=1, label2=2, threshold=1.0):
         First segmentation mask.
     s2 : numpy.ndarray
         Second segmentation mask.
-    label1 : int, optional
+    label1 : int
         Label for regions from the first mask in the final merged mask. Default is 1.
-    label2 : int, optional
+    label2 : int
         Label for regions from the second mask in the final merged mask. Default is 2.
     threshold : float, optional
         Threshold for area ratio of intersection over union for merging regions.
@@ -136,10 +156,9 @@ def _normalize(
     pmax: float = 99.8,
     eps: float = 1e-20,
     clip: bool = False,
-    name: str = "normed",
 ) -> np.ndarray:
-    """Performs a min max normalisation.
-
+    """
+    Performs a min max normalisation.
     This function was adapted from the csbdeep package.
 
     Parameters
@@ -157,7 +176,7 @@ def _normalize(
 
     Returns
     -------
-    xr.DataArray
+    np.ndarray
         A min-max normalized image.
     """
     perc = np.percentile(img, [pmin, pmax], axis=(1, 2)).T
@@ -170,11 +189,37 @@ def _normalize(
     return norm
 
 
-def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error"):
+def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error") -> bool:
     """
-    This method checks for disconnected cells in a segmentation mask.
-    It returns True if there are disconnected cells, and False otherwise.
-    handle can be 'error', 'warning', or 'ignore'.
+    Check for disconnected cells in a segmentation mask.
+
+    Parameters:
+    ----------
+    segmentation : np.ndarray
+        The segmentation mask to check for disconnected cells.
+    handle : str, optional
+        The handling option for disconnected cells. Can be 'error', 'warning', or 'ignore'.
+
+    Returns:
+    -------
+    bool
+        True if there are disconnected cells, False otherwise.
+
+    Raises:
+    ------
+    ValueError
+        If disconnected cells are found and the handle is set to 'error'.
+
+    Warnings:
+    ---------
+    If disconnected cells are found and the handle is set to 'warning'.
+
+    Notes:
+    ------
+    This method checks for disconnected cells in a segmentation mask. It returns True if there are disconnected cells,
+    and False otherwise. The handle parameter determines how disconnected cells are handled. If handle is set to 'error',
+    a ValueError is raised. If handle is set to 'warning', a warning is logged. If handle is set to 'ignore', the method
+    returns True without raising an error or warning.
     """
     relabeled_mask = label(segmentation)
     num_cells = len(np.unique(segmentation))
@@ -185,17 +230,42 @@ def _check_for_disconnected_cells(segmentation: np.ndarray, handle: str = "error
     else:
         if handle == "error":
             raise ValueError(
-                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to see which cell is disconnected."
+                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to get an example of a disconnected cell."
             )
         elif handle == "warning":
             logger.warning(
-                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to see which cell is disconnected."
+                "Found disconnected masks in the segmentation. Use pp.get_disconnected_cell() to to get an example of a disconnected cell."
             )
         return True
 
 
 def handle_disconnected_cells(segmentation: np.ndarray, mode: str = "ignore"):
-    """This method handles disconnected cells in a segmentation mask. It can either completely remove any disconnected components, do nothing, only keep the largest or relabel."""
+    """
+    Handle disconnected cells in a segmentation mask.
+
+    Parameters:
+        segmentation (np.ndarray): The input segmentation mask.
+        mode (str, optional): The mode to handle disconnected cells.
+            - "ignore": Do nothing and keep the original segmentation mask.
+            - "remove": Remove disconnected cells from the segmentation mask.
+            - "relabel": Relabel cells to avoid disconnected cells.
+            - "keep_largest": Keep only the largest component of each disconnected cell.
+
+    Returns:
+        np.ndarray: The updated segmentation mask.
+
+    Raises:
+        AssertionError: If the mode is not one of 'ignore', 'remove', 'relabel', 'keep_largest'.
+
+    Notes:
+        - This method checks if there are any disconnected cells in the segmentation mask.
+        - If there are no disconnected cells, it returns the original segmentation mask.
+        - The behavior depends on the chosen mode:
+            - "ignore": Do nothing and return the original segmentation mask.
+            - "remove": Remove disconnected cells by setting their values to 0.
+            - "relabel": Relabel cells to avoid disconnected cells.
+            - "keep_largest": Keep only the largest component of each disconnected cell.
+    """
     assert mode in [
         "ignore",
         "remove",
@@ -259,7 +329,16 @@ def handle_disconnected_cells(segmentation: np.ndarray, mode: str = "ignore"):
     return segmentation
 
 
-def _get_disconnected_cell(segmentation):
+def _get_disconnected_cell(segmentation: np.ndarray) -> int:
+    """
+    Find and return the first disconnected cell in the given segmentation.
+
+    Parameters:
+    segmentation (np.ndarray): The segmentation array representing the cells.
+
+    Returns:
+    int: The label of the first disconnected cell found, or None if no disconnected cell is found.
+    """
     for cell in sorted(np.unique(segmentation))[1:]:
         binary_mask = np.where(segmentation == cell, 1, 0)
         _, num_features = scipy.ndimage.label(binary_mask)
