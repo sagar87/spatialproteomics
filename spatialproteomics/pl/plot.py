@@ -1025,6 +1025,6 @@ class PlotAccessor:
 
         return self._obj
 
-    def autocrop(self, channel=None, downsample=10):
-        slices = _autocrop(self._obj, channel=channel, downsample=downsample)
+    def autocrop(self, downsample=10):
+        slices = _autocrop(self._obj, downsample=downsample)
         return self._obj.pp[slices[0], slices[1]]
