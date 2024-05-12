@@ -113,7 +113,7 @@
 <span class="target" id="module-spatialproteomics.pp.preprocessing"></span><dl class="py class">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PreprocessingAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor" title="Permalink to this definition"></a></dt>
-<dd><p>The image accessor enables fast indexing and preprocesses image.data</p>
+<dd><p>The image accessor enables fast indexing and preprocessing of the spatialproteomics object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_channel">
 <span class="sig-name descname"><span class="pre">add_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_channel" title="Permalink to this definition"></a></dt>
@@ -180,7 +180,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_observations">
 <span class="sig-name descname"><span class="pre">add_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('label',</span> <span class="pre">'centroid')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_xarray</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_observations" title="Permalink to this definition"></a></dt>
-<dd><p>Adds properties derived from the mask to the image container.</p>
+<dd><p>Adds properties derived from the segmentation mask to the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -266,7 +266,7 @@ of the image container.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation">
-<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_growth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_growth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a segmentation mask (_segmentation) field to the xarray dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -275,13 +275,25 @@ of the image container.</p>
 that indicates the location of each cell.</p></li>
 <li><p><strong>mask_growth</strong> (<em>int</em>) – The number of pixels by which the segmentation mask should be grown.</p></li>
 <li><p><strong>relabel</strong> (<em>bool</em>) – If true the segmentation mask is relabeled to have continuous numbers from 1 to n.</p></li>
-<li><p><strong>copy</strong> (<em>bool</em>) – If true the segmentation mask is copied.</p></li>
 <li><p><strong>Returns</strong> – </p></li>
 <li><p><strong>--------</strong> – </p></li>
 <li><p><strong>xr.Dataset</strong> – The amended xarray.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample">
+<span class="sig-name descname"><span class="pre">downsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample" title="Permalink to this definition"></a></dt>
+<dd><p>Downsamples the image and segmentation mask in the object by a given rate.</p>
+<p>Parameters:
+- rate (int): The downsampling rate. Only every <cite>rate</cite>-th pixel will be kept.</p>
+<p>Returns:
+- xr.Dataset: The downsampled object containing the updated image and segmentation mask.</p>
+<p>Raises:
+- AssertionError: If no image layer is found in the object.
+- AssertionError: If no segmentation mask is found in the object.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -304,7 +316,32 @@ that indicates the location of each cell.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs">
 <span class="sig-name descname"><span class="pre">filter_by_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the list of cells with the labels from items.</p>
+<dd><p>Filter the object by observations based on a given feature and filtering function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>col</strong> (<em>str</em>) – The name of the feature to filter by.</p></li>
+<li><p><strong>func</strong> (<em>Callable</em>) – A filtering function that takes in the values of the feature and returns a boolean array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The filtered object with the selected cells and updated segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the feature does not exist in the object’s observations.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method filters the object by selecting only the cells that satisfy the filtering condition.</p></li>
+<li><p>It also updates the segmentation mask to remove cells that are not selected and relabels the remaining cells.</p></li>
+</ul>
+<p class="rubric">Example</p>
+<p>To filter the object by the feature “area” and keep only the cells with an area greater than 70px:
+&gt;&gt;&gt; obj = obj.pp.add_observations(‘area’).pp.filter_by_obs(‘area’, lambda x: x &gt; 70)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -327,16 +364,23 @@ that indicates the location of each cell.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_channels">
 <span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_channels" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a single channel as a numpy array.</p>
+<dd><p>Retrieve the specified channels from the dataset.</p>
+<p>Parameters:
+channels (Union[List[str], str]): The channels to retrieve. Can be a single channel name or a list of channel names.</p>
+<p>Returns:
+xr.Dataset: The dataset containing the specified channels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_disconnected_cell">
+<span class="sig-name descname"><span class="pre">get_disconnected_cell</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_disconnected_cell" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the first disconnected cell from the segmentation layer.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the channel or a list of channel names.</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The first disconnected cell from the segmentation layer.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The selected channels as a new image container.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray.Dataset</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -344,13 +388,72 @@ that indicates the location of each cell.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_layer_as_df">
 <span class="sig-name descname"><span class="pre">get_layer_as_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_obs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celltypes_to_str</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_layer_as_df" title="Permalink to this definition"></a></dt>
-<dd><p>This method converts a layer of the image container to a pandas dataframe.</p>
+<dd><p>Returns the specified layer as a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<em>str</em>) – The name of the layer to retrieve. Defaults to Layers.OBS.</p></li>
+<li><p><strong>celltypes_to_str</strong> (<em>bool</em>) – Whether to convert celltype labels to strings. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The layer data as a DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells">
-<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
-<dd><p>Grows the cells in the segmentation mask.</p>
+<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ignore'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Grows the segmentation masks by expanding the labels in the object.</p>
+<p>Parameters:
+- iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
+- handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are “ignore”, “remove”, or “fill”. Default is “ignore”.</p>
+<p>Raises:
+- ValueError: If the object does not contain a segmentation mask.</p>
+<p>Returns:
+- obj (xarray.Dataset): The object with the grown segmentation masks and updated observations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.merge_segmentation">
+<span class="sig-name descname"><span class="pre">merge_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'relabel'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.merge_segmentation" title="Permalink to this definition"></a></dt>
+<dd><p>Merge segmentation masks with the existing segmentation mask in the xarray object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>np.ndarray</em>) – The array containing the segmentation masks to be merged. It can be 2D or 3D.</p></li>
+<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – Optional. The labels corresponding to each segmentation mask in the array.
+If provided, the number of labels must match the number of arrays.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Optional. The threshold value for merging cells. Default is 1.0.</p></li>
+<li><p><strong>handle_disconnected</strong> (<em>str</em>) – Optional. The method to handle disconnected cells. Default is “relabel”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The xarray object with the merged segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>obj (xarray.Dataset)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If no segmentation mask is found in the xarray object.</p></li>
+<li><p><strong>AssertionError</strong> – If the input array is not 2D or 3D.</p></li>
+<li><p><strong>AssertionError</strong> – If the input array is not of type int.</p></li>
+<li><p><strong>AssertionError</strong> – If the shape of the input array does not match the shape of the segmentation mask.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If the input array is 2D, it will be expanded to 3D.</p></li>
+<li><p>If labels are provided, they need to match the number of arrays.</p></li>
+<li><p>The merging process starts with merging the biggest cells first, then the smaller ones.</p></li>
+<li><p>Disconnected cells in the input are handled based on the specified method.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
