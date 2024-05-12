@@ -3,7 +3,6 @@ from .intensity import (
     arcsinh_median_intensity,
     arcsinh_sum_intensity,
     arcsinh_var_intensity,
-    detect_peaks_num,
     is_positive,
     mean_intensity,
     percentage_positive,
@@ -19,7 +18,6 @@ __all__ = [
     "arcsinh_sum_intensity",
     "arcsinh_var_intensity",
     "arcsinh_median_intensity",
-    "detect_peaks_num",
     "is_positive",
     "percentage_positive",
 ]

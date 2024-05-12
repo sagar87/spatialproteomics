@@ -5,15 +5,15 @@ from spatialproteomics.constants import Layers
 
 def test_drop_layers(dataset_labeled):
     # dropping one layer
-    reduced = dataset_labeled.pp.drop_layers(Layers.LABELS)
+    reduced = dataset_labeled.pp.drop_layers(Layers.PROPERTIES)
 
     # ensuring that the layer was dropped
-    assert Layers.LABELS not in reduced
+    assert Layers.PROPERTIES not in reduced
     # ensuring that the props dimension was also dropped
     assert "props" not in reduced.dims
 
     # dropping multiple layers
-    reduced = dataset_labeled.pp.drop_layers([Layers.LABELS, Layers.SEGMENTATION])
+    reduced = dataset_labeled.pp.drop_layers([Layers.PROPERTIES, Layers.SEGMENTATION])
     # ensuring that the props dimension was dropped
     assert "props" not in reduced.dims
     # ensuring that x and y were not dropped, since they are still needed for the image

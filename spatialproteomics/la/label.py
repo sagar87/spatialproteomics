@@ -16,103 +16,13 @@ class LabelAccessor:
         self._obj = xarray_obj
 
     def __contains__(self, key):
-        if Layers.LABELS not in self._obj:
+        if Layers.PROPERTIES not in self._obj:
             return False
 
         label_dict = self._obj.la._label_to_dict(Props.NAME)
         return key in label_dict.keys() or key in label_dict.values()
 
-    def _relabel_dict(self, dictionary: dict):
-        _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
-        return {fw[k]: v for k, v in dictionary.items()}
-
-    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
-        """Returns a dictionary that maps each label to a list to their property.
-
-        Parameters
-        ----------
-        prop : str
-            The property to map to the labels.
-        reverse : bool
-            If True, the dictionary will be reversed.
-        relabel : bool
-            Deprecated.
-
-        Returns
-        -------
-        label_dict : dict
-            A dictionary that maps each label to a list to their property.
-        """
-        labels_layer = self._obj[Layers.LABELS]
-        labels = self._obj.coords[Dims.LABELS]
-
-        label_dict = {}
-
-        for label in labels:
-            current_row = labels_layer.loc[label, prop]
-            label_dict[label.values.item()] = current_row.values.item()
-
-        if relabel:
-            return self._obj.la._relabel_dict(label_dict)
-
-        if reverse:
-            label_dict = {v: k for k, v in label_dict.items()}
-
-        return label_dict
-
-    def _cells_to_label(self, relabel: bool = False, include_unlabeled: bool = False):
-        """Returns a dictionary that maps each label to a list of cells."""
-
-        label_dict = {
-            label.item(): self._obj.la._filter_cells_by_label(label.item()) for label in self._obj.coords[Dims.LABELS]
-        }
-
-        if include_unlabeled:
-            label_dict[0] = self._obj.la._filter_cells_by_label(0)
-
-        if relabel:
-            return self._obj.la._relabel_dict(label_dict)
-
-        return label_dict
-
-    def _filter_cells_by_label(self, items: Union[int, List[int]]):
-        """Returns the list of cells with the labels from items."""
-        if type(items) is int:
-            items = [items]
-
-        cells = self._obj[Layers.OBS].loc[:, Features.LABELS].values.copy()
-        cells_bool = np.isin(cells, items)
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        return cells_sel
-
-    def _label_name_to_id(self, label):
-        """Given a label name return its id."""
-        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
-        if label not in label_names_reverse:
-            raise ValueError(f"Cell type {label} not found.")
-
-        return label_names_reverse[label]
-
-    def _filter_by_intensity(
-        self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY, return_int_array: bool = True
-    ):
-        """Returns the list of cells with the labels from items."""
-        cells = self._obj[layer_key].sel({Dims.CHANNELS: channel}).values.copy()
-        cells_bool = func(cells)
-
-        if return_int_array:
-            # turning the boolean array into a numeric array (where 0 is False, 1 is True)
-            return cells_bool.astype(int)
-
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        return self._obj.sel({Dims.CELLS: cells_sel})
-
     def __getitem__(self, indices):
-        """
-        Sub selects labels.
-        """
         # type checking
         if isinstance(indices, float):
             raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
@@ -215,6 +125,151 @@ class LabelAccessor:
         cells = self._obj.la._filter_cells_by_label(inv_sel)
         return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
 
+    def _relabel_dict(self, dictionary: dict):
+        _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
+        return {fw[k]: v for k, v in dictionary.items()}
+
+    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
+        """
+        Returns a dictionary that maps each label to a list to their property.
+
+        Parameters
+        ----------
+        prop : str
+            The property to map to the labels.
+        reverse : bool
+            If True, the dictionary will be reversed.
+        relabel : bool
+            Deprecated.
+
+        Returns
+        -------
+        label_dict : dict
+            A dictionary that maps each label to a list to their property.
+        """
+        labels_layer = self._obj[Layers.PROPERTIES]
+        labels = self._obj.coords[Dims.LABELS]
+
+        label_dict = {}
+
+        for label in labels:
+            current_row = labels_layer.loc[label, prop]
+            label_dict[label.values.item()] = current_row.values.item()
+
+        if relabel:
+            return self._obj.la._relabel_dict(label_dict)
+
+        if reverse:
+            label_dict = {v: k for k, v in label_dict.items()}
+
+        return label_dict
+
+    def _cells_to_label(self, relabel: bool = False, include_unlabeled: bool = False) -> dict:
+        """
+        Returns a dictionary that maps each label to a list of cells.
+
+        Parameters
+        ----------
+        relabel : bool, optional
+            If True, relabels the dictionary keys to consecutive integers starting from 1.
+            Default is False.
+        include_unlabeled : bool, optional
+            If True, includes cells that are unlabeled in the dictionary.
+            Default is False.
+
+        Returns
+        -------
+        dict
+            A dictionary that maps each label to a list of cells. The keys are label values,
+            and the values are lists of cell indices.
+        """
+        label_dict = {
+            label.item(): self._obj.la._filter_cells_by_label(label.item()) for label in self._obj.coords[Dims.LABELS]
+        }
+
+        if include_unlabeled:
+            label_dict[0] = self._obj.la._filter_cells_by_label(0)
+
+        if relabel:
+            return self._obj.la._relabel_dict(label_dict)
+
+        return label_dict
+
+    def _filter_cells_by_label(self, items: Union[int, List[int]]):
+        """
+        Filter cells by label.
+
+        Parameters
+        ----------
+        items : int or List[int]
+            The label(s) to filter cells by. If an integer is provided, only cells with that label will be returned.
+            If a list of integers is provided, cells with any of the labels in the list will be returned.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array containing the selected cells.
+        """
+        if type(items) is int:
+            items = [items]
+
+        cells = self._obj[Layers.OBS].loc[:, Features.LABELS].values.copy()
+        cells_bool = np.isin(cells, items)
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        return cells_sel
+
+    def _label_name_to_id(self, label):
+        """
+        Convert a label name to its corresponding ID.
+
+        Parameters
+        ----------
+        label : str
+            The name of the label to convert.
+
+        Returns
+        -------
+        int
+            The ID corresponding to the given label name.
+
+        Raises
+        ------
+        ValueError
+            If the given label name is not found in the label names dictionary.
+        """
+        label_names_reverse = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+        if label not in label_names_reverse:
+            raise ValueError(f"Cell type {label} not found.")
+
+        return label_names_reverse[label]
+
+    def _filter_by_intensity(
+        self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY, return_int_array: bool = True
+    ) -> xr.Dataset:
+        """
+        Filter the cells based on intensity values for a specific channel. Useful for binarizing markers.
+
+        Parameters:
+            channel (str): The channel to filter on.
+            func (Callable): A function that takes in intensity values and returns a boolean array indicating which cells to keep.
+            layer_key (str, optional): The key of the layer containing the intensity values. Defaults to Layers.INTENSITY.
+            return_int_array (bool, optional): Whether to return the filtered cells as a numeric array (0 for False, 1 for True). Defaults to True.
+
+        Returns:
+            xarray.Dataset: The filtered cells as a DataArray if return_int_array is False, otherwise a numeric array.
+        """
+        cells = self._obj[layer_key].sel({Dims.CHANNELS: channel}).values.copy()
+        cells_bool = func(cells)
+
+        if return_int_array:
+            # turning the boolean array into a numeric array (where 0 is False, 1 is True)
+            return cells_bool.astype(int)
+
+        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
+
+        return self._obj.sel({Dims.CELLS: cells_sel})
+
     def add_label_type(self, name: str, color: str = "w") -> xr.Dataset:
         """
         Add a new label type to the data object.
@@ -253,19 +308,19 @@ class LabelAccessor:
             raise ValueError("No observation table found.")
 
         # Assert that label type is not already present
-        if Layers.LABELS in self._obj:
-            if name in self._obj[Layers.LABELS].sel({Dims.PROPS: Props.NAME}):
+        if Layers.PROPERTIES in self._obj:
+            if name in self._obj[Layers.PROPERTIES].sel({Dims.PROPS: Props.NAME}):
                 raise ValueError("Label type already exists.")
 
         array = np.array([name, color]).reshape(1, -1)
 
-        # if label annotations (Layers.LABELS) are not present, create them
-        if Layers.LABELS not in self._obj:
+        # if label properties (Layers.PROPERTIES) are not present, create them
+        if Layers.PROPERTIES not in self._obj:
             da = xr.DataArray(
                 array,
                 coords=[np.array([1]), [Props.NAME, Props.COLOR]],
                 dims=[Dims.LABELS, Dims.PROPS],
-                name=Layers.LABELS,
+                name=Layers.PROPERTIES,
             )
 
             db = xr.DataArray(
@@ -285,7 +340,7 @@ class LabelAccessor:
             )
 
             da = xr.concat(
-                [self._obj[Layers.LABELS], da],
+                [self._obj[Layers.PROPERTIES], da],
                 dim=Dims.LABELS,
             )
             obj = xr.merge([self._obj, da])
@@ -325,10 +380,8 @@ class LabelAccessor:
 
         if isinstance(cell_type, str):
             cell_type = [self._obj.la._label_name_to_id(cell_type)]
-        # TODO: If list should properly get cell -type
-        # TODO: should call reset label type prior to removing the cell type
 
-        if Layers.LABELS not in self._obj:
+        if Layers.PROPERTIES not in self._obj:
             raise ValueError("No cell type labels found.")
 
         for i in cell_type:
@@ -370,8 +423,8 @@ class LabelAccessor:
         """
         # checking that we already have properties
         assert (
-            Layers.LABELS in self._obj
-        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or ext.astir()."
+            Layers.PROPERTIES in self._obj
+        ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or tl.astir()."
         # making sure the property does not exist already
         assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
 
@@ -389,12 +442,12 @@ class LabelAccessor:
             array.reshape(-1, 1),
             coords=[unique_labels.astype(int), [prop]],
             dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.LABELS,
+            name=Layers.PROPERTIES,
         )
 
-        if Layers.LABELS in self._obj:
+        if Layers.PROPERTIES in self._obj:
             da = xr.concat(
-                [self._obj[Layers.LABELS], da],
+                [self._obj[Layers.PROPERTIES], da],
                 dim=Dims.PROPS,
             )
 
@@ -424,25 +477,27 @@ class LabelAccessor:
         - It updates the name of the cell type label in the data object to the new 'name'.
         """
         # checking that a label layer is already present
-        assert Layers.LABELS in self._obj, "No label layer found in the data object."
+        assert Layers.PROPERTIES in self._obj, "No label layer found in the data object."
         # checking if the old label exists
         assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
         # checking if the new label already exists
-        assert name not in self._obj[Layers.LABELS].sel({Dims.PROPS: Props.NAME}), f"Label name {name} already exists."
+        assert name not in self._obj[Layers.PROPERTIES].sel(
+            {Dims.PROPS: Props.NAME}
+        ), f"Label name {name} already exists."
 
-        # getting the original labels
-        label_layer = self._obj[Layers.LABELS].copy()
+        # getting the original label properties
+        property_layer = self._obj[Layers.PROPERTIES].copy()
 
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
 
-        label_layer.loc[label, Props.NAME] = name
+        property_layer.loc[label, Props.NAME] = name
 
-        # removing the old label layer
-        obj = self._obj.pp.drop_layers(Layers.LABELS)
+        # removing the old property layer
+        obj = self._obj.pp.drop_layers(Layers.PROPERTIES)
 
-        # adding the new label layer
-        return xr.merge([label_layer, obj])
+        # adding the new property layer
+        return xr.merge([property_layer, obj])
 
     def set_label_colors(self, labels: Union[str, List[str]], colors: Union[str, List[str]]):
         """
@@ -477,13 +532,13 @@ class LabelAccessor:
 
         # checking that a label layer is already present
         assert (
-            Layers.LABELS in self._obj
-        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or ext.astir()."
+            Layers.PROPERTIES in self._obj
+        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or tl.astir()."
 
         # obtaining the current properties
         props_layer = self._obj.coords[Dims.PROPS].values.tolist()
         labels_layer = self._obj.coords[Dims.LABELS].values.tolist()
-        array = self._obj._labels.values.copy()
+        array = self._obj[Layers.PROPERTIES].values.copy()
 
         for label, color in zip(labels, colors):
             # if the label does not exist in the object, a warning is thrown and we continue
@@ -501,10 +556,10 @@ class LabelAccessor:
             array,
             coords=[labels_layer, props_layer],
             dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.LABELS,
+            name=Layers.PROPERTIES,
         )
 
-        return xr.merge([self._obj.drop_vars(Layers.LABELS), da])
+        return xr.merge([self._obj.drop_vars(Layers.PROPERTIES), da])
 
     def predict_cell_types_argmax(
         self,
@@ -579,7 +634,7 @@ class LabelAccessor:
             # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
             obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
             # removing the old colors
-            obj = obj.pp.drop_layers(Layers.LABELS)
+            obj = obj.pp.drop_layers(Layers.PROPERTIES)
 
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
@@ -587,7 +642,30 @@ class LabelAccessor:
     def add_binarization(
         self, threshold_dict: dict, cell_type: Optional[str] = None, layer_key: str = "_percentage_positive_intensity"
     ):
-        """This method computes the percentage of positive cells for each channel and adds a binary feature for each channel based on the threshold. If a cell_type is specified, the binarization is only applied to this cell type."""
+        """
+        This method computes the percentage of positive cells for each channel and adds a binary feature for each channel based on the threshold.
+        If a cell_type is specified, the binarization is only applied to this cell type.
+
+        Parameters
+        ----------
+        threshold_dict : dict
+            A dictionary mapping channels to threshold values.
+        cell_type : str, optional
+            The specified cell type for which the binarization is applied, by default None.
+        layer_key : str, optional
+            The key for the new binary feature layer, by default "_percentage_positive_intensity".
+
+        Returns
+        -------
+        xr.Dataset
+            A new dataset object with the binary features added.
+
+        Notes
+        -----
+        - If a cell_type is specified, the binarization is only applied to the cells of that specific cell type.
+        - The binary feature is computed by comparing the intensity values of each channel to the threshold value.
+        - The binary feature is added as a new layer to the dataset object.
+        """
         channels = list(threshold_dict.keys())
 
         # checking that the channels are present in the data object
@@ -605,7 +683,6 @@ class LabelAccessor:
         # if a cell type is specified, we get the and from the cell type and the binarization, which will result in only positive cells of that specific cell type
         # to get this, we first need a binary vector that tells us if a cell is of the specified cell type
         if cell_type is not None:
-            # TODO: verify if this works and add an and gate
             # getting the cell type id
             cell_type_id = obj.la._label_name_to_id(cell_type)
             # getting all of the cells that should have a 1 in the binary vector

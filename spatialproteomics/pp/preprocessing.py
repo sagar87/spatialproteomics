@@ -13,7 +13,7 @@ from skimage.segmentation import expand_labels
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
-from .intensity import sum_intensity
+from .intensity import arcsinh_median_intensity
 from .utils import (
     _get_disconnected_cell,
     _merge_segmentation,
@@ -26,38 +26,39 @@ from .utils import (
 
 @xr.register_dataset_accessor("pp")
 class PreprocessingAccessor:
-    """The image accessor enables fast indexing and preprocesses image.data"""
+    """The image accessor enables fast indexing and preprocessing of the spatialproteomics object."""
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
     def __getitem__(self, indices) -> xr.Dataset:
-        """Fast subsetting the image container. The following examples show how
+        """
+        Fast subsetting the image container. The following examples show how
         the user can subset the image container:
 
         Subset the image container using x and y coordinates:
-        >> ds.pp[0:50, 0:50]
+        >>> ds.pp[0:50, 0:50]
 
         Subset the image container using x and y coordinates and channels:
-        >> ds.pp['Hoechst', 0:50, 0:50]
+        >>> ds.pp['Hoechst', 0:50, 0:50]
 
         Subset the image container using channels:
-        >> ds.pp['Hoechst']
+        >>> ds.pp['Hoechst']
 
         Multiple channels can be selected by passing a list of channels:
-        >> ds.pp[['Hoechst', 'CD4']]
+        >>> ds.pp[['Hoechst', 'CD4']]
 
-        Parameters:
-        -----------
-        indices: str, slice, list, tuple
+        Parameters
+        ----------
+        indices : str, slice, list, tuple
             The indices to subset the image container.
-        Returns:
-        --------
+
+        Returns
+        -------
         xarray.Dataset
             The subsetted image container.
         """
-        # unfortunately python does not have type(indices) is dict_keys, hence the slightly convoluted syntax
-        # basically it just checks if the user provided a dict_values or dict_keys and turns them into a list if that is the case
+        # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
         if type(indices) is {}.keys().__class__ or type(indices) is {}.values().__class__:
             indices = list(indices)
 
@@ -167,20 +168,17 @@ class PreprocessingAccessor:
 
     def get_channels(self, channels: Union[List[str], str]) -> xr.Dataset:
         """
-        Returns a single channel as a numpy array.
+        Retrieve the specified channels from the dataset.
 
-        Parameters
-        ----------
-        channels: Union[str, list]
-            The name of the channel or a list of channel names.
+        Parameters:
+        channels (Union[List[str], str]): The channels to retrieve. Can be a single channel name or a list of channel names.
 
-        Returns
-        -------
-        xarray.Dataset
-            The selected channels as a new image container.
+        Returns:
+        xr.Dataset: The dataset containing the specified channels.
         """
         if isinstance(channels, str):
             channels = [channels]
+
         # build query
         query = {Dims.CHANNELS: channels}
 
@@ -231,7 +229,6 @@ class PreprocessingAccessor:
             dims=Dims.IMAGE,
             name=Layers.IMAGE,
         )
-        # im = xr.concat([self._obj[Layers.IMAGE], da], dim=Dims.IMAGE[0])
 
         return xr.merge([self._obj, da])
 
@@ -240,7 +237,6 @@ class PreprocessingAccessor:
         segmentation: np.ndarray,
         mask_growth: int = 0,
         relabel: bool = True,
-        copy: bool = True,
         handle_disconnected: str = "ignore",
     ) -> xr.Dataset:
         """
@@ -255,8 +251,6 @@ class PreprocessingAccessor:
             The number of pixels by which the segmentation mask should be grown.
         relabel : bool
             If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
-        copy : bool
-            If true the segmentation mask is copied.
 
         Returns:
         --------
@@ -274,9 +268,7 @@ class PreprocessingAccessor:
 
         # checking if there are any disconnected cells in the input
         handle_disconnected_cells(segmentation, mode=handle_disconnected)
-
-        if copy:
-            segmentation = segmentation.copy()
+        segmentation = segmentation.copy()
 
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
@@ -304,7 +296,7 @@ class PreprocessingAccessor:
         return_xarray: bool = False,
     ) -> xr.Dataset:
         """
-        Adds properties derived from the mask to the image container.
+        Adds properties derived from the segmentation mask to the image container.
 
         Parameters
         ----------
@@ -438,7 +430,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        func=sum_intensity,
+        func=arcsinh_median_intensity,
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -448,7 +440,7 @@ class PreprocessingAccessor:
         Parameters
         ----------
         func : Callable, optional
-            The function used for quantification. Default is sum_intensity.
+            The function used for quantification. Default is arcsinh_median_intensity.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -569,15 +561,15 @@ class PreprocessingAccessor:
             array.reshape(-1, 1),
             coords=[unique_labels.astype(int), [prop]],
             dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.LABELS,
+            name=Layers.PROPERTIES,
         )
 
         if return_xarray:
             return da
 
-        if Layers.LABELS in self._obj:
+        if Layers.PROPERTIES in self._obj:
             da = xr.concat(
-                [self._obj[Layers.LABELS], da],
+                [self._obj[Layers.PROPERTIES], da],
                 dim=Dims.PROPS,
             )
 
@@ -788,7 +780,8 @@ class PreprocessingAccessor:
         image_layer = self._obj[Layers.IMAGE]
         if isinstance(quantile, list):
             quantile = np.array(quantile)
-        # Calulate quat
+
+        # calculate quantile
         lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
         filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
@@ -823,27 +816,38 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, normed])
 
     def downsample(self, rate: int):
+        """
+        Downsamples the image and segmentation mask in the object by a given rate.
+
+        Parameters:
+        - rate (int): The downsampling rate. Only every `rate`-th pixel will be kept.
+
+        Returns:
+        - xr.Dataset: The downsampled object containing the updated image and segmentation mask.
+
+        Raises:
+        - AssertionError: If no image layer is found in the object.
+        - AssertionError: If no segmentation mask is found in the object.
+        """
+        # checking if the object contains an image layer
+        assert Layers.IMAGE in self._obj, "No image layer found in the object."
+        # checking if the object contains a segmentation mask
+        assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the object."
+
         image_layer = self._obj[Layers.IMAGE]
-        # image_data = image_layer.values[:, ::rate,::rate]
 
         x = self._obj.x.values[::rate]
         y = self._obj.y.values[::rate]
         c = self._obj.channels.values
-        # import pdb;pdb.set_trace()
         img = image_layer.values[:, ::rate, ::rate]
-        # import pdb;pdb.set_trace()
         new_img = xr.DataArray(img, coords=[c, y, x], dims=[Dims.CHANNELS, Dims.Y, Dims.X], name=Layers.IMAGE)
-        # import pdb;pdb.set_trace()
         obj = self._obj.drop(Layers.IMAGE)
-        # import pdb;pdb.set_trace()
 
         if Layers.SEGMENTATION in self._obj:
             seg_layer = self._obj[Layers.SEGMENTATION]
-            # import pdb;pdb.set_trace()
             new_seg = xr.DataArray(
                 seg_layer.values[::rate, ::rate], coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
             )
-            # import pdb;pdb.set_trace()
             obj = obj.drop(Layers.SEGMENTATION)
 
         obj = obj.drop_dims([Dims.Y, Dims.X])
@@ -851,7 +855,27 @@ class PreprocessingAccessor:
         return xr.merge([obj, new_img, new_seg])
 
     def filter_by_obs(self, col: str, func: Callable):
-        """Returns the list of cells with the labels from items."""
+        """
+        Filter the object by observations based on a given feature and filtering function.
+
+        Parameters:
+            col (str): The name of the feature to filter by.
+            func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
+
+        Returns:
+            xr.Dataset: The filtered object with the selected cells and updated segmentation mask.
+
+        Raises:
+            AssertionError: If the feature does not exist in the object's observations.
+
+        Notes:
+            - This method filters the object by selecting only the cells that satisfy the filtering condition.
+            - It also updates the segmentation mask to remove cells that are not selected and relabels the remaining cells.
+
+        Example:
+            To filter the object by the feature "area" and keep only the cells with an area greater than 70px:
+            >>> obj = obj.pp.add_observations('area').pp.filter_by_obs('area', lambda x: x > 70)
+        """
         # checking if the feature exists in obs
         assert (
             col in self._obj.coords[Dims.FEATURES].values
@@ -887,10 +911,21 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore"):
+    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore") -> xr.Dataset:
         """
-        Grows the cells in the segmentation mask.
+        Grows the segmentation masks by expanding the labels in the object.
+
+        Parameters:
+        - iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
+        - handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
+
+        Raises:
+        - ValueError: If the object does not contain a segmentation mask.
+
+        Returns:
+        - obj (xarray.Dataset): The object with the grown segmentation masks and updated observations.
         """
+
         if Layers.SEGMENTATION not in self._obj:
             raise ValueError("The object does not contain a segmentation mask.")
 
@@ -938,11 +973,35 @@ class PreprocessingAccessor:
         threshold: float = 1.0,
         handle_disconnected: str = "relabel",
     ):
-        # array = all of the arrays that will iteratively be merged to the existing segmentation mask
+        """
+        Merge segmentation masks with the existing segmentation mask in the xarray object.
+
+        Parameters:
+            array (np.ndarray): The array containing the segmentation masks to be merged. It can be 2D or 3D.
+            labels (Optional[Union[str, List[str]]]): Optional. The labels corresponding to each segmentation mask in the array.
+                If provided, the number of labels must match the number of arrays.
+            threshold (float): Optional. The threshold value for merging cells. Default is 1.0.
+            handle_disconnected (str): Optional. The method to handle disconnected cells. Default is "relabel".
+
+        Returns:
+            obj (xarray.Dataset): The xarray object with the merged segmentation mask.
+
+        Raises:
+            AssertionError: If no segmentation mask is found in the xarray object.
+            AssertionError: If the input array is not 2D or 3D.
+            AssertionError: If the input array is not of type int.
+            AssertionError: If the shape of the input array does not match the shape of the segmentation mask.
+
+        Notes:
+            - If the input array is 2D, it will be expanded to 3D.
+            - If labels are provided, they need to match the number of arrays.
+            - The merging process starts with merging the biggest cells first, then the smaller ones.
+            - Disconnected cells in the input are handled based on the specified method.
+        """
         # ensuring that a segmentation mask already exists
         assert (
             Layers.SEGMENTATION in self._obj
-        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or ext.stardist()/ext.cellpose()."
+        ), "No segmentation mask found in the xarray object. Please add one first using pp.add_segmentation() or tl.stardist()/tl.cellpose()."
 
         # checking that the array is 2D or 3D
         assert array.ndim in [
@@ -1051,7 +1110,16 @@ class PreprocessingAccessor:
         return obj
 
     def get_layer_as_df(self, layer: str = Layers.OBS, celltypes_to_str: bool = True):
-        """This method converts a layer of the image container to a pandas dataframe."""
+        """
+        Returns the specified layer as a pandas DataFrame.
+
+        Parameters:
+            layer (str): The name of the layer to retrieve. Defaults to Layers.OBS.
+            celltypes_to_str (bool): Whether to convert celltype labels to strings. Defaults to True.
+
+        Returns:
+            pandas.DataFrame: The layer data as a DataFrame.
+        """
         data_array = self._obj[layer]
 
         dims = data_array.dims
@@ -1066,5 +1134,11 @@ class PreprocessingAccessor:
 
         return df
 
-    def get_disconnected_cell(self):
+    def get_disconnected_cell(self) -> int:
+        """
+        Returns the first disconnected cell from the segmentation layer.
+
+        Returns:
+            ndarray: The first disconnected cell from the segmentation layer.
+        """
         return _get_disconnected_cell(self._obj[Layers.SEGMENTATION])
