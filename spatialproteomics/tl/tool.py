@@ -60,6 +60,10 @@ class ToolAccessor:
         -----
         This method requires the 'cellpose' package to be installed.
         """
+        if isinstance(channels, str):
+            channels = [channels]
+        elif channels is None:
+            channels = self._obj.coords[Dims.CHANNELS].values
 
         if return_xarray:
             # if return_xarray is true, check if a segmentation mask with the key already exists
@@ -77,11 +81,6 @@ class ToolAccessor:
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
-
-        if isinstance(channels, str):
-            channels = [channels]
-        elif channels is None:
-            channels = self._obj.coords[Dims.CHANNELS].values
 
         all_masks = []
         for channel in channels:
