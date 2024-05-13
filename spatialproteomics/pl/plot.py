@@ -182,12 +182,12 @@ class PlotAccessor:
 
     def imshow(
         self,
-        render_intensities: bool = True,
+        render_image: bool = True,
         render_segmentation: bool = False,
         render_labels: bool = False,
         ax=None,
-        show_channel_legend: bool = True,
-        show_label_legend: bool = True,
+        legend_image: bool = True,
+        legend_label: bool = True,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -197,12 +197,12 @@ class PlotAccessor:
         Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
 
         Parameters:
-        - render_intensities (bool): Whether to render channel intensities. Default is True.
+        - render_image (bool): Whether to render the image with channel intensities. Default is True.
         - render_segmentation (bool): Whether to render segmentation. Default is False.
         - render_labels (bool): Whether to render labels. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
-        - show_channel_legend (bool): Whether to show the channel legend. Default is True.
-        - show_label_legend (bool): Whether to show the label legend. Default is True.
+        - legend_image (bool): Whether to show the channel legend. Default is True.
+        - legend_label (bool): Whether to show the label legend. Default is True.
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
@@ -223,12 +223,12 @@ class PlotAccessor:
         """
         # check that at least one rendering element is specified
         assert any(
-            [render_intensities, render_labels, render_segmentation]
-        ), "No rendering element specified. Please set at least one of 'render_intensities', 'render_labels', or 'render_segmentation' to True."
+            [render_image, render_labels, render_segmentation]
+        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', or 'render_segmentation' to True."
 
         # copying the input object to avoid colorizing the original object in place
         obj = self._obj.copy()
-        if Layers.PLOT not in self._obj and render_intensities:
+        if Layers.PLOT not in self._obj and render_image:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.sizes[Dims.CHANNELS] > 20:
                 logger.warning(
@@ -245,31 +245,12 @@ class PlotAccessor:
 
         if render_segmentation:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
+            
+        legend_image = legend_image and render_image
+        legend_label = legend_image or legend_label
 
-        if ax is None:
-            ax = plt.gca()
+        return obj.pl.show(legend_image=legend_image, legend_label=legend_label, ax=ax, downsample=downsample)
 
-        bounds = obj.pl._get_bounds()
-
-        ax.imshow(
-            obj[Layers.PLOT].values[::downsample, ::downsample],
-            origin="lower",
-            interpolation="none",
-            extent=bounds,
-        )
-
-        legend = []
-
-        if show_channel_legend and render_intensities:
-            legend += obj.pl._create_channel_legend()
-
-        if show_label_legend and render_labels:
-            legend += obj.pl._create_label_legend()
-
-        if show_channel_legend or show_label_legend:
-            ax.legend(handles=legend, **legend_kwargs)
-
-        return obj
 
     def annotate(
         self,
@@ -485,6 +466,73 @@ class PlotAccessor:
         )
 
         return xr.merge([self._obj, da])
+    
+    
+    def show(
+        self,
+        legend_image: bool = False,
+        legend_label: bool = False,
+        downsample: int = 1,
+        legend_kwargs: dict = {"framealpha": 1},
+        ax=None,
+    ):
+        """
+        Plots the image after rendering certain layers.
+        Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
+        For a more high level wrapper, please refer to pl.imshow() instead.
+
+        Parameters
+        ----------
+        legend_image : bool, optional
+            Show the legendf for the channels. Default is False.
+        legend_label : bool, optional
+            Show the labels. Default is False.
+        downsample : int, optional
+            Downsample factor for the image. Default is 1.
+        legend_kwargs : dict, optional
+            Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
+        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
+        """
+        if Layers.PLOT not in self._obj:
+            logger.warning("No plot defined yet. Plotting the first channel only. Please call pl.colorize() first.")
+            channel = str(self._obj.coords[Dims.CHANNELS].values[0])
+            self._obj = self._obj.pp[channel].pp.colorize(colors=["white"])
+
+        if ax is None:
+            ax = plt.gca()
+
+        bounds = self._obj.pl._get_bounds()
+
+        ax.imshow(
+            self._obj[Layers.PLOT].values[::downsample, ::downsample],
+            origin="lower",
+            interpolation="none",
+            extent=bounds,
+        )
+
+        legend = []
+
+        if legend_image:
+            legend += self._obj.pl._create_channel_legend()
+
+        if legend_label:
+            legend += self._obj.pl._create_label_legend()
+
+        if legend_image or legend_label:
+            ax.legend(handles=legend, **legend_kwargs)
+
+        return self._obj
 
     def scatter_labels(
         self,
