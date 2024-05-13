@@ -421,7 +421,7 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.show()
 </pre></div>
 </div>
 </div>
@@ -437,7 +437,7 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.colorize([&#39;white&#39;]).pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.colorize([&#39;white&#39;]).pl.show()
 </pre></div>
 </div>
 </div>
@@ -453,7 +453,7 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.show()
 </pre></div>
 </div>
 </div>
@@ -472,7 +472,7 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
 ax = plt.gca()
 
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.imshow(ax=ax)
+_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;]).pl.show(ax=ax)
 ax.set_title(&#39;CD3 and PAX5&#39;)
 ax.set_ylabel(&#39;Y&#39;)
 ax.set_xlabel(&#39;X&#39;)
@@ -510,7 +510,7 @@ _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
      .pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
      .pl.render_segmentation()
-     .pl.imshow(ax=ax)
+     .pl.show(ax=ax)
     )
 </pre></div>
 </div>
@@ -522,7 +522,7 @@ _ = (ds
 <img alt="../_images/notebooks_Plotting_13_0.png" src="../_images/notebooks_Plotting_13_0.png" />
 </div>
 </div>
-<p>An easier syntax is to simple set <code class="docutils literal notranslate"><span class="pre">render_segmentation=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">pl.imshow()</span></code> method.</p>
+<p>An easier syntax is to simple set <code class="docutils literal notranslate"><span class="pre">render_segmentation=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> method.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -532,7 +532,7 @@ ax = plt.gca()
 
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-     .pl.imshow(render_segmentation=True, ax=ax)
+     .pl.show(render_segmentation=True, ax=ax)
     )
 </pre></div>
 </div>
@@ -559,7 +559,7 @@ _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
      .pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;])
      .pl.render_labels(alpha=.4, alpha_boundary=1)
-     .pl.imshow(ax=ax)
+     .pl.show(ax=ax)
     )
 </pre></div>
 </div>
@@ -571,7 +571,7 @@ _ = (ds
 <img alt="../_images/notebooks_Plotting_17_0.png" src="../_images/notebooks_Plotting_17_0.png" />
 </div>
 </div>
-<p>An easier syntax is to simply use <code class="docutils literal notranslate"><span class="pre">pl.imshow()</span></code> again. This enables you to plot labels and segmentation masks.</p>
+<p>An easier syntax is to simply use <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> again. This enables you to plot labels and segmentation masks.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -581,7 +581,7 @@ ax = plt.gca()
 
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-     .pl.imshow(render_image=False, render_segmentation=True, render_labels=True, ax=ax)
+     .pl.show(render_image=False, render_segmentation=True, render_labels=True, ax=ax)
     )
 </pre></div>
 </div>
@@ -603,7 +603,7 @@ ax = plt.gca()
 
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-     .pl.imshow(render_image=True, render_segmentation=True, render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
+     .pl.show(render_image=True, render_segmentation=True, render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
     )
 </pre></div>
 </div>
@@ -627,7 +627,7 @@ ax = plt.gca()
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
      .la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;]
-     .pl.imshow(render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
+     .pl.show(render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
     )
 </pre></div>
 </div>

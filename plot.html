@@ -207,7 +207,7 @@ Default is None, which annotates all cells.</p></li>
 <li><p><em>xr.Dataset</em> – The image container with the colorized image stored in Layers.PLOT.</p></li>
 <li><p><em>Example Usage</em></p></li>
 <li><p><em>————–</em></p></li>
-<li><p><em>&gt;&gt;&gt; ds.pp[‘PAX5’, ‘CD3’].pl.colorize([‘red’, ‘green’]).pl.imshow()</em></p></li>
+<li><p><em>&gt;&gt;&gt; ds.pp[‘PAX5’, ‘CD3’].pl.colorize([‘red’, ‘green’]).pl.show()</em></p></li>
 </ul>
 </p>
 </dd>
@@ -216,29 +216,32 @@ Default is None, which annotates all cells.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.imshow">
-<span class="sig-name descname"><span class="pre">imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">render_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.imshow" title="Permalink to this definition"></a></dt>
-<dd><p>Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.</p>
-<p>Parameters:
-- render_image (bool): Whether to render the image with channel intensities. Default is True.
-- render_segmentation (bool): Whether to render segmentation. Default is False.
-- render_labels (bool): Whether to render labels. Default is False.
-- ax: The matplotlib axes to plot on. If None, the current axes will be used.
-- legend_image (bool): Whether to show the channel legend. Default is True.
-- legend_label (bool): Whether to show the label legend. Default is True.
-- downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
-- legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {“framealpha”: 1}.
-- segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
-- label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.</p>
-<p>Returns:
-- obj (xr.Dataset): The modified dataset object.</p>
-<p>Raises:
-- AssertionError: If no rendering element is specified.</p>
-<p>Note:
-- This method displays an image with optional rendering elements such as intensities, labels, and segmentation.
-- The <cite>render_intensities</cite>, <cite>render_labels</cite>, and <cite>render_segmentation</cite> parameters control which rendering elements are displayed.
-- The <cite>ax</cite> parameter allows specifying a specific matplotlib axes to plot on. If None, the current axes will be used.
-- The <cite>show_channel_legend</cite> and <cite>show_label_legend</cite> parameters control whether to show the channel and label legends, respectively.
-- The <cite>legend_kwargs</cite>, <cite>segmentation_kwargs</cite>, and <cite>label_kwargs</cite> parameters allow configuring the appearance of the legend, segmentation, and labels, respectively.</p>
+<span class="sig-name descname"><span class="pre">imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">legend_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.imshow" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the image after rendering certain layers.
+Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
+For a more high level wrapper, please refer to pl.show() instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>legend_image</strong> (<em>bool</em><em>, </em><em>optional</em>) – Show the legendf for the channels. Default is False.</p></li>
+<li><p><strong>legend_label</strong> (<em>bool</em><em>, </em><em>optional</em>) – Show the labels. Default is False.</p></li>
+<li><p><strong>downsample</strong> (<em>int</em><em>, </em><em>optional</em>) – Downsample factor for the image. Default is 1.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments for configuring the legend. Default is {“framealpha”: 1}.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes</em><em>, </em><em>optional</em>) – The matplotlib axis to plot on. If not provided, the current axis will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function is used to plot images in conjunction with ‘im.colorize’ and ‘la.render_label’.</p></li>
+<li><p>The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -357,32 +360,29 @@ Default is None, which annotates all cells.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.show">
-<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">legend_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.show" title="Permalink to this definition"></a></dt>
-<dd><p>Plots the image after rendering certain layers.
-Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
-For a more high level wrapper, please refer to pl.imshow() instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>legend_image</strong> (<em>bool</em><em>, </em><em>optional</em>) – Show the legendf for the channels. Default is False.</p></li>
-<li><p><strong>legend_label</strong> (<em>bool</em><em>, </em><em>optional</em>) – Show the labels. Default is False.</p></li>
-<li><p><strong>downsample</strong> (<em>int</em><em>, </em><em>optional</em>) – Downsample factor for the image. Default is 1.</p></li>
-<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments for configuring the legend. Default is {“framealpha”: 1}.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib.axes</em><em>, </em><em>optional</em>) – The matplotlib axis to plot on. If not provided, the current axis will be used.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The updated image container.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The function is used to plot images in conjunction with ‘im.colorize’ and ‘la.render_label’.</p></li>
-<li><p>The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.</p></li>
-</ul>
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">render_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_segmentation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{'framealpha':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.show" title="Permalink to this definition"></a></dt>
+<dd><p>Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.</p>
+<p>Parameters:
+- render_image (bool): Whether to render the image with channel intensities. Default is True.
+- render_segmentation (bool): Whether to render segmentation. Default is False.
+- render_labels (bool): Whether to render labels. Default is False.
+- ax: The matplotlib axes to plot on. If None, the current axes will be used.
+- legend_image (bool): Whether to show the channel legend. Default is True.
+- legend_label (bool): Whether to show the label legend. Default is True.
+- downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
+- legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {“framealpha”: 1}.
+- segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
+- label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.</p>
+<p>Returns:
+- obj (xr.Dataset): The modified dataset object.</p>
+<p>Raises:
+- AssertionError: If no rendering element is specified.</p>
+<p>Note:
+- This method displays an image with optional rendering elements such as intensities, labels, and segmentation.
+- The <cite>render_intensities</cite>, <cite>render_labels</cite>, and <cite>render_segmentation</cite> parameters control which rendering elements are displayed.
+- The <cite>ax</cite> parameter allows specifying a specific matplotlib axes to plot on. If None, the current axes will be used.
+- The <cite>show_channel_legend</cite> and <cite>show_label_legend</cite> parameters control whether to show the channel and label legends, respectively.
+- The <cite>legend_kwargs</cite>, <cite>segmentation_kwargs</cite>, and <cite>label_kwargs</cite> parameters allow configuring the appearance of the legend, segmentation, and labels, respectively.</p>
 </dd></dl>
 
 </dd></dl>
