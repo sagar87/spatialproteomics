@@ -2490,7 +2490,7 @@ sp_object = sp_object.la.set_label_colors([&#39;T_h&#39;, &#39;T_tox&#39;, &#39;
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 _ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]].pl.imshow(ax=ax[0])
-_ = sp_object.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, ax=ax[1])
+_ = sp_object.pl.imshow(render_image=False, render_segmentation=True, render_labels=True, ax=ax[1])
 </pre></div>
 </div>
 </div>

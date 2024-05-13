@@ -2360,7 +2360,7 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=(10, 5))\n",
     "_ = sp_object.pp[['CD4', 'CD8', 'FOXP3', 'BCL6']].pl.imshow(ax=ax[0])\n",
-    "_ = sp_object.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, ax=ax[1])"
+    "_ = sp_object.pl.imshow(render_image=False, render_segmentation=True, render_labels=True, ax=ax[1])"
    ]
   },
   {

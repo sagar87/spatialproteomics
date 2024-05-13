@@ -581,7 +581,7 @@ ax = plt.gca()
 
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-     .pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, ax=ax)
+     .pl.imshow(render_image=False, render_segmentation=True, render_labels=True, ax=ax)
     )
 </pre></div>
 </div>
@@ -603,7 +603,7 @@ ax = plt.gca()
 
 _ = (ds
      .pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-     .pl.imshow(render_intensities=True, render_segmentation=True, render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
+     .pl.imshow(render_image=True, render_segmentation=True, render_labels=True, label_kwargs={&#39;alpha&#39;: 0.5}, ax=ax)
     )
 </pre></div>
 </div>
