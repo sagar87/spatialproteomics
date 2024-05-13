@@ -245,12 +245,11 @@ class PlotAccessor:
 
         if render_segmentation:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
-            
+
         legend_image = legend_image and render_image
         legend_label = legend_image or legend_label
 
         return obj.pl.show(legend_image=legend_image, legend_label=legend_label, ax=ax, downsample=downsample)
-
 
     def annotate(
         self,
@@ -466,8 +465,7 @@ class PlotAccessor:
         )
 
         return xr.merge([self._obj, da])
-    
-    
+
     def show(
         self,
         legend_image: bool = False,
@@ -733,7 +731,6 @@ class PlotAccessor:
         ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
 
         return self._obj
-
 
     def autocrop(
         self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None
