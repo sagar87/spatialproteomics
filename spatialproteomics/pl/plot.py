@@ -143,7 +143,7 @@ class PlotAccessor:
 
         Example Usage
         --------------
-        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.imshow()
+        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.show()
         """
         # check if a plot already exists
         assert (
@@ -180,7 +180,7 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
-    def imshow(
+    def show(
         self,
         render_image: bool = True,
         render_segmentation: bool = False,
@@ -232,7 +232,7 @@ class PlotAccessor:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.sizes[Dims.CHANNELS] > 20:
                 logger.warning(
-                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l"
+                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.show()."
                 )
                 channel = str(self._obj.coords[Dims.CHANNELS].values[0])
                 obj = self._obj.pp[channel].pl.colorize(colors=["white"])
@@ -247,9 +247,15 @@ class PlotAccessor:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
 
         legend_image = legend_image and render_image
-        legend_label = legend_image or legend_label
+        legend_label = legend_label and render_labels
 
-        return obj.pl.show(legend_image=legend_image, legend_label=legend_label, ax=ax, downsample=downsample)
+        return obj.pl.imshow(
+            legend_image=legend_image,
+            legend_label=legend_label,
+            ax=ax,
+            downsample=downsample,
+            legend_kwargs=legend_kwargs,
+        )
 
     def annotate(
         self,
@@ -466,7 +472,7 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
-    def show(
+    def imshow(
         self,
         legend_image: bool = False,
         legend_label: bool = False,
@@ -477,7 +483,7 @@ class PlotAccessor:
         """
         Plots the image after rendering certain layers.
         Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
-        For a more high level wrapper, please refer to pl.imshow() instead.
+        For a more high level wrapper, please refer to pl.show() instead.
 
         Parameters
         ----------
