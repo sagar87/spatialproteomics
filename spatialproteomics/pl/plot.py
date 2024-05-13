@@ -143,7 +143,7 @@ class PlotAccessor:
 
         Example Usage
         --------------
-        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.imshow()
+        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.show()
         """
         # check if a plot already exists
         assert (
@@ -180,14 +180,14 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
-    def imshow(
+    def show(
         self,
-        render_intensities: bool = True,
+        render_image: bool = True,
         render_segmentation: bool = False,
         render_labels: bool = False,
         ax=None,
-        show_channel_legend: bool = True,
-        show_label_legend: bool = True,
+        legend_image: bool = True,
+        legend_label: bool = True,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -197,12 +197,12 @@ class PlotAccessor:
         Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
 
         Parameters:
-        - render_intensities (bool): Whether to render channel intensities. Default is True.
+        - render_image (bool): Whether to render the image with channel intensities. Default is True.
         - render_segmentation (bool): Whether to render segmentation. Default is False.
         - render_labels (bool): Whether to render labels. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
-        - show_channel_legend (bool): Whether to show the channel legend. Default is True.
-        - show_label_legend (bool): Whether to show the label legend. Default is True.
+        - legend_image (bool): Whether to show the channel legend. Default is True.
+        - legend_label (bool): Whether to show the label legend. Default is True.
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
@@ -223,16 +223,16 @@ class PlotAccessor:
         """
         # check that at least one rendering element is specified
         assert any(
-            [render_intensities, render_labels, render_segmentation]
-        ), "No rendering element specified. Please set at least one of 'render_intensities', 'render_labels', or 'render_segmentation' to True."
+            [render_image, render_labels, render_segmentation]
+        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', or 'render_segmentation' to True."
 
         # copying the input object to avoid colorizing the original object in place
         obj = self._obj.copy()
-        if Layers.PLOT not in self._obj and render_intensities:
+        if Layers.PLOT not in self._obj and render_image:
             # if there are more than 20 channels, only the first one is plotted
             if self._obj.sizes[Dims.CHANNELS] > 20:
                 logger.warning(
-                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.imshow()l"
+                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.show()."
                 )
                 channel = str(self._obj.coords[Dims.CHANNELS].values[0])
                 obj = self._obj.pp[channel].pl.colorize(colors=["white"])
@@ -246,30 +246,16 @@ class PlotAccessor:
         if render_segmentation:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
 
-        if ax is None:
-            ax = plt.gca()
+        legend_image = legend_image and render_image
+        legend_label = legend_label and render_labels
 
-        bounds = obj.pl._get_bounds()
-
-        ax.imshow(
-            obj[Layers.PLOT].values[::downsample, ::downsample],
-            origin="lower",
-            interpolation="none",
-            extent=bounds,
+        return obj.pl.imshow(
+            legend_image=legend_image,
+            legend_label=legend_label,
+            ax=ax,
+            downsample=downsample,
+            legend_kwargs=legend_kwargs,
         )
-
-        legend = []
-
-        if show_channel_legend and render_intensities:
-            legend += obj.pl._create_channel_legend()
-
-        if show_label_legend and render_labels:
-            legend += obj.pl._create_label_legend()
-
-        if show_channel_legend or show_label_legend:
-            ax.legend(handles=legend, **legend_kwargs)
-
-        return obj
 
     def annotate(
         self,
@@ -486,6 +472,72 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
+    def imshow(
+        self,
+        legend_image: bool = False,
+        legend_label: bool = False,
+        downsample: int = 1,
+        legend_kwargs: dict = {"framealpha": 1},
+        ax=None,
+    ):
+        """
+        Plots the image after rendering certain layers.
+        Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
+        For a more high level wrapper, please refer to pl.show() instead.
+
+        Parameters
+        ----------
+        legend_image : bool, optional
+            Show the legendf for the channels. Default is False.
+        legend_label : bool, optional
+            Show the labels. Default is False.
+        downsample : int, optional
+            Downsample factor for the image. Default is 1.
+        legend_kwargs : dict, optional
+            Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        ax : matplotlib.axes, optional
+            The matplotlib axis to plot on. If not provided, the current axis will be used.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container.
+
+        Notes
+        -----
+        - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
+        - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
+        """
+        if Layers.PLOT not in self._obj:
+            logger.warning("No plot defined yet. Plotting the first channel only. Please call pl.colorize() first.")
+            channel = str(self._obj.coords[Dims.CHANNELS].values[0])
+            self._obj = self._obj.pp[channel].pp.colorize(colors=["white"])
+
+        if ax is None:
+            ax = plt.gca()
+
+        bounds = self._obj.pl._get_bounds()
+
+        ax.imshow(
+            self._obj[Layers.PLOT].values[::downsample, ::downsample],
+            origin="lower",
+            interpolation="none",
+            extent=bounds,
+        )
+
+        legend = []
+
+        if legend_image:
+            legend += self._obj.pl._create_channel_legend()
+
+        if legend_label:
+            legend += self._obj.pl._create_label_legend()
+
+        if legend_image or legend_label:
+            ax.legend(handles=legend, **legend_kwargs)
+
+        return self._obj
+
     def scatter_labels(
         self,
         legend: bool = True,
@@ -686,257 +738,6 @@ class PlotAccessor:
 
         return self._obj
 
-    def pie(
-        self,
-        wedgeprops={"linewidth": 7, "edgecolor": "white"},
-        circle_radius=0.2,
-        labels=True,
-        ax=None,
-    ):
-        """
-        Plots a pie chart of label frequencies.
-
-        Parameters
-        ----------
-        wedgeprops : dict, optional
-            Keyword arguments passed to the matplotlib pie function for wedge properties.
-        circle_radius : float, optional
-            The radius of the inner circle in the pie chart. Default is 0.2.
-        labels : bool, optional
-            Whether to display labels on the pie chart. Default is True.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        - The function plots a pie chart of label frequencies in the data object.
-        - The appearance of the pie chart can be customized using 'wedgeprops' and 'circle_radius'.
-        - Labels on the pie chart can be shown or hidden using the 'labels' parameter.
-        """
-        if ax is None:
-            ax = plt.gca()
-
-        color_dict = self._obj.la._label_to_dict(Props.COLOR)
-        names_dict = self._obj.la._label_to_dict(Props.NAME)
-
-        obs_layer = self._obj[Layers.OBS]
-        label_array = obs_layer.loc[:, Features.LABELS].values
-        x, y = np.unique(label_array, return_counts=True)
-
-        ax.pie(
-            y,
-            labels=[names_dict[i] for i in x] if labels else None,
-            colors=[color_dict[i] for i in x],
-            wedgeprops=wedgeprops,
-        )
-        my_circle = plt.Circle((0, 0), circle_radius, color="white")
-        ax.add_artist(my_circle)
-
-    def spectra(self, cells: Union[List[int], int], layers_key="intensity", ncols=4, width=4, height=3, ax=None):
-        """
-        Plots the spectra of cells.
-
-        Parameters
-        ----------
-        cells : Union[List[int], int]
-            The cell ID(s) whose spectra will be plotted.
-        layers_key : str, optional
-            The key representing the layer in the data object for plotting spectra. Default is "intensity".
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, a new figure and axis will be created.
-
-        Returns
-        -------
-        xr.Dataset
-            The selected data array for the plotted cells.
-
-        Notes
-        -----
-        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
-        """
-        if type(cells) is int:
-            cells = [cells]
-
-        da = self._obj[layers_key].sel({"cells": cells})
-        num_cells = len(cells)
-
-        fig, axes = _set_up_subplots(num_cells, ncols=ncols, width=width, height=height)
-
-        # fig, axes = plt.subplots(1, num_cells, figsize=(4 * num_cells, 3))
-
-        if num_cells > 1:
-            for i, ax in zip(range(da.values.shape[0]), axes.flatten()):
-                ax.bar(np.arange(da.values.shape[1]), da.values[i])
-                ax.set_xticks(np.arange(da.values.shape[1]))
-                ax.set_xticklabels(da.channels.values, rotation=90)
-                ax.set_title(f"Cell {da.cells.values[i]}")
-        else:
-            axes.bar(np.arange(da.values.squeeze().shape[0]), da.values.squeeze())
-            axes.set_xticks(np.arange(da.values.squeeze().shape[0]))
-            axes.set_xticklabels(da.channels.values, rotation=90)
-            axes.set_title(f"Cell {da.cells.values[0]}")
-
-        # if ax is isinstance(ax, np.ndarray):
-        # assert np.prod(ax.shape) >= num_cells, "Must provide at least one axis for each cell to plot."
-
-        return da
-
-    def spectra_with_annotation(
-        self,
-        cells: Union[List[int], None] = None,
-        layers_key="intensity",
-        format_df=None,
-        plot_kwargs: dict = {
-            "width": 12,
-            "height": 2,
-            "hspace": 1.0,
-            "wspace": 0.0001,
-            "xticks": True,
-        },
-    ):
-        """
-        Plots the spectra of cells with annotation.
-
-        Parameters
-        ----------
-        cells : Union[List[int], None], optional
-            The cell ID(s) whose spectra will be plotted. If None, all cells will be plotted.
-        layers_key : str, optional
-            The key representing the layer in the data object for plotting spectra. Default is "intensity".
-        format_df : pd.DataFrame or None, optional
-            A DataFrame containing annotation information for the plotted cells. Default is None (no annotation).
-        plot_kwargs : dict, optional
-            Additional keyword arguments for setting up subplots and plot appearance.
-
-        Returns
-        -------
-        xr.Dataset
-            The image container.
-
-        Notes
-        -----
-        - The function plots the spectra of the specified cell(s) using the 'layers_key' from the data object.
-        - Annotates the spectra using the provided 'format_df' DataFrame.
-        """
-
-        if cells is None:
-            cells = self._obj.coords[Dims.CELLS].values.tolist()
-
-        # da = self._obj.se.quantify_cells(cells)
-        da = self._obj[layers_key].sel({"cells": cells})
-        annot = format_annotation_df(format_df, da)
-
-        plot_expression_spectra(
-            da.values,
-            annot,
-            titles=[f"{i}" for i in da.coords[Dims.CELLS]],
-            **plot_kwargs,
-        )
-
-        return self._obj
-
-    def draw_edges(self, color="white", linewidths=0.5, zorder=0, ax=None):
-        """
-        Draws edges connecting neighboring cells.
-
-        Parameters
-        ----------
-        color : str, optional
-            The color of the edges. Default is "white".
-        linewidths : float, optional
-            The linewidth of the edges. Default is 0.5.
-        zorder : int, optional
-            The z-order of the edges in the plot. Default is 0.
-        ax : matplotlib.axes, optional
-            The matplotlib axis to plot on. If not provided, the current axis will be used.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated image container.
-
-        Notes
-        -----
-        - The function draws edges connecting neighboring cells in the plot.
-        - The appearance of the edges can be customized using 'color' and 'linewidths'.
-        """
-        coords = self._obj[Layers.OBS].loc[:, [Features.X, Features.Y]]
-        neighbors = self._obj[Layers.NEIGHBORS].values.reshape(-1)
-        cell_dim = self._obj.sizes[Dims.CELLS]
-        neighbor_dim = self._obj.sizes[Dims.NEIGHBORS]
-
-        # set up edgelist
-        origin = coords.values
-        target = coords.sel({Dims.CELLS: neighbors}).values.reshape(cell_dim, neighbor_dim, 2)
-
-        # line segments
-        all_lines = []
-        for k in range(target.shape[1]):
-            lines = [[i, j] for i, j in zip(map(tuple, origin), map(tuple, target[:, k]))]
-            all_lines.extend(lines)
-
-        # Line collection
-        # REFACTOR
-        lc = LineCollection(all_lines, colors=color, linewidths=linewidths, zorder=zorder)
-        if ax is None:
-            ax = plt.gca()
-
-        ax.add_collection(lc)
-        xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
-        ax.set_ylim([ymin, ymax])
-        ax.set_xlim([xmin, xmax])
-
-        return self._obj
-
-    def channel_histogram(
-        self,
-        intensity_key: str,
-        bins: int = 50,
-        ncols: int = 4,
-        width: float = 4,
-        height: float = 3,
-        log_scale: bool = False,
-        ax=None,
-        **kwargs,
-    ):
-
-        intensities = self._obj[intensity_key]
-        channels = self._obj.coords[Dims.CHANNELS].values
-        num_channels = len(channels)
-
-        # if num_channels > 1 and ax is not None:
-        #     logger.warning("More than one channel. Plotting on first axis.")
-        #     # assert np.prod(ax.shape) >= num_channels, "Must provide at least one axis for each channel to plot."
-        # else:
-        #     if ax is None:
-        #         ax = plt.gca()
-
-        if num_channels > 1:
-
-            fig, axes = _set_up_subplots(num_channels, ncols=ncols, width=width, height=height)
-
-            for ch, ax in zip(channels, axes.flatten()):
-                data = intensities.sel({Dims.CHANNELS: ch}).values
-                ax.hist(data, bins=bins, **kwargs)
-                ax.set_title(ch)
-                if log_scale:
-                    ax.set_yscale("log")
-        else:
-            if ax is None:
-                ax = plt.gca()
-            ch = channels[0]
-            data = intensities.sel({Dims.CHANNELS: ch}).values
-            ax.hist(data, bins=bins, **kwargs)
-            ax.set_title(ch)
-            if log_scale:
-                ax.set_yscale("log")
-
-        return self._obj      
-      
     def autocrop(
         self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None
     ) -> xr.Dataset:
