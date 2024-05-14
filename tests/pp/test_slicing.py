@@ -88,3 +88,13 @@ def test_image_slicing_dict_values(dataset_full):
     assert "Hoechst" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
     assert "CD4" in sub[Layers.IMAGE].coords[Dims.IMAGE[0]]
     assert Layers.SEGMENTATION in sub
+
+
+def test_image_slicing_wrong_input(dataset_full):
+    with pytest.raises(TypeError, match="Invalid input. To subselect, you can input a string, slice, list, or tuple."):
+        dataset_full.pp[True]
+
+
+def test_image_slicing_inconsistent_type(dataset_full):
+    with pytest.raises(TypeError, match="Invalid input. Found non-string elements in the list."):
+        dataset_full.pp[["DAPI", 3]]
