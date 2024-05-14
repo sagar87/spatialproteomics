@@ -77,6 +77,9 @@ class PreprocessingAccessor:
                 c_slice = indices
                 x_slice = slice(None)
                 y_slice = slice(None)
+            else:
+                raise TypeError(f"Invalid input. Found non-string elements in the list. Input list: {indices}")
+
         elif type(indices) is tuple:
             all_str = all([type(s) is str for s in indices])
 
@@ -113,6 +116,10 @@ class PreprocessingAccessor:
                 if (type(indices[1]) is slice) & (type(indices[2]) is slice):
                     x_slice = indices[1]
                     y_slice = indices[2]
+        else:
+            raise TypeError(
+                f"Invalid input. To subselect, you can input a string, slice, list, or tuple. You provided {type(indices)}"
+            )
 
         ds = self._obj.pp.get_channels(c_slice)
 
