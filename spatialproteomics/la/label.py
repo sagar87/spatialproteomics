@@ -674,11 +674,8 @@ class LabelAccessor:
         ), f"One or more channels not found in the data object. Available channels are: {self._obj.coords[Dims.CHANNELS]}"
 
         # check if this key already exists
-        if layer_key in self._obj:
-            logger.warning(f"Layer with key {layer_key} already exists. Using existing expression matrix.")
-            obj = self._obj.copy()
-        else:
-            obj = self._obj.pp.add_quantification(func=percentage_positive, key_added=layer_key)
+        assert layer_key not in self._obj, f"Layer with key {layer_key} already exists. Please use a different key."
+        obj = self._obj.pp.add_quantification(func=percentage_positive, key_added=layer_key)
 
         # if a cell type is specified, we get the and from the cell type and the binarization, which will result in only positive cells of that specific cell type
         # to get this, we first need a binary vector that tells us if a cell is of the specified cell type
