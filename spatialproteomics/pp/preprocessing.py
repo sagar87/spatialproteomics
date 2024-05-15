@@ -681,22 +681,37 @@ class PreprocessingAccessor:
 
         return xr.merge([obj.sel(cells=da.cells), da])
 
-    def drop_layers(self, layers: Union[str, list]) -> xr.Dataset:
+    def drop_layers(
+        self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None
+    ) -> xr.Dataset:
         """
-        Drops layers from the image container.
+        Drops layers from the image container. Can either drop all layers specified in layers or drop all layers but the ones specified in keep.
 
         Parameters
         ----------
         layers : Union[str, list]
             The name of the layer or a list of layer names to be dropped.
+        keep : Union[str, list]
+            The name of the layer or a list of layer names to be kept.
 
         Returns
         -------
         xr.Dataset
             The updated image container with dropped layers.
         """
+        # checking that either layers or keep is provided
+        assert layers is not None or keep is not None, "Please provide either layers or keep."
+        assert not (layers is not None and keep is not None), "Please provide either layers or keep."
+
         if type(layers) is str:
             layers = [layers]
+
+        if type(keep) is str:
+            keep = [keep]
+
+        # if keep is provided, we drop all layers that are not in keep
+        if keep is not None:
+            layers = [str(x) for x in self._obj.data_vars if str(x) not in keep]
 
         assert all(
             [layer in self._obj.data_vars for layer in layers]
@@ -986,13 +1001,17 @@ class PreprocessingAccessor:
         """
         Merge segmentation masks.
         This can be done in two ways: either by merging a multi-dimensional array from the object directly, or by adding a numpy array.
+        You can either just merge a multi-dimensional array, or merge to an existing 1D mask (e. g. a precomputed DAPI segmentation).
 
         Parameters:
             array (np.ndarray): The array containing the segmentation masks to be merged. It can be 2D or 3D.
+            from_key (str): The key of the segmentation mask in the xarray object to be merged.
             labels (Optional[Union[str, List[str]]]): Optional. The labels corresponding to each segmentation mask in the array.
                 If provided, the number of labels must match the number of arrays.
             threshold (float): Optional. The threshold value for merging cells. Default is 1.0.
             handle_disconnected (str): Optional. The method to handle disconnected cells. Default is "relabel".
+            key_base_segmentation (str): Optional. The key of the base segmentation mask in the xarray object to merge to.
+            key_added (str): Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is "_segmentation".
 
         Returns:
             obj (xarray.Dataset): The xarray object with the merged segmentation mask.
@@ -1013,18 +1032,23 @@ class PreprocessingAccessor:
         assert (
             from_key is not None or array is not None
         ), "Either from_key or array must be provided. Use from_key to merge segmentation from a precomputed mask, or array if you want to merge segmentations from a numpy array to an existing segmentation."
+
         # checking that either from_key or array are not both not None
         assert not (
             from_key is not None and array is not None
         ), "Only one of from_key or array can be provided. Use from_key to merge segmentation from a precomputed mask, or array if you want to merge segmentations from a numpy array to an existing segmentation."
+
         # checking that from_key is a string
         if from_key is not None:
             assert type(from_key) is str, f"The input from_key must be a string. You provided type {type(from_key)}."
+
+        # checking that key_base_segmentation exists in the object
         if key_base_segmentation is not None:
             assert (
                 key_base_segmentation in self._obj
             ), f"The key {key_base_segmentation} does not exist in the xarray object."
 
+        # checking if the array has the right shape and type
         if array is not None:
             # checking that the array is 2D or 3D
             assert array.ndim in [
@@ -1034,9 +1058,12 @@ class PreprocessingAccessor:
 
             # checking that the input type is int
             assert np.issubdtype(array.dtype, np.integer), "The input array must be of type int."
+
         else:
+
             # ensuring that the key exists in the object
             assert from_key in self._obj, f"The key {from_key} does not exist in the xarray object."
+
             # reading the array from the object
             array = self._obj[from_key].values
 
