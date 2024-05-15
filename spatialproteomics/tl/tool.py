@@ -63,7 +63,7 @@ class ToolAccessor:
         if isinstance(channels, str):
             channels = [channels]
         elif channels is None:
-            channels = self._obj.coords[Dims.CHANNELS].values
+            channels = [str(x) for x in self._obj.coords[Dims.CHANNELS].values]
 
         if return_xarray:
             # if return_xarray is true, check if a segmentation mask with the key already exists
