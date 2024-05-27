@@ -7,7 +7,6 @@ from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
-from ..pp.intensity import percentage_positive
 
 
 @xr.register_dataset_accessor("la")
@@ -639,18 +638,16 @@ class LabelAccessor:
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
 
-    def add_binarization(
-        self, threshold_dict: dict, cell_type: Optional[str] = None, layer_key: str = "_percentage_positive_intensity"
-    ):
+    def add_binarization(self, threshold_dict: dict, label: Optional[str] = None, layer_key: str = Layers.INTENSITY):
         """
-        This method computes the percentage of positive cells for each channel and adds a binary feature for each channel based on the threshold.
-        If a cell_type is specified, the binarization is only applied to this cell type.
+        Binarise based on a threshold.
+        If a label is specified, the binarization is only applied to this cell type.
 
         Parameters
         ----------
         threshold_dict : dict
             A dictionary mapping channels to threshold values.
-        cell_type : str, optional
+        label : str, optional
             The specified cell type for which the binarization is applied, by default None.
         layer_key : str, optional
             The key for the new binary feature layer, by default "_percentage_positive_intensity".
@@ -662,10 +659,13 @@ class LabelAccessor:
 
         Notes
         -----
-        - If a cell_type is specified, the binarization is only applied to the cells of that specific cell type.
+        - If a label is specified, the binarization is only applied to the cells of that specific cell type.
         - The binary feature is computed by comparing the intensity values of each channel to the threshold value.
         - The binary feature is added as a new layer to the dataset object.
         """
+        if layer_key not in self._obj:
+            raise KeyError(f'No layer "{layer_key}" found. Please add it first using pp.add_quantification().')
+
         channels = list(threshold_dict.keys())
 
         # checking that the channels are present in the data object
@@ -673,31 +673,27 @@ class LabelAccessor:
             [channel in self._obj.coords[Dims.CHANNELS].values for channel in channels]
         ), f"One or more channels not found in the data object. Available channels are: {self._obj.coords[Dims.CHANNELS]}"
 
-        # check if this key already exists
-        if layer_key in self._obj:
-            logger.warning(f"Layer with key {layer_key} already exists. Using existing expression matrix.")
-            obj = self._obj.copy()
-        else:
-            obj = self._obj.pp.add_quantification(func=percentage_positive, key_added=layer_key)
+        # copy object
+        obj = self._obj.copy()
 
         # if a cell type is specified, we get the and from the cell type and the binarization, which will result in only positive cells of that specific cell type
         # to get this, we first need a binary vector that tells us if a cell is of the specified cell type
-        if cell_type is not None:
+        if label is not None:
             # getting the cell type id
-            cell_type_id = obj.la._label_name_to_id(cell_type)
+            label_id = obj.la._label_name_to_id(label)
             # getting all of the cells that should have a 1 in the binary vector
-            cells_of_specified_cell_type = obj.la[cell_type_id].cells.values
+            cells_of_specified_label = obj.la[label_id].cells.values
             # creating a boolean mask indicating whether each element of cells is in cells_subset
-            ct_mask = np.isin(obj.cells.values, cells_of_specified_cell_type)
+            ct_mask = np.isin(obj.cells.values, cells_of_specified_label)
             # converting the boolean mask to integers (0 for False, 1 for True)
             ct_indicator_array = ct_mask.astype(int)
 
         for channel, threshold in threshold_dict.items():
             positive_cells = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
-            if cell_type is None:
+            if label is None:
                 obj = obj.pp.add_feature(f"{channel}_binarized", positive_cells)
             else:
                 # here we multiply the two binary arrays together, which is essentially equivalent to an and gate, only retaining binarized values for the cell type in question
-                obj = obj.pp.add_feature(f"{cell_type}_{channel}_binarized", positive_cells * ct_indicator_array)
+                obj = obj.pp.add_feature(f"{label}_{channel}_binarized", positive_cells * ct_indicator_array)
 
         return obj
