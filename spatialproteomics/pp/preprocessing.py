@@ -300,6 +300,7 @@ class PreprocessingAccessor:
     def add_observations(
         self,
         properties: Union[str, list, tuple] = ("label", "centroid"),
+        layer_key: str = Layers.SEGMENTATION,
         return_xarray: bool = False,
     ) -> xr.Dataset:
         """
@@ -310,6 +311,8 @@ class PreprocessingAccessor:
         properties : Union[str, list, tuple]
             A list of properties to be added to the image container. See
             skimage.measure.regionprops_table for a list of available properties.
+        layer_key : str
+            The key of the layer that contains the segmentation mask.
         return_xarray : bool
             If true, the function returns an xarray.DataArray with the properties
             instead of adding them to the image container.
@@ -319,8 +322,8 @@ class PreprocessingAccessor:
         xr.DataSet
             The amended image container.
         """
-        if Layers.SEGMENTATION not in self._obj:
-            raise ValueError("No segmentation mask found.")
+        if layer_key not in self._obj:
+            raise ValueError(f"No segmentation mask found at layer {layer_key}.")
 
         if type(properties) is str:
             properties = [properties]
@@ -328,7 +331,7 @@ class PreprocessingAccessor:
         if "label" not in properties:
             properties = ["label", *properties]
 
-        table = regionprops_table(self._obj[Layers.SEGMENTATION].values, properties=properties)
+        table = regionprops_table(self._obj[layer_key].values, properties=properties)
 
         label = table.pop("label")
         data = []
@@ -876,13 +879,14 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, new_img, new_seg])
 
-    def filter_by_obs(self, col: str, func: Callable):
+    def filter_by_obs(self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION):
         """
         Filter the object by observations based on a given feature and filtering function.
 
         Parameters:
             col (str): The name of the feature to filter by.
             func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
+            segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
 
         Returns:
             xr.Dataset: The filtered object with the selected cells and updated segmentation mask.
@@ -903,6 +907,10 @@ class PreprocessingAccessor:
             col in self._obj.coords[Dims.FEATURES].values
         ), f"Feature {col} not found in obs. You can add it with pp.add_observations()."
 
+        assert (
+            segmentation_key in self._obj
+        ), f"Segmentation mask with key {segmentation_key} not found in the object. Set segmentation_key to ensure that the segmentation masks are synchronized to the observations."
+
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
@@ -911,7 +919,7 @@ class PreprocessingAccessor:
         obj = self._obj.sel({Dims.CELLS: cells_sel})
 
         # synchronizing the segmentation mask with the selected cells
-        segmentation = obj[Layers.SEGMENTATION].values
+        segmentation = obj[segmentation_key].values
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
         # relabeling cells in the segmentation mask so the IDs go from 1 to n again
@@ -924,11 +932,11 @@ class PreprocessingAccessor:
             segmentation,
             coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
             dims=[Dims.Y, Dims.X],
-            name=Layers.SEGMENTATION,
+            name=segmentation_key,
         )
 
         # removing the old segmentation
-        obj = obj.drop_vars(Layers.SEGMENTATION)
+        obj = obj.drop_vars(segmentation_key)
 
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])

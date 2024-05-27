@@ -340,6 +340,7 @@ class PlotAccessor:
 
     def render_segmentation(
         self,
+        layer_key: str = Layers.SEGMENTATION,
         alpha: float = 0.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
@@ -348,6 +349,7 @@ class PlotAccessor:
         Renders the segmentation mask with optional alpha blending and boundary rendering.
 
         Parameters:
+            layer_key (str, optional): The key of the layer containing the segmentation mask. Default is Layers.SEGMENTATION.
             alpha (float, optional): The alpha value for blending the segmentation mask with the plot. Default is 0.0.
             alpha_boundary (float, optional): The alpha value for rendering the boundary of the segmentation mask. Default is 1.0.
             mode (str, optional): The mode for rendering the segmentation mask. Possible values are "inner" and "outer". Default is "inner".
@@ -364,12 +366,12 @@ class PlotAccessor:
             - The rendered segmentation mask will be added as a new layer to the object.
         """
         assert (
-            Layers.SEGMENTATION in self._obj
-        ), "No segmentation layer found. Please add a segmentation mask before calling this method."
+            layer_key in self._obj
+        ), f"Could not find segmentation layer with key {layer_key}. Please add a segmentation mask before calling this method."
 
         color_dict = {1: "white"}
         cmap = _get_listed_colormap(color_dict)
-        segmentation = self._obj[Layers.SEGMENTATION].values
+        segmentation = self._obj[layer_key].values
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
