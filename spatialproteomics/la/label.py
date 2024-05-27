@@ -638,6 +638,29 @@ class LabelAccessor:
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
 
+    def _threshold_label(
+        self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
+    ):
+        if layer_key not in self._obj:
+            raise KeyError(f'No layer "{layer_key}" found. Please add it first using pp.add_quantification().')
+
+        if channel not in self._obj.coords[Dims.CHANNELS]:
+            raise KeyError(f'No channel "{channel}".')
+
+        obj = self._obj.copy()
+        label_pos = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
+
+        if label is not None:
+            # getting all of the cells that should have a 1 in the binary vector
+            label_idx = obj.la[label].cells.values
+            # creating a boolean mask indicating whether each element of cells is in cells_subset
+            label_mask = np.isin(obj.cells.values, label_idx).astype(int)
+            label_pos *= label_mask
+
+        obj = obj.pp.add_feature(f"{channel}_binarized", label_pos)
+
+        return obj
+
     def add_binarization(self, threshold_dict: dict, label: Optional[str] = None, layer_key: str = Layers.INTENSITY):
         """
         Binarise based on a threshold.
