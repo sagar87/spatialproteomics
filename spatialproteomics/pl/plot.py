@@ -14,6 +14,7 @@ from .utils import (
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _render_segmentation,
 )
 
 
@@ -341,6 +342,7 @@ class PlotAccessor:
     def render_segmentation(
         self,
         layer_key: str = Layers.SEGMENTATION,
+        colors: List[str] = ["white"],
         alpha: float = 0.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
@@ -350,6 +352,7 @@ class PlotAccessor:
 
         Parameters:
             layer_key (str, optional): The key of the layer containing the segmentation mask. Default is Layers.SEGMENTATION.
+            colors (List[str], optional): A list of colors to be used for rendering the segmentation mask. Default is ['white'].
             alpha (float, optional): The alpha value for blending the segmentation mask with the plot. Default is 0.0.
             alpha_boundary (float, optional): The alpha value for rendering the boundary of the segmentation mask. Default is 1.0.
             mode (str, optional): The mode for rendering the segmentation mask. Possible values are "inner" and "outer". Default is "inner".
@@ -369,16 +372,28 @@ class PlotAccessor:
             layer_key in self._obj
         ), f"Could not find segmentation layer with key {layer_key}. Please add a segmentation mask before calling this method."
 
-        color_dict = {1: "white"}
-        cmap = _get_listed_colormap(color_dict)
         segmentation = self._obj[layer_key].values
+
+        # the segmentation mask can either be 2D or 3D
+        # if it is 2D, we transform it into 3D for compatibility with 3D segmentation masks (where multiple channels are present)
+        if len(segmentation.shape) == 2:
+            segmentation = np.expand_dims(segmentation, axis=0)
+            channels = [1]
+        else:
+            channels = list(range(1, len(self._obj[layer_key].coords[Dims.CHANNELS]) + 1))
+
+        # checking that there are as many colors as there are channels in the segmentation mask which is rendered
+        assert (
+            len(colors) == segmentation.shape[0]
+        ), f"Number of colors ({len(colors)}) does not match the number of channels in the segmentation mask ({segmentation.shape[0]}). Please specify a color for each segmentation channel using the colors keyword."
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_labels(
+            rendered = _render_segmentation(
                 segmentation,
-                cmap,
-                self._obj[Layers.PLOT].values,
+                colors=colors,
+                background="black",
+                img=self._obj[Layers.PLOT].values,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -386,9 +401,10 @@ class PlotAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_labels(
+            rendered = _render_segmentation(
                 segmentation,
-                cmap,
+                colors=colors,
+                background="black",
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -397,14 +413,20 @@ class PlotAccessor:
         da = xr.DataArray(
             rendered,
             coords=[
+                channels,
                 self._obj.coords[Dims.Y],
                 self._obj.coords[Dims.X],
                 ["r", "g", "b", "a"],
             ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
             name=Layers.PLOT,
             attrs=attrs,
         )
+
+        # merging the masks together into a 2D array
+        da = da.sum(Dims.CHANNELS, keep_attrs=True)
+        da.values[da.values > 1] = 1.0
+
         return xr.merge([self._obj, da])
 
     def render_labels(

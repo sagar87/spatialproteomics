@@ -323,7 +323,9 @@ class PreprocessingAccessor:
             The amended image container.
         """
         if layer_key not in self._obj:
-            raise ValueError(f"No segmentation mask found at layer {layer_key}.")
+            raise ValueError(
+                f"No segmentation mask found at layer {layer_key}. You can specify which layer to use with the layer_key parameter."
+            )
 
         if type(properties) is str:
             properties = [properties]
@@ -909,7 +911,7 @@ class PreprocessingAccessor:
 
         assert (
             segmentation_key in self._obj
-        ), f"Segmentation mask with key {segmentation_key} not found in the object. Set segmentation_key to ensure that the segmentation masks are synchronized to the observations."
+        ), f"Segmentation mask with key {segmentation_key} not found in the object. You can specify the key with the segmentation_key parameter."
 
         cells = self._obj[Layers.OBS].sel({Dims.FEATURES: col}).values.copy()
         cells_bool = func(cells)
