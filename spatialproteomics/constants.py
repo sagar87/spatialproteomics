@@ -50,6 +50,7 @@ class Dims(object):
 
 class Attrs(object):
     IMAGE_COLORS = "image_colors"
+    SEGMENTATION_COLORS = "segmentation_colors"
     LABEL_COLORS = "label_colors"
     LABEL_NAMES = "label_names"
 

@@ -48,7 +48,6 @@ class PlotAccessor:
         Returns:
             elements (list): A list of Patch objects representing the legend elements.
         """
-
         # checking if the plot layer exists
         assert Layers.PLOT in self._obj, "No plot layer found. Please call pl.colorize() first."
         # checking if the image colors attribute exists
@@ -62,6 +61,31 @@ class PlotAccessor:
         color_dict = {k: v for k, v in color_dict.items() if k != 0}
 
         elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
+        return elements
+
+    def _create_segmentation_legend(self):
+        """
+        Create a legend for the segmentation layers.
+
+        Returns:
+            elements (list): A list of Line2D objects representing the segmentation layers.
+        """
+        assert (
+            Attrs.SEGMENTATION_COLORS in self._obj[Layers.PLOT].attrs
+        ), "No segmentation colors found. Please specify colors when rendering multiple segmentation masks."
+
+        color_dict = self._obj[Layers.PLOT].attrs[Attrs.SEGMENTATION_COLORS]
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                color=c,
+                label=ch,
+            )
+            for ch, c in color_dict.items()
+        ]
+
         return elements
 
     def _create_label_legend(self):
@@ -188,6 +212,7 @@ class PlotAccessor:
         render_labels: bool = False,
         ax=None,
         legend_image: bool = True,
+        legend_segmentation: bool = True,
         legend_label: bool = True,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
@@ -203,6 +228,7 @@ class PlotAccessor:
         - render_labels (bool): Whether to render labels. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
         - legend_image (bool): Whether to show the channel legend. Default is True.
+        - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
         - legend_label (bool): Whether to show the label legend. Default is True.
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
@@ -246,16 +272,22 @@ class PlotAccessor:
 
         if render_segmentation:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
+            # it should not be possible to show a segmentation legend if there is only one segmentation layer
+            segmentation_shape = self._obj[segmentation_kwargs.get("layer_key", Layers.SEGMENTATION)].values.shape
+            legend_segmentation = legend_segmentation and len(segmentation_shape) > 2
 
         legend_image = legend_image and render_image
+        legend_segmentation = legend_segmentation and render_segmentation
         legend_label = legend_label and render_labels
 
         return obj.pl.imshow(
             legend_image=legend_image,
+            legend_segmentation=legend_segmentation,
             legend_label=legend_label,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
+            segmentation_kwargs=segmentation_kwargs,
         )
 
     def annotate(
@@ -410,6 +442,12 @@ class PlotAccessor:
                 mode=mode,
             )
 
+        # adding segmentation colors to the attributes
+        if Dims.CHANNELS in self._obj[layer_key].coords:
+            attrs[Attrs.SEGMENTATION_COLORS] = {
+                k.item(): v for k, v in zip(self._obj[layer_key].coords[Dims.CHANNELS], colors)
+            }
+
         da = xr.DataArray(
             rendered,
             coords=[
@@ -430,7 +468,11 @@ class PlotAccessor:
         return xr.merge([self._obj, da])
 
     def render_labels(
-        self, alpha: float = 1.0, alpha_boundary: float = 1.0, mode: str = "inner", override_color: Optional[str] = None
+        self,
+        alpha: float = 1.0,
+        alpha_boundary: float = 1.0,
+        mode: str = "inner",
+        override_color: Optional[str] = None,
     ) -> xr.Dataset:
         """
         Renders cell type labels on the plot.
@@ -499,9 +541,11 @@ class PlotAccessor:
     def imshow(
         self,
         legend_image: bool = False,
+        legend_segmentation: bool = False,
         legend_label: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
+        segmentation_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -513,12 +557,16 @@ class PlotAccessor:
         ----------
         legend_image : bool, optional
             Show the legendf for the channels. Default is False.
+        legend_segmentation : bool, optional
+            Show the legend for the segmentation. Default is False.
         legend_label : bool, optional
             Show the labels. Default is False.
         downsample : int, optional
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        segmentation_kwargs : dict, optional
+            Additional keyword arguments for rendering the segmentation, e. g. colors when rendering multiple segmentation channels. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -553,6 +601,9 @@ class PlotAccessor:
 
         if legend_image:
             legend += self._obj.pl._create_channel_legend()
+
+        if legend_segmentation:
+            legend += self._obj.pl._create_segmentation_legend()
 
         if legend_label:
             legend += self._obj.pl._create_label_legend()

@@ -108,21 +108,21 @@ def _render_segmentation(
     mode: str = "inner",
 ) -> np.ndarray:
     """
-    Rendering a (potentially 3D) segmentation mask.
+    Render a 2D or 3D (in the case of multiple segmentations, e. g. with cellpose) segmentation.
 
     Parameters:
-        img (np.ndarray): The input image to be colorized.
-        colors (List[str], optional): The list of colors to be used for colorization. Defaults to ["C1", "C2", "C3", "C4", "C5"].
+        segmentation (np.ndarray): The segmentation array with shape (num_channels, height, width).
+        colors (List[str]): The list of colors to be applied to each channel of the segmentation.
         background (str, optional): The background color. Defaults to "black".
-        normalize (bool, optional): Whether to normalize the image before colorization. Defaults to True.
+        img (np.ndarray, optional): The image to be used as a base for rendering. Defaults to None.
+        alpha (float, optional): The transparency level for the colored segmentation. Defaults to 0.2.
+        alpha_boundary (float, optional): The transparency level for the boundary of the segmentation. Defaults to 1.0.
+        mode (str, optional): The mode for finding boundaries. Defaults to "inner".
 
     Returns:
-        np.ndarray: The colorized image.
+        np.ndarray: The rendered image with shape (num_channels, height, width, rgba).
 
-    Raises:
-        AssertionError: If the length of the palette is less than the number of channels in the image.
     """
-    # TODO: FIX DOCS FOR THIS METHOD
     num_channels = segmentation.shape[0]
     cmaps = _get_linear_colormap(colors[:num_channels], background)
     # transforming the segmentation into dtype float (otherwise it is not rendered for some reason)
@@ -140,8 +140,9 @@ def _render_segmentation(
         img[..., -1] = 1
 
     # if a plot is already provided, we need to copy it n_marker times to apply the masking operations later
+    # intensities are normalized by n_channels to avoid overexposure
     if len(img.shape) == 3:
-        img = np.repeat(img[np.newaxis, :, :, :], num_channels, axis=0)
+        img = np.repeat(img[np.newaxis, :, :, :], num_channels, axis=0) / num_channels
 
     im = img.copy()
 
