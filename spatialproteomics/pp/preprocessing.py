@@ -242,9 +242,7 @@ class PreprocessingAccessor:
     def add_segmentation(
         self,
         segmentation: np.ndarray,
-        mask_growth: int = 0,
         relabel: bool = True,
-        handle_disconnected: str = "ignore",
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
@@ -274,14 +272,11 @@ class PreprocessingAccessor:
         ), "The shape of segmentation mask does not match that of the image."
 
         # checking if there are any disconnected cells in the input
-        handle_disconnected_cells(segmentation, mode=handle_disconnected)
+        # handle_disconnected_cells(segmentation, mode=handle_disconnected)
         segmentation = segmentation.copy()
 
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
-
-        if mask_growth > 0:
-            segmentation = expand_labels(segmentation, mask_growth)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -958,7 +953,7 @@ class PreprocessingAccessor:
         masks_grown = expand_labels(segmentation, iterations)
 
         # checking if there are any disconnected segmentation masks
-        handle_disconnected_cells(masks_grown, mode=handle_disconnected)
+        # handle_disconnected_cells(masks_grown, mode=handle_disconnected)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
