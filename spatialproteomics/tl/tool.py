@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -17,8 +17,8 @@ class ToolAccessor:
 
     def cellpose(
         self,
-        channels: Optional[Union[List[str], str]] = None,
-        key_added: Optional[str] = Layers.SEGMENTATION,
+        channel: Optional[str] = None,
+        key_added: Optional[str] = "_cellpose_segmentation",
         diameter: int = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
@@ -26,16 +26,17 @@ class ToolAccessor:
         flow_threshold: float = 0.4,
         gpu: bool = True,
         model_type: str = "cyto3",
-        return_xarray: bool = True,
-        handle_disconnected: str = "ignore",
+        postprocess_func: Callable = lambda x: x,
     ):
         """
-        Segment cells using Cellpose.
+        Segment cells using Cellpose. Adds a layer to the spatialproteomics object
+        with dimension (X, Y) or (C, X, Y) dependent on whether channel argument
+        is specified or not.
 
         Parameters
         ----------
-        channels: List[str], optional
-            List of channels to use for segmentation. If None, all channels are used.
+        channel : str, optional
+            Channel to use for segmentation. If None, all channels are used.
         key_added : str, optional
             Key to assign to the segmentation results.
         diameter : int, optional
@@ -60,23 +61,16 @@ class ToolAccessor:
         -----
         This method requires the 'cellpose' package to be installed.
         """
-        if isinstance(channels, str):
-            channels = [channels]
-        elif channels is None:
-            channels = [str(x) for x in self._obj.coords[Dims.CHANNELS].values]
+        if key_added in self._obj:
+            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
 
-        if return_xarray:
-            # if return_xarray is true, check if a segmentation mask with the key already exists
-            assert (
-                key_added not in self._obj
-            ), f"A segmentation mask with the key {key_added} already exists. You can either change the key with the key_added parameter, or return the predictions as a numpy array. To do this, set return_xarray to False. Alternatively, you can drop the existing segmentation mask from the object by using pp.drop_layers('{key_added}')."
+        if key_added == Layers.SEGMENTATION:
+            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
 
-            # if the number of channels is 1, we can add the segmentation to the original object
-            # if it is equal to the number of channels, we can also add it to the object
-            # if it is anything else, we force the user to return the predictions in the form of a numpy array
-            assert len(channels) == 1 or len(channels) == len(
-                self._obj.coords[Dims.CHANNELS].values
-            ), "You are trying to segment only a subset of the available channels. If you want to add the segmentation mask to the xarray object directly, you need to segment either all channels or only one channel. If you want to segment a subset of the channels, you need to return the predictions as a numpy array."
+        if channel is not None:
+            channels = [channel]
+        else:
+            channels = self._obj.coords[Dims.CELLS].values.tolist()
 
         from cellpose import models
 
@@ -93,18 +87,13 @@ class ToolAccessor:
                 flow_threshold=flow_threshold,
             )
 
-            # checking if there are any disconnected cells in the input
-            handle_disconnected_cells(masks_pred, handle_disconnected)
-
+            postprocess_func(masks_pred)
             all_masks.append(masks_pred)
 
         if len(all_masks) == 1:
             mask_tensor = np.expand_dims(all_masks[0], 0)
         else:
             mask_tensor = np.stack(all_masks, 0)
-
-        if not return_xarray:
-            return mask_tensor
 
         # if there is one channel, we can squeeze the mask tensor
         if len(channels) == 1:
