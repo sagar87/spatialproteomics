@@ -241,7 +241,7 @@ class PreprocessingAccessor:
 
     def add_segmentation(
         self,
-        segmentation: np.ndarray,
+        segmentation: Union[str, np.ndarray] = None,
         relabel: bool = True,
     ) -> xr.Dataset:
         """
@@ -249,9 +249,9 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        segmentation : np.ndarray
+        segmentation : str or np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
-            that indicates the location of each cell.
+            that indicates the location of each cell, or a layer key.
         mask_growth : int
             The number of pixels by which the segmentation mask should be grown.
         relabel : bool
@@ -262,7 +262,13 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended xarray.
         """
+        if isinstance(segmentation, str):
+            if segmentation not in self._obj:
+                raise KeyError(f'The key "{segmentation}" does not exist.')
 
+            segmentation = self._obj[segmentation].values.squeeze()
+
+        assert segmentation.ndim == 2, "A segmentation mask must 2 dimensional."
         assert ~np.any(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
