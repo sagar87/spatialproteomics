@@ -14,6 +14,7 @@ from .utils import (
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _render_segmentation,
 )
 
 
@@ -47,7 +48,6 @@ class PlotAccessor:
         Returns:
             elements (list): A list of Patch objects representing the legend elements.
         """
-
         # checking if the plot layer exists
         assert Layers.PLOT in self._obj, "No plot layer found. Please call pl.colorize() first."
         # checking if the image colors attribute exists
@@ -61,6 +61,31 @@ class PlotAccessor:
         color_dict = {k: v for k, v in color_dict.items() if k != 0}
 
         elements = [Patch(facecolor=c, label=ch, **kwargs) for ch, c in color_dict.items()]
+        return elements
+
+    def _create_segmentation_legend(self):
+        """
+        Create a legend for the segmentation layers.
+
+        Returns:
+            elements (list): A list of Line2D objects representing the segmentation layers.
+        """
+        assert (
+            Attrs.SEGMENTATION_COLORS in self._obj[Layers.PLOT].attrs
+        ), "No segmentation colors found. Please specify colors when rendering multiple segmentation masks."
+
+        color_dict = self._obj[Layers.PLOT].attrs[Attrs.SEGMENTATION_COLORS]
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                color=c,
+                label=ch,
+            )
+            for ch, c in color_dict.items()
+        ]
+
         return elements
 
     def _create_label_legend(self):
@@ -187,6 +212,7 @@ class PlotAccessor:
         render_labels: bool = False,
         ax=None,
         legend_image: bool = True,
+        legend_segmentation: bool = True,
         legend_label: bool = True,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
@@ -202,6 +228,7 @@ class PlotAccessor:
         - render_labels (bool): Whether to render labels. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
         - legend_image (bool): Whether to show the channel legend. Default is True.
+        - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
         - legend_label (bool): Whether to show the label legend. Default is True.
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
@@ -245,16 +272,22 @@ class PlotAccessor:
 
         if render_segmentation:
             obj = obj.pl.render_segmentation(**segmentation_kwargs)
+            # it should not be possible to show a segmentation legend if there is only one segmentation layer
+            segmentation_shape = self._obj[segmentation_kwargs.get("layer_key", Layers.SEGMENTATION)].values.shape
+            legend_segmentation = legend_segmentation and len(segmentation_shape) > 2
 
         legend_image = legend_image and render_image
+        legend_segmentation = legend_segmentation and render_segmentation
         legend_label = legend_label and render_labels
 
         return obj.pl.imshow(
             legend_image=legend_image,
+            legend_segmentation=legend_segmentation,
             legend_label=legend_label,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
+            segmentation_kwargs=segmentation_kwargs,
         )
 
     def annotate(
@@ -340,6 +373,30 @@ class PlotAccessor:
 
     def render_segmentation(
         self,
+        layer_key: str = Layers.SEGMENTATION,
+        colors: List[str] = [
+            "white",
+            "#e6194B",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#42d4f4",
+            "#f032e6",
+            "#bfef45",
+            "#fabed4",
+            "#469990",
+            "#dcbeff",
+            "#9A6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#a9a9a9",
+        ],
         alpha: float = 0.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
@@ -348,6 +405,8 @@ class PlotAccessor:
         Renders the segmentation mask with optional alpha blending and boundary rendering.
 
         Parameters:
+            layer_key (str, optional): The key of the layer containing the segmentation mask. Default is Layers.SEGMENTATION.
+            colors (List[str], optional): A list of colors to be used for rendering the segmentation mask. Default is ['white'].
             alpha (float, optional): The alpha value for blending the segmentation mask with the plot. Default is 0.0.
             alpha_boundary (float, optional): The alpha value for rendering the boundary of the segmentation mask. Default is 1.0.
             mode (str, optional): The mode for rendering the segmentation mask. Possible values are "inner" and "outer". Default is "inner".
@@ -364,19 +423,33 @@ class PlotAccessor:
             - The rendered segmentation mask will be added as a new layer to the object.
         """
         assert (
-            Layers.SEGMENTATION in self._obj
-        ), "No segmentation layer found. Please add a segmentation mask before calling this method."
+            layer_key in self._obj
+        ), f"Could not find segmentation layer with key {layer_key}. Please add a segmentation mask before calling this method."
 
-        color_dict = {1: "white"}
-        cmap = _get_listed_colormap(color_dict)
-        segmentation = self._obj[Layers.SEGMENTATION].values
+        segmentation = self._obj[layer_key].values
+
+        # the segmentation mask can either be 2D or 3D
+        # if it is 2D, we transform it into 3D for compatibility with 3D segmentation masks (where multiple channels are present)
+        if len(segmentation.shape) == 2:
+            segmentation = np.expand_dims(segmentation, axis=0)
+            channels = [1]
+        else:
+            channels = list(range(1, len(self._obj[layer_key].coords[Dims.CHANNELS]) + 1))
+
+        # checking that there are as many colors as there are channels in the segmentation mask which is rendered
+        assert (
+            len(colors) >= segmentation.shape[0]
+        ), f"Trying to render {segmentation.shape[0]} segmentation layers. Please provide custom colors using the colors argument."
+
+        colors = colors[: len(channels)]
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_labels(
+            rendered = _render_segmentation(
                 segmentation,
-                cmap,
-                self._obj[Layers.PLOT].values,
+                colors=colors,
+                background="black",
+                img=self._obj[Layers.PLOT].values,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -384,29 +457,46 @@ class PlotAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_labels(
+            rendered = _render_segmentation(
                 segmentation,
-                cmap,
+                colors=colors,
+                background="black",
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
             )
 
+        # adding segmentation colors to the attributes
+        if Dims.CHANNELS in self._obj[layer_key].coords:
+            attrs[Attrs.SEGMENTATION_COLORS] = {
+                k.item(): v for k, v in zip(self._obj[layer_key].coords[Dims.CHANNELS], colors)
+            }
+
         da = xr.DataArray(
             rendered,
             coords=[
+                channels,
                 self._obj.coords[Dims.Y],
                 self._obj.coords[Dims.X],
                 ["r", "g", "b", "a"],
             ],
-            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X, Dims.RGBA],
             name=Layers.PLOT,
             attrs=attrs,
         )
+
+        # merging the masks together into a 2D array
+        da = da.sum(Dims.CHANNELS, keep_attrs=True)
+        da.values[da.values > 1] = 1.0
+
         return xr.merge([self._obj, da])
 
     def render_labels(
-        self, alpha: float = 1.0, alpha_boundary: float = 1.0, mode: str = "inner", override_color: Optional[str] = None
+        self,
+        alpha: float = 1.0,
+        alpha_boundary: float = 1.0,
+        mode: str = "inner",
+        override_color: Optional[str] = None,
     ) -> xr.Dataset:
         """
         Renders cell type labels on the plot.
@@ -475,9 +565,11 @@ class PlotAccessor:
     def imshow(
         self,
         legend_image: bool = False,
+        legend_segmentation: bool = False,
         legend_label: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
+        segmentation_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -489,12 +581,16 @@ class PlotAccessor:
         ----------
         legend_image : bool, optional
             Show the legendf for the channels. Default is False.
+        legend_segmentation : bool, optional
+            Show the legend for the segmentation. Default is False.
         legend_label : bool, optional
             Show the labels. Default is False.
         downsample : int, optional
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        segmentation_kwargs : dict, optional
+            Additional keyword arguments for rendering the segmentation, e. g. colors when rendering multiple segmentation channels. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -530,10 +626,13 @@ class PlotAccessor:
         if legend_image:
             legend += self._obj.pl._create_channel_legend()
 
+        if legend_segmentation:
+            legend += self._obj.pl._create_segmentation_legend()
+
         if legend_label:
             legend += self._obj.pl._create_label_legend()
 
-        if legend_image or legend_label:
+        if legend_image or legend_segmentation or legend_label:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj

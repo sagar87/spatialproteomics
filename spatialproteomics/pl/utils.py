@@ -98,6 +98,60 @@ def _colorize(
     return colored
 
 
+def _render_segmentation(
+    segmentation: np.ndarray,
+    colors: List[str],
+    background: str = "black",
+    img: np.ndarray = None,
+    alpha: float = 0.2,
+    alpha_boundary: float = 1.0,
+    mode: str = "inner",
+) -> np.ndarray:
+    """
+    Render a 2D or 3D (in the case of multiple segmentations, e. g. with cellpose) segmentation.
+
+    Parameters:
+        segmentation (np.ndarray): The segmentation array with shape (num_channels, height, width).
+        colors (List[str]): The list of colors to be applied to each channel of the segmentation.
+        background (str, optional): The background color. Defaults to "black".
+        img (np.ndarray, optional): The image to be used as a base for rendering. Defaults to None.
+        alpha (float, optional): The transparency level for the colored segmentation. Defaults to 0.2.
+        alpha_boundary (float, optional): The transparency level for the boundary of the segmentation. Defaults to 1.0.
+        mode (str, optional): The mode for finding boundaries. Defaults to "inner".
+
+    Returns:
+        np.ndarray: The rendered image with shape (num_channels, height, width, rgba).
+
+    """
+    num_channels = segmentation.shape[0]
+    cmaps = _get_linear_colormap(colors[:num_channels], background)
+    # transforming the segmentation into dtype float (otherwise it is not rendered for some reason)
+    segmentation = segmentation.astype(np.float32)
+
+    colored_segmentation = np.stack([cmaps[i](segmentation[i]) for i in range(num_channels)], 0)
+
+    mask_bool = segmentation > 0
+    # find_boundaries only operates on single-channel images, hence we need to construct the boundary image for each channel separately
+    bounds = np.array([find_boundaries(segmentation[i, :, :], mode=mode) for i in range(num_channels)])
+    mask_bound = np.bitwise_and(mask_bool, bounds)
+
+    if img is None:
+        img = np.zeros(colored_segmentation.shape, np.float32)
+        img[..., -1] = 1
+
+    # if a plot is already provided, we need to copy it n_marker times to apply the masking operations later
+    # intensities are normalized by n_channels to avoid overexposure
+    if len(img.shape) == 3:
+        img = np.repeat(img[np.newaxis, :, :, :], num_channels, axis=0) / num_channels
+
+    im = img.copy()
+
+    im[mask_bool] = alpha * colored_segmentation[mask_bool] + (1 - alpha) * img[mask_bool]
+    im[mask_bound] = alpha_boundary * colored_segmentation[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
+
+    return im
+
+
 def _render_labels(
     segmentation: np.ndarray,
     cmap: list,
