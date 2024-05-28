@@ -5,7 +5,7 @@ import pandas as pd
 import xarray as xr
 
 from ..constants import Dims, Layers
-from ..pp.utils import handle_disconnected_cells
+from ..pp.utils import _normalize
 
 
 @xr.register_dataset_accessor("tl")
@@ -70,16 +70,16 @@ class ToolAccessor:
         if channel is not None:
             channels = [channel]
         else:
-            channels = self._obj.coords[Dims.CELLS].values.tolist()
+            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
 
         all_masks = []
-        for channel in channels:
+        for ch in channels:
             masks_pred, _, _, _ = model.eval(
-                self._obj.pp[channel]._image.values.squeeze(),
+                self._obj.pp[ch]._image.values.squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
@@ -90,15 +90,10 @@ class ToolAccessor:
             postprocess_func(masks_pred)
             all_masks.append(masks_pred)
 
-        if len(all_masks) == 1:
-            mask_tensor = np.expand_dims(all_masks[0], 0)
-        else:
-            mask_tensor = np.stack(all_masks, 0)
-
         # if there is one channel, we can squeeze the mask tensor
-        if len(channels) == 1:
+        if len(all_masks) == 1:
             da = xr.DataArray(
-                mask_tensor.squeeze(),
+                all_masks[0].squeeze(),
                 coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
                 dims=[Dims.Y, Dims.X],
                 name=key_added,
@@ -106,7 +101,7 @@ class ToolAccessor:
         # if we segment on all of the channels, we need to add the channel dimension
         else:
             da = xr.DataArray(
-                mask_tensor,
+                np.stack(all_masks, 0),
                 coords=[
                     self._obj.coords[Dims.CHANNELS],
                     self._obj.coords[Dims.Y],
@@ -203,13 +198,14 @@ class ToolAccessor:
 
     def stardist(
         self,
+        channel: Optional[str] = None,
+        key_added: Optional[str] = "_stardist_segmentation",
         scale: float = 3,
         n_tiles: int = 12,
         normalize: bool = True,
-        nuclear_channel: str = "DAPI",
         predict_big: bool = False,
         image_key: str = Layers.IMAGE,
-        handle_disconnected: str = "ignore",
+        postprocess_func: Callable = lambda x: x,
         **kwargs,
     ) -> xr.Dataset:
         """
@@ -241,33 +237,60 @@ class ToolAccessor:
             If the object already contains a segmentation mask.
 
         """
-        import csbdeep.utils
+        if key_added in self._obj:
+            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
+
+        if key_added == Layers.SEGMENTATION:
+            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
+
+        if channel is not None:
+            channels = [channel]
+        else:
+            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+
         from stardist.models import StarDist2D
 
-        if Layers.SEGMENTATION in self._obj:
-            raise ValueError("The object already contains a segmentation mask. StarDist will not be executed.")
+        # import csbdeep.utils
 
-        # getting the nuclear image
-        nuclear_img = self._obj.pp[nuclear_channel][image_key].values.squeeze()
-
-        # normalizing the image
-        if normalize:
-            nuclear_img = csbdeep.utils.normalize(nuclear_img)
-
-        # Load the StarDist model
         model = StarDist2D.from_pretrained("2D_versatile_fluo")
 
-        # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
-        if predict_big:
-            labels, _ = model.predict_instances_big(nuclear_img, scale=scale, **kwargs)
+        all_masks = []
+        for ch in channels:
+            img = self._obj.pp[ch]._image.values
+            if normalize:
+                img = _normalize(img)
+
+            # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
+            if predict_big:
+                labels, _ = model.predict_instances_big(img.squeeze(), scale=scale, **kwargs)
+            else:
+                labels, _ = model.predict_instances(img.squeeze(), scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
+
+            labels = postprocess_func(labels)
+            all_masks.append(labels)
+
+        # if there is one channel, we can squeeze the mask tensor
+        if len(all_masks) == 1:
+            da = xr.DataArray(
+                all_masks[0].squeeze(),
+                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+                dims=[Dims.Y, Dims.X],
+                name=key_added,
+            )
+        # if we segment on all of the channels, we need to add the channel dimension
         else:
-            labels, _ = model.predict_instances(nuclear_img, scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
+            da = xr.DataArray(
+                np.stack(all_masks, 0),
+                coords=[
+                    self._obj.coords[Dims.CHANNELS],
+                    self._obj.coords[Dims.Y],
+                    self._obj.coords[Dims.X],
+                ],
+                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+                name=key_added,
+            )
 
-        # checking if there are any disconnected cells in the input
-        handle_disconnected_cells(labels, handle_disconnected)
-
-        # Adding the segmentation mask  and centroids to the xarray dataset
-        return self._obj.pp.add_segmentation(labels).pp.add_observations()
+        return xr.merge([self._obj, da])
 
     def astir(
         self,
