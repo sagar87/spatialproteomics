@@ -374,7 +374,29 @@ class PlotAccessor:
     def render_segmentation(
         self,
         layer_key: str = Layers.SEGMENTATION,
-        colors: List[str] = ["white"],
+        colors: List[str] = [
+            "white",
+            "#e6194B",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#42d4f4",
+            "#f032e6",
+            "#bfef45",
+            "#fabed4",
+            "#469990",
+            "#dcbeff",
+            "#9A6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#a9a9a9",
+        ],
         alpha: float = 0.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
@@ -416,8 +438,10 @@ class PlotAccessor:
 
         # checking that there are as many colors as there are channels in the segmentation mask which is rendered
         assert (
-            len(colors) == segmentation.shape[0]
-        ), f"Number of colors ({len(colors)}) does not match the number of channels in the segmentation mask ({segmentation.shape[0]}). Please specify a color for each segmentation channel using the colors keyword."
+            len(colors) >= segmentation.shape[0]
+        ), f"Trying to render {segmentation.shape[0]} segmentation layers. Please provide custom colors using the colors argument."
+
+        colors = colors[: len(channels)]
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
@@ -608,7 +632,7 @@ class PlotAccessor:
         if legend_label:
             legend += self._obj.pl._create_label_legend()
 
-        if legend_image or legend_label:
+        if legend_image or legend_segmentation or legend_label:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj
