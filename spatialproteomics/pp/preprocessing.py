@@ -1026,8 +1026,11 @@ class PreprocessingAccessor:
             - Disconnected cells in the input are handled based on the specified method.
         """
 
-        # merge big cells first, then small cells
+        # checking if the keys exist
+        assert layer_key in self._obj, f"The key {layer_key} does not exist in the object."
+        assert key_added not in self._obj, f"The key {key_added} already exists in the object."
 
+        # merge big cells first, then small cells
         channels = self._obj.coords[Dims.CHANNELS].values.tolist()
         segmentation = self._obj.pp[channels[0]][layer_key].values
 
