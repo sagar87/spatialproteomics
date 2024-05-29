@@ -38,17 +38,17 @@ def test_add_segmentation_relabel(data_dic, dataset_segmentation):
     assert list(segmented.cells.values) == list(range(1, num_cells + 1))
 
 
-def test_add_segmentation_mask_growth(data_dic, dataset_segmentation):
-    segmentation = data_dic["segmentation"]
-    segmented = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=0).pp.add_observations("area")
-    segmented_grown = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=2).pp.add_observations("area")
+# def test_add_segmentation_mask_growth(data_dic, dataset_segmentation):
+#     segmentation = data_dic["segmentation"]
+#     segmented = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=0).pp.add_observations("area")
+#     segmented_grown = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=2).pp.add_observations("area")
 
-    areas = segmented.pp.add_observations("area")["_obs"].sel(features="area").values
-    areas_grown = segmented_grown.pp.add_observations("area")["_obs"].sel(features="area").values
+#     areas = segmented.pp.add_observations("area")["_obs"].sel(features="area").values
+#     areas_grown = segmented_grown.pp.add_observations("area")["_obs"].sel(features="area").values
 
-    assert segmented["_segmentation"].values.shape == segmented_grown["_segmentation"].values.shape
-    assert np.sum(segmented_grown["_segmentation"].values - segmented["_segmentation"].values) != 0
-    assert np.all(areas_grown >= areas)
+#     assert segmented["_segmentation"].values.shape == segmented_grown["_segmentation"].values.shape
+#     assert np.sum(segmented_grown["_segmentation"].values - segmented["_segmentation"].values) != 0
+#     assert np.all(areas_grown >= areas)
 
 
 # def test_add_segmentation_disconnected_cells(data_dic, dataset_segmentation):

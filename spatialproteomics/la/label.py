@@ -638,7 +638,30 @@ class LabelAccessor:
         # adding the new labels
         return obj.pp.add_labels(celltype_prediction_df)
 
-    def add_binarization(self, threshold_dict: dict, label: Optional[str] = None, layer_key: str = Layers.INTENSITY):
+    def _threshold_label(
+        self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
+    ):
+        if layer_key not in self._obj:
+            raise KeyError(f'No layer "{layer_key}" found. Please add it first using pp.add_quantification().')
+
+        if channel not in self._obj.coords[Dims.CHANNELS]:
+            raise KeyError(f'No channel "{channel}".')
+
+        obj = self._obj.copy()
+        label_pos = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
+
+        if label is not None:
+            # getting all of the cells that should have a 1 in the binary vector
+            label_idx = obj.la[label].cells.values
+            # creating a boolean mask indicating whether each element of cells is in cells_subset
+            label_mask = np.isin(obj.cells.values, label_idx).astype(int)
+            label_pos *= label_mask
+
+        obj = obj.pp.add_feature(f"{channel}_binarized", label_pos)
+
+        return obj
+
+    def threshold_labels(self, threshold_dict: dict, label: Optional[str] = None, layer_key: str = Layers.INTENSITY):
         """
         Binarise based on a threshold.
         If a label is specified, the binarization is only applied to this cell type.
@@ -663,37 +686,8 @@ class LabelAccessor:
         - The binary feature is computed by comparing the intensity values of each channel to the threshold value.
         - The binary feature is added as a new layer to the dataset object.
         """
-        if layer_key not in self._obj:
-            raise KeyError(f'No layer "{layer_key}" found. Please add it first using pp.add_quantification().')
-
-        channels = list(threshold_dict.keys())
-
-        # checking that the channels are present in the data object
-        assert all(
-            [channel in self._obj.coords[Dims.CHANNELS].values for channel in channels]
-        ), f"One or more channels not found in the data object. Available channels are: {self._obj.coords[Dims.CHANNELS]}"
-
-        # copy object
         obj = self._obj.copy()
-
-        # if a cell type is specified, we get the and from the cell type and the binarization, which will result in only positive cells of that specific cell type
-        # to get this, we first need a binary vector that tells us if a cell is of the specified cell type
-        if label is not None:
-            # getting the cell type id
-            label_id = obj.la._label_name_to_id(label)
-            # getting all of the cells that should have a 1 in the binary vector
-            cells_of_specified_label = obj.la[label_id].cells.values
-            # creating a boolean mask indicating whether each element of cells is in cells_subset
-            ct_mask = np.isin(obj.cells.values, cells_of_specified_label)
-            # converting the boolean mask to integers (0 for False, 1 for True)
-            ct_indicator_array = ct_mask.astype(int)
-
         for channel, threshold in threshold_dict.items():
-            positive_cells = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
-            if label is None:
-                obj = obj.pp.add_feature(f"{channel}_binarized", positive_cells)
-            else:
-                # here we multiply the two binary arrays together, which is essentially equivalent to an and gate, only retaining binarized values for the cell type in question
-                obj = obj.pp.add_feature(f"{label}_{channel}_binarized", positive_cells * ct_indicator_array)
+            obj = obj.la._threshold_label(channel=channel, threshold=threshold, layer_key=layer_key, label=label)
 
         return obj

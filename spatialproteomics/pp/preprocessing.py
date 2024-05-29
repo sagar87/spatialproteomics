@@ -11,7 +11,7 @@ from skimage.restoration import unsupervised_wiener
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Labels, Layers, Props
+from ..constants import COLORS, Attrs, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .intensity import arcsinh_median_intensity
 from .utils import (
@@ -20,7 +20,6 @@ from .utils import (
     _normalize,
     _relabel_cells,
     _remove_unlabeled_cells,
-    handle_disconnected_cells,
 )
 
 
@@ -241,19 +240,17 @@ class PreprocessingAccessor:
 
     def add_segmentation(
         self,
-        segmentation: np.ndarray,
-        mask_growth: int = 0,
+        segmentation: Union[str, np.ndarray] = None,
         relabel: bool = True,
-        handle_disconnected: str = "ignore",
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
 
         Parameters
         ----------
-        segmentation : np.ndarray
+        segmentation : str or np.ndarray
             A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
-            that indicates the location of each cell.
+            that indicates the location of each cell, or a layer key.
         mask_growth : int
             The number of pixels by which the segmentation mask should be grown.
         relabel : bool
@@ -264,7 +261,13 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended xarray.
         """
+        if isinstance(segmentation, str):
+            if segmentation not in self._obj:
+                raise KeyError(f'The key "{segmentation}" does not exist.')
 
+            segmentation = self._obj[segmentation].values.squeeze()
+
+        assert segmentation.ndim == 2, "A segmentation mask must 2 dimensional."
         assert ~np.any(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
@@ -274,14 +277,11 @@ class PreprocessingAccessor:
         ), "The shape of segmentation mask does not match that of the image."
 
         # checking if there are any disconnected cells in the input
-        handle_disconnected_cells(segmentation, mode=handle_disconnected)
+        # handle_disconnected_cells(segmentation, mode=handle_disconnected)
         segmentation = segmentation.copy()
 
         if relabel:
             segmentation, _ = _relabel_cells(segmentation)
-
-        if mask_growth > 0:
-            segmentation = expand_labels(segmentation, mask_growth)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -968,7 +968,7 @@ class PreprocessingAccessor:
         masks_grown = expand_labels(segmentation, iterations)
 
         # checking if there are any disconnected segmentation masks
-        handle_disconnected_cells(masks_grown, mode=handle_disconnected)
+        # handle_disconnected_cells(masks_grown, mode=handle_disconnected)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
@@ -1000,13 +1000,10 @@ class PreprocessingAccessor:
 
     def merge_segmentation(
         self,
-        from_key: str = None,
-        array: np.ndarray = None,
+        layer_key: str,
+        key_added: str = "_merged_segmentation",
         labels: Optional[Union[str, List[str]]] = None,
-        threshold: float = 1.0,
-        handle_disconnected: str = "relabel",
-        key_base_segmentation: str = None,
-        key_added: str = Layers.SEGMENTATION,
+        threshold: float = 0.8,
     ):
         """
         Merge segmentation masks.
@@ -1038,79 +1035,28 @@ class PreprocessingAccessor:
             - The merging process starts with merging the biggest cells first, then the smaller ones.
             - Disconnected cells in the input are handled based on the specified method.
         """
-        # checking that either from_key or array are not None
-        assert (
-            from_key is not None or array is not None
-        ), "Either from_key or array must be provided. Use from_key to merge segmentation from a precomputed mask, or array if you want to merge segmentations from a numpy array to an existing segmentation."
 
-        # checking that either from_key or array are not both not None
-        assert not (
-            from_key is not None and array is not None
-        ), "Only one of from_key or array can be provided. Use from_key to merge segmentation from a precomputed mask, or array if you want to merge segmentations from a numpy array to an existing segmentation."
-
-        # checking that from_key is a string
-        if from_key is not None:
-            assert type(from_key) is str, f"The input from_key must be a string. You provided type {type(from_key)}."
-
-        # checking that key_base_segmentation exists in the object
-        if key_base_segmentation is not None:
-            assert (
-                key_base_segmentation in self._obj
-            ), f"The key {key_base_segmentation} does not exist in the xarray object."
-
-        # checking if the array has the right shape and type
-        if array is not None:
-            # checking that the array is 2D or 3D
-            assert array.ndim in [
-                2,
-                3,
-            ], "The input array must be 2D (if you want to merge one segmentation mask) or 3D (if you want to iteratively merge multiple segmentation masks)."
-
-            # checking that the input type is int
-            assert np.issubdtype(array.dtype, np.integer), "The input array must be of type int."
-
-        else:
-
-            # ensuring that the key exists in the object
-            assert from_key in self._obj, f"The key {from_key} does not exist in the xarray object."
-
-            # reading the array from the object
-            array = self._obj[from_key].values
-
-        # if the array is 2D, it gets expanded to 3D
-        if array.ndim == 2:
-            array = np.expand_dims(array, 0)
-
-        # we only want to allow merging of multiple arrays. So if the array is 2D, we require key_base_segmentation to be true
-        if array.shape[0] == 1:
-            assert (
-                key_base_segmentation is not None
-            ), f"If you want to merge a single segmentation mask to an existing one, please use the key_base_segmentation argument. Input array had shape {array.shape}. The channels should be in the first dimension."
-
-        # if labels are provided, they need to match the number of arrays
-        if labels is not None:
-            assert (
-                len(labels) == array.shape[0]
-            ), f"The number of labels must match the number of arrays. You submitted {len(labels)} channels compared to {array.shape[0]} arrays."
-
-        # ensuring that the second and third dimension of the array match the segmentation mask
-        assert (array.shape[1] == self._obj.sizes[Dims.Y]) & (
-            array.shape[2] == self._obj.sizes[Dims.X]
-        ), "The shape of the input array does not match the shape of the segmentation mask."
+        # checking if the keys exist
+        assert layer_key in self._obj, f"The key {layer_key} does not exist in the object."
+        assert key_added not in self._obj, f"The key {key_added} already exists in the object."
 
         # merge big cells first, then small cells
-        i = 0
-        segmentation = array[i, :, :]
+        channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        segmentation = self._obj.pp[channels[0]][layer_key].values
 
         # iterating through the array to merge the segmentation masks
-        for i in range(1, array.shape[0]):
+        for i in range(1, len(channels)):
             if labels is not None:
                 label_1, label_2 = labels[i - 1], labels[i]
             else:
-                label_1, label_2 = i, i + 1
+                label_1, label_2 = channels[i - 1], channels[i]
 
             segmentation, final_mapping = _merge_segmentation(
-                segmentation, array[i, :, :], label1=label_1, label2=label_2, threshold=threshold
+                segmentation.squeeze(),
+                self._obj.pp[channels[i]][layer_key].values.squeeze(),
+                label1=label_1,
+                label2=label_2,
+                threshold=threshold,
             )
 
             if i == 1:
@@ -1120,39 +1066,8 @@ class PreprocessingAccessor:
                 # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
                 mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
 
-        # finally, we merge the smallest cells, which we assume to be in the segmentation mask already
-        if labels is not None:
-            # the final label is unlabeled
-            label_1, label_2 = labels[i], Labels.UNLABELED
-        else:
-            label_1, label_2 = i, i + 1
-
         # if a segmentation mask already exists in the object, we merge to it
         obj = self._obj.copy()
-
-        # if we want to merge to a base segmentation, we do it here
-        if key_base_segmentation is not None:
-            segmentation, final_mapping = _merge_segmentation(
-                segmentation,
-                self._obj[key_base_segmentation].values,
-                label1=label_1,
-                label2=label_2,
-                threshold=threshold,
-            )
-
-            # replacing the old segmentation mask and obs with the new one
-            if key_base_segmentation == key_added:
-                obj = obj.pp.drop_layers(key_base_segmentation)
-
-        # if there is only one array to merge, we can simply take the mapping obtained by _merge_segmentation as the final mapping
-        if array.shape[0] == 1:
-            mapping = final_mapping
-        else:
-            # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
-            mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
-
-        # checking if there are any disconnected cells in the input
-        handle_disconnected_cells(segmentation, mode=handle_disconnected)
 
         # assigning the new segmentation to the object
         da = xr.DataArray(
@@ -1160,36 +1075,10 @@ class PreprocessingAccessor:
             coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
             dims=[Dims.Y, Dims.X],
             name=key_added,
+            attrs={Attrs.LABEL_SEGMENTATION: mapping},
         )
 
-        # we need to remove all layers that have "cells" as part of their coordinates in order to keep the "cells" dimension synchronized with the segmentation mask
-        for layer in obj.data_vars:
-            if Dims.CELLS in obj[layer].dims:
-                obj = obj.pp.drop_layers(layer)
-                logger.warning(
-                    f"Found '{Dims.CELLS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
-                )
-
-        obj = xr.merge([obj, da])
-
-        # adding the default obs back to the object
-        obj = obj.pp.add_observations()
-
-        # if labels are provided, they are added to the object
-        if labels is not None:
-            # we need to remove all layers that have "props" as part of their coordinates so we can overwrite it
-            for layer in obj.data_vars:
-                if Dims.PROPS in obj[layer].dims:
-                    obj = obj.pp.drop_layers(layer)
-                    logger.warning(
-                        f"Found '{Dims.PROPS}' coordinate in '{layer}'. Removing layer. Please re-add the layer after merging the segmentation masks."
-                    )
-
-            # creating and adding the new labels
-            label_df = pd.DataFrame({"cell": mapping.keys(), "label": mapping.values()})
-            obj = obj.pp.add_labels(label_df)
-
-        return obj
+        return xr.merge([obj, da])
 
     def get_layer_as_df(self, layer: str = Layers.OBS, celltypes_to_str: bool = True):
         """
