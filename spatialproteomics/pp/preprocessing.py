@@ -881,11 +881,11 @@ class PreprocessingAccessor:
         obj = obj.drop_dims([Dims.Y, Dims.X])
 
         return xr.merge([obj, new_img, new_seg])
-    
+
     def rescale(self, scale: int):
         """
         Rescales the image and segmentation mask in the object by a given scale.
-        
+
         Parameters:
         - scale (int): The scale factor by which to rescale the image and segmentation mask.
 
@@ -895,7 +895,7 @@ class PreprocessingAccessor:
         Raises:
         - AssertionError: If no image layer is found in the object.
         - AssertionError: If no segmentation mask is found in the object.
-        """        
+        """
         # checking if the object contains an image layer
         assert Layers.IMAGE in self._obj, "No image layer found in the object."
         # checking if the object contains a segmentation mask
@@ -912,9 +912,7 @@ class PreprocessingAccessor:
         if Layers.SEGMENTATION in self._obj:
             seg_layer = self._obj[Layers.SEGMENTATION]
             seg = skimage.transform.rescale(seg_layer.values, scale=scale)
-            new_seg = xr.DataArray(
-                seg, coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
-            )
+            new_seg = xr.DataArray(seg, coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION)
             obj = obj.drop(Layers.SEGMENTATION)
 
         obj = obj.drop_dims([Dims.Y, Dims.X])
