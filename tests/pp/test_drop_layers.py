@@ -50,10 +50,24 @@ def test_drop_layers_keep(dataset_labeled):
     assert Layers.OBS not in reduced
 
     # keeping multiple layers
-    reduced = dataset_labeled.pp.drop_layers(keep=[Layers.PROPERTIES, Layers.SEGMENTATION])
+    reduced = dataset_labeled.pp.drop_layers(keep=[Layers.PROPERTIES, Layers.IMAGE])
     # ensuring that the layers were not dropped
     assert Layers.PROPERTIES in reduced
-    assert Layers.SEGMENTATION in reduced
+    assert Layers.IMAGE in reduced
     # ensuring that all other layers were dropped
-    assert Layers.IMAGE not in reduced
+    assert Layers.SEGMENTATION not in reduced
     assert Layers.OBS not in reduced
+
+
+def test_drop_layers_segmentation(dataset_labeled):
+    # when dropping the segmentation, obs also should be dropped automatically
+    reduced = dataset_labeled.pp.drop_layers(Layers.SEGMENTATION)
+    assert Layers.SEGMENTATION not in reduced
+    assert Layers.OBS not in reduced
+
+
+def test_drop_layers_obs(dataset_labeled):
+    # when dropping obs, the segmentation also should be dropped automatically
+    reduced = dataset_labeled.pp.drop_layers(Layers.OBS)
+    assert Layers.OBS not in reduced
+    assert Layers.SEGMENTATION not in reduced
