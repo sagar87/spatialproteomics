@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import xarray as xr
 
 from spatialproteomics.constants import Dims, Layers
 
@@ -7,8 +8,27 @@ from spatialproteomics.constants import Dims, Layers
 def test_add_segmentation(data_dic, dataset_segmentation):
     segmented = dataset_segmentation.pp.add_segmentation(data_dic["segmentation"])
 
-    assert "_segmentation" in segmented
-    assert "_segmentation" not in dataset_segmentation
+    assert Layers.SEGMENTATION in segmented
+    assert Layers.SEGMENTATION not in dataset_segmentation
+    assert Dims.CELLS in segmented.coords
+    assert Dims.CELLS not in dataset_segmentation.coords
+    assert Layers.OBS in segmented
+
+
+def test_add_segmentation_from_layer(data_dic, dataset_segmentation):
+    da = xr.DataArray(
+        data_dic["segmentation"],
+        coords=[range(500), range(500)],
+        dims=[Dims.X, Dims.Y],
+        name="_segmentation_preliminary",
+    ).astype(int)
+
+    ds = xr.merge([dataset_segmentation, da])
+    segmented = ds.pp.add_segmentation("_segmentation_preliminary")
+
+    assert "_segmentation_preliminary" in segmented
+    assert Layers.SEGMENTATION in segmented
+    assert Layers.SEGMENTATION not in dataset_segmentation
     assert Dims.CELLS in segmented.coords
     assert Dims.CELLS not in dataset_segmentation.coords
     assert Layers.OBS in segmented
@@ -36,24 +56,3 @@ def test_add_segmentation_relabel(data_dic, dataset_segmentation):
 
     assert cell_labels == list(range(1, num_cells + 1))
     assert list(segmented.cells.values) == list(range(1, num_cells + 1))
-
-
-# def test_add_segmentation_mask_growth(data_dic, dataset_segmentation):
-#     segmentation = data_dic["segmentation"]
-#     segmented = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=0).pp.add_observations("area")
-#     segmented_grown = dataset_segmentation.pp.add_segmentation(segmentation, mask_growth=2).pp.add_observations("area")
-
-#     areas = segmented.pp.add_observations("area")["_obs"].sel(features="area").values
-#     areas_grown = segmented_grown.pp.add_observations("area")["_obs"].sel(features="area").values
-
-#     assert segmented["_segmentation"].values.shape == segmented_grown["_segmentation"].values.shape
-#     assert np.sum(segmented_grown["_segmentation"].values - segmented["_segmentation"].values) != 0
-#     assert np.all(areas_grown >= areas)
-
-
-# def test_add_segmentation_disconnected_cells(data_dic, dataset_segmentation):
-#    corrupted_segmentation = data_dic["segmentation"]
-#
-#    #corrupted_segmentation[10, 10] = -1
-#    #with pytest.raises(AssertionError, match="A segmentation mask may not contain negative numbers."):
-#    #    dataset_segmentation.pp.add_segmentation(corrupted_segmentation)

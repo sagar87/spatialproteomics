@@ -2,6 +2,7 @@ from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
+import skimage
 import xarray as xr
 from scipy.signal import medfilt2d, wiener
 from skimage.filters.rank import maximum, mean, median, minimum
@@ -875,6 +876,43 @@ class PreprocessingAccessor:
             new_seg = xr.DataArray(
                 seg_layer.values[::rate, ::rate], coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
             )
+            obj = obj.drop(Layers.SEGMENTATION)
+
+        obj = obj.drop_dims([Dims.Y, Dims.X])
+
+        return xr.merge([obj, new_img, new_seg])
+
+    def rescale(self, scale: int):
+        """
+        Rescales the image and segmentation mask in the object by a given scale.
+
+        Parameters:
+        - scale (int): The scale factor by which to rescale the image and segmentation mask.
+
+        Returns:
+        - xr.Dataset: The rescaled object containing the updated image and segmentation mask.
+
+        Raises:
+        - AssertionError: If no image layer is found in the object.
+        - AssertionError: If no segmentation mask is found in the object.
+        """
+        # checking if the object contains an image layer
+        assert Layers.IMAGE in self._obj, "No image layer found in the object."
+        # checking if the object contains a segmentation mask
+        assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the object."
+
+        image_layer = self._obj[Layers.IMAGE]
+        img = skimage.transform.rescale(image_layer.values, scale=scale, channel_axis=0)
+        x = np.array(range(img.shape[1]))
+        y = np.array(range(img.shape[2]))
+        c = self._obj.channels.values
+        new_img = xr.DataArray(img, coords=[c, y, x], dims=[Dims.CHANNELS, Dims.Y, Dims.X], name=Layers.IMAGE)
+        obj = self._obj.drop(Layers.IMAGE)
+
+        if Layers.SEGMENTATION in self._obj:
+            seg_layer = self._obj[Layers.SEGMENTATION]
+            seg = skimage.transform.rescale(seg_layer.values, scale=scale)
+            new_seg = xr.DataArray(seg, coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION)
             obj = obj.drop(Layers.SEGMENTATION)
 
         obj = obj.drop_dims([Dims.Y, Dims.X])
