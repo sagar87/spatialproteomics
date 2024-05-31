@@ -275,10 +275,10 @@ class ToolAccessor:
         image = self._obj.pp[channels][Layers.IMAGE].values
         # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
         image = np.expand_dims(np.transpose(image, (1, 2, 0)), 0)
-        
+
         all_masks = app.predict(image, **kwargs)
         all_masks = postprocess_func(all_masks)
-        
+
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
