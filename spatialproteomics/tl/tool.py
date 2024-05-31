@@ -6,6 +6,7 @@ import xarray as xr
 
 from ..constants import Dims, Layers
 from ..pp.utils import _normalize
+from .utils import _convert_masks_to_data_array, _get_channels
 
 
 @xr.register_dataset_accessor("tl")
@@ -61,16 +62,7 @@ class ToolAccessor:
         -----
         This method requires the 'cellpose' package to be installed.
         """
-        if key_added in self._obj:
-            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-        if key_added == Layers.SEGMENTATION:
-            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
-
-        if channel is not None:
-            channels = [channel]
-        else:
-            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        channels = _get_channels(self._obj, key_added, channel)
 
         from cellpose import models
 
@@ -90,26 +82,7 @@ class ToolAccessor:
             postprocess_func(masks_pred)
             all_masks.append(masks_pred)
 
-        # if there is one channel, we can squeeze the mask tensor
-        if len(all_masks) == 1:
-            da = xr.DataArray(
-                all_masks[0].squeeze(),
-                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-                dims=[Dims.Y, Dims.X],
-                name=key_added,
-            )
-        # if we segment on all of the channels, we need to add the channel dimension
-        else:
-            da = xr.DataArray(
-                np.stack(all_masks, 0),
-                coords=[
-                    self._obj.coords[Dims.CHANNELS],
-                    self._obj.coords[Dims.Y],
-                    self._obj.coords[Dims.X],
-                ],
-                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-                name=key_added,
-            )
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
 
@@ -237,16 +210,7 @@ class ToolAccessor:
             If the object already contains a segmentation mask.
 
         """
-        if key_added in self._obj:
-            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-        if key_added == Layers.SEGMENTATION:
-            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
-
-        if channel is not None:
-            channels = [channel]
-        else:
-            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        channels = _get_channels(self._obj, key_added, channel)
 
         from stardist.models import StarDist2D
 
@@ -269,26 +233,7 @@ class ToolAccessor:
             labels = postprocess_func(labels)
             all_masks.append(labels)
 
-        # if there is one channel, we can squeeze the mask tensor
-        if len(all_masks) == 1:
-            da = xr.DataArray(
-                all_masks[0].squeeze(),
-                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-                dims=[Dims.Y, Dims.X],
-                name=key_added,
-            )
-        # if we segment on all of the channels, we need to add the channel dimension
-        else:
-            da = xr.DataArray(
-                np.stack(all_masks, 0),
-                coords=[
-                    self._obj.coords[Dims.CHANNELS],
-                    self._obj.coords[Dims.Y],
-                    self._obj.coords[Dims.X],
-                ],
-                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-                name=key_added,
-            )
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
 
