@@ -162,7 +162,7 @@ is specified or not.</p>
 <li><p><strong>num_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations for segmentation.</p></li>
 <li><p><strong>gpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use GPU for segmentation.</p></li>
 <li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of Cellpose model to use.</p></li>
-<li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the segmentation as an xarray DataArray or as a numpy array.</p></li>
+<li><p><strong>postprocess_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to apply to the segmentation masks after prediction.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -254,8 +254,31 @@ is specified or not.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.tl.tool.ToolAccessor.mesmer">
+<span class="sig-name descname"><span class="pre">mesmer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key_added:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">'_mesmer_segmentation'</span></em>, <em class="sig-param"><span class="pre">postprocess_func:</span> <span class="pre">Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.mesmer" title="Permalink to this definition"></a></dt>
+<dd><p>Segment cells using Mesmer. Adds a layer to the spatialproteomics object
+with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
+<li><p><strong>postprocess_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to apply to the segmentation masks after prediction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataset containing original data and segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method requires the ‘mesmer’ package to be installed.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.tl.tool.ToolAccessor.stardist">
-<span class="sig-name descname"><span class="pre">stardist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">'_stardist_segmentation'</span></em>, <em class="sig-param"><span class="pre">scale:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">3</span></em>, <em class="sig-param"><span class="pre">n_tiles:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">12</span></em>, <em class="sig-param"><span class="pre">normalize:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em>, <em class="sig-param"><span class="pre">predict_big:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em>, <em class="sig-param"><span class="pre">image_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'_image'</span></em>, <em class="sig-param"><span class="pre">postprocess_func:</span> <span class="pre">Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.stardist" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">stardist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em>, <em class="sig-param"><span class="pre">key_added:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">'_stardist_segmentation'</span></em>, <em class="sig-param"><span class="pre">scale:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">3</span></em>, <em class="sig-param"><span class="pre">n_tiles:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">12</span></em>, <em class="sig-param"><span class="pre">normalize:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em>, <em class="sig-param"><span class="pre">predict_big:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em>, <em class="sig-param"><span class="pre">postprocess_func:</span> <span class="pre">Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataset.Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.stardist" title="Permalink to this definition"></a></dt>
 <dd><p>Apply StarDist algorithm to perform instance segmentation on the nuclear image.</p>
 <dl class="simple">
 <dt>scale<span class="classifier">float, optional</span></dt><dd><p>Scaling factor for the StarDist model (default is 3).</p>
@@ -267,6 +290,8 @@ is specified or not.</p>
 <dt>nuclear_channel<span class="classifier">str, optional</span></dt><dd><p>Name of the nuclear channel in the image (default is “DAPI”).</p>
 </dd>
 <dt>predict_big<span class="classifier">bool, optional</span></dt><dd><p>Flag indicating whether to use the ‘predict_instances_big’ method for large images (default is False).</p>
+</dd>
+<dt>postprocess_func<span class="classifier">Callable, optional</span></dt><dd><p>Function to apply to the segmentation masks after prediction (default is lambda x: x).</p>
 </dd>
 <dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs<span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to be passed to the StarDist prediction method.</p>
 </dd>
