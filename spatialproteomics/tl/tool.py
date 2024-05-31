@@ -6,6 +6,7 @@ import xarray as xr
 
 from ..constants import Dims, Layers
 from ..pp.utils import _normalize
+from .utils import _convert_masks_to_data_array, _get_channels
 
 
 @xr.register_dataset_accessor("tl")
@@ -49,8 +50,8 @@ class ToolAccessor:
             Whether to use GPU for segmentation.
         model_type : str, optional
             Type of Cellpose model to use.
-        return_xarray: bool, optional
-            Whether to return the segmentation as an xarray DataArray or as a numpy array.
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction.
 
         Returns
         -------
@@ -61,16 +62,7 @@ class ToolAccessor:
         -----
         This method requires the 'cellpose' package to be installed.
         """
-        if key_added in self._obj:
-            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-        if key_added == Layers.SEGMENTATION:
-            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
-
-        if channel is not None:
-            channels = [channel]
-        else:
-            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        channels = _get_channels(self._obj, key_added, channel)
 
         from cellpose import models
 
@@ -87,29 +79,10 @@ class ToolAccessor:
                 flow_threshold=flow_threshold,
             )
 
-            postprocess_func(masks_pred)
+            masks_pred = postprocess_func(masks_pred)
             all_masks.append(masks_pred)
 
-        # if there is one channel, we can squeeze the mask tensor
-        if len(all_masks) == 1:
-            da = xr.DataArray(
-                all_masks[0].squeeze(),
-                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-                dims=[Dims.Y, Dims.X],
-                name=key_added,
-            )
-        # if we segment on all of the channels, we need to add the channel dimension
-        else:
-            da = xr.DataArray(
-                np.stack(all_masks, 0),
-                coords=[
-                    self._obj.coords[Dims.CHANNELS],
-                    self._obj.coords[Dims.Y],
-                    self._obj.coords[Dims.X],
-                ],
-                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-                name=key_added,
-            )
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
 
@@ -204,7 +177,6 @@ class ToolAccessor:
         n_tiles: int = 12,
         normalize: bool = True,
         predict_big: bool = False,
-        image_key: str = Layers.IMAGE,
         postprocess_func: Callable = lambda x: x,
         **kwargs,
     ) -> xr.Dataset:
@@ -223,6 +195,8 @@ class ToolAccessor:
             Name of the nuclear channel in the image (default is "DAPI").
         predict_big : bool, optional
             Flag indicating whether to use the 'predict_instances_big' method for large images (default is False).
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction (default is lambda x: x).
         **kwargs : dict, optional
             Additional keyword arguments to be passed to the StarDist prediction method.
 
@@ -237,20 +211,9 @@ class ToolAccessor:
             If the object already contains a segmentation mask.
 
         """
-        if key_added in self._obj:
-            raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-        if key_added == Layers.SEGMENTATION:
-            raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
-
-        if channel is not None:
-            channels = [channel]
-        else:
-            channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        channels = _get_channels(self._obj, key_added, channel)
 
         from stardist.models import StarDist2D
-
-        # import csbdeep.utils
 
         model = StarDist2D.from_pretrained("2D_versatile_fluo")
 
@@ -269,26 +232,54 @@ class ToolAccessor:
             labels = postprocess_func(labels)
             all_masks.append(labels)
 
-        # if there is one channel, we can squeeze the mask tensor
-        if len(all_masks) == 1:
-            da = xr.DataArray(
-                all_masks[0].squeeze(),
-                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-                dims=[Dims.Y, Dims.X],
-                name=key_added,
-            )
-        # if we segment on all of the channels, we need to add the channel dimension
-        else:
-            da = xr.DataArray(
-                np.stack(all_masks, 0),
-                coords=[
-                    self._obj.coords[Dims.CHANNELS],
-                    self._obj.coords[Dims.Y],
-                    self._obj.coords[Dims.X],
-                ],
-                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-                name=key_added,
-            )
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
+
+        return xr.merge([self._obj, da])
+
+    def mesmer(
+        self,
+        key_added: Optional[str] = "_mesmer_segmentation",
+        postprocess_func: Callable = lambda x: x,
+        **kwargs,
+    ):
+        """
+        Segment cells using Mesmer. Adds a layer to the spatialproteomics object
+        with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).
+
+        Parameters
+        ----------
+        key_added : str, optional
+            Key to assign to the segmentation results.
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing original data and segmentation mask.
+
+        Notes
+        -----
+        This method requires the 'mesmer' package to be installed.
+        """
+        channels = _get_channels(self._obj, key_added, None)
+
+        assert (
+            len(channels) == 2
+        ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel."
+
+        from deepcell.applications import Mesmer
+
+        app = Mesmer()
+        # at this point, the shape of image is (channels (2), x, y)
+        image = self._obj.pp[channels][Layers.IMAGE].values
+        # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
+        image = np.expand_dims(np.transpose(image, (1, 2, 0)), 0)
+
+        all_masks = app.predict(image, **kwargs)
+        all_masks = postprocess_func(all_masks)
+
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
 
