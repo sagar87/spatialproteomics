@@ -50,8 +50,8 @@ class ToolAccessor:
             Whether to use GPU for segmentation.
         model_type : str, optional
             Type of Cellpose model to use.
-        return_xarray: bool, optional
-            Whether to return the segmentation as an xarray DataArray or as a numpy array.
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction.
 
         Returns
         -------
@@ -79,7 +79,7 @@ class ToolAccessor:
                 flow_threshold=flow_threshold,
             )
 
-            postprocess_func(masks_pred)
+            masks_pred = postprocess_func(masks_pred)
             all_masks.append(masks_pred)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
@@ -177,7 +177,6 @@ class ToolAccessor:
         n_tiles: int = 12,
         normalize: bool = True,
         predict_big: bool = False,
-        image_key: str = Layers.IMAGE,
         postprocess_func: Callable = lambda x: x,
         **kwargs,
     ) -> xr.Dataset:
@@ -196,6 +195,8 @@ class ToolAccessor:
             Name of the nuclear channel in the image (default is "DAPI").
         predict_big : bool, optional
             Flag indicating whether to use the 'predict_instances_big' method for large images (default is False).
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction (default is lambda x: x).
         **kwargs : dict, optional
             Additional keyword arguments to be passed to the StarDist prediction method.
 
@@ -214,8 +215,6 @@ class ToolAccessor:
 
         from stardist.models import StarDist2D
 
-        # import csbdeep.utils
-
         model = StarDist2D.from_pretrained("2D_versatile_fluo")
 
         all_masks = []
@@ -233,6 +232,53 @@ class ToolAccessor:
             labels = postprocess_func(labels)
             all_masks.append(labels)
 
+        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
+
+        return xr.merge([self._obj, da])
+
+    def mesmer(
+        self,
+        key_added: Optional[str] = "_mesmer_segmentation",
+        postprocess_func: Callable = lambda x: x,
+        **kwargs,
+    ):
+        """
+        Segment cells using Mesmer. Adds a layer to the spatialproteomics object
+        with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).
+
+        Parameters
+        ----------
+        key_added : str, optional
+            Key to assign to the segmentation results.
+        postprocess_func : Callable, optional
+            Function to apply to the segmentation masks after prediction.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing original data and segmentation mask.
+
+        Notes
+        -----
+        This method requires the 'mesmer' package to be installed.
+        """
+        channels = _get_channels(self._obj, key_added, None)
+
+        assert (
+            len(channels) == 2
+        ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel."
+
+        from deepcell.applications import Mesmer
+
+        app = Mesmer()
+        # at this point, the shape of image is (channels (2), x, y)
+        image = self._obj.pp[channels][Layers.IMAGE].values
+        # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
+        image = np.expand_dims(np.transpose(image, (1, 2, 0)), 0)
+        
+        all_masks = app.predict(image, **kwargs)
+        all_masks = postprocess_func(all_masks)
+        
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
