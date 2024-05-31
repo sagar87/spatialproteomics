@@ -242,7 +242,8 @@ class PreprocessingAccessor:
     def add_segmentation(
         self,
         segmentation: Union[str, np.ndarray] = None,
-        relabel: bool = True,
+        reindex: bool = True,
+        keep_labels: bool = True,
     ) -> xr.Dataset:
         """
         Adds a segmentation mask (_segmentation) field to the xarray dataset.
@@ -254,18 +255,24 @@ class PreprocessingAccessor:
             that indicates the location of each cell, or a layer key.
         mask_growth : int
             The number of pixels by which the segmentation mask should be grown.
-        relabel : bool
+        reindex : bool
             If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
+        keep_labels : bool
+            When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
+            If you want to keep those annotations, set this to True. Default is True.
 
         Returns:
         --------
         xr.Dataset
             The amended xarray.
         """
+        # flag indicating if the segmentation mask is provided as a layer key or as a numpy array
+        from_layer = None
         if isinstance(segmentation, str):
             if segmentation not in self._obj:
                 raise KeyError(f'The key "{segmentation}" does not exist.')
 
+            from_layer = segmentation
             segmentation = self._obj[segmentation].values.squeeze()
 
         assert segmentation.ndim == 2, "A segmentation mask must 2 dimensional."
@@ -281,8 +288,8 @@ class PreprocessingAccessor:
         # handle_disconnected_cells(segmentation, mode=handle_disconnected)
         segmentation = segmentation.copy()
 
-        if relabel:
-            segmentation, _ = _relabel_cells(segmentation)
+        if reindex:
+            segmentation, reindex_dict = _relabel_cells(segmentation)
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -295,6 +302,16 @@ class PreprocessingAccessor:
         # add cell coordinates
         obj = self._obj.copy()
         obj.coords[Dims.CELLS] = np.unique(segmentation[segmentation > 0]).astype(int)
+
+        if keep_labels and from_layer is not None:
+            # checking that the segmentation has labels in the attrs
+            if Attrs.LABEL_SEGMENTATION in self._obj[from_layer].attrs:
+                # this is a dict that maps from cell_id to a label (e. g. {1: 'CD68', 2: 'DAPI'})
+                labels = self._obj[from_layer].attrs[Attrs.LABEL_SEGMENTATION]
+                # if reindex was called, we first need to propagate the mapping to the labels before we can add them
+                if reindex:
+                    labels = {reindex_dict[k]: v for k, v in labels.items()}
+                obj = obj.pp.add_labels(labels)
 
         return xr.merge([obj, da]).pp.add_observations()
 
@@ -587,6 +604,33 @@ class PreprocessingAccessor:
             )
 
         return xr.merge([da, self._obj])
+
+    def add_labels(self, labels: Union[dict, None] = None) -> xr.Dataset:
+        """
+        Add labels from a mapping (cell -> label) to the spatialproteomics object.
+
+        Parameters:
+        -----------
+        labels : Union[dict, None], optional
+            A dictionary containing cell labels as keys and corresponding labels as values.
+            If None, a default labeling will be added. Default is None.
+
+        Returns:
+        --------
+        xr.Dataset
+            The spatialproteomics object with added labels.
+
+        Notes:
+        ------
+        This method converts the input dictionary into a pandas DataFrame and then adds the labels to the object
+        using the `pp.add_labels_from_dataframe` method.
+        """
+        # converting the dict into a df
+        if labels is not None:
+            labels = pd.DataFrame(labels.items(), columns=["cell", "label"])
+
+        # adding the labels to the object
+        return self._obj.pp.add_labels_from_dataframe(labels)
 
     def add_labels_from_dataframe(
         self,

@@ -46,12 +46,12 @@ def test_add_segmentation_negative_values(data_dic, dataset_segmentation):
         dataset_segmentation.pp.add_segmentation(corrupted_segmentation)
 
 
-def test_add_segmentation_relabel(data_dic, dataset_segmentation):
+def test_add_segmentation_reindex(data_dic, dataset_segmentation):
     noncontinuous_segmentation = data_dic["segmentation"]
     noncontinuous_segmentation[10, 10] = np.max(noncontinuous_segmentation) + 2
     num_cells = len(np.unique(noncontinuous_segmentation)) - 1  # -1 because of the background
 
-    segmented = dataset_segmentation.pp.add_segmentation(noncontinuous_segmentation, relabel=True)
+    segmented = dataset_segmentation.pp.add_segmentation(noncontinuous_segmentation, reindex=True)
     cell_labels = sorted(np.unique(segmented["_segmentation"].values))[1:]  # removing the background
 
     assert cell_labels == list(range(1, num_cells + 1))

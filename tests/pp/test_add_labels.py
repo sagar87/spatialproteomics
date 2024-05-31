@@ -42,3 +42,18 @@ def test_add_labels_from_dataframe_unassigned_cells(dataset):
     assert Features.LABELS in labeled[Layers.OBS].coords[Dims.FEATURES].values
     assert 0 in labeled[Layers.OBS].sel(features=Features.LABELS).values
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
+
+
+def test_add_labels(dataset):
+    # creating a dummy dict
+    cells = dataset.coords[Dims.CELLS].values
+    num_cells = len(cells)
+    label_dict = dict(zip(cells, ["CT1"] * num_cells))
+
+    # adding the labels
+    labeled = dataset.pp.add_labels(label_dict)
+
+    # checking that the labels were added
+    assert Dims.LABELS in labeled.coords
+    assert Features.LABELS in labeled[Layers.OBS].coords[Dims.FEATURES].values
+    assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
