@@ -11,6 +11,8 @@ from ..constants import Dims, Features, Layers, Props
 
 @xr.register_dataset_accessor("la")
 class LabelAccessor:
+    """Adds functions for cell phenotyping."""
+    
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
