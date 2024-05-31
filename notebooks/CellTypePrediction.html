@@ -393,7 +393,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f51130&gt;
+&lt;xarray.core.options.set_options at 0x7fffc0750f70&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -434,7 +434,7 @@ ds_processed = ds.pp[channels].pp.filter(quantiles).pp.restore(&#39;medfilt2d&#3
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ds and ds processed next to one another
@@ -451,16 +451,7 @@ ax[1].set_title(&quot;Processed&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pl/plot.py:21: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pl.plot.PlotAccessor&#39;&gt; under name &#39;pl&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PlotAccessor:
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -472,11 +463,11 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_5_2.png" src="../_images/notebooks_CellTypePrediction_5_2.png" />
+<img alt="../_images/notebooks_CellTypePrediction_5_1.png" src="../_images/notebooks_CellTypePrediction_5_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_marker_dict = {&#39;B&#39;: &#39;PAX5&#39;, &#39;T&#39;: &#39;CD3&#39;, &#39;Myeloid&#39;: &#39;CD11b&#39;, &#39;Dendritic&#39;: &#39;CD11c&#39;, &#39;Granulo&#39;: &#39;CD15&#39;, &#39;Macro&#39;: &#39;CD68&#39;, &#39;Stroma PDPN&#39;: &#39;Podoplanin&#39;, &#39;Stroma CD31&#39;: &#39;CD31&#39;, &#39;Stroma CD34&#39;: &#39;CD34&#39;, &#39;Stroma CD90&#39;: &#39;CD90&#39;, &#39;NK&#39;: &#39;CD56&#39;}
@@ -484,7 +475,7 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># predicting the cell type using the argmay
@@ -507,7 +498,7 @@ Label Stroma CD31 not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ct predictions next to the processed image
@@ -522,7 +513,7 @@ ax[1].set_title(&quot;Cell Type Predictions&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -538,7 +529,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># this is how the image in the README was created
@@ -574,7 +565,7 @@ plt.tight_layout()
 </div>
 <p>Getting observations from the xarray object is very easy. However, since the cell types are stored as integers, the method <code class="docutils literal notranslate"><span class="pre">la.get_obs(celltypes_to_str=True)</span></code> allows you to export the obs in a more readable format.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting the obs table directly from the xarray object
@@ -583,7 +574,7 @@ ds_with_ct_predictions[&#39;_obs&#39;]
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -600,7 +591,7 @@ Coordinates:
   * features  (features) &lt;U10 &#x27;_labels&#x27; &#x27;_original_&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting the obs with get_layer_as_df() to get human readable cell type annotations in a pandas data frame
@@ -609,7 +600,7 @@ ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -723,7 +714,7 @@ ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;)
 </section>
 <section id="Marker-Binarization">
 <h1>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this headline"></a></h1>
-<p>For some (functional) markers, we want to binarize them (i. e. is a cell positive or negative for that marker). This can be achieved with the <code class="docutils literal notranslate"><span class="pre">la.add_binarization</span></code> function.</p>
+<p>For some (functional) markers, we want to binarize them (i. e. is a cell positive or negative for that marker). This can be achieved with the <code class="docutils literal notranslate"><span class="pre">la.threshold_labels()</span></code> function.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -736,7 +727,7 @@ threshold_dict = {
     &quot;CD8&quot;: 0.95,
 }
 
-ds_with_binarization = ds_with_ct_predictions.la.add_binarization(threshold_dict)
+ds_with_binarization = ds_with_ct_predictions.la.threshold_labels(threshold_dict, layer_key=&#39;_arcsinh_mean&#39;)
 </pre></div>
 </div>
 </div>
@@ -797,7 +788,7 @@ Text(0.5, 1.0, &#39;CD8 binarization&#39;)
 </div>
 <p>We can also just subset from a single cell type. For example, consider a low CD4 threshold, once on all cells and once on only the T cells. For illustrative purposes, we have only applied a relaxed filter (80-percentile) to CD4 previously. We also choose a very relaxed threshold here, just to show the concept of subsetting when binarizing a marker.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>threshold_dict = {
@@ -805,9 +796,9 @@ Text(0.5, 1.0, &#39;CD8 binarization&#39;)
 }
 
 # in the first one, we binarize CD4 on all cells
-ds_with_binarization_cd4 = ds_with_ct_predictions.la.add_binarization(threshold_dict)
+ds_with_binarization_cd4 = ds_with_ct_predictions.la.threshold_labels(threshold_dict, layer_key=&#39;_arcsinh_mean&#39;)
 # in the second one, we only look at CD4 in the T cells
-ds_with_binarization_cd4_t = ds_with_ct_predictions.la.add_binarization(threshold_dict, cell_type=&#39;T&#39;)
+ds_with_binarization_cd4_t = ds_with_ct_predictions.la.threshold_labels(threshold_dict, label=&#39;T&#39;, layer_key=&#39;_arcsinh_mean&#39;)
 </pre></div>
 </div>
 </div>
@@ -823,7 +814,7 @@ ds_with_binarization_cd4_t = ds_with_ct_predictions.la.add_binarization(threshol
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the binarization next to the marker intensities
@@ -833,7 +824,7 @@ _ = ds_with_binarization_cd4.pp[[&#39;PAX5&#39;, &#39;CD3&#39;]].pl.colorize([&#
 _ = ds_with_binarization_cd4.pp[[&#39;CD4&#39;, &#39;CD8&#39;]].pl.colorize([&#39;blue&#39;, &#39;gold&#39;]).pl.show(render_image=True, render_labels=False, ax=ax[1])
 
 _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.1, palette={0: &#39;gray&#39;, 1: &#39;blue&#39;}, ax=ax[2])
-_ = ds_with_binarization_cd4_t.pl.scatter(feature=&#39;T_CD4_binarized&#39;, size=0.1, palette={0: &#39;gray&#39;, 1: &#39;blue&#39;}, ax=ax[3])
+_ = ds_with_binarization_cd4_t.pl.scatter(feature=&#39;CD4_T_binarized&#39;, size=0.1, palette={0: &#39;gray&#39;, 1: &#39;blue&#39;}, ax=ax[3])
 
 ax[0].set_title(&quot;B and T cells&quot;)
 ax[1].set_title(&quot;CD4 and CD8 cells&quot;)
@@ -843,7 +834,7 @@ ax[3].set_title(&quot;CD4 on T cells only&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -860,7 +851,7 @@ Text(0.5, 1.0, &#39;CD4 on T cells only&#39;)
 </div>
 <p>Sidenote: different plotting methods. When plotting, you can either use <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> as a high level wrapper, or explicitly call <code class="docutils literal notranslate"><span class="pre">pl.render_segmentation().pl.render_labels().pl.imshow()</span></code> to get more control over the plotting.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds_with_binarization_cd4.pl.show(render_image=False, render_segmentation=True, render_labels=True)
@@ -875,7 +866,7 @@ Text(0.5, 1.0, &#39;CD4 on T cells only&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds_with_binarization_cd4.pl.render_labels().pl.render_segmentation().pl.imshow(legend_label=True)
