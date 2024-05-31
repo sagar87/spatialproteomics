@@ -36,7 +36,7 @@ def test_predict_cell_types_argmax_without_overwriting_existing_annotations(data
     )
 
     # adding the labels
-    ds = dataset_full.pp.add_labels(df)
+    ds = dataset_full.pp.add_labels_from_dataframe(df)
 
     # adding a quantification layer
     ds = ds.pp.add_quantification()

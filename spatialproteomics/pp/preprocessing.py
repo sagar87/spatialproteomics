@@ -588,7 +588,7 @@ class PreprocessingAccessor:
 
         return xr.merge([da, self._obj])
 
-    def add_labels(
+    def add_labels_from_dataframe(
         self,
         df: Union[pd.DataFrame, None] = None,
         cell_col: str = "cell",
@@ -868,12 +868,9 @@ class PreprocessingAccessor:
 
         Raises:
         - AssertionError: If no image layer is found in the object.
-        - AssertionError: If no segmentation mask is found in the object.
         """
         # checking if the object contains an image layer
         assert Layers.IMAGE in self._obj, "No image layer found in the object."
-        # checking if the object contains a segmentation mask
-        assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the object."
 
         image_layer = self._obj[Layers.IMAGE]
 
@@ -885,15 +882,20 @@ class PreprocessingAccessor:
         obj = self._obj.drop(Layers.IMAGE)
 
         if Layers.SEGMENTATION in self._obj:
+            # if a segmentation mask is present in the object
             seg_layer = self._obj[Layers.SEGMENTATION]
             new_seg = xr.DataArray(
                 seg_layer.values[::rate, ::rate], coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
             )
             obj = obj.drop(Layers.SEGMENTATION)
 
-        obj = obj.drop_dims([Dims.Y, Dims.X])
+            obj = obj.drop_dims([Dims.Y, Dims.X])
 
-        return xr.merge([obj, new_img, new_seg])
+            return xr.merge([obj, new_img, new_seg])
+        else:
+            # if no segmentation is present in the object
+            obj = obj.drop_dims([Dims.Y, Dims.X])
+            return xr.merge([obj, new_img])
 
     def rescale(self, scale: int):
         """

@@ -385,7 +385,9 @@ class ToolAccessor:
         assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
         # adding the labels to the xarray object
-        return self._obj.pp.add_labels(assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col)
+        return self._obj.pp.add_labels_from_dataframe(
+            assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col
+        )
 
     def convert_to_anndata(
         self,

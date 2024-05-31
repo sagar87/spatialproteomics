@@ -3,7 +3,7 @@ import pandas as pd
 from spatialproteomics.constants import Dims, Features, Labels, Layers
 
 
-def test_add_labels_correct_annotation(dataset):
+def test_add_labels_from_dataframe_correct_annotation(dataset):
     # creating a dummy data frame
     cells = dataset.coords[Dims.CELLS].values
     num_cells = len(cells)
@@ -15,7 +15,7 @@ def test_add_labels_correct_annotation(dataset):
     )
 
     # adding the labels
-    labeled = dataset.pp.add_labels(df)
+    labeled = dataset.pp.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -23,7 +23,7 @@ def test_add_labels_correct_annotation(dataset):
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
 
 
-def test_add_labels_unassigned_cells(dataset):
+def test_add_labels_from_dataframe_unassigned_cells(dataset):
     # creating a dummy data frame
     cells = dataset.coords[Dims.CELLS].values
     num_cells = len(cells)
@@ -35,7 +35,7 @@ def test_add_labels_unassigned_cells(dataset):
     )
 
     # adding the labels
-    labeled = dataset.pp.add_labels(df)
+    labeled = dataset.pp.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
