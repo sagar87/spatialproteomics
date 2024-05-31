@@ -636,7 +636,7 @@ class LabelAccessor:
             obj = obj.pp.drop_layers(Layers.PROPERTIES)
 
         # adding the new labels
-        return obj.pp.add_labels(celltype_prediction_df)
+        return obj.pp.add_labels_from_dataframe(celltype_prediction_df)
 
     def _threshold_label(
         self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
