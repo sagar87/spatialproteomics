@@ -860,15 +860,30 @@ class PreprocessingAccessor:
         )
         return xr.merge([obj, normed])
 
-    def filter(self, quantile: float = 0.99, key_added: Optional[str] = None):
+    def filter(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
+        if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
+            raise ValueError("Please provide a quantile or absolute intensity cut off.")
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
-        if isinstance(quantile, list):
-            quantile = np.array(quantile)
 
-        # calculate quantile
-        lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-        filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
+        if quantile is not None:
+            if isinstance(quantile, list):
+                quantile = np.array(quantile)
+
+            # calculate quantile
+            lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
+            filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
+
+        if intensity is not None:
+            if isinstance(intensity, (float, int)):
+                intensity = np.array([intensity])
+            if isinstance(intensity, list):
+                intensity = np.array(intensity)
+
+            # calculate intensity
+            filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
+            # lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
+            # filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
 
         if key_added is None:
             obj = self._obj.drop(Layers.IMAGE)
