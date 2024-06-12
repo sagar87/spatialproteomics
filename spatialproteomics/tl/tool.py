@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from ..base_logger import logger
 from ..constants import Dims, Layers
 from ..pp.utils import _normalize
 from .utils import _convert_masks_to_data_array, _get_channels
@@ -347,13 +348,18 @@ class ToolAccessor:
 
         # raise an error if the image is of anything other than uint8
         if self._obj[Layers.IMAGE].dtype != "uint8":
-            raise ValueError(
-                "The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8."
+            logger.warning(
+                "The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8. If you applied operations such as filtering, you may ignore this warning."
+            )
+
+        # warn the user if the input dict has the wrong format
+        if "cell_type" not in marker_dict.keys():
+            logger.warning(
+                "Did not find 'cell_type' key in the marker_dict. Your dictionary should have the following structure: {'cell_type': {'B': ['PAX5'], 'T': ['CD3'], 'Myeloid': ['CD11b']}}."
             )
 
         # converting the xarray to a pandas dataframe to keep track of channel names and indices after running astir
-        expression_df = pd.DataFrame(self._obj[key].values, columns=self._obj.coords[Dims.CHANNELS].values)
-        expression_df.index = self._obj.coords[Dims.CELLS].values
+        expression_df = self._obj.pp.get_layer_as_df(key)
 
         # running astir
         model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)

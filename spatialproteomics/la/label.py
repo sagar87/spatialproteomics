@@ -11,6 +11,8 @@ from ..constants import Dims, Features, Layers, Props
 
 @xr.register_dataset_accessor("la")
 class LabelAccessor:
+    """Adds functions for cell phenotyping."""
+
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
@@ -650,14 +652,17 @@ class LabelAccessor:
         obj = self._obj.copy()
         label_pos = obj.la._filter_by_intensity(channel, lambda x: x >= threshold, layer_key=layer_key)
 
+        column = f"{channel}_binarized"
+
         if label is not None:
             # getting all of the cells that should have a 1 in the binary vector
             label_idx = obj.la[label].cells.values
             # creating a boolean mask indicating whether each element of cells is in cells_subset
             label_mask = np.isin(obj.cells.values, label_idx).astype(int)
             label_pos *= label_mask
+            column = f"{channel}_{label}_binarized"
 
-        obj = obj.pp.add_feature(f"{channel}_binarized", label_pos)
+        obj = obj.pp.add_feature(column, label_pos)
 
         return obj
 
