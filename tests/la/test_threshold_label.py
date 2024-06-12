@@ -42,5 +42,5 @@ def test_threholding_on_label(dataset_labeled):
     label_mask = np.isin(data.coords["cells"].values, data.la[label].coords["cells"].values).astype(int)
 
     manual = label_pos * label_mask
-    computed = binarized_label._obs.sel(features=f"{channel}_binarized").values
+    computed = binarized_label._obs.sel(features=f"{channel}_{label}_binarized").values
     assert np.all(manual == computed)
