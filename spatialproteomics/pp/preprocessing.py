@@ -458,6 +458,44 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
+    def add_obs_from_dataframe(self, df: pd.DataFrame) -> xr.Dataset:
+        """
+        Adds an observation table to the image container. Columns of the
+        dataframe have to match the feature coordinates of the image
+        container, and the index of the dataframe has to match the cell coordinates
+        of the image container.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            A dataframe with the observation values.
+
+        Returns
+        -------
+        xr.DataSet
+            The amended image container.
+        """
+        if Dims.CELLS not in self._obj.coords:
+            self._obj = self._obj.pp.add_observations()
+
+        # pulls out the cell and feature coordinates from the image container
+        cells = self._obj.coords[Dims.CELLS].values
+
+        # ensuring that the shape of the data frame fits the number of cells in the segmentation
+        assert len(cells) == len(
+            df.index
+        ), "Number of cells in the image container does not match the number of cells in the dataframe."
+
+        # create a data array from the dataframe
+        da = xr.DataArray(
+            df,
+            coords=[cells, df.columns],
+            dims=[Dims.CELLS, Dims.FEATURES],
+            name=Layers.OBS,
+        )
+
+        return xr.merge([self._obj, da])
+
     def add_quantification(
         self,
         func=arcsinh_median_intensity,

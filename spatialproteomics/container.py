@@ -68,3 +68,37 @@ def load_image_data(
         dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
 
     return dataset
+
+
+def read_from_spatialdata(spatial_data_object, image_key: str = "image", segmentation_key: str = "segmentation"):
+    """
+    Read data from a spatialdata object into the spatialproteomics object.
+
+    Parameters:
+        spatial_data_object (spatialdata.SpatialData, str): The spatialdata object to read data from. If str, spatialdata is used to read the file from that path.
+        image_key (str): The key of the image in the spatialdata object.
+        segmentation_key (str): The key of the segmentation in the spatialdata object.
+
+    Returns:
+        spatialproteomics_object (xr.Dataset): The spatialproteomics object.
+    """
+    import spatialdata
+
+    if isinstance(spatial_data_object, str):
+        spatial_data_object = spatialdata.read_zarr(spatial_data_object)
+
+    # image
+    image = spatial_data_object.images[image_key]
+    # segmentation
+    segmentation = spatial_data_object.labels[segmentation_key]
+    # coordinates
+    markers = image.coords["c"].values
+    # obs (from anndata)
+    obs = spatial_data_object.table.obs
+
+    # create the spatialproteomics object
+    obj = load_image_data(image, channel_coords=markers)
+    obj = obj.pp.add_segmentation(segmentation)
+    obj = obj.pp.add_obs_from_dataframe(obs)
+
+    return obj

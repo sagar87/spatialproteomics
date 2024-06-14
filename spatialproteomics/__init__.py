@@ -26,7 +26,7 @@ from .constants import (
     White,
     Yellow,
 )
-from .container import load_image_data
+from .container import load_image_data, read_from_spatialdata
 from .la import LabelAccessor
 from .pl import PlotAccessor
 from .pp import (
@@ -44,6 +44,7 @@ from .tl import ToolAccessor
 
 __all__ = [
     "load_image_data",
+    "read_from_spatialdata",
     "PreprocessingAccessor",
     "LabelAccessor",
     "PlotAccessor",
