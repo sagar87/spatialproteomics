@@ -6,7 +6,6 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import Dims, Layers
-from ..container import load_image_data
 from ..pp.utils import _normalize
 from .utils import _convert_masks_to_data_array, _get_channels
 
