@@ -68,7 +68,20 @@ class LabelAccessor:
                     sel.append(i)
 
         cells = self._obj.la._filter_cells_by_label(sel)
-        return self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
+
+        obj = self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
+
+        # removing all cells from the segmentation mask that are not in the cells array
+        # we need the copy() here, as this will otherwise modify the original self._obj due to the array referencing it
+        segmentation = self._obj[Layers.SEGMENTATION].values.copy()
+        mask = np.isin(segmentation, cells)
+        segmentation[~mask] = 0
+        # removing the old segmentation
+        obj = obj.drop_vars(Layers.SEGMENTATION)
+        # adding the new segmentation
+        obj = obj.pp.add_segmentation(segmentation)
+
+        return obj
 
     def deselect(self, indices):
         """
@@ -124,7 +137,19 @@ class LabelAccessor:
         inv_sel = [i for i in self._obj.coords[Dims.LABELS] if i not in sel]
 
         cells = self._obj.la._filter_cells_by_label(inv_sel)
-        return self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
+
+        obj = self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
+
+        # removing all cells from the segmentation mask that are not in the cells array
+        segmentation = obj[Layers.SEGMENTATION].values.copy()
+        mask = np.isin(segmentation, cells)
+        segmentation[~mask] = 0
+        # removing the old segmentation
+        obj = obj.drop_vars(Layers.SEGMENTATION)
+        # adding the new segmentation
+        obj = obj.pp.add_segmentation(segmentation)
+
+        return obj
 
     def _relabel_dict(self, dictionary: dict):
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
