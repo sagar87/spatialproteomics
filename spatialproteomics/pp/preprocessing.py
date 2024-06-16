@@ -933,6 +933,44 @@ class PreprocessingAccessor:
             name=Layers.IMAGE if key_added is None else key_added,
         )
         return xr.merge([obj, filtered])
+    
+    def apply(self, func: Callable, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE, **kwargs):
+        """
+        Apply a function to all channels.
+        
+        Parameters
+        ----------
+        func : Callable
+            The function to apply to the layer.
+        key : str
+            The key of the layer to apply the function to. Default is Layers.IMAGE.
+        key_added : str
+            The key under which the updated layer will be stored. Default is Layers.IMAGE (i. e. the original image will be overwritten).
+        **kwargs : dict, optional
+            Additional keyword arguments to pass to the function.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the applied function.
+        """
+        # checking if the key is in the object
+        assert key in self._obj, f"Key {key} not found in the image container."
+
+        # apply the function to all channels
+        obj = self._obj.copy()
+        layer = obj[key].copy()
+        processed_layer = xr.apply_ufunc(func, layer)
+
+        # adding the modified layer to the object
+        obj[key_added] = xr.DataArray(
+            processed_layer,
+            coords=[self._obj.coords[Dims.CHANNELS], self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=key_added,
+        )
+        
+        return obj
 
     def normalize(self):
         """
