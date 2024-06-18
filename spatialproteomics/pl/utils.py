@@ -7,6 +7,7 @@ from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.segmentation import clear_border, find_boundaries
 
+from ..base_logger import logger
 from ..pp.utils import _normalize
 
 
@@ -26,7 +27,17 @@ def _get_linear_colormap(palette: list, background: str = "black"):
     list
         A list of LinearSegmentedColormap objects.
     """
-    return [LinearSegmentedColormap.from_list(color, [background, color], N=256) for color in palette]
+    # if there are multiple colors in the palette, we only want to set the background color for the first colormap
+    out = []
+    if len(palette) > 1 and background == "white":
+        logger.warning(
+            "Setting the background color to white for multiple colors in the palette is currently not recommended, as only the first marker will be visible."
+        )
+
+    for i, color in enumerate(palette):
+        bg = background if i == 0 else (0, 0, 0, 0)  # transparent background for all but the first rgba layer
+        out.append(LinearSegmentedColormap.from_list(color, [bg, color], N=256))
+    return out
 
 
 def _get_listed_colormap(palette: dict):
