@@ -933,11 +933,11 @@ class PreprocessingAccessor:
             name=Layers.IMAGE if key_added is None else key_added,
         )
         return xr.merge([obj, filtered])
-    
+
     def apply(self, func: Callable, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE, **kwargs):
         """
         Apply a function to all channels.
-        
+
         Parameters
         ----------
         func : Callable
@@ -969,7 +969,7 @@ class PreprocessingAccessor:
             dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=key_added,
         )
-        
+
         return obj
 
     def normalize(self):
