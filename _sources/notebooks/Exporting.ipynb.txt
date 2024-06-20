@@ -118,7 +118,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Zarr\n",
+    "## Exporting to Zarr\n",
     "This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code. \n",
     "\n",
     "In case there are issues with simply running `ds.to_zarr(\"your_path.zarr\")`, you might need to parse the dtypes correctly. This is a [known issue](https://github.com/pydata/xarray/issues/3476) with xarray and will hopefully be fixed soon."

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Merging segmentation masks &mdash; spatial_proteomics 0.4.0 documentation</title>
+  <title>Segmentation &mdash; spatial_proteomics 0.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plotting" href="Plotting.html" />
-    <link rel="prev" title="Slicing" href="Slicing.html" />
+    <link rel="prev" title="Subselecting data" href="Slicing.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -52,12 +52,15 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Merging segmentation masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Segmentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Whole-Cell-Segmentation-with-Mesmer">Whole Cell Segmentation with Mesmer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
 </ul>
 
@@ -75,7 +78,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Merging segmentation masks</li>
+      <li>Segmentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/Segmentation.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -363,9 +366,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Merging-segmentation-masks">
-<h1>Merging segmentation masks<a class="headerlink" href="#Merging-segmentation-masks" title="Permalink to this headline"></a></h1>
-<p>You can merge segmentation masks into one. The masks to be merged should always be ordererd by small to big. You can also add labels directly.</p>
+<section id="Segmentation">
+<h1>Segmentation<a class="headerlink" href="#Segmentation" title="Permalink to this headline"></a></h1>
+<p>Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for StarDist, mesmer and cellpose.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -393,14 +396,14 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffd5f57250&gt;
+&lt;xarray.core.options.set_options at 0x7fff13304f40&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;).pp[1000:1300, 1000:1300]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;).pp[1000:1300, 1000:1300].pp.drop_layers(keep=&#39;_image&#39;)
 </pre></div>
 </div>
 </div>
@@ -409,69 +412,14 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># segmenting on CD11c (dendritic cells) and CD68 (macrophages) and getting the result as a numpy array
-new_segmentations = ds.tl.cellpose(channels=[&#39;CD11c&#39;, &#39;CD68&#39;], return_xarray=False, handle_disconnected=&quot;remove&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-TORCH CUDA version not installed/working.
-&gt;&gt;&gt;&gt; using CPU
-&gt;&gt; cyto3 &lt;&lt; model set to be used
-&gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
-channels set to [0, 0]
-~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 19.10 sec
-&gt;&gt;&gt; diameter(s) =
-[ 20.95 ]
-~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 34.51 sec
-Found disconnected masks in the segmentation.
-Removed 4 disconnected cells from the segmentation mask.
-channels set to [0, 0]
-~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 17.34 sec
-&gt;&gt;&gt; diameter(s) =
-[ 21.76 ]
-~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 31.56 sec
-Found disconnected masks in the segmentation.
-Removed 1 disconnected cells from the segmentation mask.
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>new_segmentations.shape
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(2, 301, 301)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
@@ -479,87 +427,123 @@ Removed 1 disconnected cells from the segmentation mask.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (cells: 314, channels: 56, y: 301, x: 301, labels: 8,
-                    props: 2, features: 4)
+Dimensions:   (channels: 56, y: 301, x: 301)
 Coordinates:
-  * cells          (cells) int64 3185 3215 3236 3237 ... 4715 4718 4728 4729
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
-  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * channels  (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * x         (x) int64 1000 1001 1002 1003 1004 ... 1296 1297 1298 1299 1300
+  * y         (y) int64 1000 1001 1002 1003 1004 ... 1296 1297 1298 1299 1300
 Data variables:
-    _arcsinh_mean  (cells, channels) float64 3.145 0.101 1.386 ... 0.7508 0.4342
-    _arcsinh_sum   (cells, channels) float64 8.73 3.989 6.909 ... 5.641 5.032
-    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
-    _labels        (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
-    _obs           (cells, features) float64 1.085e+03 1.296e+03 6.0 ... 4.0 3.0
-    _raw_mean      (cells, channels) float64 57.93 0.5056 9.375 ... 4.117 2.24
-    _raw_sum       (cells, channels) float64 1.547e+04 135.0 ... 704.0 383.0
-    _segmentation  (y, x) int64 0 0 0 4319 4319 ... 4014 4014 3481 3481 3481</pre></div>
+    _image    (channels, y, x) uint8 72 72 72 69 79 92 109 116 ... 3 3 2 3 3 2 3</pre></div>
 </div>
+<section id="Nuclear-Segmentation-with-StarDist">
+<h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Permalink to this headline"></a></h2>
+<p>StarDist can perform segmentation on a single channel. Here, we show how it can be used to segment nuclei. Subsequently, we will look at how these segmentation masks can be processed in an attempt to capture the cytosol and membrane better.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
-merged_ds = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># running the segmentation
+ds_stardist = ds.tl.stardist(channel=&#39;DAPI&#39;, key_added=&#39;_stardist_segmentation&#39;)
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Found model &#39;2D_versatile_fluo&#39; for &#39;StarDist2D&#39;.
+Loading network weights from &#39;weights_best.h5&#39;.
+Loading thresholds from &#39;thresholds.json&#39;.
+Using default values: prob_thresh=0.479071, nms_thresh=0.3.
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Found disconnected masks in the segmentation.
-Relabeled all cells to avoid disconnected cells.
-Found &#39;cells&#39; coordinate in &#39;_arcsinh_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_arcsinh_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_obs&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_raw_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_raw_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+100%|██████████| 144/144 [02:20&lt;00:00,  1.03it/s]
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<p>Since it is possible to have multiple segmentations in a spatialproteomics object, we need to tell the package which segmentation to treat as the default one. This is done with <code class="docutils literal notranslate"><span class="pre">pp.add_segmentation()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(16, 8))
-
-# adding colors to match the channel colors
-merged_ds = merged_ds.la.set_label_colors([&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], [&#39;C3&#39;, &#39;C4&#39;])
-
-# original masks
-_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[0])
-
-# merged masks
-_ = merged_ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[1])
-_ = merged_ds.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[2])
-<br/></pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding the segmentation as default segmentation
+ds_stardist = ds_stardist.pp.add_segmentation(&#39;_stardist_segmentation&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the segmentation
+fix, ax = plt.subplots(1, 2, figsize=(16, 8))
+_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(ax=ax[0])
+_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[1])
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_8_0.png" src="../_images/notebooks_Segmentation_8_0.png" />
+<img alt="../_images/notebooks_Segmentation_9_0.png" src="../_images/notebooks_Segmentation_9_0.png" />
 </div>
 </div>
-<p>There are two issues right now: one is that the cellpose segmentation is suboptimal. We can try to fix this by setting different cell probability and flow probability thresholds in the cellpose method (see cellpose documentaiton for details). In addition, we can merge the segmentation masks with a lower cutoff. This will keep cells which retain more than threshold (e. g. 60) percent of their volume after the merging.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<p>To try to capture full cells, we can grow the segmentation masks, e. g. by two pixels into each direction. If two masks collide, the masks will stop growing into that direction.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># segmenting on CD11c (dendritic cells) and CD68 (macrophages) and getting the result as a numpy array
-new_segmentations = ds.ext.cellpose(channels=[&#39;CD11c&#39;, &#39;CD68&#39;], cellprob_threshold=5.0, flow_threshold=0.4, return_xarray=False, handle_disconnected=&quot;remove&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_stardist_grown = ds_stardist.pp.grow_cells(2)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the segmentation
+fix, ax = plt.subplots(1, 2, figsize=(16, 8))
+_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[0])
+_ = ds_stardist_grown.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[1])
+ax[0].set_title(&#39;StarDist segmentation&#39;)
+ax[1].set_title(&#39;Grown masks&#39;)
+plt.tight_layout()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Segmentation_12_0.png" src="../_images/notebooks_Segmentation_12_0.png" />
+</div>
+</div>
+</section>
+<section id="Whole-Cell-Segmentation-with-Mesmer">
+<h2>Whole Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Permalink to this headline"></a></h2>
+<p>If you have a universal membrane marker, you can use mesmer for whole cell segmentation. Since there is no membrane marker in this dataset that is present on all cells, this is not shown here. For further information, refer to the <code class="docutils literal notranslate"><span class="pre">tl</span></code> module. The syntax is identical to that of StarDist and cellpose.</p>
+</section>
+<section id="Segmenting-Multiple-Channels-with-Cellpose">
+<h2>Segmenting Multiple Channels with Cellpose<a class="headerlink" href="#Segmenting-Multiple-Channels-with-Cellpose" title="Permalink to this headline"></a></h2>
+<p>Cellpose is another state of the art tool for segmentation. Next to predicting nuclei, you can also use it to try to predict other cell types. In the following, we will see how we can use cellpose to segment three different channels independently and then merge the segmentation masks into one mask. There are some hyperparameters in cellpose which can help the prediction.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># segmenting on DAPI, CD11c (dendritic cells) and CD68 (macrophages)
+# note that when merging the masks later, the order matters (channels take precedence by position in the subsetting)
+ds_cellpose = ds.pp[[&#39;CD11c&#39;, &#39;CD68&#39;, &#39;DAPI&#39;]].tl.cellpose(key_added=&#39;_cellpose_segmentation&#39;)
 </pre></div>
 </div>
 </div>
@@ -574,217 +558,172 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 18.38 sec
+estimated cell diameter(s) in 17.68 sec
 &gt;&gt;&gt; diameter(s) =
 [ 20.95 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 30.24 sec
-Found disconnected masks in the segmentation.
-Removed 1 disconnected cells from the segmentation mask.
+&gt;&gt;&gt;&gt; TOTAL TIME 33.25 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 16.91 sec
+estimated cell diameter(s) in 14.22 sec
 &gt;&gt;&gt; diameter(s) =
 [ 21.76 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 30.13 sec
-Found disconnected masks in the segmentation.
-Removed 0 disconnected cells from the segmentation mask.
+&gt;&gt;&gt;&gt; TOTAL TIME 27.12 sec
+channels set to [0, 0]
+~~~ ESTIMATING CELL DIAMETER(S) ~~~
+estimated cell diameter(s) in 21.16 sec
+&gt;&gt;&gt; diameter(s) =
+[ 11.94 ]
+~~~ FINDING MASKS ~~~
+&gt;&gt;&gt;&gt; TOTAL TIME 52.49 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># inspecting the resulting segmentation masks
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-
-ax[0].imshow(new_segmentations[0])
-ax[1].imshow(new_segmentations[1])
-
-# flipping the y axis for consistency
-ax[0].invert_yaxis()
-ax[1].invert_yaxis()
-
-ax[0].set_title(&#39;CD11c&#39;)
-ax[1].set_title(&#39;CD68&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;CD68&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_11_1.png" src="../_images/notebooks_Segmentation_11_1.png" />
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:                 (channels: 3, y: 301, x: 301)
+Coordinates:
+  * channels                (channels) &lt;U11 &#x27;CD11c&#x27; &#x27;CD68&#x27; &#x27;DAPI&#x27;
+  * x                       (x) int64 1000 1001 1002 1003 ... 1298 1299 1300
+  * y                       (y) int64 1000 1001 1002 1003 ... 1298 1299 1300
+Data variables:
+    _image                  (channels, y, x) uint8 0 0 0 0 0 ... 32 36 48 65 74
+    _cellpose_segmentation  (channels, y, x) uint16 0 0 0 0 0 0 ... 0 0 0 0 0 0</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[52]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks into a single segmentation
+# the threshold value tells you how much of a mask need to overlap for the less important one to be removed
+ds_cellpose_merged = ds_cellpose.pp.merge_segmentation(&#39;_cellpose_segmentation&#39;, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;, &#39;Lymphocyte&#39;], threshold=0.8)
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks
-merged_ds_2 = ds.pp.merge_segmentation(new_segmentations, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], threshold=0.6)
-
-fig, ax = plt.subplots(1, 3, figsize=(16, 8))
-
-# adding colors to match the channel colors
-merged_ds_2 = merged_ds_2.la.set_label_colors([&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], [&#39;C3&#39;, &#39;C4&#39;])
-
-# original masks
-_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[0])
-
-# merged masks
-_ = merged_ds_2.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=[&#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;]).pl.imshow(render_segmentation=True, legend_background=True, ax=ax[1])
-_ = merged_ds_2.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[2])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose_merged
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:                 (channels: 3, y: 301, x: 301)
+Coordinates:
+  * channels                (channels) &lt;U11 &#x27;CD11c&#x27; &#x27;CD68&#x27; &#x27;DAPI&#x27;
+  * x                       (x) int64 1000 1001 1002 1003 ... 1298 1299 1300
+  * y                       (y) int64 1000 1001 1002 1003 ... 1298 1299 1300
+Data variables:
+    _image                  (channels, y, x) uint8 0 0 0 0 0 ... 32 36 48 65 74
+    _cellpose_segmentation  (channels, y, x) uint16 0 0 0 0 0 0 ... 0 0 0 0 0 0
+    _merged_segmentation    (y, x) uint16 0 0 0 0 0 0 22 22 ... 0 0 0 0 18 18 0</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding the merged segmentation as the main segmentation in the object
+ds_cellpose_merged = ds_cellpose_merged.pp.add_segmentation(&#39;_merged_segmentation&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Found disconnected masks in the segmentation.
-Relabeled all cells to avoid disconnected cells.
-Found &#39;cells&#39; coordinate in &#39;_arcsinh_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_arcsinh_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_obs&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_raw_mean&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;cells&#39; coordinate in &#39;_raw_sum&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
-Found &#39;props&#39; coordinate in &#39;_labels&#39;. Removing layer. Please re-add the layer after merging the segmentation masks.
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
+  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
+Found _obs in image container. Concatenating.
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
+  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_12_1.png" src="../_images/notebooks_Segmentation_12_1.png" />
-</div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_dict = {
-    &quot;B&quot;: &quot;PAX5&quot;,
-    &quot;T&quot;: &quot;CD3&quot;,
-    &quot;Myeloid&quot;: &quot;CD11b&quot;,
-    # &quot;Dendritic&quot;: &quot;CD11c&quot;,
-    &quot;Granulo&quot;: &quot;CD15&quot;,
-    # &quot;Macro&quot;: &quot;CD68&quot;,
-    &quot;Stroma PDPN&quot;: &quot;Podoplanin&quot;,
-    &quot;Stroma CD31&quot;: &quot;CD31&quot;,
-    &quot;Stroma CD34&quot;: &quot;CD34&quot;,
-    &quot;Stroma CD90&quot;: &quot;CD90&quot;,
-    &quot;NK&quot;: &quot;CD56&quot;,
-}
-
-merged_ds_2.pp.add_quantification().la.predict_cell_types_argmax(ct_dict).pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose_merged
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (labels: 6, props: 2, channels: 56, x: 301, y: 301,
-                    cells: 361, features: 3, rgba: 4)
+Dimensions:                 (labels: 3, props: 2, channels: 3, x: 301, y: 301,
+                             cells: 409, features: 3)
 Coordinates:
-  * labels         (labels) int64 1 2 3 4 5 6
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
-  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
-  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 355 356 357 358 359 360 361
-  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
-  * rgba           (rgba) &lt;U1 &#x27;r&#x27; &#x27;g&#x27; &#x27;b&#x27; &#x27;a&#x27;
+  * labels                  (labels) int64 1 2 3
+  * props                   (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * channels                (channels) &lt;U11 &#x27;CD11c&#x27; &#x27;CD68&#x27; &#x27;DAPI&#x27;
+  * x                       (x) int64 1000 1001 1002 1003 ... 1298 1299 1300
+  * y                       (y) int64 1000 1001 1002 1003 ... 1298 1299 1300
+  * cells                   (cells) int64 1 2 3 4 5 6 ... 405 406 407 408 409
+  * features                (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
 Data variables:
-    _labels        (labels, props) object &#x27;#008941&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
-    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
-    _segmentation  (y, x) uint16 0 0 0 266 266 266 266 ... 192 192 192 61 61 61
-    _obs           (cells, features) float64 1.0 1.079e+03 ... 1.058e+03
-    _intensity     (cells, channels) float64 2.203e+04 0.0 ... 704.0 383.0
-    _plot          (y, x, rgba) float32 0.0 0.0 0.0 1.0 ... 0.4039 0.6627 1.0</pre></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_13_1.png" src="../_images/notebooks_Segmentation_13_1.png" />
-</div>
+    _properties             (labels, props) object &#x27;#CB7E98&#x27; ... &#x27;Macrophage&#x27;
+    _image                  (channels, y, x) uint8 0 0 0 0 0 ... 32 36 48 65 74
+    _cellpose_segmentation  (channels, y, x) uint16 0 0 0 0 0 0 ... 0 0 0 0 0 0
+    _merged_segmentation    (y, x) uint16 0 0 0 0 0 0 22 22 ... 0 0 0 0 18 18 0
+    _obs                    (cells, features) float64 1.0 ... 1.113e+03
+    _segmentation           (y, x) int64 0 0 0 0 0 0 22 22 ... 0 0 0 0 0 18 18 0</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>merged_ds_3 = merged_ds_2.pp.add_quantification().la.predict_cell_types_argmax(ct_dict)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(16, 8))
 
-color_dict = {&quot;Dendritic Cell&quot;: &quot;deepskyblue&quot;, &quot;Macrophage&quot;: &quot;purple&quot;, &quot;Myeloid&quot;: &quot;pink&quot;, &quot;Stroma CD34&quot;: &quot;orange&quot;, &quot;Stroma CD90&quot;: &quot;yellow&quot;, &quot;T&quot;: &quot;darkgreen&quot;}
-for k, v in color_dict.items():
-    merged_ds_3 = merged_ds_3.la.set_label_colors(k, v)
+# adding colors to match the channel colors
+colors = [&#39;orange&#39;, &#39;deepskyblue&#39;, &#39;darkred&#39;]
+ds_cellpose_merged = ds_cellpose_merged.la.set_label_colors([&#39;Lymphocyte&#39;, &#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], colors)
 
-merged_ds_3.pl.imshow(render_intensities=False, render_segmentation=True, render_labels=True, legend_label=True)
-</pre></div>
+# original masks
+_ = ds_cellpose_merged.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
+
+# merged masks
+_ = ds_cellpose_merged.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[1])
+_ = ds_cellpose_merged.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[2])
+<br/></pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.Dataset&gt;
-Dimensions:        (labels: 6, props: 2, channels: 56, x: 301, y: 301,
-                    cells: 361, features: 3, rgba: 4)
-Coordinates:
-  * labels         (labels) int64 1 2 3 4 5 6
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * x              (x) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
-  * y              (y) int64 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
-  * cells          (cells) int64 1 2 3 4 5 6 7 8 ... 355 356 357 358 359 360 361
-  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
-  * rgba           (rgba) &lt;U1 &#x27;r&#x27; &#x27;g&#x27; &#x27;b&#x27; &#x27;a&#x27;
-Data variables:
-    _image         (channels, y, x) uint8 72 72 72 69 79 92 109 ... 3 2 3 3 2 3
-    _segmentation  (y, x) uint16 0 0 0 266 266 266 266 ... 192 192 192 61 61 61
-    _obs           (cells, features) float64 1.0 1.079e+03 ... 1.058e+03
-    _intensity     (cells, channels) float64 2.203e+04 0.0 ... 704.0 383.0
-    _labels        (labels, props) object &#x27;deepskyblue&#x27; &#x27;Dendritic Cell&#x27; ... &#x27;T&#x27;
-    _plot          (y, x, rgba) float32 0.0 0.0 0.0 1.0 0.0 ... 1.0 1.0 0.0 1.0</pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_14_1.png" src="../_images/notebooks_Segmentation_14_1.png" />
+<img alt="../_images/notebooks_Segmentation_21_0.png" src="../_images/notebooks_Segmentation_21_0.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
+<p>Note that this method is far from perfect, and does not always pick up on all masks. For example, no dendritic cell was detected by cellpose. In this case, you might want to look into fine-tuning cellpose to your celltype of interest. You can also tweak the cellpose parameters to try to improve the segmentation.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Slicing.html" class="btn btn-neutral float-left" title="Slicing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Slicing.html" class="btn btn-neutral float-left" title="Subselecting data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Plotting.html" class="btn btn-neutral float-right" title="Plotting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

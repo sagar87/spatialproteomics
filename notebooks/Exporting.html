@@ -51,14 +51,12 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html#Marker-Binarization">Marker Binarization</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Exporting Data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Zarr">Zarr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Exporting-to-Zarr">Exporting to Zarr</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-to-AnnData">Exporting to AnnData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
@@ -446,8 +444,8 @@ Data variables:
     _raw_sum                        (cells, channels) float64 1.053e+04 ... 4...
     _segmentation                   (y, x) int64 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0</pre></div>
 </div>
-<section id="Zarr">
-<h2>Zarr<a class="headerlink" href="#Zarr" title="Permalink to this headline"></a></h2>
+<section id="Exporting-to-Zarr">
+<h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Permalink to this headline"></a></h2>
 <p>This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code.</p>
 <p>In case there are issues with simply running <code class="docutils literal notranslate"><span class="pre">ds.to_zarr(&quot;your_path.zarr&quot;)</span></code>, you might need to parse the dtypes correctly. This is a <a class="reference external" href="https://github.com/pydata/xarray/issues/3476">known issue</a> with xarray and will hopefully be fixed soon.</p>
 <div class="nbinput nblast docutils container">

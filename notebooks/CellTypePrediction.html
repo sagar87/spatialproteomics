@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Exporting Data" href="Exporting.html" />
-    <link rel="prev" title="Extracting data" href="Extracting.html" />
+    <link rel="prev" title="Plotting" href="Plotting.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -52,12 +52,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Slicing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Merging segmentation masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Extracting.html">Extracting data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#Marker-Binarization">Marker Binarization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cell Type Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Image-Processing">Image Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Cell-Type-Prediction-with-Argmax">Cell Type Prediction with Argmax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Cell-Type-Prediction-with-Astir">Cell Type Prediction with Astir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Marker-Binarization">Marker Binarization</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
 </ul>
 
@@ -365,9 +369,9 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Cell-Type-Prediction">
 <h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
-<p>There are different ways to predict cell types, e. g. using astir or argmax. Here, we demonstrate how to filter data and then use argmax to get a quick initial prediction.</p>
+<p>There are different ways to predict cell types, e. g. using astir or argmax. The following notebook demonstrates some common ways of predicting cell types and subtypes</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -376,7 +380,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatialproteomics
@@ -388,16 +392,16 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffc0750f70&gt;
+&lt;xarray.core.options.set_options at 0x7fffd557cc70&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
@@ -417,8 +421,10 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
+<section id="Image-Processing">
+<h2>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># preprocessing: filtering by percentiles and applying a median filter
@@ -434,7 +440,7 @@ ds_processed = ds.pp[channels].pp.filter(quantiles).pp.restore(&#39;medfilt2d&#3
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ds and ds processed next to one another
@@ -451,7 +457,7 @@ ax[1].set_title(&quot;Processed&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -463,11 +469,15 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_5_1.png" src="../_images/notebooks_CellTypePrediction_5_1.png" />
+<img alt="../_images/notebooks_CellTypePrediction_6_1.png" src="../_images/notebooks_CellTypePrediction_6_1.png" />
 </div>
 </div>
+</section>
+<section id="Cell-Type-Prediction-with-Argmax">
+<h2>Cell Type Prediction with Argmax<a class="headerlink" href="#Cell-Type-Prediction-with-Argmax" title="Permalink to this headline"></a></h2>
+<p>Given the filtered image, the simplest way to derive cell type labels is to define associations between cell types and markers, and then assign the cell type whose marker is most highly expressed (i. e. taking the argmax). This is what is demonstrated below.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_marker_dict = {&#39;B&#39;: &#39;PAX5&#39;, &#39;T&#39;: &#39;CD3&#39;, &#39;Myeloid&#39;: &#39;CD11b&#39;, &#39;Dendritic&#39;: &#39;CD11c&#39;, &#39;Granulo&#39;: &#39;CD15&#39;, &#39;Macro&#39;: &#39;CD68&#39;, &#39;Stroma PDPN&#39;: &#39;Podoplanin&#39;, &#39;Stroma CD31&#39;: &#39;CD31&#39;, &#39;Stroma CD34&#39;: &#39;CD34&#39;, &#39;Stroma CD90&#39;: &#39;CD90&#39;, &#39;NK&#39;: &#39;CD56&#39;}
@@ -475,7 +485,7 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># predicting the cell type using the argmay
@@ -498,7 +508,7 @@ Label Stroma CD31 not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ct predictions next to the processed image
@@ -513,7 +523,7 @@ ax[1].set_title(&quot;Cell Type Predictions&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -525,11 +535,11 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_8_1.png" src="../_images/notebooks_CellTypePrediction_8_1.png" />
+<img alt="../_images/notebooks_CellTypePrediction_10_1.png" src="../_images/notebooks_CellTypePrediction_10_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># this is how the image in the README was created
@@ -560,42 +570,16 @@ plt.tight_layout()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_9_0.png" src="../_images/notebooks_CellTypePrediction_9_0.png" />
+<img alt="../_images/notebooks_CellTypePrediction_11_0.png" src="../_images/notebooks_CellTypePrediction_11_0.png" />
 </div>
 </div>
 <p>Getting observations from the xarray object is very easy. However, since the cell types are stored as integers, the method <code class="docutils literal notranslate"><span class="pre">la.get_obs(celltypes_to_str=True)</span></code> allows you to export the obs in a more readable format.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting the obs table directly from the xarray object
-ds_with_ct_predictions[&#39;_obs&#39;]
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<pre>&lt;xarray.DataArray &#x27;_obs&#x27; (cells: 12560, features: 4)&gt;
-array([[9.00000000e+00, 3.00000000e+00, 6.13329787e+02, 7.68420213e+02],
-       [4.00000000e+00, 5.00000000e+00, 7.69098446e+02, 7.07544041e+02],
-       [9.00000000e+00, 2.00000000e+00, 7.74528409e+02, 6.44284091e+02],
-       ...,
-       [9.00000000e+00, 2.00000000e+00, 2.26591085e+03, 2.23199225e+03],
-       [1.00000000e+00, 7.00000000e+00, 2.28148069e+03, 2.21842489e+03],
-       [1.00000000e+00, 7.00000000e+00, 2.24906944e+03, 2.23656481e+03]])
-Coordinates:
-  * cells     (cells) int64 1 2 3 4 5 6 ... 12555 12556 12557 12558 12559 12560
-  * features  (features) &lt;U10 &#x27;_labels&#x27; &#x27;_original_&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</pre></div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting the obs with get_layer_as_df() to get human readable cell type annotations in a pandas data frame
-ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;)
+ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;, celltypes_to_str=True)
 </pre></div>
 </div>
 </div>
@@ -712,8 +696,413 @@ ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;)
 </div></div>
 </div>
 </section>
+<section id="Cell-Type-Prediction-with-Astir">
+<h2>Cell Type Prediction with Astir<a class="headerlink" href="#Cell-Type-Prediction-with-Astir" title="Permalink to this headline"></a></h2>
+<p>There also exist more involved methods of predicting cell types, such as astir. Here is a quick example on how one could apply astir to the previous image.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_processed
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (cells: 12560, channels: 13, features: 4, y: 3000, x: 3000,
+                    labels: 8, props: 2)
+Coordinates:
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;PAX5&#x27; &#x27;CD3&#x27; &#x27;CD11b&#x27; ... &#x27;CD56&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 0.007447 2.46 ... 1.923 0.5909
+    _arcsinh_sum   (cells, channels) float64 1.138 7.689 3.606 ... 0.0 7.277 5.6
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean      (cells, channels) float64 0.03723 29.06 0.4894 ... 16.75 3.13
+    _raw_sum       (cells, channels) float64 7.0 5.463e+03 ... 3.617e+03 676.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;
+    _image         (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># minor reformating
+seg = ds_processed[&#39;_segmentation&#39;].values
+ds_for_astir = ds_processed.pp.drop_layers(&#39;_obs&#39;).pp.add_segmentation(seg)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># using astir to predict cell types
+# note the slightly different structure of the marker dictionary
+ct_marker_dict = {&#39;cell_type&#39;: {&#39;B&#39;: [&#39;PAX5&#39;], &#39;T&#39;: [&#39;CD3&#39;], &#39;Myeloid&#39;: [&#39;CD11b&#39;], &#39;Dendritic&#39;: [&#39;CD11c&#39;], &#39;Granulo&#39;: [&#39;CD15&#39;], &#39;Macro&#39;: [&#39;CD68&#39;], &#39;Stroma PDPN&#39;: [&#39;Podoplanin&#39;], &#39;Stroma CD31&#39;: [&#39;CD31&#39;], &#39;Stroma CD34&#39;: [&#39;CD34&#39;], &#39;Stroma CD90&#39;: [&#39;CD90&#39;], &#39;NK&#39;: [&#39;CD56&#39;]}}
+# TODO: fix issue with astir
+ds_with_ct_predictions_astir = ds_processed.tl.astir(ct_marker_dict, key=&#39;_arcsinh_mean&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8. If you applied operations such as filtering, you may ignore this warning.
+training restart 1/5: 100%|██████████| 5/5 [17.19s/epochs, current loss: -9953.2]
+training restart 2/5: 100%|██████████| 5/5 [15.18s/epochs, current loss: -11194.5]
+training restart 3/5: 100%|██████████| 5/5 [17.06s/epochs, current loss: -10689.8]
+training restart 4/5: 100%|██████████| 5/5 [18.56s/epochs, current loss: -8783.6]
+training restart 5/5: 100%|██████████| 5/5 [17.58s/epochs, current loss: -9601.6]
+training restart (final):   3%|▎         | 13/500 [19.41s/epochs, current loss: -27782.4]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">MergeError</span>                                Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[45], line 4</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># using astir to predict cell types</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(95,135,135)"># note the slightly different structure of the marker dictionary</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> ct_marker_dict <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">cell_type</span><span style="color: rgb(175,0,0)">&#39;</span>: {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">B</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">PAX5</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">T</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD3</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Myeloid</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD11b</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Dendritic</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD11c</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Granulo</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD15</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Macro</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD68</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma PDPN</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Podoplanin</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD31</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD31</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD34</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD34</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD90</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD90</span><span style="color: rgb(175,0,0)">&#39;</span>], <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">NK</span><span style="color: rgb(175,0,0)">&#39;</span>: [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">CD56</span><span style="color: rgb(175,0,0)">&#39;</span>]}}
+<span class="ansi-green-fg">----&gt; 4</span> ds_with_ct_predictions_astir <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">ds_processed</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">tl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">astir</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">ct_marker_dict</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">_arcsinh_mean</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/tl/tool.py:385</span>, in <span class="ansi-cyan-fg">ToolAccessor.astir</span><span class="ansi-blue-fg">(self, marker_dict, key, threshold, seed, learning_rate, batch_size, n_init, n_init_epochs, max_epochs, cell_id_col, cell_type_col, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    382</span> assigned_cell_types[cell_id_col] <span style="color: rgb(98,98,98)">=</span> assigned_cell_types[cell_id_col]<span style="color: rgb(98,98,98)">.</span>astype(<span style="color: rgb(0,135,0)">int</span>)
+<span class="ansi-green-intense-fg ansi-bold">    384</span> <span style="color: rgb(95,135,135)"># adding the labels to the xarray object</span>
+<span class="ansi-green-fg">--&gt; 385</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_obj</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pp</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">add_labels_from_dataframe</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">    386</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">assigned_cell_types</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">cell_col</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">cell_id_col</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">label_col</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">cell_type_col</span>
+<span class="ansi-green-intense-fg ansi-bold">    387</span> <span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:750</span>, in <span class="ansi-cyan-fg">PreprocessingAccessor.add_labels_from_dataframe</span><span class="ansi-blue-fg">(self, df, cell_col, label_col, colors, names)</span>
+<span class="ansi-green-intense-fg ansi-bold">    742</span> da <span style="color: rgb(98,98,98)">=</span> da<span style="color: rgb(98,98,98)">.</span>where(
+<span class="ansi-green-intense-fg ansi-bold">    743</span>     da<span style="color: rgb(98,98,98)">.</span>coords[Dims<span style="color: rgb(98,98,98)">.</span>CELLS]<span style="color: rgb(98,98,98)">.</span>isin(
+<span class="ansi-green-intense-fg ansi-bold">    744</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>coords[Dims<span style="color: rgb(98,98,98)">.</span>CELLS],
+<span class="ansi-green-intense-fg ansi-bold">    745</span>     ),
+<span class="ansi-green-intense-fg ansi-bold">    746</span>     drop<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-intense-fg ansi-bold">    747</span> )
+<span class="ansi-green-intense-fg ansi-bold">    749</span> obj <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>copy()
+<span class="ansi-green-fg">--&gt; 750</span> obj <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">xr</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">merge</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">obj</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">cells</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">da</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">cells</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">da</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    752</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> colors <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-intense-fg ansi-bold">    753</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">len</span>(colors) <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(0,135,0)">len</span>(unique_labels), <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Colors has the same.</span><span style="color: rgb(175,0,0)">&#34;</span>
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/merge.py:1025</span>, in <span class="ansi-cyan-fg">merge</span><span class="ansi-blue-fg">(objects, compat, join, fill_value, combine_attrs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1022</span>     obj <span style="color: rgb(98,98,98)">=</span> obj<span style="color: rgb(98,98,98)">.</span>to_dataset(promote_attrs<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(obj, DataArray) <span class="ansi-bold" style="color: rgb(0,135,0)">else</span> obj
+<span class="ansi-green-intense-fg ansi-bold">   1023</span>     dict_like_objects<span style="color: rgb(98,98,98)">.</span>append(obj)
+<span class="ansi-green-fg">-&gt; 1025</span> merge_result <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">merge_core</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">   1026</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">dict_like_objects</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1027</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">compat</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1028</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">join</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1029</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">combine_attrs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">combine_attrs</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1030</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">fill_value</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">fill_value</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1031</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1032</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> Dataset<span style="color: rgb(98,98,98)">.</span>_construct_direct(<span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>merge_result<span style="color: rgb(98,98,98)">.</span>_asdict())
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/merge.py:757</span>, in <span class="ansi-cyan-fg">merge_core</span><span class="ansi-blue-fg">(objects, compat, join, combine_attrs, priority_arg, explicit_coords, indexes, fill_value)</span>
+<span class="ansi-green-intense-fg ansi-bold">    755</span> collected <span style="color: rgb(98,98,98)">=</span> collect_variables_and_indexes(aligned, indexes<span style="color: rgb(98,98,98)">=</span>indexes)
+<span class="ansi-green-intense-fg ansi-bold">    756</span> prioritized <span style="color: rgb(98,98,98)">=</span> _get_priority_vars_and_indexes(aligned, priority_arg, compat<span style="color: rgb(98,98,98)">=</span>compat)
+<span class="ansi-green-fg">--&gt; 757</span> variables, out_indexes <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">merge_collected</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">    758</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">collected</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">prioritized</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">compat</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">compat</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">combine_attrs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">combine_attrs</span>
+<span class="ansi-green-intense-fg ansi-bold">    759</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    761</span> dims <span style="color: rgb(98,98,98)">=</span> calculate_dimensions(variables)
+<span class="ansi-green-intense-fg ansi-bold">    763</span> coord_names, noncoord_names <span style="color: rgb(98,98,98)">=</span> determine_coords(coerced)
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/merge.py:302</span>, in <span class="ansi-cyan-fg">merge_collected</span><span class="ansi-blue-fg">(grouped, prioritized, compat, combine_attrs, equals)</span>
+<span class="ansi-green-intense-fg ansi-bold">    300</span> variables <span style="color: rgb(98,98,98)">=</span> [variable <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> variable, _ <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> elements_list]
+<span class="ansi-green-intense-fg ansi-bold">    301</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; 302</span>     merged_vars[name] <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">unique_variable</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">    303</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">variables</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">compat</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">equals</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    304</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    305</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> MergeError:
+<span class="ansi-green-intense-fg ansi-bold">    306</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> compat <span style="color: rgb(98,98,98)">!=</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">minimal</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-intense-fg ansi-bold">    307</span>         <span style="color: rgb(95,135,135)"># we need more than &#34;minimal&#34; compatibility (for which</span>
+<span class="ansi-green-intense-fg ansi-bold">    308</span>         <span style="color: rgb(95,135,135)"># we drop conflicting coordinates)</span>
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/merge.py:156</span>, in <span class="ansi-cyan-fg">unique_variable</span><span class="ansi-blue-fg">(name, variables, compat, equals)</span>
+<span class="ansi-green-intense-fg ansi-bold">    153</span>                 <span class="ansi-bold" style="color: rgb(0,135,0)">break</span>
+<span class="ansi-green-intense-fg ansi-bold">    155</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> equals:
+<span class="ansi-green-fg">--&gt; 156</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> MergeError(
+<span class="ansi-green-intense-fg ansi-bold">    157</span>         <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">conflicting values for variable </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">!r}</span><span style="color: rgb(175,0,0)"> on objects to be combined. </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    158</span>         <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">You can skip this check by specifying compat=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">override</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">.</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    159</span>     )
+<span class="ansi-green-intense-fg ansi-bold">    161</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> combine_method:
+<span class="ansi-green-intense-fg ansi-bold">    162</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> var <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> variables[<span style="color: rgb(98,98,98)">1</span>:]:
+
+<span class="ansi-red-fg">MergeError</span>: conflicting values for variable &#39;_obs&#39; on objects to be combined. You can skip this check by specifying compat=&#39;override&#39;.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding custom colors and adding observations back in
+cell_types = [&#39;B&#39;, &#39;T&#39;, &#39;Myeloid&#39;, &#39;Dendritic&#39;, &#39;Granulo&#39;, &#39;Macro&#39;, &#39;Stroma PDPN&#39;, &#39;Stroma CD31&#39;, &#39;Stroma CD34&#39;, &#39;Stroma CD90&#39;, &#39;NK&#39;, &#39;Other&#39;]
+ds_with_ct_predictions_astir = ds_with_ct_predictions_astir.la.set_label_colors(cell_types, colors_celltypes + [&#39;darkgray&#39;]).pp.add_observations()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[34], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># adding custom colors and adding observations back in</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> cell_types <span style="color: rgb(98,98,98)">=</span> [<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">B</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">T</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Myeloid</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Dendritic</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Granulo</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Macro</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma PDPN</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD31</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD34</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Stroma CD90</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">NK</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Other</span><span style="color: rgb(175,0,0)">&#39;</span>]
+<span class="ansi-green-fg">----&gt; 3</span> ds_with_ct_predictions_astir <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">ds_with_ct_predictions_astir</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">la</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">set_label_colors</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">cell_types</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">colors_celltypes</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">+</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">darkgray</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pp</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">add_observations</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:344</span>, in <span class="ansi-cyan-fg">PreprocessingAccessor.add_observations</span><span class="ansi-blue-fg">(self, properties, layer_key, return_xarray)</span>
+<span class="ansi-green-intense-fg ansi-bold">    324</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    325</span> <span style="color: rgb(175,0,0)">Adds properties derived from the segmentation mask to the image container.</span>
+<span class="ansi-green-intense-fg ansi-bold">    326</span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">    341</span> <span style="color: rgb(175,0,0)">    The amended image container.</span>
+<span class="ansi-green-intense-fg ansi-bold">    342</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    343</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> layer_key <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj:
+<span class="ansi-green-fg">--&gt; 344</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-intense-fg ansi-bold">    345</span>         <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">No segmentation mask found at layer </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>layer_key<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">. You can specify which layer to use with the layer_key parameter.</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    346</span>     )
+<span class="ansi-green-intense-fg ansi-bold">    348</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">type</span>(properties) <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span style="color: rgb(0,135,0)">str</span>:
+<span class="ansi-green-intense-fg ansi-bold">    349</span>     properties <span style="color: rgb(98,98,98)">=</span> [properties]
+
+<span class="ansi-red-fg">ValueError</span>: No segmentation mask found at layer _segmentation. You can specify which layer to use with the layer_key parameter.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_with_ct_predictions_astir
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (labels: 12, props: 2, cells: 12560, channels: 13, x: 3000,
+                    y: 3000, features: 1)
+Coordinates:
+  * labels         (labels) int64 1 2 3 4 5 6 7 8 9 10 11 12
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;PAX5&#x27; &#x27;CD3&#x27; &#x27;CD11b&#x27; ... &#x27;CD56&#x27; &#x27;CD4&#x27; &#x27;CD8&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * features       (features) &lt;U7 &#x27;_labels&#x27;
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 0.007447 2.46 ... 1.923 0.5909
+    _arcsinh_sum   (cells, channels) float64 1.138 7.689 3.606 ... 0.0 7.277 5.6
+    _raw_mean      (cells, channels) float64 0.03723 29.06 0.4894 ... 16.75 3.13
+    _raw_sum       (cells, channels) float64 7.0 5.463e+03 ... 3.617e+03 676.0
+    _image         (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
+    _obs           (cells, features) float64 12.0 4.0 9.0 12.0 ... 7.0 1.0 1.0
+    _properties    (labels, props) object &#x27;#e6194B&#x27; &#x27;B&#x27; ... &#x27;#3cb44b&#x27; &#x27;T&#x27;</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the astir and the argmax predictions
+fig, ax = plt.subplots(1, 3, figsize=(21, 7))
+_ = ds_processed.pp[channels_celltypes].pl.colorize(colors_celltypes).pl.autocrop(padding=100).pl.show(ax=ax[0])
+_ = ds_with_ct_predictions_astir.pl.autocrop(padding=100).pl.show(render_image=False, render_labels=True, ax=ax[2])
+_ = ds_with_ct_predictions.pl.autocrop(padding=100).pl.show(render_image=False, render_labels=True, ax=ax[2])
+
+
+# removing the x and y ticks
+ax[0].set_xticks([])
+ax[0].set_yticks([])
+ax[1].set_xticks([])
+ax[1].set_yticks([])
+ax[2].set_xticks([])
+ax[2].set_yticks([])
+
+# setting titles
+ax[0].set_title(&#39;Markers&#39;)
+ax[1].set_title(&#39;Astir Predictions&#39;)
+ax[2].set_title(&#39;Argmax Predictions&#39;)
+
+plt.tight_layout()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/pandas/core/indexes/base.py:3805</span>, in <span class="ansi-cyan-fg">Index.get_loc</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">   3804</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">-&gt; 3805</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_engine</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_loc</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">casted_key</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   3806</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> err:
+
+File <span class="ansi-green-fg">index.pyx:167</span>, in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
+
+File <span class="ansi-green-fg">index.pyx:196</span>, in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
+
+File <span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi:7081</span>, in <span class="ansi-cyan-fg">pandas._libs.hashtable.PyObjectHashTable.get_item</span><span class="ansi-blue-fg">()</span>
+
+File <span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi:7089</span>, in <span class="ansi-cyan-fg">pandas._libs.hashtable.PyObjectHashTable.get_item</span><span class="ansi-blue-fg">()</span>
+
+<span class="ansi-red-fg">KeyError</span>: &#39;centroid-1&#39;
+
+The above exception was the direct cause of the following exception:
+
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexes.py:473</span>, in <span class="ansi-cyan-fg">PandasIndex.sel</span><span class="ansi-blue-fg">(self, labels, method, tolerance)</span>
+<span class="ansi-green-intense-fg ansi-bold">    472</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; 473</span>     indexer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_loc</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">label_value</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    474</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/pandas/core/indexes/base.py:3812</span>, in <span class="ansi-cyan-fg">Index.get_loc</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">   3811</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> InvalidIndexError(key)
+<span class="ansi-green-fg">-&gt; 3812</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(key) <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">err</span>
+<span class="ansi-green-intense-fg ansi-bold">   3813</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>:
+<span class="ansi-green-intense-fg ansi-bold">   3814</span>     <span style="color: rgb(95,135,135)"># If we have a listlike key, _check_indexing_error will raise</span>
+<span class="ansi-green-intense-fg ansi-bold">   3815</span>     <span style="color: rgb(95,135,135)">#  InvalidIndexError. Otherwise we fall through and re-raise</span>
+<span class="ansi-green-intense-fg ansi-bold">   3816</span>     <span style="color: rgb(95,135,135)">#  the TypeError.</span>
+
+<span class="ansi-red-fg">KeyError</span>: &#39;centroid-1&#39;
+
+The above exception was the direct cause of the following exception:
+
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[31], line 4</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> fig, ax <span style="color: rgb(98,98,98)">=</span> plt<span style="color: rgb(98,98,98)">.</span>subplots(<span style="color: rgb(98,98,98)">1</span>, <span style="color: rgb(98,98,98)">3</span>, figsize<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">21</span>, <span style="color: rgb(98,98,98)">7</span>))
+<span class="ansi-green-intense-fg ansi-bold">      3</span> _ <span style="color: rgb(98,98,98)">=</span> ds_processed<span style="color: rgb(98,98,98)">.</span>pp[channels_celltypes]<span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>colorize(colors_celltypes)<span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>autocrop(padding<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">100</span>)<span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>show(ax<span style="color: rgb(98,98,98)">=</span>ax[<span style="color: rgb(98,98,98)">0</span>])
+<span class="ansi-green-fg">----&gt; 4</span> _ <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">ds_with_ct_predictions_astir</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">autocrop</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">padding</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">100</span><span class="ansi-yellow-bg">)</span><span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>show(render_image<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>, render_labels<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, ax<span style="color: rgb(98,98,98)">=</span>ax[<span style="color: rgb(98,98,98)">2</span>])
+<span class="ansi-green-intense-fg ansi-bold">      5</span> _ <span style="color: rgb(98,98,98)">=</span> ds_with_ct_predictions<span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>autocrop(padding<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">100</span>)<span style="color: rgb(98,98,98)">.</span>pl<span style="color: rgb(98,98,98)">.</span>show(render_image<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>, render_labels<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, ax<span style="color: rgb(98,98,98)">=</span>ax[<span style="color: rgb(98,98,98)">2</span>])
+<span class="ansi-green-intense-fg ansi-bold">      8</span> <span style="color: rgb(95,135,135)"># removing the x and y ticks</span>
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pl/plot.py:858</span>, in <span class="ansi-cyan-fg">PlotAccessor.autocrop</span><span class="ansi-blue-fg">(self, padding, downsample, key, channel)</span>
+<span class="ansi-green-intense-fg ansi-bold">    856</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> channel <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-intense-fg ansi-bold">    857</span>     channel <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>coords[Dims<span style="color: rgb(98,98,98)">.</span>CHANNELS]<span style="color: rgb(98,98,98)">.</span>values<span style="color: rgb(98,98,98)">.</span>tolist()[<span style="color: rgb(98,98,98)">0</span>]
+<span class="ansi-green-fg">--&gt; 858</span> img <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_obj</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pp</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">channel</span><span class="ansi-yellow-bg">]</span><span style="color: rgb(98,98,98)">.</span>pp<span style="color: rgb(98,98,98)">.</span>downsample(downsample)[key]<span style="color: rgb(98,98,98)">.</span>values<span style="color: rgb(98,98,98)">.</span>squeeze()
+<span class="ansi-green-intense-fg ansi-bold">    859</span> slices <span style="color: rgb(98,98,98)">=</span> _autocrop(img, downsample<span style="color: rgb(98,98,98)">=</span>downsample, padding<span style="color: rgb(98,98,98)">=</span>padding)
+<span class="ansi-green-intense-fg ansi-bold">    860</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>pp[slices[<span style="color: rgb(98,98,98)">0</span>], slices[<span style="color: rgb(98,98,98)">1</span>]]
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:126</span>, in <span class="ansi-cyan-fg">PreprocessingAccessor.__getitem__</span><span class="ansi-blue-fg">(self, indices)</span>
+<span class="ansi-green-intense-fg ansi-bold">    120</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>(
+<span class="ansi-green-intense-fg ansi-bold">    121</span>         <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Invalid input. To subselect, you can input a string, slice, list, or tuple. You provided </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">type</span>(indices)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    122</span>     )
+<span class="ansi-green-intense-fg ansi-bold">    124</span> ds <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>pp<span style="color: rgb(98,98,98)">.</span>get_channels(c_slice)
+<span class="ansi-green-fg">--&gt; 126</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">ds</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pp</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_bbox</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">x_slice</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">y_slice</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:165</span>, in <span class="ansi-cyan-fg">PreprocessingAccessor.get_bbox</span><span class="ansi-blue-fg">(self, x_slice, y_slice)</span>
+<span class="ansi-green-intense-fg ansi-bold">    162</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> Dims<span style="color: rgb(98,98,98)">.</span>CELLS <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj<span style="color: rgb(98,98,98)">.</span>sizes:
+<span class="ansi-green-intense-fg ansi-bold">    163</span>     coords <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_obj[Layers<span style="color: rgb(98,98,98)">.</span>OBS]
+<span class="ansi-green-intense-fg ansi-bold">    164</span>     cells <span style="color: rgb(98,98,98)">=</span> (
+<span class="ansi-green-fg">--&gt; 165</span>         (<span class="ansi-yellow-bg">coords</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">loc</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">Features</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">X</span><span class="ansi-yellow-bg">]</span> <span style="color: rgb(98,98,98)">&gt;</span><span style="color: rgb(98,98,98)">=</span> x_start)
+<span class="ansi-green-intense-fg ansi-bold">    166</span>         <span style="color: rgb(98,98,98)">&amp;</span> (coords<span style="color: rgb(98,98,98)">.</span>loc[:, Features<span style="color: rgb(98,98,98)">.</span>X] <span style="color: rgb(98,98,98)">&lt;</span><span style="color: rgb(98,98,98)">=</span> x_stop)
+<span class="ansi-green-intense-fg ansi-bold">    167</span>         <span style="color: rgb(98,98,98)">&amp;</span> (coords<span style="color: rgb(98,98,98)">.</span>loc[:, Features<span style="color: rgb(98,98,98)">.</span>Y] <span style="color: rgb(98,98,98)">&gt;</span><span style="color: rgb(98,98,98)">=</span> y_start)
+<span class="ansi-green-intense-fg ansi-bold">    168</span>         <span style="color: rgb(98,98,98)">&amp;</span> (coords<span style="color: rgb(98,98,98)">.</span>loc[:, Features<span style="color: rgb(98,98,98)">.</span>Y] <span style="color: rgb(98,98,98)">&lt;</span><span style="color: rgb(98,98,98)">=</span> y_stop)
+<span class="ansi-green-intense-fg ansi-bold">    169</span>     )<span style="color: rgb(98,98,98)">.</span>values
+<span class="ansi-green-intense-fg ansi-bold">    171</span>     <span style="color: rgb(95,135,135)"># finalise query</span>
+<span class="ansi-green-intense-fg ansi-bold">    172</span>     query[Dims<span style="color: rgb(98,98,98)">.</span>CELLS] <span style="color: rgb(98,98,98)">=</span> cells
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/dataarray.py:209</span>, in <span class="ansi-cyan-fg">_LocIndexer.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">    207</span>     labels <span style="color: rgb(98,98,98)">=</span> indexing<span style="color: rgb(98,98,98)">.</span>expanded_indexer(key, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>data_array<span style="color: rgb(98,98,98)">.</span>ndim)
+<span class="ansi-green-intense-fg ansi-bold">    208</span>     key <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">dict</span>(<span style="color: rgb(0,135,0)">zip</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>data_array<span style="color: rgb(98,98,98)">.</span>dims, labels))
+<span class="ansi-green-fg">--&gt; 209</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">data_array</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/dataarray.py:1527</span>, in <span class="ansi-cyan-fg">DataArray.sel</span><span class="ansi-blue-fg">(self, indexers, method, tolerance, drop, **indexers_kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1417</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">sel</span>(
+<span class="ansi-green-intense-fg ansi-bold">   1418</span>     <span style="color: rgb(0,135,0)">self</span>: T_DataArray,
+<span class="ansi-green-intense-fg ansi-bold">   1419</span>     indexers: Mapping[Any, Any] <span style="color: rgb(98,98,98)">|</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1423</span>     <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>indexers_kwargs: Any,
+<span class="ansi-green-intense-fg ansi-bold">   1424</span> ) <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">&gt;</span> T_DataArray:
+<span class="ansi-green-intense-fg ansi-bold">   1425</span> <span style="color: rgb(188,188,188)">    </span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;Return a new DataArray whose data is given by selecting index</span>
+<span class="ansi-green-intense-fg ansi-bold">   1426</span> <span style="color: rgb(175,0,0)">    labels along the specified dimension(s).</span>
+<span class="ansi-green-intense-fg ansi-bold">   1427</span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1525</span> <span style="color: rgb(175,0,0)">    Dimensions without coordinates: points</span>
+<span class="ansi-green-intense-fg ansi-bold">   1526</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
+<span class="ansi-green-fg">-&gt; 1527</span>     ds <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_to_temp_dataset</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">   1528</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1529</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">drop</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">drop</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1530</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1531</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1532</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">indexers_kwargs</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1533</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1534</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_from_temp_dataset(ds)
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/dataset.py:2565</span>, in <span class="ansi-cyan-fg">Dataset.sel</span><span class="ansi-blue-fg">(self, indexers, method, tolerance, drop, **indexers_kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2504</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;Returns a new dataset with each array indexed by tick labels</span>
+<span class="ansi-green-intense-fg ansi-bold">   2505</span> <span style="color: rgb(175,0,0)">along the specified dimension(s).</span>
+<span class="ansi-green-intense-fg ansi-bold">   2506</span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2562</span> <span style="color: rgb(175,0,0)">DataArray.sel</span>
+<span class="ansi-green-intense-fg ansi-bold">   2563</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   2564</span> indexers <span style="color: rgb(98,98,98)">=</span> either_dict_or_kwargs(indexers, indexers_kwargs, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">sel</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-fg">-&gt; 2565</span> query_results <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">map_index_queries</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">   2566</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">tolerance</span>
+<span class="ansi-green-intense-fg ansi-bold">   2567</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2569</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> drop:
+<span class="ansi-green-intense-fg ansi-bold">   2570</span>     no_scalar_variables <span style="color: rgb(98,98,98)">=</span> {}
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexing.py:183</span>, in <span class="ansi-cyan-fg">map_index_queries</span><span class="ansi-blue-fg">(obj, indexers, method, tolerance, **indexers_kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    181</span>         results<span style="color: rgb(98,98,98)">.</span>append(IndexSelResult(labels))
+<span class="ansi-green-intense-fg ansi-bold">    182</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">--&gt; 183</span>         results<span style="color: rgb(98,98,98)">.</span>append(<span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">labels</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg">)</span>)
+<span class="ansi-green-intense-fg ansi-bold">    185</span> merged <span style="color: rgb(98,98,98)">=</span> merge_sel_results(results)
+<span class="ansi-green-intense-fg ansi-bold">    187</span> <span style="color: rgb(95,135,135)"># drop dimension coordinates found in dimension indexers</span>
+<span class="ansi-green-intense-fg ansi-bold">    188</span> <span style="color: rgb(95,135,135)"># (also drop multi-index if any)</span>
+<span class="ansi-green-intense-fg ansi-bold">    189</span> <span style="color: rgb(95,135,135)"># (.sel() already ensures alignment)</span>
+
+File <span class="ansi-green-fg">~/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/indexes.py:475</span>, in <span class="ansi-cyan-fg">PandasIndex.sel</span><span class="ansi-blue-fg">(self, labels, method, tolerance)</span>
+<span class="ansi-green-intense-fg ansi-bold">    473</span>                 indexer <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>index<span style="color: rgb(98,98,98)">.</span>get_loc(label_value)
+<span class="ansi-green-intense-fg ansi-bold">    474</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+<span class="ansi-green-fg">--&gt; 475</span>                 <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(
+<span class="ansi-green-intense-fg ansi-bold">    476</span>                     <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">not all values found in index </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>coord_name<span class="ansi-bold" style="color: rgb(175,95,135)">!r}</span><span style="color: rgb(175,0,0)">. </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    477</span>                     <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Try setting the `method` keyword argument (example: method=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">nearest</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">).</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    478</span>                 ) <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">e</span>
+<span class="ansi-green-intense-fg ansi-bold">    480</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> label_array<span style="color: rgb(98,98,98)">.</span>dtype<span style="color: rgb(98,98,98)">.</span>kind <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-intense-fg ansi-bold">    481</span>     indexer <span style="color: rgb(98,98,98)">=</span> label_array
+
+<span class="ansi-red-fg">KeyError</span>: &#34;not all values found in index &#39;features&#39;. Try setting the `method` keyword argument (example: method=&#39;nearest&#39;).&#34;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_CellTypePrediction_20_1.png" src="../_images/notebooks_CellTypePrediction_20_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
 <section id="Marker-Binarization">
-<h1>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this headline"></a></h1>
+<h2>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this headline"></a></h2>
 <p>For some (functional) markers, we want to binarize them (i. e. is a cell positive or negative for that marker). This can be achieved with the <code class="docutils literal notranslate"><span class="pre">la.threshold_labels()</span></code> function.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -783,7 +1172,7 @@ Text(0.5, 1.0, &#39;CD8 binarization&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_15_1.png" src="../_images/notebooks_CellTypePrediction_15_1.png" />
+<img alt="../_images/notebooks_CellTypePrediction_24_1.png" src="../_images/notebooks_CellTypePrediction_24_1.png" />
 </div>
 </div>
 <p>We can also just subset from a single cell type. For example, consider a low CD4 threshold, once on all cells and once on only the T cells. For illustrative purposes, we have only applied a relaxed filter (80-percentile) to CD4 previously. We also choose a very relaxed threshold here, just to show the concept of subsetting when binarizing a marker.</p>
@@ -846,55 +1235,17 @@ Text(0.5, 1.0, &#39;CD4 on T cells only&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_18_1.png" src="../_images/notebooks_CellTypePrediction_18_1.png" />
+<img alt="../_images/notebooks_CellTypePrediction_27_1.png" src="../_images/notebooks_CellTypePrediction_27_1.png" />
 </div>
 </div>
-<p>Sidenote: different plotting methods. When plotting, you can either use <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> as a high level wrapper, or explicitly call <code class="docutils literal notranslate"><span class="pre">pl.render_segmentation().pl.render_labels().pl.imshow()</span></code> to get more control over the plotting.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds_with_binarization_cd4.pl.show(render_image=False, render_segmentation=True, render_labels=True)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_20_0.png" src="../_images/notebooks_CellTypePrediction_20_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds_with_binarization_cd4.pl.render_labels().pl.render_segmentation().pl.imshow(legend_label=True)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_21_0.png" src="../_images/notebooks_CellTypePrediction_21_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Extracting.html" class="btn btn-neutral float-left" title="Extracting data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Plotting.html" class="btn btn-neutral float-left" title="Plotting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Exporting.html" class="btn btn-neutral float-right" title="Exporting Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
