@@ -668,6 +668,32 @@ class LabelAccessor:
     def _threshold_label(
         self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
     ):
+        """
+        Apply a threshold to a specific channel in the spatialproteomics object and generate a binary label.
+        This method is called by the threshold_labels() method.
+
+        Parameters:
+        -----------
+        channel : str
+            The name of the channel to apply the threshold to.
+        threshold : float
+            The threshold value to use for binarization.
+        layer_key : str, optional
+            The key of the layer to apply the threshold to. Defaults to Layers.INTENSITY.
+        label : str, optional
+            The name of the label to use for further filtering. Defaults to None.
+
+        Returns:
+        --------
+        obj : spatialproteomics object
+            A copy of the spatialproteomics object with the binary label added as a new feature.
+
+        Raises:
+        -------
+        KeyError
+            If the specified layer_key is not found in the spatialproteomics object.
+            If the specified channel is not found in the spatialproteomics object.
+        """
         if layer_key not in self._obj:
             raise KeyError(f'No layer "{layer_key}" found. Please add it first using pp.add_quantification().')
 
