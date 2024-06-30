@@ -960,14 +960,7 @@ Text(0.5, 1.0, &#39;CD8 binarization&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>threshold_dict = {
-    &quot;CD4&quot;: 0.5
-}
-
-# in the first one, we binarize CD4 on all cells
-ds_with_binarization_cd4 = ds_with_ct_predictions.la.threshold_labels(threshold_dict, layer_key=&#39;_percentage_positive&#39;)
-# in the second one, we only look at CD4 in the T cells
-ds_with_binarization_cd4_t = ds_with_ct_predictions.la.threshold_labels(threshold_dict, label=&#39;T&#39;, layer_key=&#39;_percentage_positive&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y
 </pre></div>
 </div>
 </div>
