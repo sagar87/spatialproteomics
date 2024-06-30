@@ -79,7 +79,7 @@ class LabelAccessor:
         # removing the old segmentation
         obj = obj.drop_vars(Layers.SEGMENTATION)
         # adding the new segmentation
-        obj = obj.pp.add_segmentation(segmentation)
+        obj = obj.pp.add_segmentation(segmentation, reindex=False)
 
         return obj
 
