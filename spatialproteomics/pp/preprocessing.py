@@ -360,7 +360,6 @@ class PreprocessingAccessor:
         for k, v in table.items():
             if Dims.FEATURES in self._obj.coords:
                 if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
-                    logger.warning(f"Found {k} in _obs. Skipping.")
                     continue
             # when looking at centroids, it could happen that the image has been cropped before
             # in this case, the x and y coordinates do not necessarily start at 0
@@ -373,7 +372,6 @@ class PreprocessingAccessor:
             data.append(v)
 
         if len(data) == 0:
-            logger.warning("Warning: No properties were added.")
             return self._obj
 
         da = xr.DataArray(
