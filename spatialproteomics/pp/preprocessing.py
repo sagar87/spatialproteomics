@@ -697,6 +697,11 @@ class PreprocessingAccessor:
         xr.Dataset
             The updated image container with added labels.
         """
+        # check if properties are already present
+        assert (
+            Layers.PROPERTIES not in self._obj
+        ), "Already found label properties in the object. Please remove them with pp.drop_layers('_properties') first."
+
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values
             labels = np.ones(len(cells))

@@ -688,7 +688,7 @@ class PlotAccessor:
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
-        
+
         ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
 
         if legend:
