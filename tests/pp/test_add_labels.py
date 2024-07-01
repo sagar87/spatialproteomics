@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from spatialproteomics.constants import Dims, Features, Labels, Layers
 
@@ -57,3 +58,16 @@ def test_add_labels(dataset):
     assert Dims.LABELS in labeled.coords
     assert Features.LABELS in labeled[Layers.OBS].coords[Dims.FEATURES].values
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
+
+
+def test_add_labels_existing_labels(dataset_labeled):
+    # creating a dummy dict
+    cells = dataset_labeled.coords[Dims.CELLS].values
+    num_cells = len(cells)
+    label_dict = dict(zip(cells, ["CT1"] * num_cells))
+
+    with pytest.raises(
+        AssertionError,
+        match="Already found label properties in the object.",
+    ):
+        dataset_labeled.pp.add_labels(label_dict)

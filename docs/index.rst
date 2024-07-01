@@ -24,6 +24,7 @@ Welcome to the documentation of spatialproteomics!
    notebooks/Slicing
    notebooks/Segmentation
    notebooks/Plotting
+   notebooks/ImageProcessing
    notebooks/Extracting
    notebooks/CellTypePrediction
    notebooks/Exporting

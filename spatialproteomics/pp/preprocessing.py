@@ -360,7 +360,6 @@ class PreprocessingAccessor:
         for k, v in table.items():
             if Dims.FEATURES in self._obj.coords:
                 if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
-                    logger.warning(f"Found {k} in _obs. Skipping.")
                     continue
             # when looking at centroids, it could happen that the image has been cropped before
             # in this case, the x and y coordinates do not necessarily start at 0
@@ -373,7 +372,6 @@ class PreprocessingAccessor:
             data.append(v)
 
         if len(data) == 0:
-            logger.warning("Warning: No properties were added.")
             return self._obj
 
         da = xr.DataArray(
@@ -699,6 +697,11 @@ class PreprocessingAccessor:
         xr.Dataset
             The updated image container with added labels.
         """
+        # check if properties are already present
+        assert (
+            Layers.PROPERTIES not in self._obj
+        ), "Already found label properties in the object. Please remove them with pp.drop_layers('_properties') first."
+
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values
             labels = np.ones(len(cells))
@@ -898,9 +901,29 @@ class PreprocessingAccessor:
         )
         return xr.merge([obj, normed])
 
-    def filter(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
+    def threshold(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
+        """
+        Apply thresholding to the image layer of the object.
+
+        Parameters:
+        - quantile (float): The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.
+        - intensity (int): The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.
+        - key_added (Optional[str]): The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.
+
+        Returns:
+        - xr.Dataset: The object with the thresholding applied to the image layer.
+
+        Raises:
+        - ValueError: If both quantile and intensity are None or if both quantile and intensity are provided.
+        """
         if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
             raise ValueError("Please provide a quantile or absolute intensity cut off.")
+
+        if Layers.PLOT in self._obj:
+            logger.warning(
+                "Please only call pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
+            )
+
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
 
@@ -920,11 +943,11 @@ class PreprocessingAccessor:
 
             # calculate intensity
             filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
-            # lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-            # filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
+
+        obj = self._obj.copy()
 
         if key_added is None:
-            obj = self._obj.drop(Layers.IMAGE)
+            obj = obj.drop(Layers.IMAGE)
 
         filtered = xr.DataArray(
             filtered,
@@ -960,7 +983,7 @@ class PreprocessingAccessor:
         # apply the function to all channels
         obj = self._obj.copy()
         layer = obj[key].copy()
-        processed_layer = xr.apply_ufunc(func, layer)
+        processed_layer = xr.apply_ufunc(func, layer, kwargs=kwargs)
 
         # adding the modified layer to the object
         obj[key_added] = xr.DataArray(

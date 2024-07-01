@@ -689,6 +689,8 @@ class PlotAccessor:
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
 
+        ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
+
         if legend:
             legend = self._obj.pl._create_label_legend()
             ax.legend(handles=legend, **legend_kwargs).set_zorder(102)
