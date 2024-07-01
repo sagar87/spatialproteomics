@@ -25,7 +25,7 @@ copyright = "2024, Harald Vohringer, Matthias Meyer-Bender"
 author = "Harald Vohringer, Matthias Meyer-Bender"
 
 # The full version, including alpha/beta/rc tags
-release = "0.4.0"
+release = "0.5.2"
 
 
 # -- General configuration ---------------------------------------------------
