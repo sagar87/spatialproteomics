@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subselecting data &mdash; spatial_proteomics 0.4.0 documentation</title>
+  <title>Subselecting Data &mdash; spatial_proteomics 0.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,13 +52,14 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Subselecting data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Slicing-channels-and-x,-y-coordinates">Slicing channels and x, y coordinates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Slicing-labels">Slicing labels</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Subselecting Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Slicing-Channels-and-Spatial-Coordinates">Slicing Channels and Spatial Coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Slicing-Labels">Slicing Labels</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
 </ul>
@@ -77,7 +78,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Subselecting data</li>
+      <li>Subselecting Data</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/Slicing.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -365,8 +366,8 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Subselecting-data">
-<h1>Subselecting data<a class="headerlink" href="#Subselecting-data" title="Permalink to this headline"></a></h1>
+<section id="Subselecting-Data">
+<h1>Subselecting Data<a class="headerlink" href="#Subselecting-Data" title="Permalink to this headline"></a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -407,8 +408,8 @@ xr.set_options(display_style=&#39;text&#39;)
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
-<section id="Slicing-channels-and-x,-y-coordinates">
-<h2>Slicing channels and x, y coordinates<a class="headerlink" href="#Slicing-channels-and-x,-y-coordinates" title="Permalink to this headline"></a></h2>
+<section id="Slicing-Channels-and-Spatial-Coordinates">
+<h2>Slicing Channels and Spatial Coordinates<a class="headerlink" href="#Slicing-Channels-and-Spatial-Coordinates" title="Permalink to this headline"></a></h2>
 <p>To slice specific channels of the image we simply use <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor together with the familiar bracket <code class="docutils literal notranslate"><span class="pre">[]</span></code> indexing.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -566,8 +567,8 @@ Data variables:
     _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>
-<section id="Slicing-labels">
-<h2>Slicing labels<a class="headerlink" href="#Slicing-labels" title="Permalink to this headline"></a></h2>
+<section id="Slicing-Labels">
+<h2>Slicing Labels<a class="headerlink" href="#Slicing-Labels" title="Permalink to this headline"></a></h2>
 <p>The labels accessor <code class="docutils literal notranslate"><span class="pre">.la</span></code> allows to select specific cell types by their label number or name.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:

@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Cell Type Prediction" href="CellTypePrediction.html" />
+    <link rel="next" title="Image Processing" href="ImageProcessing.html" />
     <link rel="prev" title="Segmentation" href="Segmentation.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -52,16 +52,17 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Plotting-channel-intensities">Plotting channel intensities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-segmentation-masks">Rendering segmentation masks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-labels">Rendering labels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Annotation-of-regions-or-cells">Annotation of regions or cells</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Expert-plotting">Expert plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Expert-Plotting">Expert Plotting</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
 </ul>
@@ -451,8 +452,8 @@ Data variables:
     _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
     _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
 </div>
-<section id="Plotting-channel-intensities">
-<h2>Plotting channel intensities<a class="headerlink" href="#Plotting-channel-intensities" title="Permalink to this headline"></a></h2>
+<section id="Plotting-Channel-Intensities">
+<h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Permalink to this headline"></a></h2>
 <p>The slicing capabilities of <code class="docutils literal notranslate"><span class="pre">xarray</span></code> make data visualization very easy. The general pattern is here to first select the channels, image regions and labels of interest, and then to use the plotting functions that are available via the <code class="docutils literal notranslate"><span class="pre">.pl</span></code> accessor. Images can be shown by using the <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> method.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -546,8 +547,8 @@ plt.tight_layout()
 </div>
 </div>
 </section>
-<section id="Rendering-segmentation-masks">
-<h2>Rendering segmentation masks<a class="headerlink" href="#Rendering-segmentation-masks" title="Permalink to this headline"></a></h2>
+<section id="Rendering-Segmentation-Masks">
+<h2>Rendering Segmentation Masks<a class="headerlink" href="#Rendering-Segmentation-Masks" title="Permalink to this headline"></a></h2>
 <p>If your spatialproteomics object contains a segmentation mask, you can simple plot it by setting <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code> to true.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -566,8 +567,8 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 </div>
 </div>
 </section>
-<section id="Rendering-labels">
-<h2>Rendering labels<a class="headerlink" href="#Rendering-labels" title="Permalink to this headline"></a></h2>
+<section id="Rendering-Labels">
+<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this headline"></a></h2>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> also has an argument called <code class="docutils literal notranslate"><span class="pre">render_labels</span></code>, which can be used to render cell type labels. We can simultaneously deactivate the rendering of the intensities to get an image of only the labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -631,8 +632,8 @@ Warning: No properties were added.
 </div>
 </div>
 </section>
-<section id="Annotation-of-regions-or-cells">
-<h2>Annotation of regions or cells<a class="headerlink" href="#Annotation-of-regions-or-cells" title="Permalink to this headline"></a></h2>
+<section id="Annotation-of-Regions-or-Cells">
+<h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Permalink to this headline"></a></h2>
 <p>We can also annotate regions or cells within the plots.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -684,8 +685,8 @@ Warning: No properties were added.
 </div>
 </div>
 </section>
-<section id="Expert-plotting">
-<h2>Expert plotting<a class="headerlink" href="#Expert-plotting" title="Permalink to this headline"></a></h2>
+<section id="Expert-Plotting">
+<h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Permalink to this headline"></a></h2>
 <p>To gain more control over your plots, you can use the functions <code class="docutils literal notranslate"><span class="pre">colorize</span></code>, <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, and <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">show</span></code>, which provides a high-level wrapper around these). Those methods allow for more nuanced adjustments of the final plot. Here are a few examples, for more details please consult the documentation of the corresponding methods.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -877,7 +878,7 @@ _ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;])
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Segmentation.html" class="btn btn-neutral float-left" title="Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CellTypePrediction.html" class="btn btn-neutral float-right" title="Cell Type Prediction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ImageProcessing.html" class="btn btn-neutral float-right" title="Image Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

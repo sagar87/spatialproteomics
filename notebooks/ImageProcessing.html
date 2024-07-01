@@ -21,6 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cell Type Prediction" href="CellTypePrediction.html" />
+    <link rel="prev" title="Plotting" href="Plotting.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -48,11 +50,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
 </ul>
@@ -83,6 +86,260 @@
              
   
 <style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
@@ -107,13 +364,286 @@
 </style>
 <section id="Image-Processing">
 <h1>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h1>
-<p>This notebook shows some exemplary image processing algorithms.</p>
+<p>This notebook shows some exemplary image processing algorithms. Note that plotting methods should always be called after preprocessing modules. <code class="docutils literal notranslate"><span class="pre">ds.pp.threshold(0.99).pl.colorize('red').pl.show()</span></code> will work, whereas <code class="docutils literal notranslate"><span class="pre">ds.pl.colorize('red').pp.threshold(0.99).pl.show()</span></code> will not show the thresholded image correctly.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
+%autoreload 2
+
+import spatialproteomics
+import matplotlib.pyplot as plt
+import xarray as xr
+xr.set_options(display_style=&#39;text&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.core.options.set_options at 0x7ffc99f6ed90&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
+ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
+ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
+ds = ds.pp.drop_layers(&quot;_labels&quot;)
+# focusing on just one channel to illustrate the concepts better
+ds_single_channel = ds.pp[&#39;IKZF3&#39;]
+ds_multichannel = ds.pp[[&#39;PAX5&#39;, &#39;CD3&#39;]]
+ds
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (cells: 12560, channels: 56, y: 3000, x: 3000, features: 4,
+                    labels: 8, props: 2)
+Coordinates:
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[71]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 10))
+_ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_3_0.png" src="../_images/notebooks_ImageProcessing_3_0.png" />
+</div>
+</div>
+<p>The marker above seems to have worked fairly well, but you can observe some unspecific binding. To boost the signal-to-noise ratio, we can threshold the image. This basically means that every value below that threshold gets set to zero. You can either threshold using an absolute intensity, or using a quantile value.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[78]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># thresholding with absolute intensity
+fig, ax = plt.subplots(1, 5, figsize=(50, 10))
+
+for i in range(5):
+    _ = ds_single_channel.pp.threshold(intensity= 10*i).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[i])
+    ax[i].set_title(f&quot;Absolute threshold: {10 * i}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_5_0.png" src="../_images/notebooks_ImageProcessing_5_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># thresholding with quantiles
+fig, ax = plt.subplots(1, 5, figsize=(50, 10))
+
+for i, quantile in enumerate([0.8, 0.9, 0.95, 0.99, 0.999]):
+    _ = ds_single_channel.pp.threshold(quantile= quantile).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[i])
+    ax[i].set_title(f&quot;Quantile threshold: {quantile}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_6_1.png" src="../_images/notebooks_ImageProcessing_6_1.png" />
+</div>
+</div>
+<p>You can also use different thresholds for different channels.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(10, 10))
+_ = ds_multichannel.pp.threshold(quantile=[0.95, 0.9]).pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_8_0.png" src="../_images/notebooks_ImageProcessing_8_0.png" />
+</div>
+</div>
+<p>After thresholding, a medianfilter can be useful to reduce the noise further. This is implemented in the <code class="docutils literal notranslate"><span class="pre">pp.restore()</span></code> method.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[93]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(30, 10))
+_ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
+_ = ds_single_channel.pp.threshold(quantile=0.95).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
+_ = ds_single_channel.pp.threshold(quantile=0.95).pp.restore(&#39;medfilt2d&#39;, kernel_size=3).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[2])
+
+ax[0].set_title(&quot;Raw image&quot;)
+ax[1].set_title(&quot;Thresholded&quot;)
+ax[2].set_title(&quot;Thresholded and restored&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[93]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Thresholded and restored&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_10_1.png" src="../_images/notebooks_ImageProcessing_10_1.png" />
+</div>
+</div>
+<p>Next to thresholding and restoring, you can apply any preprocessing function you like using the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method. With this method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[115]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to a single channel
+from scipy.ndimage import gaussian_filter
+
+def multiply_array(arr, factor=10):
+        return (arr * factor).clip(0, 255).astype(&#39;uint8&#39;)
+
+fig, ax = plt.subplots(1, 3, figsize=(30, 10))
+_ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
+_ = ds_single_channel.pp.apply(func=multiply_array).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
+_ = ds_single_channel.pp.apply(func=gaussian_filter, sigma=5).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[2])
+
+ax[0].set_title(&quot;Raw image&quot;)
+ax[1].set_title(&quot;Custom method&quot;)
+ax[2].set_title(&quot;Gaussian filter&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[115]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Gaussian filter&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_12_1.png" src="../_images/notebooks_ImageProcessing_12_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[116]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to multiple channels
+fig, ax = plt.subplots(1, 3, figsize=(30, 10))
+_ = ds_multichannel.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show(ax=ax[0])
+_ = ds_multichannel.pp.apply(func=multiply_array).pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show(ax=ax[1])
+_ = ds_multichannel.pp.apply(func=gaussian_filter, sigma=5).pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show(ax=ax[2])
+
+ax[0].set_title(&quot;Raw image&quot;)
+ax[1].set_title(&quot;Custom method&quot;)
+ax[2].set_title(&quot;Gaussian filter&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[116]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Gaussian filter&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_13_1.png" src="../_images/notebooks_ImageProcessing_13_1.png" />
+</div>
+</div>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Plotting.html" class="btn btn-neutral float-left" title="Plotting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CellTypePrediction.html" class="btn btn-neutral float-right" title="Cell Type Prediction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
