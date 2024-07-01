@@ -918,9 +918,11 @@ class PreprocessingAccessor:
         """
         if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
             raise ValueError("Please provide a quantile or absolute intensity cut off.")
-        
+
         if Layers.PLOT in self._obj:
-            logger.warning("Please only call pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly.")
+            logger.warning(
+                "Please only call pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
+            )
 
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
