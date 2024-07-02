@@ -928,8 +928,16 @@ class PreprocessingAccessor:
         image_layer = self._obj[Layers.IMAGE]
 
         if quantile is not None:
+            if isinstance(quantile, (float, int)):
+                quantile = np.array([quantile])
             if isinstance(quantile, list):
                 quantile = np.array(quantile)
+
+            assert (
+                len(quantile) == 1 or len(quantile) == image_layer.coords[Dims.CHANNELS].size
+            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels."
+
+            assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
 
             # calculate quantile
             lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
@@ -940,6 +948,15 @@ class PreprocessingAccessor:
                 intensity = np.array([intensity])
             if isinstance(intensity, list):
                 intensity = np.array(intensity)
+
+            assert (
+                len(intensity) == 1 or len(intensity) == image_layer.coords[Dims.CHANNELS].size
+            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels."
+
+            assert np.all(intensity >= 0), "Intensity values must be positive."
+            assert np.all(
+                intensity <= np.max(image_layer.values)
+            ), "Intensity values must be smaller than the maximum intensity."
 
             # calculate intensity
             filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
