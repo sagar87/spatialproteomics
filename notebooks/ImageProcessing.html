@@ -366,7 +366,7 @@ div.rendered_html tbody tr:hover {
 <h1>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h1>
 <p>This notebook shows some exemplary image processing algorithms. Note that plotting methods should always be called after preprocessing modules. <code class="docutils literal notranslate"><span class="pre">ds.pp.threshold(0.99).pl.colorize('red').pl.show()</span></code> will work, whereas <code class="docutils literal notranslate"><span class="pre">ds.pl.colorize('red').pp.threshold(0.99).pl.show()</span></code> will not show the thresholded image correctly.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -380,16 +380,16 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7ffc99f6ed90&gt;
+&lt;xarray.core.options.set_options at 0x7fff11bd6310&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
@@ -415,7 +415,7 @@ ds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -441,7 +441,7 @@ Data variables:
     _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[71]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 10))
@@ -458,7 +458,7 @@ _ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show()
 </div>
 <p>The marker above seems to have worked fairly well, but you can observe some unspecific binding. To boost the signal-to-noise ratio, we can threshold the image. This basically means that every value below that threshold gets set to zero. You can either threshold using an absolute intensity, or using a quantile value.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[78]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># thresholding with absolute intensity
@@ -478,7 +478,7 @@ for i in range(5):
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># thresholding with quantiles
@@ -490,35 +490,16 @@ for i, quantile in enumerate([0.8, 0.9, 0.95, 0.99, 0.999]):
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:28: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_6_1.png" src="../_images/notebooks_ImageProcessing_6_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_6_0.png" src="../_images/notebooks_ImageProcessing_6_0.png" />
 </div>
 </div>
 <p>You can also use different thresholds for different channels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(10, 10))
@@ -533,9 +514,25 @@ _ = ds_multichannel.pp.threshold(quantile=[0.95, 0.9]).pl.colorize([&#39;gold&#3
 <img alt="../_images/notebooks_ImageProcessing_8_0.png" src="../_images/notebooks_ImageProcessing_8_0.png" />
 </div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(10, 10))
+_ = ds_multichannel.pp.threshold(intensity=[20, 30]).pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_9_0.png" src="../_images/notebooks_ImageProcessing_9_0.png" />
+</div>
+</div>
 <p>After thresholding, a medianfilter can be useful to reduce the noise further. This is implemented in the <code class="docutils literal notranslate"><span class="pre">pp.restore()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[93]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(30, 10))
@@ -550,7 +547,7 @@ ax[2].set_title(&quot;Thresholded and restored&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[93]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -562,12 +559,12 @@ Text(0.5, 1.0, &#39;Thresholded and restored&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_10_1.png" src="../_images/notebooks_ImageProcessing_10_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_11_1.png" src="../_images/notebooks_ImageProcessing_11_1.png" />
 </div>
 </div>
 <p>Next to thresholding and restoring, you can apply any preprocessing function you like using the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method. With this method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[115]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to a single channel
@@ -588,7 +585,7 @@ ax[2].set_title(&quot;Gaussian filter&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[115]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -600,11 +597,11 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_12_1.png" src="../_images/notebooks_ImageProcessing_12_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_13_1.png" src="../_images/notebooks_ImageProcessing_13_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[116]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to multiple channels
@@ -620,7 +617,7 @@ ax[2].set_title(&quot;Gaussian filter&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[116]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -632,7 +629,7 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_13_1.png" src="../_images/notebooks_ImageProcessing_13_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_14_1.png" src="../_images/notebooks_ImageProcessing_14_1.png" />
 </div>
 </div>
 </section>
