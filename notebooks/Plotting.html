@@ -392,7 +392,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffe40d9b20&gt;
+&lt;xarray.core.options.set_options at 0x7fff187190d0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -614,21 +614,11 @@ _ = ds.pp[1000:1500, 500:1000].la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;].la.set_
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Found centroid-0 in _obs. Skipping.
-Found centroid-1 in _obs. Skipping.
-Warning: No properties were added.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_23_1.png" src="../_images/notebooks_Plotting_23_1.png" />
+<img alt="../_images/notebooks_Plotting_23_0.png" src="../_images/notebooks_Plotting_23_0.png" />
 </div>
 </div>
 </section>
@@ -667,21 +657,11 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Found centroid-0 in _obs. Skipping.
-Found centroid-1 in _obs. Skipping.
-Warning: No properties were added.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_27_1.png" src="../_images/notebooks_Plotting_27_1.png" />
+<img alt="../_images/notebooks_Plotting_27_0.png" src="../_images/notebooks_Plotting_27_0.png" />
 </div>
 </div>
 </section>
@@ -750,7 +730,7 @@ Warning: No properties were added.
 </div>
 <p>You can also use scatterplots instad of always plotting the images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of the labels
@@ -766,7 +746,7 @@ _ = ds.pl.scatter_labels(legend=False)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of any categorical variable in obs
@@ -795,6 +775,34 @@ _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.
 <img alt="../_images/notebooks_Plotting_36_1.png" src="../_images/notebooks_Plotting_36_1.png" />
 </div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatterplot of continuous variables
+# adding area of each cell and plotting it
+ds_tmp = ds.pp.add_observations(&#39;area&#39;)
+_ = ds_tmp.pl.scatter(feature=&#39;area&#39;, scatter_kws={&#39;cmap&#39;: &#39;YlOrRd&#39;})
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Found _obs in image container. Concatenating.
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
+  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_37_1.png" src="../_images/notebooks_Plotting_37_1.png" />
+</div>
+</div>
 <p>Lastly, if you have multiple segmentation masks, you can show all of them at the same time like this.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
@@ -808,7 +816,7 @@ _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_38_0.png" src="../_images/notebooks_Plotting_38_0.png" />
+<img alt="../_images/notebooks_Plotting_39_0.png" src="../_images/notebooks_Plotting_39_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -859,7 +867,7 @@ _ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;])
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_40_0.png" src="../_images/notebooks_Plotting_40_0.png" />
+<img alt="../_images/notebooks_Plotting_41_0.png" src="../_images/notebooks_Plotting_41_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
