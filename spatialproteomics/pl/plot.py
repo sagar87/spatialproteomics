@@ -754,39 +754,48 @@ class PlotAccessor:
         x = layer.loc[:, Features.X]
         y = layer.loc[:, Features.Y]
 
-        if palette is None:
-            # Default palette
-            unique_values = np.unique(layer.sel(features=feature))
-            assert (
-                len(unique_values) <= 10
-            ), "Scatter currently only supports categorical features with 10 or fewer unique values. If you want more than 10 features, please provide a color_scheme."
+        # if no palette is provided, we check if the data is categorical (i.e. has less than 10 unique values) or continuous
+        # if it is categorical, we use a default palette
+        unique_values = np.unique(layer.sel(features=feature))
+        if palette is None and len(unique_values) <= 10:
+            # default palette
             colors = plt.cm.tab10(np.linspace(0, 1, len(unique_values)))  # Using tab10 colormap for 10 unique colors
-            color_dict = {val: color for val, color in zip(unique_values, colors)}
-        else:
-            color_dict = palette
+            palette = {val: color for val, color in zip(unique_values, colors)}
+
+        if palette:
             # check if all unique values are present in the palette
             assert set(np.unique(layer.sel(features=feature))) <= set(
-                color_dict.keys()
+                palette.keys()
             ), f"Not all values are present in the palette. Make sure the following keys are in your palette: {np.unique(layer.sel(features=feature))}."
 
-        # Assigning colors based on feature values
-        colors = [color_dict.get(val, "gray") for val in layer.sel(features=feature).values]
+            # Assigning colors based on feature values
+            colors = [palette.get(val, "gray") for val in layer.sel(features=feature).values]
 
-        ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+            ax.scatter(x.values, y.values, color=colors, s=size, alpha=alpha, zorder=zorder, **scatter_kws)
+
+            if legend:
+                # Creating legend labels based on unique feature values
+                legend_handles = [
+                    plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
+                    for val, color in palette.items()
+                ]
+                ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
+        else:
+            # if there is no palette provided and none was inferred, we treat the data as continuous
+            ax.scatter(
+                x.values, y.values, c=layer.sel(features=feature), s=size, alpha=alpha, zorder=zorder, **scatter_kws
+            )
+
+            if legend:
+                # adding colorbar
+                cbar = plt.colorbar(ax.collections[0], ax=ax)
+                cbar.set_label(feature)
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])
         ax.set_xlim([xmin, xmax])
 
         ax.set_aspect("equal")  # Set equal aspect ratio for x and y axes
-
-        if legend:
-            # Creating legend labels based on unique feature values
-            legend_handles = [
-                plt.Line2D([0], [0], marker="o", color="w", markersize=5, markerfacecolor=color, label=val)
-                for val, color in color_dict.items()
-            ]
-            ax.legend(handles=legend_handles, **legend_kwargs).set_zorder(102)
 
         return self._obj
 
