@@ -392,7 +392,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fff187190d0&gt;
+&lt;xarray.core.options.set_options at 0x7fffe712eb80&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -411,9 +411,9 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
@@ -746,7 +746,7 @@ _ = ds.pl.scatter_labels(legend=False)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of any categorical variable in obs
@@ -759,24 +759,15 @@ _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
-  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_36_1.png" src="../_images/notebooks_Plotting_36_1.png" />
+<img alt="../_images/notebooks_Plotting_36_0.png" src="../_images/notebooks_Plotting_36_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatterplot of continuous variables
@@ -792,8 +783,6 @@ _ = ds_tmp.pl.scatter(feature=&#39;area&#39;, scatter_kws={&#39;cmap&#39;: &#39;
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Found _obs in image container. Concatenating.
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
-  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -805,7 +794,7 @@ Found _obs in image container. Concatenating.
 </div>
 <p>Lastly, if you have multiple segmentation masks, you can show all of them at the same time like this.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].pl.colorize([&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show()
@@ -820,7 +809,7 @@ Found _obs in image container. Concatenating.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_multisegmentation = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].tl.cellpose()
@@ -838,22 +827,22 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 41.61 sec
+estimated cell diameter(s) in 80.09 sec
 &gt;&gt;&gt; diameter(s) =
 [ 12.36 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 100.90 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 216.12 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 50.53 sec
+estimated cell diameter(s) in 83.11 sec
 &gt;&gt;&gt; diameter(s) =
 [ 19.38 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 87.90 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 146.19 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(16, 16))
@@ -863,11 +852,97 @@ _ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;])
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pl/plot.py:22: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pl.plot.PlotAccessor&#39;&gt; under name &#39;pl&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PlotAccessor:
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_41_0.png" src="../_images/notebooks_Plotting_41_0.png" />
+<img alt="../_images/notebooks_Plotting_41_1.png" src="../_images/notebooks_Plotting_41_1.png" />
+</div>
+</div>
+<p>We can also plot histograms of any table, for example the observations (e. g. cell area) or the marker distribution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># quick check what our object looks like
+ds_tmp
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (cells: 12560, channels: 56, features: 5, labels: 8,
+                    props: 2, x: 3000, y: 3000)
+Coordinates:
+  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;_original_&#x27; ... &#x27;centroid-1&#x27;
+  * labels         (labels) int64 1 2 3 4 5 6 7 8
+  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+Data variables:
+    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
+    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
+    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _obs           (cells, features) float64 4.0 3.0 ... 2.249e+03 2.237e+03
+    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
+    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the obs table
+_ = ds_tmp.pl.histogram(&#39;area&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pl/plot.py:22: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pl.plot.PlotAccessor&#39;&gt; under name &#39;pl&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PlotAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_44_1.png" src="../_images/notebooks_Plotting_44_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the expression matrix
+_ = ds_tmp.pl.histogram(&#39;DAPI&#39;, key=&#39;_arcsinh_mean&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_45_0.png" src="../_images/notebooks_Plotting_45_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
