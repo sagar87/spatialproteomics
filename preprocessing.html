@@ -586,6 +586,36 @@ If provided, the number of labels must match the number of arrays.</p></li>
 - ValueError: If both quantile and intensity are None or if both quantile and intensity are provided.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.transform_expression_matrix">
+<span class="sig-name descname"><span class="pre">transform_expression_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'arcsinh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'_intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cofactor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_percentile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_percentile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">99.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.transform_expression_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms the expression matrix based on the specified mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – The transformation method. Available options are “arcsinh”, “zscore”, “minmax”, “double_zscore”, and “clip”.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The key of the expression matrix in the object.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – The key to assign to the transformed matrix in the object.</p></li>
+<li><p><strong>cofactor</strong> (<em>float</em>) – The cofactor to use for the “arcsinh” transformation.</p></li>
+<li><p><strong>min_percentile</strong> (<em>float</em>) – The minimum percentile value to use for the “clip” transformation.</p></li>
+<li><p><strong>max_percentile</strong> (<em>float</em>) – The maximum percentile value to use for the “clip” transformation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The object with the transformed matrix added.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If an unknown transformation mode is specified.</p></li>
+<li><p><strong>AssertionError</strong> – If no expression matrix is found at the specified layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
