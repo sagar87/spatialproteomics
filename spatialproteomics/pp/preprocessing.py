@@ -5,6 +5,7 @@ import pandas as pd
 import skimage
 import xarray as xr
 from scipy.signal import medfilt2d, wiener
+from scipy.stats import norm, zscore
 from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
 from skimage.morphology import disk
@@ -964,7 +965,7 @@ class PreprocessingAccessor:
         obj = self._obj.copy()
 
         if key_added is None:
-            obj = obj.drop(Layers.IMAGE)
+            obj = obj.drop_vars(Layers.IMAGE)
 
         filtered = xr.DataArray(
             filtered,
@@ -1341,3 +1342,78 @@ class PreprocessingAccessor:
             ndarray: The first disconnected cell from the segmentation layer.
         """
         return _get_disconnected_cell(self._obj[Layers.SEGMENTATION])
+
+    def transform_expression_matrix(
+        self,
+        method: str = "arcsinh",
+        key: str = Layers.INTENSITY,
+        key_added: str = Layers.INTENSITY,
+        cofactor: float = 5.0,
+        min_percentile: float = 1.0,
+        max_percentile: float = 99.0,
+    ):
+        """
+        Transforms the expression matrix based on the specified mode.
+
+        Parameters:
+            method (str): The transformation method. Available options are "arcsinh", "zscore", "minmax", "double_zscore", and "clip".
+            key (str): The key of the expression matrix in the object.
+            key_added (str): The key to assign to the transformed matrix in the object.
+            cofactor (float): The cofactor to use for the "arcsinh" transformation.
+            min_percentile (float): The minimum percentile value to use for the "clip" transformation.
+            max_percentile (float): The maximum percentile value to use for the "clip" transformation.
+
+        Returns:
+            xr.Dataset: The object with the transformed matrix added.
+
+        Raises:
+            ValueError: If an unknown transformation mode is specified.
+            AssertionError: If no expression matrix is found at the specified layer.
+        """
+        # checking if there is an expression matrix in the object
+        assert key in self._obj, f"No expression matrix found at layer {key}."
+
+        # getting the expression matrix from the object
+        expression_matrix = self._obj[key].values
+
+        # applying the appropriate transform
+        if method == "arcsinh":
+            transformed_matrix = np.arcsinh(expression_matrix / cofactor)
+        elif method == "zscore":
+            # z-scoring along each channel
+            transformed_matrix = zscore(expression_matrix, axis=0)
+        elif method == "minmax":
+            # applying min max scaling, so that the lowest value is 0 and the highest is 1
+            transformed_matrix = (expression_matrix - np.min(expression_matrix, axis=0)) / (
+                np.max(expression_matrix, axis=0) - np.min(expression_matrix, axis=0)
+            )
+        elif method == "double_zscore":
+            # z-scoring along each channel
+            transformed_matrix = zscore(expression_matrix, axis=0)
+            # z-scoring along each cell
+            transformed_matrix = zscore(transformed_matrix, axis=1)
+            # turning the z-scores into probabilities using the cumulative density function
+            transformed_matrix = norm.cdf(transformed_matrix)
+            # taking the negative log of the inverse probability to amplify positive values
+            transformed_matrix = -np.log(1 - transformed_matrix)
+        elif method == "clip":
+            min_value, max_value = np.percentile(expression_matrix, [min_percentile, max_percentile])
+            transformed_matrix = np.clip(expression_matrix, min_value, max_value)
+        else:
+            raise ValueError(f"Unknown transformation method: {method}")
+
+        # creating a new data array with the transformed matrix
+        da = xr.DataArray(
+            transformed_matrix,
+            coords=[self._obj.coords[Dims.CELLS], self._obj.coords[Dims.CHANNELS]],
+            dims=[Dims.CELLS, Dims.CHANNELS],
+            name=key_added,
+        )
+
+        obj = self._obj.copy()
+        # removing the old expression matrix from the object
+        if key == key_added:
+            obj = obj.drop_vars(key)
+
+        # adding the transformed matrix to the object
+        return xr.merge([obj, da])
