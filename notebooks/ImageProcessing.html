@@ -385,7 +385,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f6fa2b039a0&gt;
+&lt;xarray.core.options.set_options at 0x7fff11bd6310&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -408,7 +408,9 @@ ds
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/opt/conda/lib/python3.10/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
+  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
+/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
@@ -513,7 +515,7 @@ _ = ds_multichannel.pp.threshold(quantile=[0.95, 0.9]).pl.colorize([&#39;gold&#3
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(10, 10))
@@ -528,31 +530,29 @@ _ = ds_multichannel.pp.threshold(intensity=[20, 30]).pl.colorize([&#39;gold&#39;
 <img alt="../_images/notebooks_ImageProcessing_9_0.png" src="../_images/notebooks_ImageProcessing_9_0.png" />
 </div>
 </div>
-<p>After thresholding, a medianfilter can be useful to reduce the noise further. We can use the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method to apply any preprocessing function of our choice.</p>
+<p>After thresholding, a medianfilter can be useful to reduce the noise further. This is implemented in the <code class="docutils literal notranslate"><span class="pre">pp.restore()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from scipy.signal import medfilt2d
-
-fig, ax = plt.subplots(1, 3, figsize=(30, 10))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(30, 10))
 _ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
 _ = ds_single_channel.pp.threshold(quantile=0.95).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
-_ = ds_single_channel.pp.threshold(quantile=0.95).pp.apply(medfilt2d, kernel_size=3).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[2])
+_ = ds_single_channel.pp.threshold(quantile=0.95).pp.restore(&#39;medfilt2d&#39;, kernel_size=3).pl.colorize(&#39;gold&#39;).pl.show(ax=ax[2])
 
 ax[0].set_title(&quot;Raw image&quot;)
 ax[1].set_title(&quot;Thresholded&quot;)
-ax[2].set_title(&quot;Thresholded and median filtered&quot;)
+ax[2].set_title(&quot;Thresholded and restored&quot;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Thresholded and median filtered&#39;)
+Text(0.5, 1.0, &#39;Thresholded and restored&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -562,9 +562,9 @@ Text(0.5, 1.0, &#39;Thresholded and median filtered&#39;)
 <img alt="../_images/notebooks_ImageProcessing_11_1.png" src="../_images/notebooks_ImageProcessing_11_1.png" />
 </div>
 </div>
-<p>With the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
+<p>Next to thresholding and restoring, you can apply any preprocessing function you like using the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method. With this method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to a single channel
@@ -585,7 +585,7 @@ ax[2].set_title(&quot;Gaussian filter&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -601,7 +601,7 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># application to multiple channels
@@ -617,7 +617,7 @@ ax[2].set_title(&quot;Gaussian filter&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -630,164 +630,6 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_ImageProcessing_14_1.png" src="../_images/notebooks_ImageProcessing_14_1.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># total variation filter. The idea is that areas with large gradients are smoothed out, as this implies rapid fluctuation of pixel intensity values (noise).
-from skimage.restoration import denoise_tv_chambolle
-
-fig, ax = plt.subplots(1, 2, figsize=(20, 10))
-
-# zooming in for a better view
-_ = ds_single_channel.pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
-_ = ds_single_channel.pp.apply(func=denoise_tv_chambolle, weight=0.001).pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
-ax[0].set_title(&#39;Raw&#39;)
-ax[1].set_title(&#39;Total variation filter&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Total variation filter&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_15_1.png" src="../_images/notebooks_ImageProcessing_15_1.png" />
-</div>
-</div>
-<p>We can of course also combine various processing methods. Let’s have a look at some more.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import skimage
-import numpy as np
-
-# example for local thresholding
-def local_threshold_single_channel(im, threshold=2.5):
-    selem = skimage.morphology.disk(100)
-    # mean filter
-    im_mean = skimage.filters.rank.mean(im, footprint=selem)
-    # threshold based on mean filter
-    out = np.array(im &gt; threshold * im_mean, dtype=np.uint8)
-    return out
-
-fig, ax = plt.subplots(1, 2, figsize=(20, 10))
-
-# zooming in for a better view
-_ = ds_single_channel.pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
-_ = ds_single_channel.pp.apply(func=local_threshold_single_channel).pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
-ax[0].set_title(&#39;Raw&#39;)
-ax[1].set_title(&#39;Local Thresholding&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Local Thresholding&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_17_1.png" src="../_images/notebooks_ImageProcessing_17_1.png" />
-</div>
-</div>
-<p>We can also try to automatically find a good threshold. This follows the approach demonstrated <a class="reference external" href="http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2019a/content/lessons/lesson_05/basic_filtering_and_thresholding.html#Thresholding">here</a>, where we look for the highest rate of change.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def find_optimal_threshold(im, min_k=0, max_k=5, step=100):
-    selem = skimage.morphology.disk(100)
-    arr = im[0, :, :]
-    # mean filter
-    arr_mean = skimage.filters.rank.mean(arr, footprint=selem)
-    k = np.linspace(min_k, max_k, step)
-    n_pix = np.empty_like(k)
-    for i in range(len(k)):
-        n_pix[i] = (arr &gt; k[i] * arr_mean).sum()
-    plt.plot(k, n_pix)
-    plt.show()
-
-    # Compute rough second derivative
-    dn_pix_dk2 = np.diff(np.diff(n_pix))
-    # Find index of maximal second derivative
-    max_ind = np.argmax(dn_pix_dk2)
-    # Use this index to set k
-    k_opt = k[max_ind-2]
-    return k_opt
-
-k_opt = find_optimal_threshold(ds_single_channel.pp[500:1000, 1000:1500][&#39;_image&#39;])
-print(f&quot;Optimal threshold: {k_opt}&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_19_0.png" src="../_images/notebooks_ImageProcessing_19_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Optimal threshold: 0.8585858585858586
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))
-_ = ds_single_channel.pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[0])
-_ = ds_single_channel.pp.apply(func=local_threshold_single_channel, threshold=k_opt).pp[500:1000, 1000:1500].pl.colorize(&#39;gold&#39;).pl.show(ax=ax[1])
-ax[0].set_title(&#39;Raw&#39;)
-ax[1].set_title(&#39;Local Thresholding&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Local Thresholding&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_20_1.png" src="../_images/notebooks_ImageProcessing_20_1.png" />
-</div>
-</div>
-<p>In this particular instance, the automated finding of a cutoff does not correspond to the best one, and manually looking at the parameters appear more promising. However, the example above illustrates one way to automate thresholding, which may work in certain situations.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
 </div>
 </div>
 </section>
