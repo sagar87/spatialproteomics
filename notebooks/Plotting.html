@@ -393,7 +393,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f8dd848f1f0&gt;
+&lt;xarray.core.options.set_options at 0x7fa169f9f220&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -873,18 +873,18 @@ TORCH CUDA version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 9.12 sec
+estimated cell diameter(s) in 8.00 sec
 &gt;&gt;&gt; diameter(s) =
 [ 12.36 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 19.62 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 18.67 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 8.51 sec
+estimated cell diameter(s) in 9.51 sec
 &gt;&gt;&gt; diameter(s) =
 [ 19.38 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 20.09 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 21.81 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -940,7 +940,7 @@ Data variables:
     _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the obs table
@@ -957,7 +957,7 @@ _ = plt.hist(df[&#39;area&#39;], bins=50)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the expression matrix
@@ -971,6 +971,31 @@ _ = plt.hist(df[&#39;DAPI&#39;], bins=50)
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Plotting_48_0.png" src="../_images/notebooks_Plotting_48_0.png" />
+</div>
+</div>
+<p>Sidenote: you can also create a Vornoi diagram of your data by simply growing segmentation masks by a specified distance.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(15, 15))
+_ = ds_tmp.pp[&#39;DAPI&#39;].pp.grow_cells(iterations=20).pl.autocrop().pl.colorize(&#39;gold&#39;).pl.show(render_segmentation=True)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations().
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_50_1.png" src="../_images/notebooks_Plotting_50_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
