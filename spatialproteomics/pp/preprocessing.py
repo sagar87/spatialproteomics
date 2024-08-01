@@ -4,12 +4,8 @@ import numpy as np
 import pandas as pd
 import skimage
 import xarray as xr
-from scipy.signal import medfilt2d, wiener
 from scipy.stats import norm, zscore
-from skimage.filters.rank import maximum, mean, median, minimum
 from skimage.measure import regionprops_table
-from skimage.morphology import disk
-from skimage.restoration import unsupervised_wiener
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
@@ -836,72 +832,6 @@ class PreprocessingAccessor:
 
         return obj
 
-    def restore(self, method="wiener", **kwargs):
-        """
-        Restores the image using a specified method.
-
-        Parameters
-        ----------
-        method : str, optional
-            The method used for image restoration. Options are "wiener", "unsupervised_wiener", or "threshold". Default is "wiener".
-        **kwargs : dict, optional
-            Additional keyword arguments specific to the chosen method.
-
-        Returns
-        -------
-        xr.Dataset
-            The restored image container.
-        """
-        image_layer = self._obj[Layers.IMAGE]
-
-        obj = self._obj.drop(Layers.IMAGE)
-
-        if method == "wiener":
-            restored = wiener(image_layer.values)
-        elif method == "unsupervised_wiener":
-            psf = np.ones((5, 5)) / 25
-            restored, _ = unsupervised_wiener(image_layer.values.squeeze(), psf)
-            restored = np.expand_dims(restored, 0)
-        elif method == "threshold":
-            value = kwargs.get("value", 128)
-            rev_func = kwargs.get("rev_func", lambda x: x)
-            restored = np.zeros_like(image_layer)
-            idx = np.where(image_layer > rev_func(value))
-            restored[idx] = image_layer[idx]
-        elif method == "median":
-            selem = kwargs.get("selem", disk(radius=1))
-            restored = median(image_layer.values.squeeze(), footprint=selem)
-        elif method == "mean":
-            selem = kwargs.get("selem", disk(radius=1))
-            restored = mean(image_layer.values.squeeze(), footprint=selem)
-        elif method == "minimum":
-            selem = kwargs.get("selem", disk(radius=1))
-            restored = minimum(image_layer.values.squeeze(), footprint=selem)
-        elif method == "maximum":
-            selem = kwargs.get("selem", disk(radius=1))
-            restored = maximum(image_layer.values.squeeze(), footprint=selem)
-        elif method == "medfilt2d":
-            kernel_size = kwargs.get("kernel_size", 3)
-
-            if image_layer.values.ndim == 3:
-                restore_array = []
-                for i in range(image_layer.values.shape[0]):
-                    restore_array.append(medfilt2d(image_layer.values[i].squeeze(), kernel_size))
-                restored = np.stack(restore_array, 0)
-            else:
-                restored = medfilt2d(image_layer.values.squeeze(), kernel_size)
-
-        if restored.ndim == 2:
-            restored = np.expand_dims(restored, 0)
-
-        normed = xr.DataArray(
-            restored,
-            coords=image_layer.coords,
-            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
-            name=Layers.IMAGE,
-        )
-        return xr.merge([obj, normed])
-
     def threshold(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
         """
         Apply thresholding to the image layer of the object.
@@ -977,7 +907,7 @@ class PreprocessingAccessor:
 
     def apply(self, func: Callable, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE, **kwargs):
         """
-        Apply a function to all channels.
+        Apply a function to each channel independently.
 
         Parameters
         ----------
@@ -998,10 +928,19 @@ class PreprocessingAccessor:
         # checking if the key is in the object
         assert key in self._obj, f"Key {key} not found in the image container."
 
-        # apply the function to all channels
         obj = self._obj.copy()
         layer = obj[key].copy()
-        processed_layer = xr.apply_ufunc(func, layer, kwargs=kwargs)
+
+        # Apply the function independently across all channels
+        # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
+        processed_layers = []
+        for channel in layer.coords[Dims.CHANNELS].values:
+            channel_data = layer.sel({Dims.CHANNELS: channel})
+            processed_channel_data = func(channel_data, **kwargs)
+            processed_layers.append(processed_channel_data)
+
+        # Stack the processed layers back into a single numpy array
+        processed_layer = np.stack(processed_layers, 0)
 
         # adding the modified layer to the object
         obj[key_added] = xr.DataArray(
