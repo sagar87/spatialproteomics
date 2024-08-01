@@ -202,6 +202,35 @@ def _render_labels(
     return im
 
 
+def _render_obs(
+    segmentation: np.ndarray,
+    cmap: list,
+    img: np.ndarray = None,
+    alpha: float = 0.2,
+    alpha_boundary: float = 1.0,
+    mode: str = "inner",
+) -> np.ndarray:
+
+    # normalize the segmentation to be in the range [0, 1]
+    segmentation = (segmentation - segmentation.min()) / (segmentation.max() - segmentation.min())
+
+    colored_mask = cmap(segmentation)
+
+    mask_bool = segmentation > 0
+    mask_bound = np.bitwise_and(mask_bool, find_boundaries(segmentation, mode=mode))
+
+    if img is None:
+        img = np.zeros(segmentation.shape + (4,), np.float32)
+        img[..., -1] = 1
+
+    im = img.copy()
+
+    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
+    im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
+
+    return im
+
+
 def _label_segmentation_mask(segmentation: np.ndarray, ct_to_cells_dict: dict) -> np.ndarray:
     """
     Label the segmentation mask based on the provided celltype-to-cells dictionary.
