@@ -388,6 +388,7 @@ div.rendered_html tbody tr:hover {
 import pandas as pd
 import matplotlib.pyplot as plt
 import xarray as xr
+from scipy.signal import medfilt2d
 xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
@@ -398,7 +399,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffe40e1250&gt;
+&lt;xarray.core.options.set_options at 0x7f67ef4232e0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -416,16 +417,14 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;netcdf4&#39; fails while guessing
-  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/opt/conda/lib/python3.10/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
 <section id="Image-Processing">
 <h2>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># preprocessing: thresholding by percentiles and applying a median filter
@@ -437,12 +436,21 @@ channels_celltypes = channels[:-2]
 colors_celltypes = colors[:-2]
 
 # processing and recomputing quantification
-ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.restore(&#39;medfilt2d&#39;, kernel_size=3)
+ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kernel_size=3)
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:29: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ds and ds processed next to one another
@@ -459,7 +467,7 @@ ax[1].set_title(&quot;Processed&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
