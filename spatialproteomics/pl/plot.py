@@ -965,4 +965,3 @@ class PlotAccessor:
         img = self._obj.pp[channel].pp.downsample(downsample)[key].values.squeeze()
         slices = _autocrop(img, downsample=downsample, padding=padding)
         return self._obj.pp[slices[0], slices[1]]
-
