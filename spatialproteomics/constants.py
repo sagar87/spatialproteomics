@@ -52,6 +52,7 @@ class Attrs(object):
     IMAGE_COLORS = "image_colors"
     SEGMENTATION_COLORS = "segmentation_colors"
     LABEL_COLORS = "label_colors"
+    OBS_COLORS = "obs_colors"
     LABEL_NAMES = "label_names"
     LABEL_SEGMENTATION = "label_segmentation"
 

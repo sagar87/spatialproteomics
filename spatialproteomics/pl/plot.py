@@ -14,6 +14,7 @@ from .utils import (
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _render_obs,
     _render_segmentation,
 )
 
@@ -118,6 +119,21 @@ class PlotAccessor:
         ]
 
         return elements
+
+    def _create_obs_legend(self):
+        assert (
+            Attrs.OBS_COLORS in self._obj[Layers.PLOT].attrs
+        ), "No observation colors found. Please call pl.render_obs() first."
+        obs_colors = self._obj[Layers.PLOT].attrs[Attrs.OBS_COLORS]
+        feature = obs_colors["feature"]
+        cmap = obs_colors["cmap"]
+        min_val = obs_colors["min"]
+        max_val = obs_colors["max"]
+        # creating a colorbar
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
+        sm.set_array([])
+        cbar = plt.colorbar(sm, ax=plt.gca(), label=feature)
+        return [cbar]
 
     def colorize(
         self,
@@ -562,11 +578,86 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
+    def render_obs(
+        self,
+        feature: str = None,
+        cmap: str = "viridis",
+        alpha: float = 1.0,
+        alpha_boundary: float = 1.0,
+        mode: str = "inner",
+    ) -> xr.Dataset:
+        assert (
+            Layers.OBS in self._obj
+        ), "No observation layer found in the object. Please add an observation layer first."
+        assert (
+            Layers.SEGMENTATION in self._obj
+        ), "No segmentation layer found in the object. Please add a segmentation layer first."
+        obs = self._obj[Layers.OBS]
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
+        # creating a continuous colormap
+        cmap = plt.cm.get_cmap(cmap)
+        feature_values = obs.sel(features=feature).values
+        # we need to ensure that the feature values are normalized between 0 and 1
+        # feature_values = (feature_values - feature_values.min()) / (feature_values.max() - feature_values.min())
+
+        # mapping the feature values onto the segmentation mask (replacing the cell indices with the feature values)
+        # we need to ensure the mapping between the feature values and the segmentation is correct
+        cell_indices = self._obj.coords[Dims.CELLS]
+
+        # dict that maps each cell ID to its feature value
+        feature_mapping = {k.item(): v for k, v in zip(cell_indices, feature_values)}
+        # setting the background to 0
+        feature_mapping[0] = 0
+        # mapping the feature values onto the segmentation mask (and setting to 0 for the background)
+        segmentation = np.vectorize(feature_mapping.get)(segmentation)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+
+            rendered = _render_obs(
+                segmentation,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_obs(segmentation, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+
+        # adding information for rendering the colorbar
+        # in here, we need the name of the feature, the colormap and the min and max values of the feature
+        attrs[Attrs.OBS_COLORS] = {
+            "feature": feature,
+            "cmap": cmap,
+            "min": feature_values.min(),
+            "max": feature_values.max(),
+        }
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+
+        return xr.merge([self._obj, da])
+
     def imshow(
         self,
         legend_image: bool = False,
         legend_segmentation: bool = False,
         legend_label: bool = False,
+        legend_obs: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -585,6 +676,8 @@ class PlotAccessor:
             Show the legend for the segmentation. Default is False.
         legend_label : bool, optional
             Show the labels. Default is False.
+        legend_obs: bool, optional
+            Show the observation colorbar. Default is False.
         downsample : int, optional
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
@@ -631,6 +724,9 @@ class PlotAccessor:
 
         if legend_label:
             legend += self._obj.pl._create_label_legend()
+
+        if legend_obs:
+            legend += self._obj.pl._create_obs_legend()
 
         if legend_image or legend_segmentation or legend_label:
             ax.legend(handles=legend, **legend_kwargs)
