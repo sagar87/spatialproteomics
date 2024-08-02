@@ -372,7 +372,7 @@ div.rendered_html tbody tr:hover {
 <h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
 <p>There are different ways to predict cell types, e. g. using astir or argmax. The following notebook demonstrates some common ways of predicting cell types and subtypes</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -381,7 +381,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatialproteomics as sp
@@ -394,21 +394,21 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f67ef4232e0&gt;
+&lt;xarray.core.options.set_options at 0x7f743b598220&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
 ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
-ds = ds.pp.drop_layers(&quot;_labels&quot;)
+ds = ds.pp.drop_layers([&quot;_labels&quot;, &#39;_arcsinh_mean&#39;, &#39;_arcsinh_sum&#39;, &#39;_raw_mean&#39;, &#39;_raw_sum&#39;])
 </pre></div>
 </div>
 </div>
@@ -424,7 +424,7 @@ ds = ds.pp.drop_layers(&quot;_labels&quot;)
 <section id="Image-Processing">
 <h2>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># preprocessing: thresholding by percentiles and applying a median filter
@@ -436,7 +436,7 @@ channels_celltypes = channels[:-2]
 colors_celltypes = colors[:-2]
 
 # processing and recomputing quantification
-ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kernel_size=3)
+ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kernel_size=3).pp.add_quantification(func=sp.pp.mean_intensity).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
 </pre></div>
 </div>
 </div>
@@ -445,12 +445,12 @@ ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kerne
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:29: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class PreprocessingAccessor:
+/opt/conda/lib/python3.10/site-packages/skimage/measure/_regionprops.py:317: UserWarning: Extra property &#39;mean_intensity&#39; is shadowed by existing property and will be inaccessible. Consider renaming it.
+  warn(msg)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ds and ds processed next to one another
@@ -467,7 +467,7 @@ ax[1].set_title(&quot;Processed&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -487,7 +487,7 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 <h2>Cell Type Prediction with Argmax<a class="headerlink" href="#Cell-Type-Prediction-with-Argmax" title="Permalink to this headline"></a></h2>
 <p>Given the thresholded image, the simplest way to derive cell type labels is to define associations between cell types and markers, and then assign the cell type whose marker is most highly expressed (i. e. taking the argmax). This is what is demonstrated below.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ct_marker_dict = {&#39;B&#39;: &#39;PAX5&#39;, &#39;T&#39;: &#39;CD3&#39;, &#39;Myeloid&#39;: &#39;CD11b&#39;, &#39;Dendritic&#39;: &#39;CD11c&#39;, &#39;Granulo&#39;: &#39;CD15&#39;, &#39;Macro&#39;: &#39;CD68&#39;, &#39;Stroma PDPN&#39;: &#39;Podoplanin&#39;, &#39;Stroma CD31&#39;: &#39;CD31&#39;, &#39;Stroma CD34&#39;: &#39;CD34&#39;, &#39;Stroma CD90&#39;: &#39;CD90&#39;, &#39;NK&#39;: &#39;CD56&#39;}
@@ -495,11 +495,11 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># predicting the cell type using the argmay
-ds_with_ct_predictions = ds_processed.la.predict_cell_types_argmax(ct_marker_dict, key=&#39;_arcsinh_mean&#39;, overwrite_existing_labels=True)
+ds_with_ct_predictions = ds_processed.la.predict_cell_types_argmax(ct_marker_dict, key=&#39;_intensity&#39;, overwrite_existing_labels=True)
 
 # adding colors to match the markers
 ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_marker_dict.keys()), colors_celltypes)
@@ -511,14 +511,11 @@ ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_mark
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/spatialproteomics_env/lib/python3.9/site-packages/xarray/core/concat.py:527: FutureWarning: unique with argument that is not not a Series, Index, ExtensionArray, or np.ndarray is deprecated and will raise in a future version.
-  common_dims = tuple(pd.unique([d for v in vars for d in v.dims]))
 Label Stroma PDPN not found in the data object. Skipping.
-Label Stroma CD31 not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the ct predictions next to the processed image
@@ -533,7 +530,7 @@ ax[1].set_title(&quot;Cell Type Predictions&quot;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -549,7 +546,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># this is how the image in the README was created
