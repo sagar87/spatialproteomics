@@ -13,7 +13,7 @@ python = ">=3.9,<4.0"
 xarray = "^2023.0.0"
 scikit-image = "^0.19.3"
 matplotlib = "^3.5.3"
-Sphinx = { version = "4.2.0", optional = true }
+Sphinx = { version = "5.0.0", optional = true }
 sphinx-rtd-theme = { version = "1.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
 nbsphinx = { version = "0.8.9", optional = true }
