@@ -9,8 +9,8 @@ readme = "README.md"
 authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
-xarray = "^2022.6.0"
+python = ">=3.9,<4.0"
+xarray = "^2023.0.0"
 scikit-image = "^0.19.3"
 matplotlib = "^3.5.3"
 Sphinx = { version = "4.2.0", optional = true }
