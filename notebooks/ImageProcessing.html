@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
 </ul>
 
         </div>
@@ -363,7 +364,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Image-Processing">
-<h1>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h1>
+<h1>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this heading"></a></h1>
 <p>This notebook shows some exemplary image processing algorithms. Note that plotting methods should always be called after preprocessing modules. <code class="docutils literal notranslate"><span class="pre">ds.pp.threshold(0.99).pl.colorize('red').pl.show()</span></code> will work, whereas <code class="docutils literal notranslate"><span class="pre">ds.pl.colorize('red').pp.threshold(0.99).pl.show()</span></code> will not show the thresholded image correctly.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:

@@ -14,14 +14,15 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Exporting Data" href="Exporting.html" />
+    <link rel="next" title="Interoparability" href="Interoperability.html" />
     <link rel="prev" title="Image Processing" href="ImageProcessing.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -63,7 +64,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Marker-Binarization">Marker Binarization</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
 </ul>
 
         </div>
@@ -369,7 +370,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Cell-Type-Prediction">
-<h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this headline"></a></h1>
+<h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this heading"></a></h1>
 <p>There are different ways to predict cell types, e. g. using astir or argmax. The following notebook demonstrates some common ways of predicting cell types and subtypes</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -422,7 +423,7 @@ ds = ds.pp.drop_layers([&quot;_labels&quot;, &#39;_arcsinh_mean&#39;, &#39;_arcs
 </pre></div></div>
 </div>
 <section id="Image-Processing">
-<h2>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this headline"></a></h2>
+<h2>Image Processing<a class="headerlink" href="#Image-Processing" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -484,7 +485,7 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 </div>
 </section>
 <section id="Cell-Type-Prediction-with-Argmax">
-<h2>Cell Type Prediction with Argmax<a class="headerlink" href="#Cell-Type-Prediction-with-Argmax" title="Permalink to this headline"></a></h2>
+<h2>Cell Type Prediction with Argmax<a class="headerlink" href="#Cell-Type-Prediction-with-Argmax" title="Permalink to this heading"></a></h2>
 <p>Given the thresholded image, the simplest way to derive cell type labels is to define associations between cell types and markers, and then assign the cell type whose marker is most highly expressed (i. e. taking the argmax). This is what is demonstrated below.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
@@ -704,7 +705,7 @@ ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;, celltypes_to_str=True)
 </div>
 </section>
 <section id="Cell-Type-Prediction-with-Astir">
-<h2>Cell Type Prediction with Astir<a class="headerlink" href="#Cell-Type-Prediction-with-Astir" title="Permalink to this headline"></a></h2>
+<h2>Cell Type Prediction with Astir<a class="headerlink" href="#Cell-Type-Prediction-with-Astir" title="Permalink to this heading"></a></h2>
 <p>There also exist more involved methods of predicting cell types, such as astir. Here is a quick example on how one could apply astir to the previous image.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -885,7 +886,7 @@ plt.tight_layout()
 </div>
 </section>
 <section id="Marker-Binarization">
-<h2>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this headline"></a></h2>
+<h2>Marker Binarization<a class="headerlink" href="#Marker-Binarization" title="Permalink to this heading"></a></h2>
 <p>For some (functional) markers, we want to binarize them (i. e. is a cell positive or negative for that marker). This can be achieved with the <code class="docutils literal notranslate"><span class="pre">la.threshold_labels()</span></code> function.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -1011,7 +1012,7 @@ Text(0.5, 1.0, &#39;CD4 on T cells only&#39;)
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="ImageProcessing.html" class="btn btn-neutral float-left" title="Image Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Exporting.html" class="btn btn-neutral float-right" title="Exporting Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Interoperability.html" class="btn btn-neutral float-right" title="Interoparability" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

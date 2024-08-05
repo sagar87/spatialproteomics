@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exporting Data &mdash; spatial_proteomics 0.5.2 documentation</title>
+  <title>Interoparability &mdash; spatial_proteomics 0.5.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,7 +57,9 @@
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Exporting Data</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interoparability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Importing-Data">Importing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Exporting-Data">Exporting Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-to-Zarr">Exporting to Zarr</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exporting-to-AnnData">Exporting to AnnData</a></li>
@@ -79,9 +82,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Exporting Data</li>
+      <li>Interoparability</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Exporting.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/notebooks/Interoperability.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -367,17 +370,17 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Exporting-Data">
-<h1>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Permalink to this headline"></a></h1>
-<p>Once you are happy with your analysis, you will likely want to export the results. The easiest way to do this is by using the <code class="docutils literal notranslate"><span class="pre">zarr</span></code> format, but <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">anndata</span></code>, and <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> are also supported.</p>
+<section id="Interoparability">
+<h1>Interoparability<a class="headerlink" href="#Interoparability" title="Permalink to this heading"></a></h1>
+<p>This notebook shows some way that you can import and export from <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
 %autoreload 2
 
-import spatialproteomics
+import spatialproteomics as sp
 import pandas as pd
 import xarray as xr
 import os
@@ -388,14 +391,64 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fffe40ebc10&gt;
+&lt;xarray.core.options.set_options at 0x7f265b472320&gt;
 </pre></div></div>
 </div>
+<section id="Importing-Data">
+<h2>Importing Data<a class="headerlink" href="#Importing-Data" title="Permalink to this heading"></a></h2>
+<p>In the example workflow, you have already seen how to read data from a tiff file. If you already have your data in <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format, you can also read it in from there.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = sp.read_from_spatialdata(&#39;../../data/spatialdata_example.zarr&#39;, image_key=&#39;raccoon&#39;)
+ds
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+root_attr: multiscales
+root_attr: omero
+datasets [{&#39;coordinateTransformations&#39;: [{&#39;scale&#39;: [1.0, 1.0, 1.0], &#39;type&#39;: &#39;scale&#39;}], &#39;path&#39;: &#39;0&#39;}]
+resolution: 0
+ - shape (&#39;c&#39;, &#39;y&#39;, &#39;x&#39;) = (3, 768, 1024)
+ - chunks =  [&#39;3&#39;, &#39;768&#39;, &#39;1024&#39;]
+ - dtype = uint8
+root_attr: multiscales
+root_attr: omero
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre>&lt;xarray.Dataset&gt;
+Dimensions:        (channels: 3, y: 768, x: 1024, cells: 70, features: 2)
+Coordinates:
+  * channels       (channels) int64 0 1 2
+  * y              (y) int64 0 1 2 3 4 5 6 7 ... 760 761 762 763 764 765 766 767
+  * x              (x) int64 0 1 2 3 4 5 6 ... 1018 1019 1020 1021 1022 1023
+  * cells          (cells) int64 1 2 3 4 5 6 7 8 9 ... 63 64 65 66 67 68 69 70
+  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+Data variables:
+    _image         (channels, y, x) uint8 dask.array&lt;chunksize=(3, 768, 1024), meta=np.ndarray&gt;
+    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 ... 69 69 69 69 69 69 69 69 69
+    _obs           (cells, features) float64 44.79 402.5 46.1 ... 736.5 890.5</pre></div>
+</div>
+</section>
+<section id="Exporting-Data">
+<h2>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Permalink to this heading"></a></h2>
+<p>Once you are happy with your analysis, you will likely want to export the results. The easiest way to do this is by using the <code class="docutils literal notranslate"><span class="pre">zarr</span></code> format, but <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">anndata</span></code>, and <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> are also supported.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -445,8 +498,9 @@ Data variables:
     _raw_sum                        (cells, channels) float64 1.053e+04 ... 4...
     _segmentation                   (y, x) int64 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0</pre></div>
 </div>
+</section>
 <section id="Exporting-to-Zarr">
-<h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Permalink to this headline"></a></h2>
+<h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Permalink to this heading"></a></h2>
 <p>This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code.</p>
 <p>In case there are issues with simply running <code class="docutils literal notranslate"><span class="pre">ds.to_zarr(&quot;your_path.zarr&quot;)</span></code>, you might need to parse the dtypes correctly. This is a <a class="reference external" href="https://github.com/pydata/xarray/issues/3476">known issue</a> with xarray and will hopefully be fixed soon.</p>
 <div class="nbinput nblast docutils container">
@@ -490,7 +544,7 @@ ds.to_zarr(&quot;tmp.zarr&quot;)
 </div>
 </section>
 <section id="Exporting-Tables-to-CSV">
-<h2>Exporting Tables to CSV<a class="headerlink" href="#Exporting-Tables-to-CSV" title="Permalink to this headline"></a></h2>
+<h2>Exporting Tables to CSV<a class="headerlink" href="#Exporting-Tables-to-CSV" title="Permalink to this heading"></a></h2>
 <p>Let’s say you want to export some tables as csvs. This can be done with pandas.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
@@ -684,7 +738,7 @@ df.to_csv(&quot;tmp.csv&quot;)
 </div>
 </section>
 <section id="Exporting-to-AnnData">
-<h2>Exporting to AnnData<a class="headerlink" href="#Exporting-to-AnnData" title="Permalink to this headline"></a></h2>
+<h2>Exporting to AnnData<a class="headerlink" href="#Exporting-to-AnnData" title="Permalink to this heading"></a></h2>
 <p>AnnData is a format used by scanpy, which can be useful to create interesting plots and downstream analyses. For this reason, you can export the xarray object as an AnnData object. Note that this object will only store the tabular data, but not the image or the segmentation layer.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
@@ -721,7 +775,7 @@ adata.write(&#39;tmp.h5ad&#39;)
 </div>
 </section>
 <section id="Exporting-to-SpatialData">
-<h2>Exporting to SpatialData<a class="headerlink" href="#Exporting-to-SpatialData" title="Permalink to this headline"></a></h2>
+<h2>Exporting to SpatialData<a class="headerlink" href="#Exporting-to-SpatialData" title="Permalink to this heading"></a></h2>
 <p>SpatialData is a data format which is commonly used for spatial omics analysis and combines the power of zarr with anndata. You can export to this data format as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:

@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -62,7 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
 </ul>
 
         </div>
@@ -368,7 +369,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Segmentation">
-<h1>Segmentation<a class="headerlink" href="#Segmentation" title="Permalink to this headline"></a></h1>
+<h1>Segmentation<a class="headerlink" href="#Segmentation" title="Permalink to this heading"></a></h1>
 <p>Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for StarDist, mesmer and cellpose.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -442,7 +443,7 @@ Data variables:
     _image    (channels, y, x) uint8 72 72 72 69 79 92 109 116 ... 3 3 2 3 3 2 3</pre></div>
 </div>
 <section id="Nuclear-Segmentation-with-StarDist">
-<h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Permalink to this headline"></a></h2>
+<h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Permalink to this heading"></a></h2>
 <p>StarDist can perform segmentation on a single channel. Here, we show how it can be used to segment nuclei. Subsequently, we will look at how these segmentation masks can be processed in an attempt to capture the cytosol and membrane better.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -532,11 +533,11 @@ plt.tight_layout()
 </div>
 </section>
 <section id="Whole-Cell-Segmentation-with-Mesmer">
-<h2>Whole Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Permalink to this headline"></a></h2>
+<h2>Whole Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Permalink to this heading"></a></h2>
 <p>If you have a universal membrane marker, you can use mesmer for whole cell segmentation. Since there is no membrane marker in this dataset that is present on all cells, this is not shown here. For further information, refer to the <code class="docutils literal notranslate"><span class="pre">tl</span></code> module. The syntax is identical to that of StarDist and cellpose.</p>
 </section>
 <section id="Segmenting-Multiple-Channels-with-Cellpose">
-<h2>Segmenting Multiple Channels with Cellpose<a class="headerlink" href="#Segmenting-Multiple-Channels-with-Cellpose" title="Permalink to this headline"></a></h2>
+<h2>Segmenting Multiple Channels with Cellpose<a class="headerlink" href="#Segmenting-Multiple-Channels-with-Cellpose" title="Permalink to this heading"></a></h2>
 <p>Cellpose is another state of the art tool for segmentation. Next to predicting nuclei, you can also use it to try to predict other cell types. In the following, we will see how we can use cellpose to segment three different channels independently and then merge the segmentation masks into one mask. There are some hyperparameters in cellpose which can help the prediction.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:

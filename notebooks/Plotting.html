@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -65,7 +66,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Exporting.html">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
 </ul>
 
         </div>
@@ -371,7 +372,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Plotting">
-<h1>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline"></a></h1>
+<h1>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this heading"></a></h1>
 <p>Spatialproteomics has a variety of plotting functions, enabling the plotting of intensities, segmentation masks, and predicted cell type labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -452,7 +453,7 @@ Data variables:
     _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
 </div>
 <section id="Plotting-Channel-Intensities">
-<h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Permalink to this headline"></a></h2>
+<h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Permalink to this heading"></a></h2>
 <p>The slicing capabilities of <code class="docutils literal notranslate"><span class="pre">xarray</span></code> make data visualization very easy. The general pattern is here to first select the channels, image regions and labels of interest, and then to use the plotting functions that are available via the <code class="docutils literal notranslate"><span class="pre">.pl</span></code> accessor. Images can be shown by using the <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> method.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -547,7 +548,7 @@ plt.tight_layout()
 </div>
 </section>
 <section id="Rendering-Segmentation-Masks">
-<h2>Rendering Segmentation Masks<a class="headerlink" href="#Rendering-Segmentation-Masks" title="Permalink to this headline"></a></h2>
+<h2>Rendering Segmentation Masks<a class="headerlink" href="#Rendering-Segmentation-Masks" title="Permalink to this heading"></a></h2>
 <p>If your spatialproteomics object contains a segmentation mask, you can simple plot it by setting <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code> to true.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -567,7 +568,7 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 </div>
 </section>
 <section id="Rendering-Obs">
-<h2>Rendering Obs<a class="headerlink" href="#Rendering-Obs" title="Permalink to this headline"></a></h2>
+<h2>Rendering Obs<a class="headerlink" href="#Rendering-Obs" title="Permalink to this heading"></a></h2>
 <p>Sometimes, you might want to visualize specific features, such as the cell size. With <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>, you can do this while retaining the cell shapes obtained by the segmentation.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -611,7 +612,7 @@ _ = ds.pl.autocrop().pl.render_obs(feature=&#39;centroid-0&#39;, cmap=&#39;plasm
 </div>
 </section>
 <section id="Rendering-Labels">
-<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this headline"></a></h2>
+<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this heading"></a></h2>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> also has an argument called <code class="docutils literal notranslate"><span class="pre">render_labels</span></code>, which can be used to render cell type labels. We can simultaneously deactivate the rendering of the intensities to get an image of only the labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -666,7 +667,7 @@ _ = ds.pp[1000:1500, 500:1000].la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;].la.set_
 </div>
 </section>
 <section id="Annotation-of-Regions-or-Cells">
-<h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Permalink to this headline"></a></h2>
+<h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Permalink to this heading"></a></h2>
 <p>We can also annotate regions or cells within the plots.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -709,7 +710,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 </div>
 </section>
 <section id="Expert-Plotting">
-<h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Permalink to this headline"></a></h2>
+<h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Permalink to this heading"></a></h2>
 <p>To gain more control over your plots, you can use the functions <code class="docutils literal notranslate"><span class="pre">colorize</span></code>, <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, and <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">show</span></code>, which provides a high-level wrapper around these). Those methods allow for more nuanced adjustments of the final plot. Here are a few examples, for more details please consult the documentation of the corresponding methods.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
