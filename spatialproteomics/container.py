@@ -88,17 +88,24 @@ def read_from_spatialdata(spatial_data_object, image_key: str = "image", segment
         spatial_data_object = spatialdata.read_zarr(spatial_data_object)
 
     # image
+    assert (
+        image_key in spatial_data_object.images
+    ), f"Image key {image_key} not found in spatial data object. Available keys: {list(spatial_data_object.images.keys())}"
     image = spatial_data_object.images[image_key]
-    # segmentation
-    segmentation = spatial_data_object.labels[segmentation_key]
     # coordinates
     markers = image.coords["c"].values
-    # obs (from anndata)
-    obs = spatial_data_object.table.obs
 
     # create the spatialproteomics object
     obj = load_image_data(image, channel_coords=markers)
-    obj = obj.pp.add_segmentation(segmentation)
-    obj = obj.pp.add_obs_from_dataframe(obs)
+
+    # segmentation
+    if segmentation_key in spatial_data_object.labels:
+        segmentation = spatial_data_object.labels[segmentation_key]
+        obj = obj.pp.add_segmentation(segmentation)
+
+        # obs (from anndata)
+        if spatial_data_object.table is not None:
+            obs = spatial_data_object.table.obs
+            obj = obj.pp.add_obs_from_dataframe(obs)
 
     return obj

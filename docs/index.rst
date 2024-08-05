@@ -27,7 +27,7 @@ Welcome to the documentation of spatialproteomics!
    notebooks/ImageProcessing
    notebooks/Extracting
    notebooks/CellTypePrediction
-   notebooks/Exporting
+   notebooks/Interoperability
 
 
 Indices and tables
