@@ -158,7 +158,7 @@ is specified or not.</p>
 <li><p><strong>channel</strong> (<em>str</em><em>, </em><em>optional</em>) – Channel to use for segmentation. If None, all channels are used.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
 <li><p><strong>diameter</strong> (<em>int</em><em>, </em><em>optional</em>) – Expected cell diameter in pixels.</p></li>
-<li><p><strong>channel_settings</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Channels for Cellpose to use for segmentation.</p></li>
+<li><p><strong>channel_settings</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Channels for Cellpose to use for segmentation. If [0, 0], independent segmentation is performed on all channels. If it is anything else (e. g. [1, 2]), joint segmentation is attempted.</p></li>
 <li><p><strong>num_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations for segmentation.</p></li>
 <li><p><strong>gpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use GPU for segmentation.</p></li>
 <li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of Cellpose model to use.</p></li>
