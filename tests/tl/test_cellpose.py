@@ -18,3 +18,11 @@ def test_cellpose_segmentation_already_exists(dataset_full):
         match=f'The key "{Layers.SEGMENTATION}" already exists.',
     ):
         dataset_full.tl.cellpose(key_added=Layers.SEGMENTATION)
+
+
+def test_cellpose_joint_segmentation_multichannel(dataset_full):
+    with pytest.raises(
+        AssertionError,
+        match="Joint segmentation requires exactly two channels.",
+    ):
+        dataset_full.tl.cellpose(key_added="_dummy_key", channel_settings=[1, 2])

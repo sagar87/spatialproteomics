@@ -809,14 +809,14 @@ class PreprocessingAccessor:
 
         # if the segmentation layer is dropped, we also need to drop the obs and vice versa
         # this helps to ensure that the segmentation and obs always stay in sync
-        if Layers.SEGMENTATION in layers:
+        if Layers.SEGMENTATION in layers and Layers.OBS in self._obj.data_vars:
             layers.append(Layers.OBS)
-        if Layers.OBS in layers:
+        if Layers.OBS in layers and Layers.SEGMENTATION in self._obj.data_vars:
             layers.append(Layers.SEGMENTATION)
 
         assert all(
             [layer in self._obj.data_vars for layer in layers]
-        ), f"Some layers that you are trying to remove are not in the image container. Available layers are: {', '.join(self._obj.data_vars)}."
+        ), f"Some layers that you are trying to remove are not in the image container. Available layers are: {', '.join(self._obj.data_vars)}. Layers requested to drop: {layers}."
 
         obj = self._obj.drop_vars(layers)
 
