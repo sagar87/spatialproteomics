@@ -44,7 +44,7 @@ class ToolAccessor:
         diameter : int, optional
             Expected cell diameter in pixels.
         channel_settings : List[int], optional
-            Channels for Cellpose to use for segmentation.
+            Channels for Cellpose to use for segmentation. If [0, 0], independent segmentation is performed on all channels. If it is anything else (e. g. [1, 2]), joint segmentation is attempted.
         num_iterations : int, optional
             Maximum number of iterations for segmentation.
         gpu : bool, optional
@@ -65,14 +65,39 @@ class ToolAccessor:
         """
         channels = _get_channels(self._obj, key_added, channel)
 
+        # checking that if segmentation should be performed jointly, there are exactly two channels
+        if channel_settings != [0, 0]:
+            assert (
+                len(channels) == 2
+            ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {len(channels)} channels in the object."
+
         from cellpose import models
 
         model = models.Cellpose(gpu=gpu, model_type=model_type)
 
         all_masks = []
-        for ch in channels:
+        # if the channels are [0, 0], independent segmentation is performed on all channels
+        if channel_settings == [0, 0]:
+            if len(channels) > 1:
+                logger.warn(
+                    "Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately."
+                )
+            for ch in channels:
+                masks_pred, _, _, _ = model.eval(
+                    self._obj.pp[ch]._image.values.squeeze(),
+                    diameter=diameter,
+                    channels=channel_settings,
+                    niter=num_iterations,
+                    cellprob_threshold=cellprob_threshold,
+                    flow_threshold=flow_threshold,
+                )
+
+                masks_pred = postprocess_func(masks_pred)
+                all_masks.append(masks_pred)
+        else:
+            # if the channels are anything else, joint segmentation is attempted
             masks_pred, _, _, _ = model.eval(
-                self._obj.pp[ch]._image.values.squeeze(),
+                self._obj._image.values.squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
                 niter=num_iterations,
