@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
-from skimage.segmentation import clear_border, find_boundaries
+from skimage.segmentation import find_boundaries
 
 from ..base_logger import logger
 from ..pp.utils import _normalize
@@ -319,8 +319,7 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
     """
 
     bw = closing(img > np.quantile(img, 0.8), square(20))
-    cleared = clear_border(bw)
-    label_image = label(cleared)
+    label_image = label(bw)
     props = regionprops(label_image)
 
     if len(props) == 0:
