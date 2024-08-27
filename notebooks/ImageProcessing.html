@@ -386,7 +386,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f6fa2b039a0&gt;
+&lt;xarray.core.options.set_options at 0x7f890186f370&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -409,7 +409,7 @@ ds
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/opt/conda/lib/python3.10/site-packages/xarray/backends/plugins.py:139: RuntimeWarning: &#39;scipy&#39; fails while guessing
+/opt/conda/lib/python3.10/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
   warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
 </pre></div></div>
 </div>
@@ -668,7 +668,7 @@ Text(0.5, 1.0, &#39;Total variation filter&#39;)
 </div>
 <p>We can of course also combine various processing methods. Let’s have a look at some more.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import skimage
@@ -694,7 +694,7 @@ ax[1].set_title(&#39;Local Thresholding&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -711,7 +711,7 @@ Text(0.5, 1.0, &#39;Local Thresholding&#39;)
 </div>
 <p>We can also try to automatically find a good threshold. This follows the approach demonstrated <a class="reference external" href="http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2019a/content/lessons/lesson_05/basic_filtering_and_thresholding.html#Thresholding">here</a>, where we look for the highest rate of change.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def find_optimal_threshold(im, min_k=0, max_k=5, step=100):
@@ -755,7 +755,7 @@ Optimal threshold: 0.8585858585858586
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))
@@ -767,7 +767,7 @@ ax[1].set_title(&#39;Local Thresholding&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -783,14 +783,6 @@ Text(0.5, 1.0, &#39;Local Thresholding&#39;)
 </div>
 </div>
 <p>In this particular instance, the automated finding of a cutoff does not correspond to the best one, and manually looking at the parameters appear more promising. However, the example above illustrates one way to automate thresholding, which may work in certain situations.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 
 

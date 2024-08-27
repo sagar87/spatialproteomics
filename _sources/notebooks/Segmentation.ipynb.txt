@@ -3320,13 +3320,6 @@
    "source": [
     "Note that this method is far from perfect, and does not always pick up on all masks. In this case, you might want to look into fine-tuning cellpose to your celltype of interest. You can also tweak the cellpose parameters to try to improve the segmentation."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
