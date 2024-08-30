@@ -315,13 +315,13 @@ class PreprocessingAccessor:
     def add_layer(
         self,
         array: np.ndarray,
-        key_added: str = "_custom_layer",
+        key_added: str = Layers.MASK,
     ) -> xr.Dataset:
         """
         array : np.ndarray
             The array representing the segmentation mask or layer to be added.
         key_added : str, optional
-            The name of the added layer in the xarray dataset. Default is '_custom_layer'.
+            The name of the added layer in the xarray dataset. Default is '_mask'.
         Returns
         -------
             The amended xarray dataset.
@@ -337,10 +337,10 @@ class PreprocessingAccessor:
         The name of the added layer in the xarray dataset can be specified using the `key_added` parameter.
         The amended xarray dataset is returned after merging the original dataset with the new layer.
         """
+        # checking that the layer does not exist yet
+        assert key_added not in self._obj, f"Layer {key_added} already exists."
         assert array.ndim == 2, "The array to add mask must 2 dimensional."
-
         y_dim, x_dim = array.shape
-
         assert (x_dim == self._obj.sizes[Dims.X]) & (
             y_dim == self._obj.sizes[Dims.Y]
         ), "The shape of array does not match that of the image."
@@ -1401,13 +1401,14 @@ class PreprocessingAccessor:
         # adding the transformed matrix to the object
         return xr.merge([obj, da])
 
-    def mask_region(self, key: str, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
+    def mask_region(self, key: str=Layers.MASK, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
         """
         Mask a region in the image.
 
         Parameters:
             key (str): The key of the region to mask.
             image_key (str): The key of the image layer in the object. Default is Layers.IMAGE.
+            key_added (str): The key to assign to the masked image in the object. Default is Layers.IMAGE, which overwrites the original image.
 
         Returns:
             xr.Dataset: The object with the masked region in the image.
@@ -1440,4 +1441,58 @@ class PreprocessingAccessor:
             name=key_added,
         )
 
+        return xr.merge([obj, da])
+
+    def mask_cells(self, mask_key: str=Layers.MASK, segmentation_key=Layers.SEGMENTATION) -> xr.Dataset:
+        """
+        Mask cells in the segmentation mask.
+
+        Parameters:
+            mask_key (str): The key of the mask to use for masking.
+            segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
+
+        Returns:
+            xr.Dataset: The object with the masked cells in the segmentation mask.
+        """
+        # checking if the keys exist
+        assert mask_key in self._obj, f"The key {mask_key} does not exist in the object."
+        assert segmentation_key in self._obj, f"The key {segmentation_key} does not exist in the object."
+        
+        # getting the mask and segmentation mask
+        mask = self._obj[mask_key].values
+        segmentation = self._obj[segmentation_key].values
+        
+        # checking that the mask only contains zeroes and ones
+        assert np.all(np.isin(mask, [0, 1])), "The mask must only contain zeroes and ones."
+
+        # getting all of the cells that overlap with the region where the mask is 0
+        cells_to_remove = np.unique(segmentation[mask == 0])
+        
+        # removing the cells from the segmentation mask        
+        cells_sel = np.array(sorted(set(self._obj.coords[Dims.CELLS].values) - set(cells_to_remove)))
+
+        # selecting only the cells that are in cells_sel
+        obj = self._obj.sel({Dims.CELLS: cells_sel})
+
+        # synchronizing the segmentation mask with the selected cells
+        segmentation = obj[segmentation_key].values
+        # setting all cells that are not in cells to 0
+        segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
+        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+        segmentation, relabel_dict = _relabel_cells(segmentation)
+        # updating the cell coords of the object
+        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
+
+        # creating a data array with the segmentation mask, so that we can merge it to the original
+        da = xr.DataArray(
+            segmentation,
+            coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=segmentation_key,
+        )
+
+        # removing the old segmentation
+        obj = obj.drop_vars(segmentation_key)
+
+        # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
