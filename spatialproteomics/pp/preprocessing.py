@@ -343,7 +343,7 @@ class PreprocessingAccessor:
         y_dim, x_dim = array.shape
         assert (x_dim == self._obj.sizes[Dims.X]) & (
             y_dim == self._obj.sizes[Dims.Y]
-        ), "The shape of array does not match that of the image."
+        ), f"The shape of array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
 
         # crete a data array with the segmentation mask
         da = xr.DataArray(
@@ -1401,7 +1401,7 @@ class PreprocessingAccessor:
         # adding the transformed matrix to the object
         return xr.merge([obj, da])
 
-    def mask_region(self, key: str=Layers.MASK, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
+    def mask_region(self, key: str = Layers.MASK, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
         """
         Mask a region in the image.
 
@@ -1416,17 +1416,17 @@ class PreprocessingAccessor:
         # checking if the keys exist
         assert key in self._obj, f"The key {key} does not exist in the object."
         assert image_key in self._obj, f"The key {image_key} does not exist in the object."
-        
+
         # getting the region to mask
         mask = self._obj[key].values
         image = self._obj[image_key].values
-        
+
         # checking that the mask only contains zeroes and ones
         assert np.all(np.isin(mask, [0, 1])), "The mask must only contain zeroes and ones."
 
         # masking the region in the image (so that only pixels with a one remain)
         masked_image = mask * image
-                
+
         # removing the old image from the object
         if image_key == key_added:
             obj = self._obj.drop_vars(image_key)
@@ -1443,7 +1443,7 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, da])
 
-    def mask_cells(self, mask_key: str=Layers.MASK, segmentation_key=Layers.SEGMENTATION) -> xr.Dataset:
+    def mask_cells(self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION) -> xr.Dataset:
         """
         Mask cells in the segmentation mask.
 
@@ -1457,18 +1457,18 @@ class PreprocessingAccessor:
         # checking if the keys exist
         assert mask_key in self._obj, f"The key {mask_key} does not exist in the object."
         assert segmentation_key in self._obj, f"The key {segmentation_key} does not exist in the object."
-        
+
         # getting the mask and segmentation mask
         mask = self._obj[mask_key].values
         segmentation = self._obj[segmentation_key].values
-        
+
         # checking that the mask only contains zeroes and ones
         assert np.all(np.isin(mask, [0, 1])), "The mask must only contain zeroes and ones."
 
         # getting all of the cells that overlap with the region where the mask is 0
         cells_to_remove = np.unique(segmentation[mask == 0])
-        
-        # removing the cells from the segmentation mask        
+
+        # removing the cells from the segmentation mask
         cells_sel = np.array(sorted(set(self._obj.coords[Dims.CELLS].values) - set(cells_to_remove)))
 
         # selecting only the cells that are in cells_sel

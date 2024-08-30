@@ -31,7 +31,7 @@ def test_add_quantification_spurious_function(dataset):
 
 def test_add_quantification_from_dataframe(dataset):
     quantification_df = pd.DataFrame(
-        np.zeros([dataset.dims["cells"], dataset.dims["channels"]]), columns=dataset.coords["channels"]
+        np.zeros([dataset.sizes["cells"], dataset.sizes["channels"]]), columns=dataset.coords["channels"]
     )
     quantification_df.index = dataset.coords["cells"]
     quantified = dataset.pp.add_quantification_from_dataframe(quantification_df)
@@ -44,20 +44,20 @@ def test_add_quantification_from_dataframe(dataset):
 
 def test_add_quantification_from_dataframe_mismatched_index(dataset):
     quantification_df = pd.DataFrame(
-        np.zeros([dataset.dims["cells"], dataset.dims["channels"]]), columns=dataset.coords["channels"]
+        np.zeros([dataset.sizes["cells"], dataset.sizes["channels"]]), columns=dataset.coords["channels"]
     )
     with pytest.raises(AssertionError, match="Cells in the image container are not in the dataframe."):
         dataset.pp.add_quantification_from_dataframe(quantification_df)
 
 
 def test_add_quantification_from_dataframe_mismatched_columns(dataset):
-    quantification_df = pd.DataFrame(np.zeros([dataset.dims["cells"], dataset.dims["channels"]]))
+    quantification_df = pd.DataFrame(np.zeros([dataset.sizes["cells"], dataset.sizes["channels"]]))
     quantification_df.index = dataset.coords["cells"]
     with pytest.raises(AssertionError, match="Channels in the image container are not in the dataframe."):
         dataset.pp.add_quantification_from_dataframe(quantification_df)
 
 
 def test_add_quantification_from_dataframe_wrong_dtype(dataset):
-    quantification_array = np.zeros([dataset.dims["cells"], dataset.dims["channels"]])
+    quantification_array = np.zeros([dataset.sizes["cells"], dataset.sizes["channels"]])
     with pytest.raises(TypeError, match="The input must be a pandas DataFrame."):
         dataset.pp.add_quantification_from_dataframe(quantification_array)

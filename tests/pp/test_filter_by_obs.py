@@ -13,7 +13,7 @@ def test_filter_by_obs(dataset):
     assert len(filtered[Layers.OBS]) < len(dataset[Layers.OBS])
 
     # coords are synchronized with the segmentation mask
-    assert filtered.dims[Dims.CELLS] == len(np.unique(filtered[Layers.SEGMENTATION].values)) - 1
+    assert filtered.sizes[Dims.CELLS] == len(np.unique(filtered[Layers.SEGMENTATION].values)) - 1
 
 
 def test_filter_by_obs_no_change(dataset):
