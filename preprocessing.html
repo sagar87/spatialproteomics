@@ -195,6 +195,27 @@ using the <cite>pp.add_labels_from_dataframe</cite> method.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer">
+<span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_custom_layer'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a layer the shape of the image field to the xarray dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>segmentation</strong> (<em>str</em><em> or </em><em>np.ndarray</em>) – A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
+that indicates the location of each cell, or a layer key.</p></li>
+<li><p><strong>mask_growth</strong> (<em>int</em>) – The number of pixels by which the segmentation mask should be grown.</p></li>
+<li><p><strong>reindex</strong> (<em>bool</em>) – If true the segmentation mask is relabeled to have continuous numbers from 1 to n.</p></li>
+<li><p><strong>keep_labels</strong> (<em>bool</em>) – When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
+If you want to keep those annotations, set this to True. Default is True.</p></li>
+<li><p><strong>Returns</strong> – </p></li>
+<li><p><strong>--------</strong> – </p></li>
+<li><p><strong>xr.Dataset</strong> – The amended xarray.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_obs_from_dataframe">
 <span class="sig-name descname"><span class="pre">add_obs_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_obs_from_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Adds an observation table to the image container. Columns of the
