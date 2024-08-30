@@ -29,6 +29,7 @@ class Layers(object):
     OBS = "_obs"
     INTENSITY = "_intensity"
     PLOT = "_plot"
+    MASK = "_mask"
 
 
 class Dims(object):
