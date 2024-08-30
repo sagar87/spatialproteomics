@@ -312,6 +312,51 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, da]).pp.add_observations()
 
+    def add_layer(
+        self,
+        array: np.ndarray,
+        key_added: str = '_custom_layer',
+    ) -> xr.Dataset:
+        """
+        Adds a layer the shape of the image field to the xarray dataset.
+
+        Parameters
+        ----------
+        segmentation : str or np.ndarray
+            A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
+            that indicates the location of each cell, or a layer key.
+        mask_growth : int
+            The number of pixels by which the segmentation mask should be grown.
+        reindex : bool
+            If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
+        keep_labels : bool
+            When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
+            If you want to keep those annotations, set this to True. Default is True.
+
+        Returns:
+        --------
+        xr.Dataset
+            The amended xarray.
+        """
+        assert array.ndim == 2, "The array to add mask must 2 dimensional."
+
+        y_dim, x_dim = array.shape
+
+        assert (x_dim == self._obj.sizes[Dims.X]) & (
+            y_dim == self._obj.sizes[Dims.Y]
+        ), "The shape of array does not match that of the image."
+
+        # crete a data array with the segmentation mask
+        da = xr.DataArray(
+            array,
+            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=key_added,
+        )
+
+        obj = self._obj.copy()
+        return xr.merge([obj, da]).pp.add_observations()
+
     def add_observations(
         self,
         properties: Union[str, list, tuple] = ("label", "centroid"),
