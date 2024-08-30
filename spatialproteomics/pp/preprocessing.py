@@ -315,28 +315,27 @@ class PreprocessingAccessor:
     def add_layer(
         self,
         array: np.ndarray,
-        key_added: str = '_custom_layer',
+        key_added: str = "_custom_layer",
     ) -> xr.Dataset:
         """
-        Adds a layer the shape of the image field to the xarray dataset.
-
-        Parameters
-        ----------
-        segmentation : str or np.ndarray
-            A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
-            that indicates the location of each cell, or a layer key.
-        mask_growth : int
-            The number of pixels by which the segmentation mask should be grown.
-        reindex : bool
-            If true the segmentation mask is relabeled to have continuous numbers from 1 to n.
-        keep_labels : bool
-            When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
-            If you want to keep those annotations, set this to True. Default is True.
-
-        Returns:
-        --------
-        xr.Dataset
-            The amended xarray.
+        array : np.ndarray
+            The array representing the segmentation mask or layer to be added.
+        key_added : str, optional
+            The name of the added layer in the xarray dataset. Default is '_custom_layer'.
+        Returns
+        -------
+            The amended xarray dataset.
+        Raises
+        ------
+        AssertionError
+            If the array is not 2-dimensional or its shape does not match the image shape.
+        Notes
+        -----
+        This method adds a layer to the xarray dataset, where the layer has the same shape as the image field.
+        The array should be a 2-dimensional numpy array representing the segmentation mask or layer to be added.
+        The layer is created as a DataArray with the same coordinates and dimensions as the image field.
+        The name of the added layer in the xarray dataset can be specified using the `key_added` parameter.
+        The amended xarray dataset is returned after merging the original dataset with the new layer.
         """
         assert array.ndim == 2, "The array to add mask must 2 dimensional."
 
