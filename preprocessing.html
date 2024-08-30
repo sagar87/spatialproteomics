@@ -196,23 +196,30 @@ using the <cite>pp.add_labels_from_dataframe</cite> method.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer">
-<span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_custom_layer'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer" title="Permalink to this definition"></a></dt>
-<dd><p>Adds a layer the shape of the image field to the xarray dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>segmentation</strong> (<em>str</em><em> or </em><em>np.ndarray</em>) – A segmentation mask, i.e., a np.ndarray with image.shape = (x, y),
-that indicates the location of each cell, or a layer key.</p></li>
-<li><p><strong>mask_growth</strong> (<em>int</em>) – The number of pixels by which the segmentation mask should be grown.</p></li>
-<li><p><strong>reindex</strong> (<em>bool</em>) – If true the segmentation mask is relabeled to have continuous numbers from 1 to n.</p></li>
-<li><p><strong>keep_labels</strong> (<em>bool</em>) – When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
-If you want to keep those annotations, set this to True. Default is True.</p></li>
-<li><p><strong>Returns</strong> – </p></li>
-<li><p><strong>--------</strong> – </p></li>
-<li><p><strong>xr.Dataset</strong> – The amended xarray.</p></li>
-</ul>
+<span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_mask'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>array<span class="classifier">np.ndarray</span></dt><dd><p>The array representing the segmentation mask or layer to be added.</p>
+</dd>
+<dt>key_added<span class="classifier">str, optional</span></dt><dd><p>The name of the added layer in the xarray dataset. Default is ‘_mask’.</p>
 </dd>
 </dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>The amended xarray dataset.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If the array is not 2-dimensional or its shape does not match the image shape.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method adds a layer to the xarray dataset, where the layer has the same shape as the image field.
+The array should be a 2-dimensional numpy array representing the segmentation mask or layer to be added.
+The layer is created as a DataArray with the same coordinates and dimensions as the image field.
+The name of the added layer in the xarray dataset can be specified using the <cite>key_added</cite> parameter.
+The amended xarray dataset is returned after merging the original dataset with the new layer.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -502,6 +509,47 @@ xr.Dataset: The dataset containing the specified channels.</p>
 - ValueError: If the object does not contain a segmentation mask.</p>
 <p>Returns:
 - obj (xarray.Dataset): The object with the grown segmentation masks and updated observations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.mask_cells">
+<span class="sig-name descname"><span class="pre">mask_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_mask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segmentation'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.mask_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Mask cells in the segmentation mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mask_key</strong> (<em>str</em>) – The key of the mask to use for masking.</p></li>
+<li><p><strong>segmentation_key</strong> (<em>str</em>) – The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The object with the masked cells in the segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.mask_region">
+<span class="sig-name descname"><span class="pre">mask_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_mask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_image'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.mask_region" title="Permalink to this definition"></a></dt>
+<dd><p>Mask a region in the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key of the region to mask.</p></li>
+<li><p><strong>image_key</strong> (<em>str</em>) – The key of the image layer in the object. Default is Layers.IMAGE.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – The key to assign to the masked image in the object. Default is Layers.IMAGE, which overwrites the original image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The object with the masked region in the image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
