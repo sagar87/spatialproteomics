@@ -1400,3 +1400,44 @@ class PreprocessingAccessor:
 
         # adding the transformed matrix to the object
         return xr.merge([obj, da])
+
+    def mask_region(self, key: str, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
+        """
+        Mask a region in the image.
+
+        Parameters:
+            key (str): The key of the region to mask.
+            image_key (str): The key of the image layer in the object. Default is Layers.IMAGE.
+
+        Returns:
+            xr.Dataset: The object with the masked region in the image.
+        """
+        # checking if the keys exist
+        assert key in self._obj, f"The key {key} does not exist in the object."
+        assert image_key in self._obj, f"The key {image_key} does not exist in the object."
+        
+        # getting the region to mask
+        mask = self._obj[key].values
+        image = self._obj[image_key].values
+        
+        # checking that the mask only contains zeroes and ones
+        assert np.all(np.isin(mask, [0, 1])), "The mask must only contain zeroes and ones."
+
+        # masking the region in the image (so that only pixels with a one remain)
+        masked_image = mask * image
+                
+        # removing the old image from the object
+        if image_key == key_added:
+            obj = self._obj.drop_vars(image_key)
+        else:
+            obj = self._obj.copy()
+
+        # assigning the masked image to the object
+        da = xr.DataArray(
+            masked_image,
+            coords=[self._obj.coords[Dims.CHANNELS], self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=key_added,
+        )
+
+        return xr.merge([obj, da])
