@@ -537,7 +537,7 @@ class PreprocessingAccessor:
 
     def add_quantification(
         self,
-        func=arcsinh_median_intensity,
+        func: Union[str, Callable] = "intensity_mean",
         key_added: str = Layers.INTENSITY,
         return_xarray=False,
     ) -> xr.Dataset:
@@ -546,8 +546,8 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        func : Callable, optional
-            The function used for quantification. Default is arcsinh_median_intensity.
+        func : Callable or str, optional
+            The function used for quantification. Can either be a string to specify a function from skimage.measure.regionprops_table or a custom function. Default is 'intensity_mean'.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
         return_xarray : bool, optional
@@ -575,11 +575,35 @@ class PreprocessingAccessor:
         segmentation = self._obj[Layers.SEGMENTATION].values
 
         image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
-        props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
-        cell_idx = props.pop("label")
-        for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
-            if k.startswith(func.__name__):
-                measurements.append(props[k])
+
+        # Check if the input is a string (referring to a default skimage property)
+        if isinstance(func, str):
+            print("Treating as str")
+            # Use regionprops to get the available property names
+            try:
+                props = regionprops_table(segmentation, intensity_image=image, properties=["label", func])
+            except AttributeError:
+                raise AttributeError(
+                    f"Invalid regionprop: {func}. Please provide a valid property or a custom function. Check skimage.measure.regionprops_table for available properties."
+                )
+
+            cell_idx = props.pop("label")
+            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+                if k.startswith(func):
+                    measurements.append(props[k])
+        # If the input is a callable (function)
+        elif callable(func):
+            print("Treating as func")
+            props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
+            cell_idx = props.pop("label")
+
+            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+                if k.startswith(func.__name__):
+                    measurements.append(props[k])
+        else:
+            raise ValueError(
+                "The func parameter should be either a string for default skimage properties or a callable function."
+            )
 
         da = xr.DataArray(
             np.stack(measurements, -1),
