@@ -29,17 +29,7 @@ from .constants import (
 from .container import load_image_data, read_from_spatialdata
 from .la import LabelAccessor
 from .pl import PlotAccessor
-from .pp import (
-    PreprocessingAccessor,
-    arcsinh_mean_intensity,
-    arcsinh_median_intensity,
-    arcsinh_sum_intensity,
-    arcsinh_var_intensity,
-    is_positive,
-    mean_intensity,
-    percentage_positive,
-    sum_intensity,
-)
+from .pp import PreprocessingAccessor, is_positive, percentage_positive
 from .tl import ToolAccessor
 
 __all__ = [
@@ -54,12 +44,6 @@ __all__ = [
     "Dims",
     "Features",
     "Props",
-    "sum_intensity",
-    "mean_intensity",
-    "arcsinh_sum_intensity",
-    "arcsinh_mean_intensity",
-    "arcsinh_var_intensity",
-    "arcsinh_median_intensity",
     "merge_segmentation",
     "percentage_positive",
     "is_positive",

@@ -29,6 +29,24 @@ def test_add_quantification_spurious_function(dataset):
         dataset.pp.add_quantification(func=lambda x: np.zeros([5, 10]))
 
 
+def test_add_quantification_spurious_function_2(dataset):
+    # check that it doesn't work if the function is neither a function nor a string
+    with pytest.raises(
+        ValueError,
+        match="The func parameter should be either a string for default skimage properties or a callable function.",
+    ):
+        dataset.pp.add_quantification(func=3)
+
+
+def test_add_quantification_spurious_regionprop(dataset):
+    # check that it doesn't work if the function is a string but not a valid regionprop
+    with pytest.raises(
+        AttributeError,
+        match="Invalid regionprop",
+    ):
+        dataset.pp.add_quantification(func="dummy_str")
+
+
 def test_add_quantification_from_dataframe(dataset):
     quantification_df = pd.DataFrame(
         np.zeros([dataset.sizes["cells"], dataset.sizes["channels"]]), columns=dataset.coords["channels"]

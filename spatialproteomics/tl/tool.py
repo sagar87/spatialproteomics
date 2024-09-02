@@ -516,6 +516,9 @@ class ToolAccessor:
         )
         adata.obs = obs_df
 
+        # transforming the index to string
+        adata.obs.index = [str(x) for x in adata.obs.index]
+
         spatial_data_object = spatialdata.SpatialData(
             images={"image": image}, labels={"segmentation": segmentation}, table=adata
         )
