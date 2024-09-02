@@ -66,6 +66,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 </ul>
 
         </div>
@@ -438,7 +439,7 @@ channels_celltypes = channels[:-2]
 colors_celltypes = colors[:-2]
 
 # processing and recomputing quantification
-ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kernel_size=3).pp.add_quantification(func=sp.pp.mean_intensity).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
+ds_processed = ds.pp[channels].pp.threshold(quantiles).pp.apply(medfilt2d, kernel_size=3).pp.add_quantification().pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
 </pre></div>
 </div>
 </div>

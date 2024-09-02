@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoparability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 </ul>
 
         </div>
@@ -1524,7 +1525,7 @@ _ = sp_object.pp[[&#39;CD4&#39;, &#39;CD8&#39;, &#39;FOXP3&#39;, &#39;BCL6&#39;]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object = sp_object.pp.add_quantification(func=sp.pp.mean_intensity).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_object = sp_object.pp.add_quantification(func=&#39;intensity_mean&#39;).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
 sp_object
 </pre></div>
 </div>
