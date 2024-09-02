@@ -577,7 +577,6 @@ class PreprocessingAccessor:
 
         # Check if the input is a string (referring to a default skimage property)
         if isinstance(func, str):
-            print("Treating as str")
             # Use regionprops to get the available property names
             try:
                 props = regionprops_table(segmentation, intensity_image=image, properties=["label", func])
@@ -592,7 +591,6 @@ class PreprocessingAccessor:
                     measurements.append(props[k])
         # If the input is a callable (function)
         elif callable(func):
-            print("Treating as func")
             props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
             cell_idx = props.pop("label")
 
