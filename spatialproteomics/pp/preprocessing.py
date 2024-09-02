@@ -11,7 +11,6 @@ from skimage.segmentation import expand_labels
 from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
-from .intensity import arcsinh_median_intensity
 from .utils import (
     _get_disconnected_cell,
     _merge_segmentation,

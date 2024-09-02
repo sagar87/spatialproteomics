@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import spatialproteomics as sp
 from spatialproteomics import Layers
 
 
@@ -10,7 +9,7 @@ def test_invalid_mode(dataset_labeled):
         ValueError,
         match="Unknown transformation method: dummy",
     ):
-        dataset_labeled.pp.add_quantification(sp.mean_intensity).pp.transform_expression_matrix(method="dummy")
+        dataset_labeled.pp.add_quantification().pp.transform_expression_matrix(method="dummy")
 
 
 def test_layer_not_available(dataset_labeled):
@@ -18,13 +17,13 @@ def test_layer_not_available(dataset_labeled):
         AssertionError,
         match="No expression matrix found at layer dummy_layer",
     ):
-        dataset_labeled.pp.add_quantification(sp.mean_intensity).pp.transform_expression_matrix(key="dummy_layer")
+        dataset_labeled.pp.add_quantification().pp.transform_expression_matrix(key="dummy_layer")
 
 
 def test_clip(dataset_labeled):
-    expression_matrix = dataset_labeled.pp.add_quantification(sp.mean_intensity).pp.get_layer_as_df(Layers.INTENSITY)
+    expression_matrix = dataset_labeled.pp.add_quantification().pp.get_layer_as_df(Layers.INTENSITY)
     expression_matrix_transformed = (
-        dataset_labeled.pp.add_quantification(sp.mean_intensity)
+        dataset_labeled.pp.add_quantification()
         .pp.transform_expression_matrix(method="clip")
         .pp.get_layer_as_df(Layers.INTENSITY)
     )
@@ -34,7 +33,7 @@ def test_clip(dataset_labeled):
 
 def test_minmax(dataset_labeled):
     expression_matrix = (
-        dataset_labeled.pp.add_quantification(sp.mean_intensity)
+        dataset_labeled.pp.add_quantification()
         .pp.transform_expression_matrix(method="minmax")
         .pp.get_layer_as_df(Layers.INTENSITY)
     )
@@ -43,9 +42,9 @@ def test_minmax(dataset_labeled):
 
 
 def test_arcsinh(dataset_labeled):
-    expression_matrix = dataset_labeled.pp.add_quantification(sp.mean_intensity).pp.get_layer_as_df(Layers.INTENSITY)
+    expression_matrix = dataset_labeled.pp.add_quantification().pp.get_layer_as_df(Layers.INTENSITY)
     expression_matrix_transformed = (
-        dataset_labeled.pp.add_quantification(sp.mean_intensity)
+        dataset_labeled.pp.add_quantification()
         .pp.transform_expression_matrix(method="arcsinh")
         .pp.get_layer_as_df(Layers.INTENSITY)
     )
@@ -54,7 +53,7 @@ def test_arcsinh(dataset_labeled):
 
 def test_zscore(dataset_labeled):
     expression_matrix = (
-        dataset_labeled.pp.add_quantification(sp.mean_intensity)
+        dataset_labeled.pp.add_quantification()
         .pp.transform_expression_matrix(method="zscore")
         .pp.get_layer_as_df(Layers.INTENSITY)
     )
@@ -65,6 +64,6 @@ def test_zscore(dataset_labeled):
 def test_double_zscore(dataset_labeled):
     # no tests for this, as the values could be anything
     # this just checks is the method runs in general
-    dataset_labeled.pp.add_quantification(sp.mean_intensity).pp.transform_expression_matrix(
-        method="double_zscore"
-    ).pp.get_layer_as_df(Layers.INTENSITY)
+    dataset_labeled.pp.add_quantification().pp.transform_expression_matrix(method="double_zscore").pp.get_layer_as_df(
+        Layers.INTENSITY
+    )
