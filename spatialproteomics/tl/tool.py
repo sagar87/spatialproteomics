@@ -5,7 +5,7 @@ import pandas as pd
 import xarray as xr
 
 from ..base_logger import logger
-from ..constants import Dims, Layers
+from ..constants import Dims, Features, Layers, Props
 from ..pp.utils import _normalize
 from .utils import _convert_masks_to_data_array, _get_channels
 
@@ -466,7 +466,20 @@ class ToolAccessor:
         adata.var_names = self._obj.coords[Dims.CHANNELS].values
 
         if obs_key in self._obj:
-            adata.obs = pd.DataFrame(self._obj[obs_key], columns=self._obj.coords[Dims.FEATURES])
+            adata.obs = self._obj.pp.get_layer_as_df(obs_key, idx_to_str=True)
+
+            # if we have labels and colors for them, we add them to the anndata object
+            if Dims.LABELS in self._obj.dims and Layers.PROPERTIES in self._obj:
+                properties = self._obj.pp.get_layer_as_df(Layers.PROPERTIES)
+                if Props.COLOR in properties.columns:
+                    # putting it into the anndata object
+                    adata.uns[f"{Features.LABELS}_colors"] = list(properties[Props.COLOR].values)
+
+            # to be compatible with squidpy out of the box, a spatial key is added to obsm if possible
+            if Features.X in adata.obs and Features.Y in adata.obs:
+                adata.obs[Features.X] = adata.obs[Features.X].astype(float)
+                adata.obs[Features.Y] = adata.obs[Features.Y].astype(float)
+                adata.obsm["spatial"] = np.array(adata.obs[[Features.X, Features.Y]])
 
         if additional_uns:
             for key, layer in additional_uns.items():
