@@ -475,6 +475,12 @@ class ToolAccessor:
                     # putting it into the anndata object
                     adata.uns[f"{Features.LABELS}_colors"] = list(properties[Props.COLOR].values)
 
+            # to be compatible with squidpy out of the box, a spatial key is added to obsm if possible
+            if Features.X in adata.obs and Features.Y in adata.obs:
+                adata.obs[Features.X] = adata.obs[Features.X].astype(float)
+                adata.obs[Features.Y] = adata.obs[Features.Y].astype(float)
+                adata.obsm["spatial"] = np.array(adata.obs[[Features.X, Features.Y]])
+
         if additional_uns:
             for key, layer in additional_uns.items():
                 # checking that the additional layer is present in the object
