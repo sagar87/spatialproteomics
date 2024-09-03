@@ -1313,13 +1313,16 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, da])
 
-    def get_layer_as_df(self, layer: str = Layers.OBS, celltypes_to_str: bool = True):
+    def get_layer_as_df(
+        self, layer: str = Layers.OBS, celltypes_to_str: bool = True, idx_to_str: bool = False
+    ) -> pd.DataFrame:
         """
         Returns the specified layer as a pandas DataFrame.
 
         Parameters:
             layer (str): The name of the layer to retrieve. Defaults to Layers.OBS.
             celltypes_to_str (bool): Whether to convert celltype labels to strings. Defaults to True.
+            idx_to_str (bool): Whether to convert the index to strings. Defaults to False.
 
         Returns:
             pandas.DataFrame: The layer data as a DataFrame.
@@ -1335,6 +1338,9 @@ class PreprocessingAccessor:
         if celltypes_to_str and layer == Layers.OBS and Features.LABELS in df.columns:
             label_dict = self._obj.la._label_to_dict(Props.NAME)
             df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+
+        if idx_to_str:
+            df.index = df.index.astype(str)
 
         return df
 
