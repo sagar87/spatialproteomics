@@ -473,7 +473,7 @@ class ToolAccessor:
                 properties = self._obj.pp.get_layer_as_df(Layers.PROPERTIES)
                 if Props.COLOR in properties.columns:
                     # putting it into the anndata object
-                    adata.uns[f"{Features.LABELS}_colors"] = properties[Props.COLOR]
+                    adata.uns[f"{Features.LABELS}_colors"] = list(properties[Props.COLOR].values)
 
         if additional_uns:
             for key, layer in additional_uns.items():
