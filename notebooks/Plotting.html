@@ -396,28 +396,19 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fef5ee8b2e0&gt;
+&lt;xarray.core.options.set_options at 0x7fd773f33f40&gt;
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
-ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
+ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;, engine=&#39;zarr&#39;)
 ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
 ds = ds.pp.drop_layers(&quot;_labels&quot;)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/opt/conda/lib/python3.10/site-packages/xarray/backends/plugins.py:159: RuntimeWarning: &#39;scipy&#39; fails while guessing
-  warnings.warn(f&#34;{engine!r} fails while guessing&#34;, RuntimeWarning)
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -838,7 +829,7 @@ Found _obs in image container. Concatenating.
 <img alt="../_images/notebooks_Plotting_40_1.png" src="../_images/notebooks_Plotting_40_1.png" />
 </div>
 </div>
-<p>Lastly, if you have multiple segmentation masks, you can show all of them at the same time like this.</p>
+<p>If you have multiple segmentation masks, you can show all of them at the same time like this.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
@@ -878,18 +869,18 @@ Neither TORCH CUDA nor MPS version not installed/working.
 Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately.
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 9.78 sec
+estimated cell diameter(s) in 10.40 sec
 &gt;&gt;&gt; diameter(s) =
 [ 12.36 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 24.43 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 24.24 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 12.07 sec
+estimated cell diameter(s) in 11.46 sec
 &gt;&gt;&gt; diameter(s) =
 [ 19.38 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 25.21 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 24.07 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1001,6 +992,26 @@ Mask growing requires recalculation of the observations. All features other than
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Plotting_50_1.png" src="../_images/notebooks_Plotting_50_1.png" />
+</div>
+</div>
+<p>For visualization, it is also possible to adjust the background color of the image. However, caution is advised when plotting fluorescence intensities on light backgrounds, as the background colors get mixed with the actual fluorescence values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))
+# you can pass the background either in the pl.colorize() method or in pl.show()
+_ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.colorize(&#39;gold&#39;, background=&#39;#2e2e2e&#39;).pl.show(ax=ax[0])
+_ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True,
+                                            background=&#39;lightgray&#39;, ax=ax[1])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_52_0.png" src="../_images/notebooks_Plotting_52_0.png" />
 </div>
 </div>
 </section>
