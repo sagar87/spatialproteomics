@@ -12,6 +12,7 @@ from ..base_logger import logger
 from ..constants import COLORS, Attrs, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .utils import (
+    _convert_to_8bit,
     _get_disconnected_cell,
     _merge_segmentation,
     _normalize,
@@ -1522,4 +1523,44 @@ class PreprocessingAccessor:
         obj = obj.drop_vars(segmentation_key)
 
         # adding the new filtered and relabeled segmentation
+        return xr.merge([obj, da])
+
+    def convert_to_8bit(self, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE):
+        """
+        Convert the image to 8-bit.
+
+        Parameters:
+            key (str): The key of the image layer in the object. Default is Layers.IMAGE.
+            key_added (str): The key to assign to the 8-bit image in the object. Default is Layers.IMAGE, which overwrites the original image.
+
+        Returns:
+            xr.Dataset: The object with the image converted to 8-bit.
+        """
+        # checking if the key exists
+        assert key in self._obj, f"The key {key} does not exist in the object."
+
+        # getting the image from the object
+        image = self._obj[key].values
+
+        # converting the image to 8-bit
+        image_8bit = _convert_to_8bit(image)
+
+        # removing the old image from the object
+        if key == key_added:
+            obj = self._obj.drop_vars(key)
+        else:
+            obj = self._obj.copy()
+
+        # assigning the 8-bit image to the object
+        # special case: if the image is 2D, we need to add a channel dimension
+        if len(image_8bit.shape) == 2:
+            image_8bit = np.expand_dims(image_8bit, axis=0)
+
+        da = xr.DataArray(
+            image_8bit,
+            coords=[self._obj.coords[Dims.CHANNELS], self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=key_added,
+        )
+
         return xr.merge([obj, da])

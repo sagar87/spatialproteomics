@@ -1,5 +1,6 @@
 from typing import List, Optional, Union
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -230,6 +231,7 @@ class PlotAccessor:
         legend_image: bool = True,
         legend_segmentation: bool = True,
         legend_label: bool = True,
+        background: str = "black",
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -246,6 +248,7 @@ class PlotAccessor:
         - legend_image (bool): Whether to show the channel legend. Default is True.
         - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
         - legend_label (bool): Whether to show the label legend. Default is True.
+        - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
@@ -269,19 +272,43 @@ class PlotAccessor:
             [render_image, render_labels, render_segmentation]
         ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', or 'render_segmentation' to True."
 
-        # copying the input object to avoid colorizing the original object in place
+        # store a copy of the original object to avoid overwriting it
         obj = self._obj.copy()
-        if Layers.PLOT not in self._obj and render_image:
-            # if there are more than 20 channels, only the first one is plotted
-            if self._obj.sizes[Dims.CHANNELS] > 20:
-                logger.warning(
-                    "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.show()."
-                )
-                channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-                obj = self._obj.pp[channel].pl.colorize(colors=["white"])
-            # if there are less than 20 channels, all are plotted
+        if Layers.PLOT not in self._obj:
+            if render_image:
+                # if there are more than 20 channels, only the first one is plotted
+                if self._obj.sizes[Dims.CHANNELS] > 20:
+                    logger.warning(
+                        "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.show()."
+                    )
+                    channel = str(self._obj.coords[Dims.CHANNELS].values[0])
+                    obj = self._obj.pp[channel].pl.colorize(colors=["white"], background=background)
+                # if there are less than 20 channels, all are plotted
+                else:
+                    obj = self._obj.pl.colorize(background=background)
             else:
-                obj = self._obj.pl.colorize()
+                # if no image is rendered, we need to add a plot layer with a background color
+                rgba_background = mcolors.to_rgba(background)
+                colored = np.ones((self._obj.sizes[Dims.Y], self._obj.sizes[Dims.X], 4)) * rgba_background
+
+                da = xr.DataArray(
+                    colored,
+                    coords=[
+                        self._obj.coords[Dims.Y],
+                        self._obj.coords[Dims.X],
+                        ["r", "g", "b", "a"],
+                    ],
+                    dims=[Dims.Y, Dims.X, Dims.RGBA],
+                    name=Layers.PLOT,
+                )
+
+                obj = xr.merge([self._obj, da])
+        else:
+            # if a plot already exists, but the user tries to set a background color, we raise a warning
+            if background != "black":
+                logger.warning(
+                    "The background color is set during the first color pass. If you called pl.colorize() before pl.show(), please set the background color there instead using pl.colorize(background='your_color')."
+                )
 
         if render_labels:
             obj = obj.pl.render_labels(**label_kwargs)

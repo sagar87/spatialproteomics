@@ -374,7 +374,7 @@ class ToolAccessor:
         # raise an error if the image is of anything other than uint8
         if self._obj[Layers.IMAGE].dtype != "uint8":
             logger.warning(
-                "The image is not of type uint8, which is required for astir to work properly. Use the dtype argument in add_quantification() to convert the image to uint8. If you applied operations such as filtering, you may ignore this warning."
+                "The image is not of type uint8, which is required for astir to work properly. Use pp.convert_to_8bit() to convert the image to uint8. If you applied operations such as filtering, you may ignore this warning."
             )
 
         # warn the user if the input dict has the wrong format
