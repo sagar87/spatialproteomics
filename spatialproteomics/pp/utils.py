@@ -344,3 +344,51 @@ def _get_disconnected_cell(segmentation: np.ndarray) -> int:
         _, num_features = scipy.ndimage.label(binary_mask)
         if num_features != 1:
             return cell
+
+
+def _convert_to_8bit(image):
+    """
+    Convert an image to 8-bit format.
+
+    Parameters:
+    ----------
+    image : np.ndarray
+        The input image.
+
+    Returns:
+    -------
+    np.ndarray
+        The 8-bit image.
+    """
+    # if the image is already uint8, nothing happens
+    if image.dtype == np.uint8:
+        return image
+
+    # checking that there are no negative values in the image
+    assert np.min(image) >= 0, "The image contains negative values. Please make sure that the image is non-negative."
+
+    # if the image is of type float, we check if the values are already in the range [0, 1]
+    if image.dtype == np.float32 or image.dtype == np.float64:
+        if np.max(image) <= 1:
+            return (image * 255).astype(np.uint8)
+        else:
+            raise ValueError(
+                "The image is of type float, but the values are not in the range [0, 1]. Please normalize the image first."
+            )
+    # checking if the integers are signed
+    elif image.dtype == np.uint16:
+        assert (
+            np.max(image) <= 65535
+        ), "The image contains values larger than 65535. Please make sure that the image is in the range [0, 65535]."
+        # normalizing to the highest possible value
+        return (image / 65535 * 255).astype(np.uint8)
+    elif image.dtype == np.uint32:
+        assert (
+            np.max(image) <= 4294967295
+        ), "The image contains values larger than 4294967295. Please make sure that the image is in the range [0, 4294967295]."
+        # normalizing to the highest possible value
+        return (image / 4294967295 * 255).astype(np.uint8)
+    else:
+        raise ValueError(
+            f"Could not convert image of type {image.dtype} to 8-bit. Please make sure that the image is of type uint8, uint16, uint32, float32, or float64. If the image is of type float, make sure that the values are in the range [0, 1]."
+        )
