@@ -1,11 +1,11 @@
 from typing import List, Optional, Union
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-import matplotlib.colors as mcolors
 
 from ..base_logger import logger
 from ..constants import Attrs, Dims, Features, Layers, Props
@@ -231,7 +231,7 @@ class PlotAccessor:
         legend_image: bool = True,
         legend_segmentation: bool = True,
         legend_label: bool = True,
-        background: str = 'black',
+        background: str = "black",
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -299,14 +299,16 @@ class PlotAccessor:
                         ["r", "g", "b", "a"],
                     ],
                     dims=[Dims.Y, Dims.X, Dims.RGBA],
-                    name=Layers.PLOT
+                    name=Layers.PLOT,
                 )
 
                 obj = xr.merge([self._obj, da])
         else:
             # if a plot already exists, but the user tries to set a background color, we raise a warning
             if background != "black":
-                logger.warning("The background color is set during the first color pass. If you called pl.colorize() before pl.show(), please set the background color there instead using pl.colorize(background='your_color').")
+                logger.warning(
+                    "The background color is set during the first color pass. If you called pl.colorize() before pl.show(), please set the background color there instead using pl.colorize(background='your_color')."
+                )
 
         if render_labels:
             obj = obj.pl.render_labels(**label_kwargs)
