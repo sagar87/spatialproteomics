@@ -3,7 +3,7 @@ name = "spatialproteomics"
 packages = [
     { include = "spatialproteomics" },
 ]
-version = "0.5.5"
+version = "0.5.6"
 description = "spatialproteomics provides tools for the analysis of highly multiplexed immunofluorescence data"
 readme = "README.md"
 authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
