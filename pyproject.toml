@@ -3,7 +3,7 @@ name = "spatialproteomics"
 packages = [
     { include = "spatialproteomics" },
 ]
-version = "0.5.5"
+version = "0.5.6"
 description = "spatialproteomics provides tools for the analysis of highly multiplexed immunofluorescence data"
 readme = "README.md"
 authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
@@ -11,13 +11,13 @@ authors = ["Harald Vohringer", "Matthias Meyer-Bender"]
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
 xarray = "^2023.0.0"
-scikit-image = "^0.19.3"
+scikit-image = ">=0.19.3"
 matplotlib = "^3.5.3"
 Sphinx = { version = "5.0.0", optional = true }
 sphinx-rtd-theme = { version = "1.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
 nbsphinx = { version = "0.8.9", optional = true }
-tqdm = "^4.64.0"
+tqdm = ">=4.64.0"
 scikit-learn = "^1.2.2"
 zarr = "^2.14.2"
 numpy = "<2.0.0"
