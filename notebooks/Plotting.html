@@ -396,7 +396,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7fd773f33f40&gt;
+&lt;xarray.core.options.set_options at 0x7f68a8447580&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -863,24 +863,24 @@ Neither TORCH CUDA nor MPS version not installed/working.
 &gt;&gt;&gt;&gt; using CPU
 &gt;&gt; cyto3 &lt;&lt; model set to be used
 &gt;&gt;&gt;&gt; loading model /home/meyerben/.cellpose/models/cyto3
-/opt/conda/lib/python3.10/site-packages/cellpose/resnet_torch.py:280: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+/home/meyerben/meyerben/.conda/envs/tmp_env_2/lib/python3.10/site-packages/cellpose/resnet_torch.py:280: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
   state_dict = torch.load(filename, map_location=torch.device(&#34;cpu&#34;))
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately.
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 10.40 sec
+estimated cell diameter(s) in 7.92 sec
 &gt;&gt;&gt; diameter(s) =
 [ 12.36 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 24.24 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 19.09 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 11.46 sec
+estimated cell diameter(s) in 9.11 sec
 &gt;&gt;&gt; diameter(s) =
 [ 19.38 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 24.07 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 20.98 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -996,7 +996,7 @@ Mask growing requires recalculation of the observations. All features other than
 </div>
 <p>For visualization, it is also possible to adjust the background color of the image. However, caution is advised when plotting fluorescence intensities on light backgrounds, as the background colors get mixed with the actual fluorescence values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))

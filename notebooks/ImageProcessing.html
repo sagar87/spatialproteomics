@@ -396,7 +396,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
-ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;)
+ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;, engine=&#39;zarr&#39;)
 ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
 ds = ds.pp.drop_layers(&quot;_labels&quot;)
 # focusing on just one channel to illustrate the concepts better

@@ -394,7 +394,7 @@ from PIL import Image
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;4_B4.zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;4_B4.zarr&#39;, engine=&#39;zarr&#39;)
 
 # quick plotting of some channels
 plt.figure(figsize=(10, 10))

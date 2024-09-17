@@ -458,7 +458,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading a test file which we will export later
 # notice how easy it is to load the file from a zarr using xarray
-ds = xr.load_dataset(&#39;../../data/tmp.zarr&#39;)
+ds = xr.load_dataset(&#39;../../data/tmp.zarr&#39;, engine=&#39;zarr&#39;)
 ds
 </pre></div>
 </div>

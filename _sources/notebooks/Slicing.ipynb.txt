@@ -58,7 +58,7 @@
     }
    ],
    "source": [
-    "ds = xr.load_dataset('../../data/BNHL_166_4_I2_LK.zarr')"
+    "ds = xr.load_dataset('../../data/BNHL_166_4_I2_LK.zarr', engine='zarr')"
    ]
   },
   {
