@@ -55,7 +55,6 @@ class Attrs(object):
     LABEL_COLORS = "label_colors"
     OBS_COLORS = "obs_colors"
     LABEL_NAMES = "label_names"
-    LABEL_SEGMENTATION = "label_segmentation"
 
 
 class Props(object):
