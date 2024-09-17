@@ -9,7 +9,7 @@ from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import COLORS, Attrs, Dims, Features, Labels, Layers, Props
+from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .utils import (
     _convert_to_8bit,
@@ -302,9 +302,9 @@ class PreprocessingAccessor:
 
         if keep_labels and from_layer is not None:
             # checking that the segmentation has labels in the attrs
-            if Attrs.LABEL_SEGMENTATION in self._obj[from_layer].attrs:
+            if len(self._obj[from_layer].attrs) > 0:
                 # this is a dict that maps from cell_id to a label (e. g. {1: 'CD68', 2: 'DAPI'})
-                labels = self._obj[from_layer].attrs[Attrs.LABEL_SEGMENTATION]
+                labels = self._obj[from_layer].attrs
                 # if reindex was called, we first need to propagate the mapping to the labels before we can add them
                 if reindex:
                     labels = {reindex_dict[k]: v for k, v in labels.items()}
@@ -1309,7 +1309,7 @@ class PreprocessingAccessor:
             coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
             dims=[Dims.Y, Dims.X],
             name=key_added,
-            attrs={Attrs.LABEL_SEGMENTATION: mapping},
+            attrs=mapping,
         )
 
         return xr.merge([obj, da])
