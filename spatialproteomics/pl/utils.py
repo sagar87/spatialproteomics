@@ -206,18 +206,20 @@ def _render_obs(
     segmentation: np.ndarray,
     cmap: list,
     img: np.ndarray = None,
+    background_array: np.ndarray = None,
     alpha: float = 0.2,
     alpha_boundary: float = 1.0,
     mode: str = "inner",
 ) -> np.ndarray:
-
     # normalize the segmentation to be in the range [0, 1]
     segmentation = (segmentation - segmentation.min()) / (segmentation.max() - segmentation.min())
 
     colored_mask = cmap(segmentation)
 
-    mask_bool = segmentation > 0
-    mask_bound = np.bitwise_and(mask_bool, find_boundaries(segmentation, mode=mode))
+    if background_array is None:
+        background_array = segmentation > 0
+
+    mask_bound = np.bitwise_and(background_array, find_boundaries(segmentation, mode=mode))
 
     if img is None:
         img = np.zeros(segmentation.shape + (4,), np.float32)
@@ -225,7 +227,7 @@ def _render_obs(
 
     im = img.copy()
 
-    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
+    im[background_array] = alpha * colored_mask[background_array] + (1 - alpha) * img[background_array]
     im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
 
     return im

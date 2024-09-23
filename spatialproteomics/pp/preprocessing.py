@@ -1336,10 +1336,16 @@ class PreprocessingAccessor:
         c1, c2 = coords[dims[0]].values, coords[dims[1]].values
         df = pd.DataFrame(data_array.values, index=c1, columns=c2)
 
-        # special case: when exporting obs, we can convert celltypes to strings
-        if celltypes_to_str and layer == Layers.OBS and Features.LABELS in df.columns:
-            label_dict = self._obj.la._label_to_dict(Props.NAME)
-            df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+        # special case: converting celltypes to strings
+        if celltypes_to_str:
+            # converting cts to strings in the obs df
+            if layer == Layers.OBS and Features.LABELS in df.columns:
+                label_dict = self._obj.la._label_to_dict(Props.NAME)
+                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+            # converting cts to strings in the neighborhood df
+            if layer == Layers.NEIGHBORHOODS:
+                label_dict = self._obj.la._label_to_dict(Props.NAME)
+                df.columns = [label_dict[x] for x in df.columns.values]
 
         if idx_to_str:
             df.index = df.index.astype(str)

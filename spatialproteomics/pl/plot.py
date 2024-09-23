@@ -625,18 +625,20 @@ class PlotAccessor:
         # creating a continuous colormap
         cmap = plt.cm.get_cmap(cmap)
         feature_values = obs.sel(features=feature).values
-        # we need to ensure that the feature values are normalized between 0 and 1
-        # feature_values = (feature_values - feature_values.min()) / (feature_values.max() - feature_values.min())
 
         # mapping the feature values onto the segmentation mask (replacing the cell indices with the feature values)
         # we need to ensure the mapping between the feature values and the segmentation is correct
         cell_indices = self._obj.coords[Dims.CELLS]
 
+        # creating a boolean mask for the background
+        # the reason why this needs to be computed before the mapping is that there could be obs values equal to 0
+        background_array = segmentation > 0
+
         # dict that maps each cell ID to its feature value
         feature_mapping = {k.item(): v for k, v in zip(cell_indices, feature_values)}
-        # setting the background to 0
+        # setting the background to zero
         feature_mapping[0] = 0
-        # mapping the feature values onto the segmentation mask (and setting to 0 for the background)
+        # mapping the feature values onto the segmentation mask
         segmentation = np.vectorize(feature_mapping.get)(segmentation)
 
         if Layers.PLOT in self._obj:
@@ -646,6 +648,7 @@ class PlotAccessor:
                 segmentation,
                 cmap,
                 self._obj[Layers.PLOT].values,
+                background_array=background_array,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -654,7 +657,14 @@ class PlotAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_obs(segmentation, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+            rendered = _render_obs(
+                segmentation,
+                cmap,
+                background_array=background_array,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
 
         # adding information for rendering the colorbar
         # in here, we need the name of the feature, the colormap and the min and max values of the feature
