@@ -376,6 +376,29 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.compute_neighborhoods_radius">
+<span class="sig-name descname"><span class="pre">compute_neighborhoods_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.compute_neighborhoods_radius" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the neighborhoods of each cell based on a specified radius.</p>
+<p>This method defines a radius around each cell and identifies all cells within this radius.
+It then examines the predicted cell types of these cells, including the center cell itself,
+and computes the frequency of each cell type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radius</strong> (<em>int</em><em>, </em><em>optional</em>) – The radius around each cell to define the neighborhood. Default is 100.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A merged xarray Dataset containing the original data and the computed neighborhoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.convert_to_8bit">
 <span class="sig-name descname"><span class="pre">convert_to_8bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_image'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.convert_to_8bit" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the image to 8-bit.</p>
