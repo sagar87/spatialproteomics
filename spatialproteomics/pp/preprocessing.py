@@ -12,6 +12,7 @@ from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Labels, Layers, Props
 from ..la.utils import _format_labels
 from .utils import (
+    _construct_neighborhood_df_radius,
     _convert_to_8bit,
     _get_disconnected_cell,
     _merge_segmentation,
@@ -1564,3 +1565,52 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([obj, da])
+
+    def compute_neighborhoods_radius(self, radius=100, key_added: str = Layers.NEIGHBORHOODS):
+        """
+        Compute the neighborhoods of each cell based on a specified radius.
+
+        This method defines a radius around each cell and identifies all cells within this radius.
+        It then examines the predicted cell types of these cells, including the center cell itself,
+        and computes the frequency of each cell type.
+
+        Parameters
+        ----------
+        radius : int, optional
+            The radius around each cell to define the neighborhood. Default is 100.
+        key_added : str, optional
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+
+        Returns
+        -------
+        xarray.Dataset
+            A merged xarray Dataset containing the original data and the computed neighborhoods.
+        """
+
+        # this method computes the neighborhoods of each cell based on some radius around that cell
+        # it works by defining a radius around each cell and finding all cells that are within this radius
+        # then, it looks at the predicted cell types of these cells (including the center cell itself) and computes the frequency of each cell type
+
+        assert radius > 0, "Radius must be greater than 0."
+        assert Layers.OBS in self._obj, "No observations found in the object."
+        assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+
+        # here we use the numeric labels in order to keep them synchronized with the rest of the object
+        neighborhood_df = _construct_neighborhood_df_radius(
+            self._obj.pp.get_layer_as_df(celltypes_to_str=False),
+            cell_types=self._obj.coords[Dims.LABELS].values,
+            x=Features.X,
+            y=Features.Y,
+            label_col=Features.LABELS,
+            radius=radius,
+        )
+
+        # putting the df into a data array
+        da = xr.DataArray(
+            neighborhood_df.values,
+            coords=[neighborhood_df.index, neighborhood_df.columns],
+            dims=[Dims.CELLS, Dims.LABELS],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])

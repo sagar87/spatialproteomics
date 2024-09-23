@@ -30,6 +30,7 @@ class Layers(object):
     INTENSITY = "_intensity"
     PLOT = "_plot"
     MASK = "_mask"
+    NEIGHBORHOODS = "_neighborhoods"
 
 
 class Dims(object):
