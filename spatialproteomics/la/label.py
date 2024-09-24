@@ -167,7 +167,7 @@ class LabelAccessor:
         reverse : bool
             If True, the dictionary will be reversed.
         relabel : bool
-            Deprecated.
+            If True, the dictionary keys will be relabeled.
 
         Returns
         -------

@@ -605,6 +605,79 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
+    def render_neighborhoods(
+        self,
+        alpha: float = 1.0,
+        alpha_boundary: float = 1.0,
+        mode: str = "inner",
+        override_color: Optional[str] = None,
+    ) -> xr.Dataset:
+        """
+        Renders neighborhoods on the plot.
+
+        Parameters:
+            alpha (float, optional): The transparency of the neighborhoods. Defaults to 1.0.
+            alpha_boundary (float, optional): The transparency of the label boundaries. Defaults to 1.0.
+            mode (str, optional): The mode of rendering. Can be "inner" or "outer". Defaults to "inner".
+            override_color (str, optional): The color to override the label colors. Defaults to None.
+
+        Returns:
+            xr.Dataset: The modified dataset with rendered neighborhoods.
+
+        Raises:
+            AssertionError: If no neighborhoods are found in the object.
+
+        Notes:
+            - This method requires neighborhoods to be present in the object. Add labels first using `nh.compute_neighborhoods_radius()`.
+            - The `mode` parameter determines whether the neighborhoods are rendered inside or outside the neighborhood boundaries.
+            - The `override_color` parameter can be used to override the neighborhoods colors with a single color.
+        """
+        assert (
+            Layers.NH_PROPERTIES in self._obj
+        ), "No neighborhoods found in the object. Add neighborhoods first, for example by using nh.compute_neighborhoods_radius()."
+
+        color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR, relabel=True)
+
+        if override_color is not None:
+            color_dict = {k: override_color for k in color_dict.keys()}
+
+        cmap = _get_listed_colormap(color_dict)
+
+        cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
+        segmentation = self._obj[Layers.SEGMENTATION].values
+        mask = _label_segmentation_mask(segmentation, cells_dict)
+
+        print(color_dict)
+
+        if Layers.PLOT in self._obj:
+            attrs = self._obj[Layers.PLOT].attrs
+            rendered = _render_labels(
+                mask,
+                cmap,
+                self._obj[Layers.PLOT].values,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
+            self._obj = self._obj.drop_vars(Layers.PLOT)
+        else:
+            attrs = {}
+            rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+
+        return xr.merge([self._obj, da])
+
     def render_obs(
         self,
         feature: str = None,

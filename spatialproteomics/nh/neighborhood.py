@@ -37,7 +37,6 @@ class NeighborhoodAccessor:
 
         if isinstance(indices, str):
             neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
-            print(neighborhood_dict)
 
             if indices not in neighborhood_dict:
                 raise ValueError(f"Neighborhood type {indices} not found.")
@@ -318,6 +317,32 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj, da])
 
+    def _cells_to_neighborhood(self, relabel: bool = False) -> dict:
+        """
+        Returns a dictionary that maps each neighborhood to a list of cells.
+
+        Parameters
+        ----------
+        relabel : bool, optional
+            If True, relabels the dictionary keys to consecutive integers starting from 1.
+            Default is False.
+
+        Returns
+        -------
+        dict
+            A dictionary that maps each neighborhood to a list of cells. The keys are neighborhood names,
+            and the values are lists of cell indices.
+        """
+        neighborhood_dict = {
+            neighborhood.item(): self._obj.nh._filter_cells_by_neighborhood(neighborhood.item())
+            for neighborhood in self._obj.coords[Dims.NEIGHBORHOODS]
+        }
+
+        if relabel:
+            return self._obj.nh._relabel_dict(neighborhood_dict)
+
+        return neighborhood_dict
+
     def add_properties(self, array: Union[np.ndarray, list], prop: str = Features.NEIGHBORHOODS) -> xr.Dataset:
         """
         Adds neighborhood properties to the image container.
@@ -398,7 +423,7 @@ class NeighborhoodAccessor:
 
         return obj
 
-    def _neighborhood_to_dict(self, prop: str, reverse: bool = False) -> dict:
+    def _neighborhood_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
         """
         Returns a dictionary that maps each neighborhood to a property.
 
@@ -408,6 +433,9 @@ class NeighborhoodAccessor:
             The property to map to the labels.
         reverse : bool, optional
             If True, the dictionary will be reversed. Default is False.
+        relabel : bool, optional
+            If True, relabels the dictionary keys to consecutive integers starting from 1.
+            Default is False.
 
         Returns
         -------
@@ -423,7 +451,17 @@ class NeighborhoodAccessor:
             current_row = neighborhood_layer.loc[neighborhood, prop]
             neighborhood_dict[neighborhood.values.item()] = current_row.values.item()
 
+        if relabel:
+            return self._obj.nh._relabel_dict(neighborhood_dict)
+
         if reverse:
             neighborhood_dict = {v: k for k, v in neighborhood_dict.items()}
 
         return neighborhood_dict
+
+    def _relabel_dict(self, dictionary: dict):
+        unique_keys = sorted(set(dictionary.keys()))  # Get unique keys and sort them
+        relabel_map = {
+            key: idx + 1 for idx, key in enumerate(unique_keys)
+        }  # Create a mapping to consecutive numbers starting from 1
+        return {relabel_map[k]: v for k, v in dictionary.items()}  # Apply the relabeling
