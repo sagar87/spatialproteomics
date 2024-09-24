@@ -705,6 +705,42 @@ class PreprocessingAccessor:
 
         return xr.merge([da, self._obj])
 
+    def add_nh_properties(self, array: Union[np.ndarray, list], prop: str = Features.NEIGHBORHOODS) -> xr.Dataset:
+        """
+        Adds neighborhood properties to the image container.
+
+        Parameters
+        ----------
+        array : Union[np.ndarray, list]
+            An array or list of properties to be added to the image container.
+        prop : str, optional
+            The name of the property. Default is Features.NEIGHBORHOODS.
+
+        Returns
+        -------
+        xr.Dataset or xr.DataArray
+            The updated image container with added properties or the properties as a separate xarray.DataArray.
+        """
+        unique_neighborhoods = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.NEIGHBORHOODS}))
+
+        if type(array) is list:
+            array = np.array(array)
+
+        da = xr.DataArray(
+            array.reshape(-1, 1),
+            coords=[unique_neighborhoods.astype(int), [prop]],
+            dims=[Dims.NEIGHBORHOODS, Dims.NH_PROPS],
+            name=Layers.NH_PROPERTIES,
+        )
+
+        if Layers.NH_PROPERTIES in self._obj:
+            da = xr.concat(
+                [self._obj[Layers.NH_PROPERTIES], da],
+                dim=Dims.NH_PROPS,
+            )
+
+        return xr.merge([da, self._obj])
+
     def add_labels(self, labels: Union[dict, None] = None) -> xr.Dataset:
         """
         Add labels from a mapping (cell -> label) to the spatialproteomics object.
@@ -764,7 +800,7 @@ class PreprocessingAccessor:
         # check if properties are already present
         assert (
             Layers.PROPERTIES not in self._obj
-        ), "Already found label properties in the object. Please remove them with pp.drop_layers('_properties') first."
+        ), f"Already found label properties in the object. Please remove them with pp.drop_layers('{Layers.PROPERTIES}') first."
 
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values
@@ -835,6 +871,42 @@ class PreprocessingAccessor:
         obj = obj.pp.add_properties(names, Props.NAME)
 
         return xr.merge([obj.sel(cells=da.cells), da])
+
+    def add_neighborhoods_from_dataframe(
+        self, neighborhoods: Union[np.ndarray, list], colors: Union[list, None] = None, names: Union[list, None] = None
+    ) -> xr.Dataset:
+        # check if properties are already present
+        assert (
+            Layers.NH_PROPERTIES not in self._obj
+        ), f"Already found neighborhood properties in the object. Please remove them with pp.drop_layers('{Layers.NH_PROPERTIES}') first."
+
+        # check that the labels have the same length as the cells
+        assert len(neighborhoods) == len(
+            self._obj.coords[Dims.CELLS]
+        ), "The number of neighborhoods does not match the number of cells."
+
+        if type(neighborhoods) is list:
+            neighborhoods = neighborhoods.to_numpy()
+
+        neighborhoods = neighborhoods.squeeze()
+        unique_neighborhoods = np.unique(neighborhoods)
+
+        # adding the neighborhoods into obs
+        obj = self._obj.copy()
+        obj = obj.pp.add_feature(Features.NEIGHBORHOODS, neighborhoods)
+
+        # adding colors to the neighborhoods
+        if colors is not None:
+            assert len(colors) == len(
+                unique_neighborhoods
+            ), "Colors does not have the same length as there are neighborhoods."
+        else:
+            colors = np.random.choice(COLORS, size=len(unique_neighborhoods), replace=False)
+
+        # adding a lookup table for the neighborhood colors
+        obj = obj.pp.add_nh_properties(colors, Props.COLOR)
+        # TODO: add names
+        return obj
 
     def drop_layers(
         self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None

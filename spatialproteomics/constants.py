@@ -26,6 +26,7 @@ class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"
     PROPERTIES = "_properties"
+    NH_PROPERTIES = "_nh_properties"
     OBS = "_obs"
     INTENSITY = "_intensity"
     PLOT = "_plot"
@@ -42,12 +43,13 @@ class Dims(object):
     COORDINATES = "coordinates"
     LABELS = "labels"
     FEATURES = "features"
+    NH_FEATURES = "nh_features"
     PROPS = "props"
-    NEIGHBORS = "neighbors"
+    NH_PROPS = "nh_props"
     IMAGE = ["channels", "x", "y"]
     COLORED_IMAGE = ["channels", "x", "y", "rgba"]
     SEGMENTATION = ["x", "y"]
-    DATA = ["cell_idx", "channels"]
+    NEIGHBORHOODS = "neighborhoods"
 
 
 class Attrs(object):
@@ -67,6 +69,7 @@ class Features(object):
     LABELS = "_labels"
     X = "centroid-1"
     Y = "centroid-0"
+    NEIGHBORHOODS = "_neighborhoods"
 
 
 class Labels(object):

@@ -28,6 +28,7 @@ from .constants import (
 )
 from .container import load_image_data, read_from_spatialdata
 from .la import LabelAccessor
+from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor, is_positive, percentage_positive
 from .tl import ToolAccessor
@@ -40,6 +41,7 @@ __all__ = [
     "PlotAccessor",
     "SegmentationAccessor",
     "ToolAccessor",
+    "NeighborhoodAccessor",
     "Layers",
     "Dims",
     "Features",
