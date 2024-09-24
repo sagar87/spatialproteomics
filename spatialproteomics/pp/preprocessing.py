@@ -999,13 +999,16 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore") -> xr.Dataset:
+    def grow_cells(
+        self, iterations: int = 2, handle_disconnected: str = "ignore", suppress_warning: bool = False
+    ) -> xr.Dataset:
         """
         Grows the segmentation masks by expanding the labels in the object.
 
         Parameters:
         - iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
         - handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
+        - suppress_warning (bool): Whether to suppress the warning about recalculating the observations. Used internally, default is False.
 
         Raises:
         - ValueError: If the object does not contain a segmentation mask.
@@ -1043,7 +1046,7 @@ class PreprocessingAccessor:
 
         # getting all of the obs features
         obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
-        if obs_features != [Features.Y, Features.X]:
+        if obs_features != [Features.Y, Features.X] and not suppress_warning:
             logger.warning(
                 "Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
             )

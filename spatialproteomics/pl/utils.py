@@ -1,10 +1,11 @@
 from typing import List
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from skimage.measure import label, regionprops
-from skimage.morphology import closing, square
+from skimage.morphology import closing, dilation, disk, erosion, square
 from skimage.segmentation import find_boundaries
 
 from ..base_logger import logger
@@ -336,3 +337,67 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
     return slice(downsample * minc - padding, downsample * maxc + padding), slice(
         downsample * minr - padding, downsample * maxr + padding
     )
+
+
+def _compute_erosion(segmentation: np.ndarray, threshold: int = 1, erosion_strength: int = 5) -> np.ndarray:
+    # Binarize the segmentation array: values > threshold become 1, others become 0
+    binary_mask = (segmentation > threshold).astype(np.uint8)
+
+    # Apply erosion
+    eroded_mask = erosion(binary_mask, disk(erosion_strength))
+
+    return eroded_mask
+
+
+def _render_neighborhoods(
+    segmentation: np.ndarray,
+    cmap: list,
+    img: np.ndarray = None,
+    alpha: float = 0.2,
+    alpha_boundary: float = 1.0,
+    mode: str = "inner",
+    boundary_color: str = "white",
+    boundary_thickness: int = 1,
+) -> np.ndarray:
+    """
+    Render neighborhoods on an image.
+
+    Parameters:
+    - segmentation (np.ndarray): The segmentation array containing neighborhoods.
+    - cmap (list): The color map used to map neighborhoods to colors. Should be computed with _get_listed_colormap().
+    - img (np.ndarray, optional): The image on which to render the neighborhoods. If not provided, a blank image will be created.
+    - alpha (float, optional): The transparency of the neighborhoods. Default is 0.2.
+    - alpha_boundary (float, optional): The transparency of the label boundaries. Default is 1.0.
+    - mode (str, optional): The mode used to find boundaries. Default is "inner".
+    - boundary_color (str, optional): Color for the boundaries.
+    - boundary_thickness (int, optional): Thickness of the boundary lines. Default is 1.
+
+    Returns:
+    - np.ndarray: The image with neighborhoods rendered.
+    """
+    # Convert boundary_color from string to RGBA
+    if isinstance(boundary_color, str):
+        try:
+            boundary_color = mcolors.to_rgba(boundary_color)
+        except ValueError:
+            raise ValueError(f"Invalid color name: {boundary_color}")
+
+    colored_mask = cmap(segmentation)
+
+    mask_bool = segmentation > 0
+    mask_bound = np.bitwise_and(mask_bool, find_boundaries(segmentation, mode=mode))
+
+    if img is None:
+        img = np.zeros(segmentation.shape + (4,), np.float32)
+        img[..., -1] = 1
+
+    im = img.copy()
+
+    # Apply colors to neighborhoods
+    im[mask_bool] = alpha * colored_mask[mask_bool] + (1 - alpha) * img[mask_bool]
+
+    # Dilation on the boundary mask
+    dilated_bound = dilation(mask_bound, disk(boundary_thickness))
+    im[dilated_bound] = boundary_color
+
+    return im

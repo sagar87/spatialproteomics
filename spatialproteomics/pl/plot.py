@@ -12,9 +12,11 @@ from ..constants import Attrs, Dims, Features, Layers, Props
 from .utils import (
     _autocrop,
     _colorize,
+    _compute_erosion,
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _render_neighborhoods,
     _render_obs,
     _render_segmentation,
 )
@@ -607,62 +609,102 @@ class PlotAccessor:
 
     def render_neighborhoods(
         self,
+        style: str = "cells",
         alpha: float = 1.0,
         alpha_boundary: float = 1.0,
-        mode: str = "inner",
-        override_color: Optional[str] = None,
+        boundary_color: str = "dimgray",
+        boundary_thickness: int = 3,
     ) -> xr.Dataset:
         """
-        Renders neighborhoods on the plot.
-
-        Parameters:
-            alpha (float, optional): The transparency of the neighborhoods. Defaults to 1.0.
-            alpha_boundary (float, optional): The transparency of the label boundaries. Defaults to 1.0.
-            mode (str, optional): The mode of rendering. Can be "inner" or "outer". Defaults to "inner".
-            override_color (str, optional): The color to override the label colors. Defaults to None.
-
-        Returns:
-            xr.Dataset: The modified dataset with rendered neighborhoods.
-
-        Raises:
-            AssertionError: If no neighborhoods are found in the object.
-
-        Notes:
-            - This method requires neighborhoods to be present in the object. Add labels first using `nh.compute_neighborhoods_radius()`.
-            - The `mode` parameter determines whether the neighborhoods are rendered inside or outside the neighborhood boundaries.
-            - The `override_color` parameter can be used to override the neighborhoods colors with a single color.
+        Render neighborhoods on the spatial data.
+        Parameters
+        ----------
+        style : str, optional
+            The style of rendering, either 'cells' or 'neighborhoods'. Default is 'cells'.
+        alpha : float, optional
+            The alpha transparency for the rendered image. Default is 1.0.
+        alpha_boundary : float, optional
+            The alpha transparency for the boundary of the rendered image. Default is 1.0.
+        boundary_color : str, optional
+            The color of the boundary lines. Default is 'dimgray'.
+        boundary_thickness : int, optional
+            The thickness of the boundary lines. Default is 3.
+        Returns
+        -------
+        xr.Dataset
+            The dataset with the rendered neighborhoods.
+        Raises
+        ------
+        AssertionError
+            If no neighborhoods are found in the object or if the style is not 'cells' or 'neighborhoods'.
         """
+
         assert (
             Layers.NH_PROPERTIES in self._obj
         ), "No neighborhoods found in the object. Add neighborhoods first, for example by using nh.compute_neighborhoods_radius()."
 
+        assert style in ["cells", "neighborhoods"], "Style must be either 'cells' or 'neighborhoods'."
+
         color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR, relabel=True)
 
-        if override_color is not None:
-            color_dict = {k: override_color for k in color_dict.keys()}
-
         cmap = _get_listed_colormap(color_dict)
+        rendered = None
 
-        cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        mask = _label_segmentation_mask(segmentation, cells_dict)
+        if style == "cells":
+            cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
+            segmentation = self._obj[Layers.SEGMENTATION].values
+            mask = _label_segmentation_mask(segmentation, cells_dict)
 
-        print(color_dict)
-
-        if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
-            rendered = _render_labels(
-                mask,
-                cmap,
-                self._obj[Layers.PLOT].values,
-                alpha=alpha,
-                alpha_boundary=alpha_boundary,
-                mode=mode,
-            )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
+            if Layers.PLOT in self._obj:
+                attrs = self._obj[Layers.PLOT].attrs
+                rendered = _render_labels(
+                    mask,
+                    cmap,
+                    self._obj[Layers.PLOT].values,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    mode="inner",
+                )
+                self._obj = self._obj.drop_vars(Layers.PLOT)
+            else:
+                attrs = {}
+                rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode="inner")
         else:
-            attrs = {}
-            rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+            cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
+
+            # TODO: put this into its own method in utils
+            # step 1: apply a Voronoi tesselation to the neighborhoods
+            segmentation = self._obj.pp.grow_cells(40, suppress_warning=True)[Layers.SEGMENTATION].values
+
+            eroded_mask = _compute_erosion(segmentation, erosion_strength=35)
+
+            # multiplying the segmentation with the eroded mask
+            segmentation = segmentation * eroded_mask
+
+            mask = _label_segmentation_mask(segmentation, cells_dict)
+
+            if Layers.PLOT in self._obj:
+                attrs = self._obj[Layers.PLOT].attrs
+                rendered = _render_neighborhoods(
+                    mask,
+                    cmap,
+                    self._obj[Layers.PLOT].values,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    boundary_color=boundary_color,
+                    boundary_thickness=boundary_thickness,
+                )
+                self._obj = self._obj.drop_vars(Layers.PLOT)
+            else:
+                attrs = {}
+                rendered = _render_neighborhoods(
+                    mask,
+                    cmap,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    boundary_color=boundary_color,
+                    boundary_thickness=boundary_thickness,
+                )
 
         da = xr.DataArray(
             rendered,

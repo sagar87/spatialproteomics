@@ -178,68 +178,6 @@ class NeighborhoodAccessor:
 
         return cells_sel
 
-    def set_neighborhood_colors(self, neighborhoods: Union[str, List[str]], colors: Union[str, List[str]]):
-        """
-        Set the color of a specific neighborhood.
-
-        This method sets the 'color' of a specific neighborhood identified by the 'neighborhood'.
-        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
-
-        Parameters
-        ----------
-        label : int or str
-            The ID or name of the neighborhood whose color will be updated.
-        color : any
-            The new color to be assigned to the specified neighborhood.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
-        - It updates the color of the neighborhood in the data object to the new 'color'.
-        """
-        if isinstance(neighborhoods, str):
-            neighborhoods = [neighborhoods]
-        if isinstance(colors, str):
-            colors = [colors]
-
-        # checking that there are as many colors as labels
-        assert len(neighborhoods) == len(colors), "The number of neighborhoods and colors must be the same."
-
-        # checking that a neighborhood layer is already present
-        assert (
-            Layers.NH_PROPERTIES in self._obj
-        ), "No neighborhoods layer found in the data object. Please add neighborhoods before setting colors, e. g. by using nh.compute_neighborhoods_radius()."
-
-        # obtaining the current properties
-        props_layer = self._obj.coords[Dims.NH_PROPS].values.tolist()
-        neighborhoods_layer = self._obj.coords[Dims.NEIGHBORHOODS].values.tolist()
-        array = self._obj[Layers.NH_PROPERTIES].values.copy()
-
-        for neighborhood, color in zip(neighborhoods, colors):
-            # if the neighborhoods does not exist in the object, a warning is thrown and we continue
-            if neighborhood not in self._obj.nh:
-                logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
-                continue
-
-            # getting the id for the label
-            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
-
-            # setting the new color for the given label
-            array[neighborhoods_layer.index(neighborhood), props_layer.index(Props.COLOR)] = color
-
-        da = xr.DataArray(
-            array,
-            coords=[neighborhoods_layer, props_layer],
-            dims=[Dims.NEIGHBORHOODS, Dims.NH_PROPS],
-            name=Layers.NH_PROPERTIES,
-        )
-
-        return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
-
     def _neighborhood_name_to_id(self, neighborhood):
         """
         Convert a neighborhood name to its corresponding ID.
@@ -264,103 +202,6 @@ class NeighborhoodAccessor:
             raise ValueError(f"Neighborhood {neighborhood} not found.")
 
         return neighborhood_names_reverse[neighborhood]
-
-    def set_neighborhood_name(self, neighborhood, name):
-        """
-        Set the name of a specific neighborhood.
-
-        This method sets the 'name' of a specific neighborhood identified by the 'neighborhood'.
-        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
-
-        Parameters
-        ----------
-        label : int or str
-            The ID or name of the neighborhood whose name will be updated.
-        name : str
-            The new name to be assigned to the specified neighborhood.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
-        - It updates the name of the neighborhood in the data object to the new 'name'.
-        """
-        # checking that a neighborhood layer is already present
-        assert Layers.NH_PROPERTIES in self._obj, "No neighborhood layer found in the data object."
-        # checking if the old neighborhood exists
-        assert (
-            neighborhood in self._obj.nh
-        ), f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
-        # checking if the new label already exists
-        assert name not in self._obj[Layers.NH_PROPERTIES].sel(
-            {Dims.NH_PROPS: Props.NAME}
-        ), f"Neighborhood name {neighborhood} already exists."
-
-        # getting the original neighborhood properties
-        property_layer = self._obj[Layers.NH_PROPERTIES].copy()
-
-        if isinstance(neighborhood, str):
-            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
-
-        property_layer.loc[neighborhood, Props.NAME] = name
-
-        # removing the old property layer
-        obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES)
-
-        # adding the new property layer
-        return xr.merge([property_layer, obj])
-
-    def compute_neighborhoods_radius(self, radius=100, key_added: str = Layers.NEIGHBORHOODS):
-        """
-        Compute the neighborhoods of each cell based on a specified radius.
-
-        This method defines a radius around each cell and identifies all cells within this radius.
-        It then examines the predicted cell types of these cells, including the center cell itself,
-        and computes the frequency of each cell type.
-
-        Parameters
-        ----------
-        radius : int, optional
-            The radius around each cell to define the neighborhood. Default is 100.
-        key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
-
-        Returns
-        -------
-        xarray.Dataset
-            A merged xarray Dataset containing the original data and the computed neighborhoods.
-        """
-
-        # this method computes the neighborhoods of each cell based on some radius around that cell
-        # it works by defining a radius around each cell and finding all cells that are within this radius
-        # then, it looks at the predicted cell types of these cells (including the center cell itself) and computes the frequency of each cell type
-
-        assert radius > 0, "Radius must be greater than 0."
-        assert Layers.OBS in self._obj, "No observations found in the object."
-        assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
-
-        # here we use the numeric labels in order to keep them synchronized with the rest of the object
-        neighborhood_df = _construct_neighborhood_df_radius(
-            self._obj.pp.get_layer_as_df(celltypes_to_str=False),
-            cell_types=self._obj.coords[Dims.LABELS].values,
-            x=Features.X,
-            y=Features.Y,
-            label_col=Features.LABELS,
-            radius=radius,
-        )
-
-        # putting the df into a data array
-        da = xr.DataArray(
-            neighborhood_df.values,
-            coords=[neighborhood_df.index, neighborhood_df.columns],
-            dims=[Dims.CELLS, Dims.LABELS],
-            name=key_added,
-        )
-
-        return xr.merge([self._obj, da])
 
     def _cells_to_neighborhood(self, relabel: bool = False) -> dict:
         """
@@ -510,3 +351,162 @@ class NeighborhoodAccessor:
             key: idx + 1 for idx, key in enumerate(unique_keys)
         }  # Create a mapping to consecutive numbers starting from 1
         return {relabel_map[k]: v for k, v in dictionary.items()}  # Apply the relabeling
+
+    def set_neighborhood_colors(self, neighborhoods: Union[str, List[str]], colors: Union[str, List[str]]):
+        """
+        Set the color of a specific neighborhood.
+
+        This method sets the 'color' of a specific neighborhood identified by the 'neighborhood'.
+        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the neighborhood whose color will be updated.
+        color : any
+            The new color to be assigned to the specified neighborhood.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
+        - It updates the color of the neighborhood in the data object to the new 'color'.
+        """
+        if isinstance(neighborhoods, str):
+            neighborhoods = [neighborhoods]
+        if isinstance(colors, str):
+            colors = [colors]
+
+        # checking that there are as many colors as labels
+        assert len(neighborhoods) == len(colors), "The number of neighborhoods and colors must be the same."
+
+        # checking that a neighborhood layer is already present
+        assert (
+            Layers.NH_PROPERTIES in self._obj
+        ), "No neighborhoods layer found in the data object. Please add neighborhoods before setting colors, e. g. by using nh.compute_neighborhoods_radius()."
+
+        # obtaining the current properties
+        props_layer = self._obj.coords[Dims.NH_PROPS].values.tolist()
+        neighborhoods_layer = self._obj.coords[Dims.NEIGHBORHOODS].values.tolist()
+        array = self._obj[Layers.NH_PROPERTIES].values.copy()
+
+        for neighborhood, color in zip(neighborhoods, colors):
+            # if the neighborhoods does not exist in the object, a warning is thrown and we continue
+            if neighborhood not in self._obj.nh:
+                logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
+                continue
+
+            # getting the id for the label
+            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+
+            # setting the new color for the given label
+            array[neighborhoods_layer.index(neighborhood), props_layer.index(Props.COLOR)] = color
+
+        da = xr.DataArray(
+            array,
+            coords=[neighborhoods_layer, props_layer],
+            dims=[Dims.NEIGHBORHOODS, Dims.NH_PROPS],
+            name=Layers.NH_PROPERTIES,
+        )
+
+        return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
+
+    def set_neighborhood_name(self, neighborhood, name):
+        """
+        Set the name of a specific neighborhood.
+
+        This method sets the 'name' of a specific neighborhood identified by the 'neighborhood'.
+        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the neighborhood whose name will be updated.
+        name : str
+            The new name to be assigned to the specified neighborhood.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
+        - It updates the name of the neighborhood in the data object to the new 'name'.
+        """
+        # checking that a neighborhood layer is already present
+        assert Layers.NH_PROPERTIES in self._obj, "No neighborhood layer found in the data object."
+        # checking if the old neighborhood exists
+        assert (
+            neighborhood in self._obj.nh
+        ), f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
+        # checking if the new label already exists
+        assert name not in self._obj[Layers.NH_PROPERTIES].sel(
+            {Dims.NH_PROPS: Props.NAME}
+        ), f"Neighborhood name {neighborhood} already exists."
+
+        # getting the original neighborhood properties
+        property_layer = self._obj[Layers.NH_PROPERTIES].copy()
+
+        if isinstance(neighborhood, str):
+            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+
+        property_layer.loc[neighborhood, Props.NAME] = name
+
+        # removing the old property layer
+        obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES)
+
+        # adding the new property layer
+        return xr.merge([property_layer, obj])
+
+    def compute_neighborhoods_radius(self, radius=100, key_added: str = Layers.NEIGHBORHOODS):
+        """
+        Compute the neighborhoods of each cell based on a specified radius.
+
+        This method defines a radius around each cell and identifies all cells within this radius.
+        It then examines the predicted cell types of these cells, including the center cell itself,
+        and computes the frequency of each cell type.
+
+        Parameters
+        ----------
+        radius : int, optional
+            The radius around each cell to define the neighborhood. Default is 100.
+        key_added : str, optional
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+
+        Returns
+        -------
+        xarray.Dataset
+            A merged xarray Dataset containing the original data and the computed neighborhoods.
+        """
+
+        # this method computes the neighborhoods of each cell based on some radius around that cell
+        # it works by defining a radius around each cell and finding all cells that are within this radius
+        # then, it looks at the predicted cell types of these cells (including the center cell itself) and computes the frequency of each cell type
+
+        assert radius > 0, "Radius must be greater than 0."
+        assert Layers.OBS in self._obj, "No observations found in the object."
+        assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+
+        # here we use the numeric labels in order to keep them synchronized with the rest of the object
+        neighborhood_df = _construct_neighborhood_df_radius(
+            self._obj.pp.get_layer_as_df(celltypes_to_str=False),
+            cell_types=self._obj.coords[Dims.LABELS].values,
+            x=Features.X,
+            y=Features.Y,
+            label_col=Features.LABELS,
+            radius=radius,
+        )
+
+        # putting the df into a data array
+        da = xr.DataArray(
+            neighborhood_df.values,
+            coords=[neighborhood_df.index, neighborhood_df.columns],
+            dims=[Dims.CELLS, Dims.LABELS],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
