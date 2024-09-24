@@ -291,7 +291,9 @@ class NeighborhoodAccessor:
         # checking that a neighborhood layer is already present
         assert Layers.NH_PROPERTIES in self._obj, "No neighborhood layer found in the data object."
         # checking if the old neighborhood exists
-        assert neighborhood in self._obj.nh, f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
+        assert (
+            neighborhood in self._obj.nh
+        ), f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
         # checking if the new label already exists
         assert name not in self._obj[Layers.NH_PROPERTIES].sel(
             {Dims.NH_PROPS: Props.NAME}
