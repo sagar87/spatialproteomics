@@ -16,7 +16,7 @@ def test_add_labels_from_dataframe_correct_annotation(dataset):
     )
 
     # adding the labels
-    labeled = dataset.pp.add_labels_from_dataframe(df)
+    labeled = dataset.la.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -36,7 +36,7 @@ def test_add_labels_from_dataframe_unassigned_cells(dataset):
     )
 
     # adding the labels
-    labeled = dataset.pp.add_labels_from_dataframe(df)
+    labeled = dataset.la.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -52,7 +52,7 @@ def test_add_labels(dataset):
     label_dict = dict(zip(cells, ["CT1"] * num_cells))
 
     # adding the labels
-    labeled = dataset.pp.add_labels(label_dict)
+    labeled = dataset.la.add_labels(label_dict)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -70,4 +70,4 @@ def test_add_labels_existing_labels(dataset_labeled):
         AssertionError,
         match="Already found label properties in the object.",
     ):
-        dataset_labeled.pp.add_labels(label_dict)
+        dataset_labeled.la.add_labels(label_dict)

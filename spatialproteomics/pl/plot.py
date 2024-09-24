@@ -562,7 +562,7 @@ class PlotAccessor:
             - The `override_color` parameter can be used to override the label colors with a single color.
         """
         assert (
-            Layers.PROPERTIES in self._obj
+            Layers.LA_PROPERTIES in self._obj
         ), "No labels found in the object. Add labels first, for example by using la.predict_cell_types_argmax() or tl.astir()."
 
         color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)

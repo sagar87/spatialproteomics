@@ -25,7 +25,7 @@ Black = "#000000"
 class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"
-    PROPERTIES = "_properties"
+    LA_PROPERTIES = "_la_properties"
     NH_PROPERTIES = "_nh_properties"
     OBS = "_obs"
     INTENSITY = "_intensity"
@@ -43,13 +43,12 @@ class Dims(object):
     COORDINATES = "coordinates"
     LABELS = "labels"
     FEATURES = "features"
-    NH_FEATURES = "nh_features"
-    PROPS = "props"
+    LA_PROPS = "la_props"
     NH_PROPS = "nh_props"
+    NEIGHBORHOODS = "neighborhoods"
     IMAGE = ["channels", "x", "y"]
     COLORED_IMAGE = ["channels", "x", "y", "rgba"]
     SEGMENTATION = ["x", "y"]
-    NEIGHBORHOODS = "neighborhoods"
 
 
 class Attrs(object):
@@ -66,9 +65,9 @@ class Props(object):
 
 
 class Features(object):
-    LABELS = "_labels"
     X = "centroid-1"
     Y = "centroid-0"
+    LABELS = "_labels"
     NEIGHBORHOODS = "_neighborhoods"
 
 
@@ -177,6 +176,3 @@ COLORS = [
     "#A4E804",
     "#324E72",
 ]
-
-
-PROPS_DICT = {"centroid-1": Features.X, "centroid-0": Features.Y}
