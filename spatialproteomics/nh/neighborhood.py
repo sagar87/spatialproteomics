@@ -265,8 +265,51 @@ class NeighborhoodAccessor:
 
         return neighborhood_names_reverse[neighborhood]
 
-    # TODO: reimplement colorization of neighborhoods
-    # TODO: reimplement renaming of neighborhoods
+    def set_neighborhood_name(self, neighborhood, name):
+        """
+        Set the name of a specific neighborhood.
+
+        This method sets the 'name' of a specific neighborhood identified by the 'neighborhood'.
+        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the neighborhood whose name will be updated.
+        name : str
+            The new name to be assigned to the specified neighborhood.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
+        - It updates the name of the neighborhood in the data object to the new 'name'.
+        """
+        # checking that a neighborhood layer is already present
+        assert Layers.NH_PROPERTIES in self._obj, "No neighborhood layer found in the data object."
+        # checking if the old neighborhood exists
+        assert neighborhood in self._obj.nh, f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
+        # checking if the new label already exists
+        assert name not in self._obj[Layers.NH_PROPERTIES].sel(
+            {Dims.NH_PROPS: Props.NAME}
+        ), f"Neighborhood name {neighborhood} already exists."
+
+        # getting the original neighborhood properties
+        property_layer = self._obj[Layers.NH_PROPERTIES].copy()
+
+        if isinstance(neighborhood, str):
+            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+
+        property_layer.loc[neighborhood, Props.NAME] = name
+
+        # removing the old property layer
+        obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES)
+
+        # adding the new property layer
+        return xr.merge([property_layer, obj])
 
     def compute_neighborhoods_radius(self, radius=100, key_added: str = Layers.NEIGHBORHOODS):
         """
