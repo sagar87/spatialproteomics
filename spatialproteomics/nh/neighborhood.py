@@ -3,6 +3,7 @@ from typing import List, Union
 import numpy as np
 import xarray as xr
 
+from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from .utils import _construct_neighborhood_df_radius
 
@@ -14,6 +15,13 @@ class NeighborhoodAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
+    def __contains__(self, key):
+        if Layers.NH_PROPERTIES not in self._obj:
+            return False
+
+        neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
+        return key in neighborhood_dict.keys() or key in neighborhood_dict.values()
+
     def __getitem__(self, indices):
         # type checking
         if isinstance(indices, float):
@@ -21,43 +29,43 @@ class NeighborhoodAccessor:
 
         if isinstance(indices, int):
             if indices not in self._obj.coords[Dims.NEIGHBORHOODS].values:
-                raise ValueError(f"Neighborhood type {indices} not found.")
+                raise ValueError(
+                    f"Neighborhood type {indices} not found. Neighborhoods available for integer indexing are: {self._obj.coords[Dims.NEIGHBORHOODS].values}."
+                )
 
             sel = [indices]
 
         if isinstance(indices, str):
-            raise NotImplementedError("String indexing is not yet implemented.")
-            label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+            neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
+            print(neighborhood_dict)
 
-            if indices not in label_dict:
-                raise ValueError(f"Label type {indices} not found.")
+            if indices not in neighborhood_dict:
+                raise ValueError(f"Neighborhood type {indices} not found.")
 
-            sel = [label_dict[indices]]
+            sel = [neighborhood_dict[indices]]
 
         if isinstance(indices, slice):
-            raise NotImplementedError("Slice indexing is not yet implemented.")
             l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.LABELS]
+            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.NEIGHBORHOODS]
             sel = [i for i in range(l_start, l_stop)]
 
         if isinstance(indices, (list, tuple)):
-            raise NotImplementedError("List indexing is not yet implemented.")
             if not all([isinstance(i, (str, int)) for i in indices]):
-                raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
+                raise TypeError("Neighborhood indices must be valid integers, str, slices, List[int] or List[str].")
 
             sel = []
             for i in indices:
                 if isinstance(i, str):
-                    label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+                    neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
 
-                    if i not in label_dict:
-                        raise ValueError(f"Label type {i} not found.")
+                    if i not in neighborhood_dict:
+                        raise ValueError(f"Neighborhood {i} not found.")
 
-                    sel.append(label_dict[i])
+                    sel.append(neighborhood_dict[i])
 
                 if isinstance(i, int):
-                    if i not in self._obj.coords[Dims.LABELS].values:
-                        raise ValueError(f"Label type {i} not found.")
+                    if i not in self._obj.coords[Dims.NEIGHBORHOODS].values:
+                        raise ValueError(f"Neighborhood {i} not found.")
 
                     sel.append(i)
 
@@ -74,6 +82,76 @@ class NeighborhoodAccessor:
         obj = obj.drop_vars(Layers.SEGMENTATION)
         # adding the new segmentation
         obj = obj.pp.add_segmentation(segmentation, reindex=False)
+
+        return obj
+
+    def deselect(self, indices):
+        """
+        Deselect specific neighborhood indices from the data object.
+
+        This method deselects specific neighborhood indices from the data object, effectively removing them from the selection.
+        The deselection can be performed using slices, lists, tuples, or individual integers.
+
+        Parameters
+        ----------
+        indices : slice, list, tuple, or int
+            The neighborhood indices to be deselected. Can be a slice, list, tuple, or an individual integer.
+
+        Returns
+        -------
+        any
+            The updated data object with the deselected neighborhood indices.
+
+        Notes
+        -----
+        - The function uses 'indices' to specify which neighborhoods to deselect.
+        - 'indices' can be provided as slices, lists, tuples, or an integer.
+        - The function then updates the data object to remove the deselected neighborhood indices.
+        """
+        if isinstance(indices, slice):
+            l_start = indices.start if indices.start is not None else 1
+            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.NEIGHBORHOODS]
+            sel = [i for i in range(l_start, l_stop)]
+        elif isinstance(indices, list):
+            assert all(
+                [isinstance(i, (int, str)) for i in indices]
+            ), "All neighborhood indices must be integers or strings."
+            if all([isinstance(i, int) for i in indices]):
+                sel = indices
+            else:
+                neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
+                for idx in indices:
+                    if idx not in neighborhood_dict:
+                        raise ValueError(f"Neighborhood {indices} not found.")
+                sel = [neighborhood_dict[idx] for idx in indices]
+        elif isinstance(indices, tuple):
+            indices = list(indices)
+            all_int = all([type(i) is int for i in indices])
+            assert all_int, "All neighborhood indices must be integers."
+            sel = indices
+        elif isinstance(indices, str):
+            neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
+            if indices not in neighborhood_dict:
+                raise ValueError(f"Neighborhood {indices} not found.")
+            sel = [neighborhood_dict[indices]]
+        else:
+            assert type(indices) is int, "Neighborhood must be provided as slices, lists, tuple or int."
+            sel = [indices]
+
+        inv_sel = [i for i in self._obj.coords[Dims.NEIGHBORHOODS] if i not in sel]
+
+        cells = self._obj.nh._filter_cells_by_neighborhood(inv_sel)
+
+        obj = self._obj.sel({Dims.NEIGHBORHOODS: inv_sel, Dims.CELLS: cells})
+
+        # removing all cells from the segmentation mask that are not in the cells array
+        segmentation = obj[Layers.SEGMENTATION].values.copy()
+        mask = np.isin(segmentation, cells)
+        segmentation[~mask] = 0
+        # removing the old segmentation
+        obj = obj.drop_vars(Layers.SEGMENTATION)
+        # adding the new segmentation
+        obj = obj.pp.add_segmentation(segmentation)
 
         return obj
 
@@ -101,8 +179,93 @@ class NeighborhoodAccessor:
 
         return cells_sel
 
-    # TODO: reimplement contains
-    # TODO: reimplement deselect
+    def set_neighborhood_colors(self, neighborhoods: Union[str, List[str]], colors: Union[str, List[str]]):
+        """
+        Set the color of a specific neighborhood.
+
+        This method sets the 'color' of a specific neighborhood identified by the 'neighborhood'.
+        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
+
+        Parameters
+        ----------
+        label : int or str
+            The ID or name of the neighborhood whose color will be updated.
+        color : any
+            The new color to be assigned to the specified neighborhood.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
+        - It updates the color of the neighborhood in the data object to the new 'color'.
+        """
+        if isinstance(neighborhoods, str):
+            neighborhoods = [neighborhoods]
+        if isinstance(colors, str):
+            colors = [colors]
+
+        # checking that there are as many colors as labels
+        assert len(neighborhoods) == len(colors), "The number of neighborhoods and colors must be the same."
+
+        # checking that a neighborhood layer is already present
+        assert (
+            Layers.NH_PROPERTIES in self._obj
+        ), "No neighborhoods layer found in the data object. Please add neighborhoods before setting colors, e. g. by using nh.compute_neighborhoods_radius()."
+
+        # obtaining the current properties
+        props_layer = self._obj.coords[Dims.NH_PROPS].values.tolist()
+        neighborhoods_layer = self._obj.coords[Dims.NEIGHBORHOODS].values.tolist()
+        array = self._obj[Layers.NH_PROPERTIES].values.copy()
+
+        for neighborhood, color in zip(neighborhoods, colors):
+            # if the neighborhoods does not exist in the object, a warning is thrown and we continue
+            if neighborhood not in self._obj.nh:
+                logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
+                continue
+
+            # getting the id for the label
+            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+
+            # setting the new color for the given label
+            array[neighborhoods_layer.index(neighborhood), props_layer.index(Props.COLOR)] = color
+
+        da = xr.DataArray(
+            array,
+            coords=[neighborhoods_layer, props_layer],
+            dims=[Dims.NEIGHBORHOODS, Dims.NH_PROPS],
+            name=Layers.NH_PROPERTIES,
+        )
+
+        return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
+
+    def _neighborhood_name_to_id(self, neighborhood):
+        """
+        Convert a neighborhood name to its corresponding ID.
+
+        Parameters
+        ----------
+        label : str
+            The name of the neighborhood to convert.
+
+        Returns
+        -------
+        int
+            The ID corresponding to the given neighborhood name.
+
+        Raises
+        ------
+        ValueError
+            If the given neighborhood name is not found in the neighborhood names dictionary.
+        """
+        neighborhood_names_reverse = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
+        if neighborhood not in neighborhood_names_reverse:
+            raise ValueError(f"Neighborhood {neighborhood} not found.")
+
+        return neighborhood_names_reverse[neighborhood]
+
     # TODO: reimplement colorization of neighborhoods
     # TODO: reimplement renaming of neighborhoods
 
@@ -229,8 +392,38 @@ class NeighborhoodAccessor:
         if names is not None:
             assert len(names) == len(unique_neighborhoods), "Names do not match the number of neighborhoods."
         else:
-            names = [f"Neighborhood {i+1}" for i in range(len(unique_neighborhoods))]
+            names = [f"Neighborhood {i}" for i in unique_neighborhoods]
 
         obj = obj.nh.add_properties(names, Props.NAME)
 
         return obj
+
+    def _neighborhood_to_dict(self, prop: str, reverse: bool = False) -> dict:
+        """
+        Returns a dictionary that maps each neighborhood to a property.
+
+        Parameters
+        ----------
+        prop : str
+            The property to map to the labels.
+        reverse : bool, optional
+            If True, the dictionary will be reversed. Default is False.
+
+        Returns
+        -------
+        label_dict : dict
+            A dictionary that maps each label to a property.
+        """
+        neighborhood_layer = self._obj[Layers.NH_PROPERTIES]
+        neighborhoods = self._obj.coords[Dims.NEIGHBORHOODS]
+
+        neighborhood_dict = {}
+
+        for neighborhood in neighborhoods:
+            current_row = neighborhood_layer.loc[neighborhood, prop]
+            neighborhood_dict[neighborhood.values.item()] = current_row.values.item()
+
+        if reverse:
+            neighborhood_dict = {v: k for k, v in neighborhood_dict.items()}
+
+        return neighborhood_dict
