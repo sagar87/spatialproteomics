@@ -283,33 +283,29 @@ For a more high level wrapper, please refer to pl.show() instead.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pl.plot.PlotAccessor.render_neighborhoods">
-<span class="sig-name descname"><span class="pre">render_neighborhoods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_boundary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.render_neighborhoods" title="Permalink to this definition"></a></dt>
-<dd><p>Renders neighborhoods on the plot.</p>
+<span class="sig-name descname"><span class="pre">render_neighborhoods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cells'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_boundary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dimgray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pl.plot.PlotAccessor.render_neighborhoods" title="Permalink to this definition"></a></dt>
+<dd><p>Render neighborhoods on the spatial data.
+:param style: The style of rendering, either ‘cells’ or ‘neighborhoods’. Default is ‘cells’.
+:type style: str, optional
+:param alpha: The alpha transparency for the rendered image. Default is 1.0.
+:type alpha: float, optional
+:param alpha_boundary: The alpha transparency for the boundary of the rendered image. Default is 1.0.
+:type alpha_boundary: float, optional
+:param boundary_color: The color of the boundary lines. Default is ‘dimgray’.
+:type boundary_color: str, optional
+:param boundary_thickness: The thickness of the boundary lines. Default is 3.
+:type boundary_thickness: int, optional</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – The transparency of the neighborhoods. Defaults to 1.0.</p></li>
-<li><p><strong>alpha_boundary</strong> (<em>float</em><em>, </em><em>optional</em>) – The transparency of the label boundaries. Defaults to 1.0.</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of rendering. Can be “inner” or “outer”. Defaults to “inner”.</p></li>
-<li><p><strong>override_color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color to override the label colors. Defaults to None.</p></li>
-</ul>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The dataset with the rendered neighborhoods.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The modified dataset with rendered neighborhoods.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>xr.Dataset</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>AssertionError</strong> – If no neighborhoods are found in the object.</p>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If no neighborhoods are found in the object or if the style is not ‘cells’ or ‘neighborhoods’.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>This method requires neighborhoods to be present in the object. Add labels first using <cite>nh.compute_neighborhoods_radius()</cite>.</p></li>
-<li><p>The <cite>mode</cite> parameter determines whether the neighborhoods are rendered inside or outside the neighborhood boundaries.</p></li>
-<li><p>The <cite>override_color</cite> parameter can be used to override the neighborhoods colors with a single color.</p></li>
-</ul>
 </dd></dl>
 
 <dl class="py method">
