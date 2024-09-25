@@ -138,7 +138,7 @@ class PlotAccessor:
             Line2D(
                 [0],
                 [0],
-                marker="o",
+                marker="^",
                 color="w",
                 label=names_dict[i],
                 markerfacecolor=color_dict[i],
@@ -256,15 +256,18 @@ class PlotAccessor:
         render_image: bool = True,
         render_segmentation: bool = False,
         render_labels: bool = False,
+        render_neighborhoods: bool = False,
         ax=None,
         legend_image: bool = True,
         legend_segmentation: bool = True,
         legend_label: bool = True,
+        legend_neighborhoods: bool = True,
         background: str = "black",
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
         label_kwargs: dict = {},
+        neighborhood_kwargs: dict = {},
     ) -> xr.Dataset:
         """
         Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
@@ -273,15 +276,18 @@ class PlotAccessor:
         - render_image (bool): Whether to render the image with channel intensities. Default is True.
         - render_segmentation (bool): Whether to render segmentation. Default is False.
         - render_labels (bool): Whether to render labels. Default is False.
+        - render_neighborhoods(bool): Whether to render neighborhoods. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
         - legend_image (bool): Whether to show the channel legend. Default is True.
         - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
         - legend_label (bool): Whether to show the label legend. Default is True.
+        - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
         - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
         - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
+        - neighborhood_kwargs (dict): Keyword arguments for rendering the neighborhoods. Default is {}.
 
         Returns:
         - obj (xr.Dataset): The modified dataset object.
@@ -298,8 +304,8 @@ class PlotAccessor:
         """
         # check that at least one rendering element is specified
         assert any(
-            [render_image, render_labels, render_segmentation]
-        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', or 'render_segmentation' to True."
+            [render_image, render_labels, render_segmentation, render_neighborhoods]
+        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', 'render_segmentation', or 'render_neighborhoods' to True."
 
         # store a copy of the original object to avoid overwriting it
         obj = self._obj.copy()
@@ -339,6 +345,9 @@ class PlotAccessor:
                     "The background color is set during the first color pass. If you called pl.colorize() before pl.show(), please set the background color there instead using pl.colorize(background='your_color')."
                 )
 
+        if render_neighborhoods:
+            obj = obj.pl.render_neighborhoods(**neighborhood_kwargs)
+
         if render_labels:
             obj = obj.pl.render_labels(**label_kwargs)
 
@@ -351,15 +360,18 @@ class PlotAccessor:
         legend_image = legend_image and render_image
         legend_segmentation = legend_segmentation and render_segmentation
         legend_label = legend_label and render_labels
+        legend_neighborhoods = legend_neighborhoods and render_neighborhoods
 
         return obj.pl.imshow(
             legend_image=legend_image,
             legend_segmentation=legend_segmentation,
             legend_label=legend_label,
+            legend_neighborhoods=legend_neighborhoods,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
             segmentation_kwargs=segmentation_kwargs,
+            neighborhood_kwargs=neighborhood_kwargs,
         )
 
     def annotate(
@@ -636,7 +648,7 @@ class PlotAccessor:
 
     def render_neighborhoods(
         self,
-        style: str = "cells",
+        style: str = "neighborhoods",
         alpha: float = 1.0,
         alpha_boundary: float = 1.0,
         boundary_color: str = "dimgray",
@@ -647,7 +659,7 @@ class PlotAccessor:
         Parameters
         ----------
         style : str, optional
-            The style of rendering, either 'cells' or 'neighborhoods'. Default is 'cells'.
+            The style of rendering, either 'cells' or 'neighborhoods'. Default is 'neighborhoods'.
         alpha : float, optional
             The alpha transparency for the rendered image. Default is 1.0.
         alpha_boundary : float, optional
@@ -841,6 +853,7 @@ class PlotAccessor:
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
+        neighborhood_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -866,6 +879,8 @@ class PlotAccessor:
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         segmentation_kwargs : dict, optional
             Additional keyword arguments for rendering the segmentation, e. g. colors when rendering multiple segmentation channels. Default is {}.
+        neighborhood_kwargs : dict, optional
+            Additional keyword arguments for rendering the neighborhoods. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -901,14 +916,14 @@ class PlotAccessor:
         if legend_image:
             legend += self._obj.pl._create_channel_legend()
 
+        if legend_neighborhoods:
+            legend += self._obj.pl._create_neighborhood_legend()
+
         if legend_segmentation:
             legend += self._obj.pl._create_segmentation_legend()
 
         if legend_label:
             legend += self._obj.pl._create_label_legend()
-
-        if legend_neighborhoods:
-            legend += self._obj.pl._create_neighborhood_legend()
 
         if legend_obs:
             legend += self._obj.pl._create_obs_legend()
