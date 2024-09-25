@@ -370,8 +370,6 @@ class PlotAccessor:
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
-            segmentation_kwargs=segmentation_kwargs,
-            neighborhood_kwargs=neighborhood_kwargs,
         )
 
     def annotate(
@@ -653,6 +651,8 @@ class PlotAccessor:
         alpha_boundary: float = 1.0,
         boundary_color: str = "dimgray",
         boundary_thickness: int = 3,
+        dilation_strength: int = 40,
+        erosion_strength: int = 35,
     ) -> xr.Dataset:
         """
         Render neighborhoods on the spatial data.
@@ -668,6 +668,10 @@ class PlotAccessor:
             The color of the boundary lines. Default is 'dimgray'.
         boundary_thickness : int, optional
             The thickness of the boundary lines. Default is 3.
+        dilation_strength : int, optional
+            The strength of the dilation applied to the cells. Default is 40.
+        erosion_strength : int, optional
+            The strength of the erosion applied to the cells. Default is 35.
         Returns
         -------
         xr.Dataset
@@ -681,8 +685,12 @@ class PlotAccessor:
         assert (
             Layers.NH_PROPERTIES in self._obj
         ), "No neighborhoods found in the object. Add neighborhoods first, for example by using nh.compute_neighborhoods_radius()."
-
         assert style in ["cells", "neighborhoods"], "Style must be either 'cells' or 'neighborhoods'."
+        assert dilation_strength > 0, "Dilation strength must be greater than 0."
+        assert erosion_strength > 0, "Erosion strength must be greater than 0."
+        assert (
+            dilation_strength >= erosion_strength
+        ), "Dilation strength must be greater than or equal to erosion strength."
 
         color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR, relabel=True)
 
@@ -711,11 +719,10 @@ class PlotAccessor:
         else:
             cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
 
-            # TODO: put this into its own method in utils
             # step 1: apply a Voronoi tesselation to the neighborhoods
-            segmentation = self._obj.pp.grow_cells(40, suppress_warning=True)[Layers.SEGMENTATION].values
+            segmentation = self._obj.pp.grow_cells(dilation_strength, suppress_warning=True)[Layers.SEGMENTATION].values
 
-            eroded_mask = _compute_erosion(segmentation, erosion_strength=35)
+            eroded_mask = _compute_erosion(segmentation, erosion_strength=erosion_strength)
 
             # multiplying the segmentation with the eroded mask
             segmentation = segmentation * eroded_mask
@@ -852,8 +859,6 @@ class PlotAccessor:
         legend_obs: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
-        segmentation_kwargs: dict = {},
-        neighborhood_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -877,10 +882,6 @@ class PlotAccessor:
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
-        segmentation_kwargs : dict, optional
-            Additional keyword arguments for rendering the segmentation, e. g. colors when rendering multiple segmentation channels. Default is {}.
-        neighborhood_kwargs : dict, optional
-            Additional keyword arguments for rendering the neighborhoods. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 

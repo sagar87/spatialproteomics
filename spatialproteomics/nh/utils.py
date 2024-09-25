@@ -1,7 +1,6 @@
 import pandas as pd
-from scipy.spatial import KDTree, Delaunay
+from scipy.spatial import Delaunay, KDTree
 from sklearn.neighbors import NearestNeighbors
-
 
 
 def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", radius=100):
@@ -57,10 +56,11 @@ def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroi
 
     return neighborhood_profile
 
+
 def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", k=10):
     """
     Constructs a neighborhood profile DataFrame for each cell using k-nearest neighbors.
-    
+
     Parameters
     ----------
     df : pandas.DataFrame
@@ -75,7 +75,7 @@ def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0
         Column name for the cell type labels (default is 'labels').
     k : int, optional
         The number of nearest neighbors to consider (default is 10).
-        
+
     Returns
     -------
     pandas.DataFrame
@@ -117,7 +117,7 @@ def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0
 def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels"):
     """
     Constructs a neighborhood profile DataFrame for each cell using Delaunay triangulation.
-    
+
     Parameters
     ----------
     df : pandas.DataFrame
@@ -130,7 +130,7 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
         Column name for the y-coordinate (default is 'centroid-0').
     label_col : str, optional
         Column name for the cell type labels (default is 'labels').
-        
+
     Returns
     -------
     pandas.DataFrame
@@ -149,11 +149,13 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
     # resetting the index to start from 0, makes accessing with loc easier
     original_index = df.index
     df = df.reset_index()
-    
+
     # Iterate over each cell
     for i in range(len(df)):
         # Get the indices of the neighboring cells connected via Delaunay triangulation
-        neighbors = tri.vertex_neighbor_vertices[1][tri.vertex_neighbor_vertices[0][i]:tri.vertex_neighbor_vertices[0][i + 1]]
+        neighbors = tri.vertex_neighbor_vertices[1][
+            tri.vertex_neighbor_vertices[0][i] : tri.vertex_neighbor_vertices[0][i + 1]
+        ]
 
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()
@@ -161,11 +163,11 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
         # Update the neighborhood profile for the current cell
         for cell_type, count in neighbor_counts.items():
             neighborhood_profile.at[i, cell_type] = count
-    
+
     # Normalize the neighborhood profile so that each row sums to 1
     neighborhood_profile = neighborhood_profile.div(neighborhood_profile.sum(axis=1), axis=0)
-    
+
     # setting the index back to the original ones
     neighborhood_profile.index = original_index
-    
+
     return neighborhood_profile
