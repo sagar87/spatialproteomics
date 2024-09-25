@@ -123,6 +123,33 @@ class PlotAccessor:
 
         return elements
 
+    def _create_neighborhood_legend(self):
+        """
+        Create a legend for the neighborhoods.
+
+        Returns:
+            elements (list): A list of Line2D objects representing the legend elements.
+        """
+        # getting colors and names for each cell type label
+        color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR)
+        names_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                label=names_dict[i],
+                markerfacecolor=color_dict[i],
+                markersize=15,
+            )
+            for i in sorted(color_dict)
+            if i in self._obj.coords[Dims.NEIGHBORHOODS]
+        ]
+
+        return elements
+
     def _create_obs_legend(self):
         assert (
             Attrs.OBS_COLORS in self._obj[Layers.PLOT].attrs
@@ -809,6 +836,7 @@ class PlotAccessor:
         legend_image: bool = False,
         legend_segmentation: bool = False,
         legend_label: bool = False,
+        legend_neighborhoods: bool = False,
         legend_obs: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
@@ -827,7 +855,9 @@ class PlotAccessor:
         legend_segmentation : bool, optional
             Show the legend for the segmentation. Default is False.
         legend_label : bool, optional
-            Show the labels. Default is False.
+            Show the label legend. Default is False.
+        legend_neighborhoods : bool, optional
+            Show the neighborhood legend. Default is False.
         legend_obs: bool, optional
             Show the observation colorbar. Default is False.
         downsample : int, optional
@@ -877,10 +907,13 @@ class PlotAccessor:
         if legend_label:
             legend += self._obj.pl._create_label_legend()
 
+        if legend_neighborhoods:
+            legend += self._obj.pl._create_neighborhood_legend()
+
         if legend_obs:
             legend += self._obj.pl._create_obs_legend()
 
-        if legend_image or legend_segmentation or legend_label:
+        if legend_image or legend_segmentation or legend_label or legend_neighborhoods or legend_obs:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj
