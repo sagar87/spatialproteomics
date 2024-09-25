@@ -5,7 +5,7 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
-from .utils import _construct_neighborhood_df_radius
+from .utils import _construct_neighborhood_df_radius, _construct_neighborhood_df_knn, _construct_neighborhood_df_delaunay
 
 
 @xr.register_dataset_accessor("nh")
@@ -501,6 +501,93 @@ class NeighborhoodAccessor:
             radius=radius,
         )
 
+        # putting the df into a data array
+        da = xr.DataArray(
+            neighborhood_df.values,
+            coords=[neighborhood_df.index, neighborhood_df.columns],
+            dims=[Dims.CELLS, Dims.LABELS],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
+
+
+    def compute_neighborhoods_knn(self, k=10, key_added: str = Layers.NEIGHBORHOODS):
+        """
+        Compute the neighborhoods of each cell based on k-nearest neighbors.
+
+        This method identifies the k-nearest neighbors for each cell and computes
+        the frequency of each cell type within these k neighbors.
+
+        Parameters
+        ----------
+        k : int, optional
+            The number of nearest neighbors to consider. Default is 10.
+        key_added : str, optional
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+
+        Returns
+        -------
+        xarray.Dataset
+            A merged xarray Dataset containing the original data and the computed neighborhoods.
+        """
+
+        assert k > 0, "k must be greater than 0."
+        assert Layers.OBS in self._obj, "No observations found in the object."
+        assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+            
+        # here we use the numeric labels in order to keep them synchronized with the rest of the object
+        neighborhood_df = _construct_neighborhood_df_knn(
+            self._obj.pp.get_layer_as_df(celltypes_to_str=False),
+            cell_types=self._obj.coords[Dims.LABELS].values,
+            x=Features.X,
+            y=Features.Y,
+            label_col=Features.LABELS,
+            k=k,
+        )
+
+        # Convert the DataFrame to an xarray DataArray
+        # putting the df into a data array
+        da = xr.DataArray(
+            neighborhood_df.values,
+            coords=[neighborhood_df.index, neighborhood_df.columns],
+            dims=[Dims.CELLS, Dims.LABELS],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
+    
+    
+    def compute_neighborhoods_delaunay(self, key_added: str = Layers.NEIGHBORHOODS):
+        """
+        Compute the neighborhoods of each cell based on a Delaunay triangulation.
+
+        This method identifies the neighbors for each cell and computes
+        the frequency of each cell type within these k neighbors.
+
+        Parameters
+        ----------
+        key_added : str, optional
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+
+        Returns
+        -------
+        xarray.Dataset
+            A merged xarray Dataset containing the original data and the computed neighborhoods.
+        """
+        assert Layers.OBS in self._obj, "No observations found in the object."
+        assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+            
+        # here we use the numeric labels in order to keep them synchronized with the rest of the object
+        neighborhood_df = _construct_neighborhood_df_delaunay(
+            self._obj.pp.get_layer_as_df(celltypes_to_str=False),
+            cell_types=self._obj.coords[Dims.LABELS].values,
+            x=Features.X,
+            y=Features.Y,
+            label_col=Features.LABELS,
+        )
+
+        # Convert the DataFrame to an xarray DataArray
         # putting the df into a data array
         da = xr.DataArray(
             neighborhood_df.values,
