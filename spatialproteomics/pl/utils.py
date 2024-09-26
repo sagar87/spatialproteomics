@@ -339,9 +339,9 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
     )
 
 
-def _compute_erosion(segmentation: np.ndarray, threshold: int = 1, erosion_strength: int = 5) -> np.ndarray:
-    # Binarize the segmentation array: values > threshold become 1, others become 0
-    binary_mask = (segmentation > threshold).astype(np.uint8)
+def _compute_erosion(segmentation: np.ndarray, erosion_strength: int = 5) -> np.ndarray:
+    # Binarize the segmentation array: values > 0 become 1, others become 0
+    binary_mask = (segmentation > 0).astype(np.uint8)
 
     # Apply erosion
     eroded_mask = erosion(binary_mask, disk(erosion_strength))
@@ -385,6 +385,7 @@ def _render_neighborhoods(
     colored_mask = cmap(segmentation)
 
     mask_bool = segmentation > 0
+
     mask_bound = np.bitwise_and(mask_bool, find_boundaries(segmentation, mode=mode))
 
     if img is None:

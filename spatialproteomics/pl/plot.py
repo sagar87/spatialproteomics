@@ -721,7 +721,6 @@ class PlotAccessor:
 
             # step 1: apply a Voronoi tesselation to the neighborhoods
             segmentation = self._obj.pp.grow_cells(dilation_strength, suppress_warning=True)[Layers.SEGMENTATION].values
-
             eroded_mask = _compute_erosion(segmentation, erosion_strength=erosion_strength)
 
             # multiplying the segmentation with the eroded mask
