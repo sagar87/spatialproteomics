@@ -445,7 +445,7 @@ class NeighborhoodAccessor:
 
         Parameters
         ----------
-        label : int or str
+        neighborhood : int or str
             The ID or name of the neighborhood whose name will be updated.
         name : str
             The new name to be assigned to the specified neighborhood.
@@ -468,7 +468,7 @@ class NeighborhoodAccessor:
         # checking if the new label already exists
         assert name not in self._obj[Layers.NH_PROPERTIES].sel(
             {Dims.NH_PROPS: Props.NAME}
-        ), f"Neighborhood name {neighborhood} already exists."
+        ), f"Neighborhood name {name} already exists."
 
         # getting the original neighborhood properties
         property_layer = self._obj[Layers.NH_PROPERTIES].copy()
@@ -553,7 +553,7 @@ class NeighborhoodAccessor:
             A merged xarray Dataset containing the original data and the computed neighborhoods.
         """
 
-        assert k > 0, "k must be greater than 0."
+        assert k > 0, "K must be greater than 0."
         assert Layers.OBS in self._obj, "No observations found in the object."
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
 
