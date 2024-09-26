@@ -60,6 +60,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Neighborhood Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#Comparison-of-different-neighborhood-methods">Comparison of different neighborhood methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoperability</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 </ul>
@@ -368,9 +369,10 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Neighborhood-Analysis">
 <h1>Neighborhood Analysis<a class="headerlink" href="#Neighborhood-Analysis" title="Permalink to this heading"></a></h1>
-<p>To find structures within our tissues, we can use the concept of cellular neighborhoods. The idea is that we start by defining neighborhoods for each cell, which consist of the relative abundances of the surrounding cell types. Afterwards, we can use clustering across multiple samples to define the neighborhoods. Finally, we can add these neighborhood labels back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> object and use them to select specific regions of the tissue.</p>
+<p>To find structures within our tissues, we can use the concept of cellular neighborhoods. The idea is that we start by defining neighborhoods for each cell, which consist of the relative abundances of the surrounding cell types. Afterwards, we can use clustering across multiple samples to define the neighborhoods. Finally, we can add these neighborhood labels back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> object and use them to select specific regions of the tissue. Methods relating to neighborhoods are
+contained in the <code class="docutils literal notranslate"><span class="pre">nh</span></code> module.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
@@ -379,6 +381,7 @@ div.rendered_html tbody tr:hover {
 import spatialproteomics as sp
 import matplotlib.pyplot as plt
 import xarray as xr
+import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 </pre></div>
@@ -386,34 +389,487 @@ from sklearn.cluster import KMeans
 </div>
 <p>As a first step, we open three datasets and store them inside of a dictionary.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_obj_1 = xr.open_dataset(&#39;/g/huber/projects/CODEX/TRIANGLE/TRIANGLE_processed/1_F6.zarr&#39;, engine=&#39;zarr&#39;)
-sp_obj_2 = xr.open_dataset(&#39;/g/huber/projects/CODEX/TRIANGLE/TRIANGLE_processed/1_F7.zarr&#39;, engine=&#39;zarr&#39;)
-sp_obj_3 = xr.open_dataset(&#39;/g/huber/projects/CODEX/TRIANGLE/TRIANGLE_processed/1_C6.zarr&#39;, engine=&#39;zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_obj_1 = xr.open_dataset(&#39;../../data/sample_1.zarr&#39;, engine=&#39;zarr&#39;)
+sp_obj_2 = xr.open_dataset(&#39;../../data/sample_2.zarr&#39;, engine=&#39;zarr&#39;)
+sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
 </pre></div>
 </div>
 </div>
-<p>We can use the method <code class="docutils literal notranslate"><span class="pre">pp.compute_neighborhoods_radius()</span></code> to compute the neighborhood profiles, which will be written into a new layer called <code class="docutils literal notranslate"><span class="pre">_neighborhoods</span></code>. This method takes a radius around each cell and returns the relative cell type frequencies within that radius. Here, we use <code class="docutils literal notranslate"><span class="pre">pp.get_layer_as_df()</span></code> to investigate what this looks like.</p>
+<p>We can use the method <code class="docutils literal notranslate"><span class="pre">nh.compute_neighborhoods_radius()</span></code> to compute the neighborhood profiles, which will be written into a new layer called <code class="docutils literal notranslate"><span class="pre">_neighborhoods</span></code>. This method takes a radius around each cell and returns the relative cell type frequencies within that radius. Here, we use <code class="docutils literal notranslate"><span class="pre">pp.get_layer_as_df()</span></code> to investigate what this looks like.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_obj_1.pp.compute_neighborhoods_radius().pp.get_layer_as_df(&#39;_neighborhoods&#39;).head()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># computing the neighborhood matrix
+sp_obj_1_with_neighborhood = sp_obj_1.nh.compute_neighborhoods_radius()
+sp_obj_1_with_neighborhood
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+html[theme=dark],
+body[data-theme=dark],
+body.vscode-dark {
+  --xr-font-color0: rgba(255, 255, 255, 1);
+  --xr-font-color2: rgba(255, 255, 255, 0.54);
+  --xr-font-color3: rgba(255, 255, 255, 0.38);
+  --xr-border-color: #1F1F1F;
+  --xr-disabled-color: #515151;
+  --xr-background-color: #111111;
+  --xr-background-color-row-even: #111111;
+  --xr-background-color-row-odd: #313131;
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 20px 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: none;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: '►';
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: '▼';
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: '(';
+}
+
+.xr-dim-list:after {
+  content: ')';
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ',';
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
+Dimensions:                (cells: 6901, celltype_levels: 3, channels: 56,
+                            y: 2000, x: 2000, labels: 9, la_props: 2,
+                            features: 17)
+Coordinates:
+  * cells                  (cells) int64 1 2 3 4 5 ... 6897 6898 6899 6900 6901
+  * celltype_levels        (celltype_levels) &lt;U8 &#x27;labels&#x27; &#x27;labels_1&#x27; &#x27;labels_2&#x27;
+  * channels               (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;TIM3&#x27; ... &#x27;ki-67&#x27; &#x27;CD38&#x27;
+  * features               (features) &lt;U10 &#x27;BCL-2&#x27; &#x27;BCL-6&#x27; ... &#x27;ki-67&#x27;
+  * la_props               (la_props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * labels                 (labels) int64 1 2 3 4 5 6 7 8 9
+  * x                      (x) int64 0 1 2 3 4 5 ... 1995 1996 1997 1998 1999
+  * y                      (y) int64 0 1 2 3 4 5 ... 1995 1996 1997 1998 1999
+Data variables:
+    _celltype_predictions  (cells, celltype_levels) &lt;U11 ...
+    _image                 (channels, y, x) uint8 ...
+    _la_properties         (labels, la_props) &lt;U11 ...
+    _obs                   (cells, features) float64 1.0 1.0 0.0 ... 904.5 0.0
+    _segmentation          (y, x) int64 ...
+    _neighborhoods         (cells, labels) float64 0.7812 0.0 0.0 ... 0.0 0.2344</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-dae658ba-3180-4ea9-9892-46b9d4acc4e8' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-dae658ba-3180-4ea9-9892-46b9d4acc4e8' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>cells</span>: 6901</li><li><span class='xr-has-index'>celltype_levels</span>: 3</li><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>y</span>: 2000</li><li><span class='xr-has-index'>x</span>: 2000</li><li><span class='xr-has-index'>labels</span>: 9</li><li><span class='xr-has-index'>la_props</span>: 2</li><li><span class='xr-has-index'>features</span>: 17</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-7b6a8199-4497-4aef-8618-00cad0055c9c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7b6a8199-4497-4aef-8618-00cad0055c9c' class='xr-section-summary' >Coordinates: <span>(8)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 ... 6898 6899 6900 6901</div><input id='attrs-94c473fc-146f-4e76-b48f-a0403527d746' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-94c473fc-146f-4e76-b48f-a0403527d746' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dbfaf2cd-406a-4fa9-8c21-752b3ca4996f' class='xr-var-data-in' type='checkbox'><label for='data-dbfaf2cd-406a-4fa9-8c21-752b3ca4996f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   1,    2,    3, ..., 6899, 6900, 6901])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>celltype_levels</span></div><div class='xr-var-dims'>(celltype_levels)</div><div class='xr-var-dtype'>&lt;U8</div><div class='xr-var-preview xr-preview'>&#x27;labels&#x27; &#x27;labels_1&#x27; &#x27;labels_2&#x27;</div><input id='attrs-657bdf52-3a87-475a-9b71-fa54312de3ab' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-657bdf52-3a87-475a-9b71-fa54312de3ab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0be4a6fb-cecf-49bf-be73-65a30ad54859' class='xr-var-data-in' type='checkbox'><label for='data-0be4a6fb-cecf-49bf-be73-65a30ad54859' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;labels&#x27;, &#x27;labels_1&#x27;, &#x27;labels_2&#x27;], dtype=&#x27;&lt;U8&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;TIM3&#x27; ... &#x27;ki-67&#x27; &#x27;CD38&#x27;</div><input id='attrs-0b64e2df-f675-4f58-950a-406ee0e1eff7' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-0b64e2df-f675-4f58-950a-406ee0e1eff7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-76c49c59-cfc0-4d5e-ada2-aba6d5208764' class='xr-var-data-in' type='checkbox'><label for='data-76c49c59-cfc0-4d5e-ada2-aba6d5208764' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;TIM3&#x27;, &#x27;CD4 Cy7&#x27;, &#x27;CCR7&#x27;, &#x27;BCL-6&#x27;, &#x27;CD62L&#x27;, &#x27;Helios&#x27;, &#x27;PD-L1&#x27;,
+       &#x27;CD69&#x27;, &#x27;IKZF3&#x27;, &#x27;c-myc&#x27;, &#x27;BCL-2&#x27;, &#x27;CD68&#x27;, &#x27;LAG3&#x27;, &#x27;TCF1&#x27;, &#x27;CD57&#x27;,
+       &#x27;CD56&#x27;, &#x27;CD138&#x27;, &#x27;Lambda&#x27;, &#x27;NOXA&#x27;, &#x27;CD25&#x27;, &#x27;p53&#x27;, &#x27;CD19&#x27;, &#x27;FoxP3&#x27;,
+       &#x27;Podoplanin&#x27;, &#x27;CXCR3&#x27;, &#x27;CXCR5&#x27;, &#x27;IRF4&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CD21&#x27;,
+       &#x27;Kappa&#x27;, &#x27;CD31&#x27;, &#x27;CD163&#x27;, &#x27;CD7&#x27;, &#x27;CD4&#x27;, &#x27;CD15&#x27;, &#x27;CD45RO&#x27;, &#x27;Collagen IV&#x27;,
+       &#x27;CD34&#x27;, &#x27;CD20&#x27;, &#x27;Na/K ATPase&#x27;, &#x27;HLA-DR&#x27;, &#x27;CD11b&#x27;, &#x27;PD1&#x27;, &#x27;CD90&#x27;, &#x27;PAX5&#x27;,
+       &#x27;CD8&#x27;, &#x27;CD11c&#x27;, &#x27;CD79a&#x27;, &#x27;CD45RA&#x27;, &#x27;Granzyme B&#x27;, &#x27;CD3&#x27;, &#x27;CD45&#x27;, &#x27;ki-67&#x27;,
+       &#x27;CD38&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;BCL-2&#x27; &#x27;BCL-6&#x27; ... &#x27;ki-67&#x27;</div><input id='attrs-6107b903-10cc-4060-8363-ec276646d50b' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-6107b903-10cc-4060-8363-ec276646d50b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b5b2fc6b-1af0-4162-b390-e4f3ab1cb3e4' class='xr-var-data-in' type='checkbox'><label for='data-b5b2fc6b-1af0-4162-b390-e4f3ab1cb3e4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;BCL-2&#x27;, &#x27;BCL-6&#x27;, &#x27;CCR7&#x27;, &#x27;CD57&#x27;, &#x27;CD8&#x27;, &#x27;FoxP3&#x27;, &#x27;Granzyme B&#x27;,
+       &#x27;Helios&#x27;, &#x27;ICOS&#x27;, &#x27;LAG3&#x27;, &#x27;PD1&#x27;, &#x27;TCF1&#x27;, &#x27;TIM3&#x27;, &#x27;_labels&#x27;,
+       &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;, &#x27;ki-67&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>la_props</span></div><div class='xr-var-dims'>(la_props)</div><div class='xr-var-dtype'>&lt;U6</div><div class='xr-var-preview xr-preview'>&#x27;_color&#x27; &#x27;_name&#x27;</div><input id='attrs-76db66a7-854e-420a-8186-3da2f629aecd' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-76db66a7-854e-420a-8186-3da2f629aecd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cb54cd83-e845-4553-8d9f-4a1273d3e7cf' class='xr-var-data-in' type='checkbox'><label for='data-cb54cd83-e845-4553-8d9f-4a1273d3e7cf' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;&lt;U6&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>labels</span></div><div class='xr-var-dims'>(labels)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 6 7 8 9</div><input id='attrs-c04564d7-7c4b-43d7-b562-e231ec4d8681' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c04564d7-7c4b-43d7-b562-e231ec4d8681' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bb084932-04e7-404c-a21b-0eec66ec9da7' class='xr-var-data-in' type='checkbox'><label for='data-bb084932-04e7-404c-a21b-0eec66ec9da7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([1, 2, 3, 4, 5, 6, 7, 8, 9])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 1996 1997 1998 1999</div><input id='attrs-8127dde8-d85b-4c8d-9fc5-748346a2a549' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8127dde8-d85b-4c8d-9fc5-748346a2a549' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e34c799a-3cf5-4bc8-8bdb-1d9e75377b88' class='xr-var-data-in' type='checkbox'><label for='data-e34c799a-3cf5-4bc8-8bdb-1d9e75377b88' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 1997, 1998, 1999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 1996 1997 1998 1999</div><input id='attrs-bcb4a259-45f6-4db7-9769-bc1284b7aa65' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-bcb4a259-45f6-4db7-9769-bc1284b7aa65' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-328e9d51-328c-47eb-9dc9-fb6efe1f83e7' class='xr-var-data-in' type='checkbox'><label for='data-328e9d51-328c-47eb-9dc9-fb6efe1f83e7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 1997, 1998, 1999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-2ff4a11e-2d38-4447-861d-0fb18cdd8400' class='xr-section-summary-in' type='checkbox'  checked><label for='section-2ff4a11e-2d38-4447-861d-0fb18cdd8400' class='xr-section-summary' >Data variables: <span>(6)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_celltype_predictions</span></div><div class='xr-var-dims'>(cells, celltype_levels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-07f1286b-318b-4e16-9954-b0da9cef3c23' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-07f1286b-318b-4e16-9954-b0da9cef3c23' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9e511b0b-42f0-4f3f-b14b-a6e2b263ade3' class='xr-var-data-in' type='checkbox'><label for='data-9e511b0b-42f0-4f3f-b14b-a6e2b263ade3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>[20703 values with dtype=&lt;U11]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-704d9b8d-29bd-4871-8fda-080ddee367d8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-704d9b8d-29bd-4871-8fda-080ddee367d8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d9416f5a-e262-40f3-b268-475a6b6a98ce' class='xr-var-data-in' type='checkbox'><label for='data-d9416f5a-e262-40f3-b268-475a6b6a98ce' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>[224000000 values with dtype=uint8]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_la_properties</span></div><div class='xr-var-dims'>(labels, la_props)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-0c8421d2-563b-4b15-b2f7-e8702cd47626' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-0c8421d2-563b-4b15-b2f7-e8702cd47626' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b24cac1b-0e74-4eb5-928d-461950803b69' class='xr-var-data-in' type='checkbox'><label for='data-b24cac1b-0e74-4eb5-928d-461950803b69' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>[18 values with dtype=&lt;U11]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>1.0 1.0 0.0 ... 1.649e+03 904.5 0.0</div><input id='attrs-1d7cc34f-cf91-4a04-8865-61fc698d5290' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1d7cc34f-cf91-4a04-8865-61fc698d5290' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-295f8e03-60c6-4ddc-89c7-79b5e9577138' class='xr-var-data-in' type='checkbox'><label for='data-295f8e03-60c6-4ddc-89c7-79b5e9577138' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[1.000000e+00, 1.000000e+00, 0.000000e+00, ..., 2.330565e+02,
+        8.680282e+02, 0.000000e+00],
+       [0.000000e+00, 1.000000e+00, 0.000000e+00, ..., 2.348092e+02,
+        8.109313e+02, 0.000000e+00],
+       [1.000000e+00, 0.000000e+00, 0.000000e+00, ..., 2.353251e+02,
+        8.843300e+02, 0.000000e+00],
+       ...,
+       [1.000000e+00, 0.000000e+00, 0.000000e+00, ..., 1.643940e+03,
+        9.614188e+02, 0.000000e+00],
+       [1.000000e+00, 0.000000e+00, 0.000000e+00, ..., 1.646662e+03,
+        8.629873e+02, 0.000000e+00],
+       [0.000000e+00, 0.000000e+00, 0.000000e+00, ..., 1.649231e+03,
+        9.045299e+02, 0.000000e+00]])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-c4a2da25-ebe6-4e6d-9b1a-c73607b39d2a' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c4a2da25-ebe6-4e6d-9b1a-c73607b39d2a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7d9cce71-7cad-4db6-b0df-ab46b28f44f7' class='xr-var-data-in' type='checkbox'><label for='data-7d9cce71-7cad-4db6-b0df-ab46b28f44f7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>[4000000 values with dtype=int64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_neighborhoods</span></div><div class='xr-var-dims'>(cells, labels)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.7812 0.0 0.0 ... 0.0 0.2344</div><input id='attrs-e17b4842-d3b3-4acc-8100-3c1a2e319064' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e17b4842-d3b3-4acc-8100-3c1a2e319064' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0512becb-1ef8-4b1a-9e19-a9138498f87a' class='xr-var-data-in' type='checkbox'><label for='data-0512becb-1ef8-4b1a-9e19-a9138498f87a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[0.78125   , 0.        , 0.        , ..., 0.        , 0.        ,
+        0.203125  ],
+       [0.77941176, 0.        , 0.        , ..., 0.        , 0.        ,
+        0.20588235],
+       [0.76119403, 0.        , 0.        , ..., 0.01492537, 0.        ,
+        0.19402985],
+       ...,
+       [0.609375  , 0.078125  , 0.        , ..., 0.03125   , 0.        ,
+        0.25      ],
+       [0.69565217, 0.04347826, 0.        , ..., 0.01449275, 0.        ,
+        0.2173913 ],
+       [0.609375  , 0.09375   , 0.        , ..., 0.03125   , 0.        ,
+        0.234375  ]])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-a0d7e857-33fa-45e7-847b-c83566444d06' class='xr-section-summary-in' type='checkbox'  ><label for='section-a0d7e857-33fa-45e7-847b-c83566444d06' class='xr-section-summary' >Indexes: <span>(8)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-64a69a31-aa6e-4235-97c5-75ce70b55d43' class='xr-index-data-in' type='checkbox'/><label for='index-64a69a31-aa6e-4235-97c5-75ce70b55d43' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   1,    2,    3,    4,    5,    6,    7,    8,    9,   10,
+       ...
+       6892, 6893, 6894, 6895, 6896, 6897, 6898, 6899, 6900, 6901],
+      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=6901))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>celltype_levels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-59f59b1d-cba0-43f5-8097-67b4a06e41d4' class='xr-index-data-in' type='checkbox'/><label for='index-59f59b1d-cba0-43f5-8097-67b4a06e41d4' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;labels&#x27;, &#x27;labels_1&#x27;, &#x27;labels_2&#x27;], dtype=&#x27;object&#x27;, name=&#x27;celltype_levels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-45f3e5ec-53ac-4d31-b26c-8380599341dc' class='xr-index-data-in' type='checkbox'/><label for='index-45f3e5ec-53ac-4d31-b26c-8380599341dc' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;TIM3&#x27;, &#x27;CD4 Cy7&#x27;, &#x27;CCR7&#x27;, &#x27;BCL-6&#x27;, &#x27;CD62L&#x27;, &#x27;Helios&#x27;, &#x27;PD-L1&#x27;,
+       &#x27;CD69&#x27;, &#x27;IKZF3&#x27;, &#x27;c-myc&#x27;, &#x27;BCL-2&#x27;, &#x27;CD68&#x27;, &#x27;LAG3&#x27;, &#x27;TCF1&#x27;, &#x27;CD57&#x27;,
+       &#x27;CD56&#x27;, &#x27;CD138&#x27;, &#x27;Lambda&#x27;, &#x27;NOXA&#x27;, &#x27;CD25&#x27;, &#x27;p53&#x27;, &#x27;CD19&#x27;, &#x27;FoxP3&#x27;,
+       &#x27;Podoplanin&#x27;, &#x27;CXCR3&#x27;, &#x27;CXCR5&#x27;, &#x27;IRF4&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CD21&#x27;,
+       &#x27;Kappa&#x27;, &#x27;CD31&#x27;, &#x27;CD163&#x27;, &#x27;CD7&#x27;, &#x27;CD4&#x27;, &#x27;CD15&#x27;, &#x27;CD45RO&#x27;, &#x27;Collagen IV&#x27;,
+       &#x27;CD34&#x27;, &#x27;CD20&#x27;, &#x27;Na/K ATPase&#x27;, &#x27;HLA-DR&#x27;, &#x27;CD11b&#x27;, &#x27;PD1&#x27;, &#x27;CD90&#x27;, &#x27;PAX5&#x27;,
+       &#x27;CD8&#x27;, &#x27;CD11c&#x27;, &#x27;CD79a&#x27;, &#x27;CD45RA&#x27;, &#x27;Granzyme B&#x27;, &#x27;CD3&#x27;, &#x27;CD45&#x27;, &#x27;ki-67&#x27;,
+       &#x27;CD38&#x27;],
+      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-ef634447-9588-4459-83fd-e02887f7ff36' class='xr-index-data-in' type='checkbox'/><label for='index-ef634447-9588-4459-83fd-e02887f7ff36' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;BCL-2&#x27;, &#x27;BCL-6&#x27;, &#x27;CCR7&#x27;, &#x27;CD57&#x27;, &#x27;CD8&#x27;, &#x27;FoxP3&#x27;, &#x27;Granzyme B&#x27;,
+       &#x27;Helios&#x27;, &#x27;ICOS&#x27;, &#x27;LAG3&#x27;, &#x27;PD1&#x27;, &#x27;TCF1&#x27;, &#x27;TIM3&#x27;, &#x27;_labels&#x27;,
+       &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;, &#x27;ki-67&#x27;],
+      dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>la_props</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-0e63bbcc-96a0-493b-925a-33cf7365f562' class='xr-index-data-in' type='checkbox'/><label for='index-0e63bbcc-96a0-493b-925a-33cf7365f562' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;object&#x27;, name=&#x27;la_props&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>labels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-2ab2d422-eee2-4168-85e7-38270f541272' class='xr-index-data-in' type='checkbox'/><label for='index-2ab2d422-eee2-4168-85e7-38270f541272' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=&#x27;int64&#x27;, name=&#x27;labels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-a3ad8ad5-68c8-4fe4-8c4d-68a3fe6d669f' class='xr-index-data-in' type='checkbox'/><label for='index-a3ad8ad5-68c8-4fe4-8c4d-68a3fe6d669f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+       ...
+       1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=2000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-7ae46651-49b8-422e-89fd-45f4fdebe044' class='xr-index-data-in' type='checkbox'/><label for='index-7ae46651-49b8-422e-89fd-45f4fdebe044' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+       ...
+       1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=2000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-f9c232ce-845c-4ead-8af9-29f9ada74590' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-f9c232ce-845c-4ead-8af9-29f9ada74590' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># checking what the neighborhoods layer looks like
+sp_obj_1_with_neighborhood.pp.get_layer_as_df(&#39;_neighborhoods&#39;).head()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -449,84 +905,84 @@ sp_obj_3 = xr.open_dataset(&#39;/g/huber/projects/CODEX/TRIANGLE/TRIANGLE_proces
   <tbody>
     <tr>
       <th>1</th>
-      <td>0.666667</td>
-      <td>0.000000</td>
-      <td>0.041667</td>
-      <td>0.020833</td>
+      <td>0.781250</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.015625</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.000000</td>
-      <td>0.020833</td>
-      <td>0.250000</td>
+      <td>0.0</td>
+      <td>0.203125</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.769231</td>
-      <td>0.019231</td>
-      <td>0.000000</td>
-      <td>0.038462</td>
+      <td>0.779412</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.019231</td>
+      <td>0.014706</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>0.000000</td>
-      <td>0.153846</td>
+      <td>0.0</td>
+      <td>0.205882</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.763636</td>
-      <td>0.018182</td>
-      <td>0.000000</td>
-      <td>0.036364</td>
+      <td>0.761194</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.018182</td>
-      <td>0.000000</td>
-      <td>0.163636</td>
+      <td>0.029851</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.014925</td>
+      <td>0.0</td>
+      <td>0.194030</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.745098</td>
-      <td>0.019608</td>
-      <td>0.000000</td>
-      <td>0.039216</td>
+      <td>0.753846</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.019608</td>
-      <td>0.000000</td>
-      <td>0.176471</td>
+      <td>0.030769</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.015385</td>
+      <td>0.0</td>
+      <td>0.200000</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>0.692308</td>
-      <td>0.019231</td>
-      <td>0.038462</td>
-      <td>0.038462</td>
+      <td>0.811594</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.019231</td>
-      <td>0.019231</td>
-      <td>0.173077</td>
+      <td>0.014493</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.173913</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
-<p>Each cell now has a neighborhood associated with it, which is defined as the relative abundance of the surrounding cell types (including the cell itself). We can do this across all three datasets, and then aggregate the results into a single data frame.</p>
+<p>Each cell now has a neighborhood associated with it, which is defined as the relative abundance of the surrounding cell types. This includes the cell itself, but you can change this behavior with the argument <code class="docutils literal notranslate"><span class="pre">include_center</span></code> when computing the neighborhoods). We can now do this across all three datasets, and then aggregate the results into a single data frame.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = []
 for id, sp_obj in sp_dict.items():
-    df.append(sp_obj.pp.compute_neighborhoods_radius().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
+    df.append(sp_obj.nh.compute_neighborhoods_radius().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
 # replacing nans with 0s (this means that the ct was never called in that specific sample)
 df = pd.concat(df).fillna(0)
-df
+df.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -562,156 +1018,83 @@ df
   <tbody>
     <tr>
       <th>1</th>
-      <td>0.666667</td>
-      <td>0.000000</td>
-      <td>0.041667</td>
-      <td>0.020833</td>
+      <td>0.781250</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.015625</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.000000</td>
-      <td>0.020833</td>
-      <td>0.250000</td>
+      <td>0.0</td>
+      <td>0.203125</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.769231</td>
-      <td>0.019231</td>
-      <td>0.000000</td>
-      <td>0.038462</td>
+      <td>0.779412</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.019231</td>
+      <td>0.014706</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>0.000000</td>
-      <td>0.153846</td>
+      <td>0.0</td>
+      <td>0.205882</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.763636</td>
-      <td>0.018182</td>
-      <td>0.000000</td>
-      <td>0.036364</td>
+      <td>0.761194</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.018182</td>
-      <td>0.000000</td>
-      <td>0.163636</td>
+      <td>0.029851</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.014925</td>
+      <td>0.0</td>
+      <td>0.194030</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.745098</td>
-      <td>0.019608</td>
-      <td>0.000000</td>
-      <td>0.039216</td>
+      <td>0.753846</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.019608</td>
-      <td>0.000000</td>
-      <td>0.176471</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0.692308</td>
-      <td>0.019231</td>
-      <td>0.038462</td>
-      <td>0.038462</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.019231</td>
-      <td>0.019231</td>
-      <td>0.173077</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>6924</th>
-      <td>0.892308</td>
-      <td>0.015385</td>
-      <td>0.000000</td>
-      <td>0.015385</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.076923</td>
-    </tr>
-    <tr>
-      <th>6925</th>
-      <td>0.953846</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
       <td>0.030769</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
       <td>0.015385</td>
+      <td>0.0</td>
+      <td>0.200000</td>
     </tr>
     <tr>
-      <th>6926</th>
-      <td>0.984375</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.015625</td>
+      <th>5</th>
+      <td>0.811594</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.014493</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>6927</th>
-      <td>0.984375</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.015625</td>
       <td>0.0</td>
-      <td>0.0</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>6928</th>
-      <td>0.903226</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.032258</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.064516</td>
+      <td>0.173913</td>
     </tr>
   </tbody>
 </table>
-<p>14195 rows × 9 columns</p>
 </div></div>
 </div>
 <p>We can now perform k-means clustering on this large data frame. Note that you could also use alternative clustering approaches, however some of them (e. g. hierarchical clustering) might be difficult to apply to large data sets, since they require the computation of a full pairwise distance matrix.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Running K-Means clustering (here with k=4, you could adjust that to your liking)
-clusterer = KMeans(n_clusters=4, random_state=0)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Running K-Means clustering (here with k=3, you could adjust that to your liking)
+clusterer = KMeans(n_clusters=3, random_state=0)
 clusterer.fit(df)
-kmeans_df = pd.DataFrame({f&#39;labels&#39;: clusterer.labels_})
-kmeans_df
+kmeans_df = pd.DataFrame({f&#39;neighborhood&#39;: clusterer.labels_})
+kmeans_df.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -733,13 +1116,13 @@ kmeans_df
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>labels</th>
+      <th>neighborhood</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>1</th>
@@ -751,68 +1134,54 @@ kmeans_df
     </tr>
     <tr>
       <th>3</th>
-      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>14190</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14191</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14192</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14193</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14194</th>
       <td>1</td>
     </tr>
   </tbody>
 </table>
-<p>14195 rows × 1 columns</p>
 </div></div>
 </div>
-<p>Now we have a large data frame containing the neighborhood labels. We can add them back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> objects with <code class="docutils literal notranslate"><span class="pre">pp.add_feature()</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<p>Now we have a large data frame containing the neighborhood labels. We can add them back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> objects with <code class="docutils literal notranslate"><span class="pre">nh.add_neighborhoods_from_dataframe()</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding the neighborhoods back into the graph
-for sample_id, sp_obj in sp_dict.items():
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for sample_id, sp_obj in sp_dict.items():
+    # obtaining the number of cells contained in the object we are currently looking at
     num_cells = sp_obj.sizes[&#39;cells&#39;]
     # getting the labels for the number of cells
     tmp_df = kmeans_df[:num_cells]
     # removing those cells from the kmeans_df
     kmeans_df = kmeans_df[num_cells:]
-    sp_dict[sample_id] = sp_obj.pp.add_feature(&#39;k-means_label&#39;, tmp_df[&#39;labels&#39;].values)
+    # storing the neighborhoods in the spatialproteomics objects
+    # we can also set custom neighborhood colors here using .nh.set_neighborhood_colors()
+    sp_dict[sample_id] = sp_obj.nh.add_neighborhoods_from_dataframe(tmp_df).nh.set_neighborhood_colors(np.arange(3), [&#39;lightgreen&#39;, &#39;red&#39;, &#39;yellow&#39;])
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Neighborhood 2 not found in the data object. Skipping.
+Neighborhood 0 not found in the data object. Skipping.
+</pre></div></div>
+</div>
 <p>Finally, we can plot the results. Let’s look at both the cellular neighborhoods as well as the original cell type labels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(30, 20))
 ax = ax.flatten()
 
-_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.render_obs(&#39;k-means_label&#39;, cmap=&#39;spring&#39;).pl.imshow(ax=ax[0])
-_ = sp_dict[&#39;2&#39;].pl.autocrop().pl.render_obs(&#39;k-means_label&#39;, cmap=&#39;spring&#39;).pl.imshow(ax=ax[1])
-_ = sp_dict[&#39;3&#39;].pl.autocrop().pl.render_obs(&#39;k-means_label&#39;, cmap=&#39;spring&#39;).pl.imshow(ax=ax[2])
+_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[0])
+_ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[1])
+_ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[2])
 
 _ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[3])
 _ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[4])
@@ -824,15 +1193,165 @@ _ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_labels
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_14_0.png" src="../_images/notebooks_Neighborhoods_14_0.png" />
+<img alt="../_images/notebooks_Neighborhoods_15_0.png" src="../_images/notebooks_Neighborhoods_15_0.png" />
 </div>
 </div>
+<p>As you can see, our neighborhoods capture a B cell rich zone, a T cell rich zone, and a Myeloid rich zone. Depending on the amount of clusters you set, you can of course get different results, including more or less neighborhoods.</p>
+<p>Once you have defined clusters, you may also rename the neighborhoods. In addition, note that you can also plot them on the cells directly, instead of using the region-based approach demonstrated above.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># renaming the neighborhoods
+sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 0&#39;, &#39;T cell neighborhood&#39;)
+sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 1&#39;, &#39;B cell neighborhood&#39;)
 </pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(21, 7))
+ax = ax.flatten()
+
+_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[0])
+# using the imshow syntax to have more control over the plot
+# refer to the plotting notebook for more information
+_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.render_neighborhoods(style=&#39;cells&#39;).pl.imshow(legend_neighborhoods=True, ax=ax[1])
+# plotting the segmentation on top of the neighborhoods
+_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.render_neighborhoods().pl.render_segmentation(alpha=0.5).pl.imshow(legend_neighborhoods=True, ax=ax[2])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_18_0.png" src="../_images/notebooks_Neighborhoods_18_0.png" />
+</div>
+</div>
+</section>
+<section id="Comparison-of-different-neighborhood-methods">
+<h1>Comparison of different neighborhood methods<a class="headerlink" href="#Comparison-of-different-neighborhood-methods" title="Permalink to this heading"></a></h1>
+<p>There are three main ways how a neighborhood can be computed: via a radius, a k-nearest neighborh graph, or a Delaunay triangulation. In the <code class="docutils literal notranslate"><span class="pre">radius</span></code> method, a circle with a certain radius is drawn around a cell, and the cell type frequencies are aggregated. With <code class="docutils literal notranslate"><span class="pre">knn</span></code>, the k nearest neighbors of a cell are counted as the neighborhood. Finally, <code class="docutils literal notranslate"><span class="pre">delaunay</span></code> creates a Delaunay triangulation from the cell centroids and counts cells as part of each other’s neighborhood if they are connected in
+the resulting graph.</p>
+<p>Let’s look at how these three methods perform on the example data from above. To illustrate the differences better, we also cluster with a higher k, resulting in more neighborhoods.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># putting the strategy from above into a single method
+def compute_and_plot_clusters(sp_dict, k=5, method=&#39;radius&#39;):
+    # ===== CREATION OF THE JOINT NEIGHBORHOOD DF =====
+    df = []
+    for id, sp_obj in sp_dict.items():
+        if method == &#39;radius&#39;:
+            df.append(sp_obj.nh.compute_neighborhoods_radius().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
+        elif method == &#39;knn&#39;:
+            df.append(sp_obj.nh.compute_neighborhoods_knn().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
+        elif method == &#39;delaunay&#39;:
+            df.append(sp_obj.nh.compute_neighborhoods_delaunay().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
+    # replacing nans with 0s (this means that the ct was never called in that specific sample)
+    df = pd.concat(df).fillna(0)
+
+    # ===== K-MEANS CLUSTERING =====
+    clusterer = KMeans(n_clusters=k, random_state=0)
+    clusterer.fit(df)
+    kmeans_df = pd.DataFrame({f&#39;neighborhood&#39;: clusterer.labels_})
+
+    # ===== ADDING NEIGHBORHOODS INTO SP OBJECTS =====
+    for sample_id, sp_obj in sp_dict.items():
+        # obtaining the number of cells contained in the object we are currently looking at
+        num_cells = sp_obj.sizes[&#39;cells&#39;]
+        # getting the labels for the number of cells
+        tmp_df = kmeans_df[:num_cells]
+        # removing those cells from the kmeans_df
+        kmeans_df = kmeans_df[num_cells:]
+        # storing the neighborhoods in the spatialproteomics objects
+        # we can also set custom neighborhood colors here using .nh.set_neighborhood_colors()
+        sp_dict[sample_id] = sp_obj.nh.add_neighborhoods_from_dataframe(tmp_df).nh.set_neighborhood_colors(np.arange(k), [&#39;deepskyblue&#39;, &#39;orange&#39;, &#39;red&#39;, &#39;purple&#39;, &#39;blue&#39;])
+
+    # ===== PLOTTING =====
+    fig, ax = plt.subplots(2, 3, figsize=(15, 10))
+    ax = ax.flatten()
+
+    _ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[0])
+    _ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[1])
+    _ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[2])
+
+    _ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[3])
+    _ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[4])
+    _ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[5])
+
+    for axis in ax:
+        axis.set_xticks([])
+        axis.set_yticks([])
+    plt.suptitle(method)
+    plt.tight_layout()
+    plt.show()
+</pre></div>
+</div>
+</div>
+<p>Note that the colors for the neighborhoods were chosen arbitrarily here.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;radius&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Neighborhoods are non-consecutive. Relabeling...
+Neighborhood 2 not found in the data object. Skipping.
+Neighborhoods are non-consecutive. Relabeling...
+Neighborhood 2 not found in the data object. Skipping.
+Neighborhood 0 not found in the data object. Skipping.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_22_1.png" src="../_images/notebooks_Neighborhoods_22_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;knn&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_23_0.png" src="../_images/notebooks_Neighborhoods_23_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_24_0.png" src="../_images/notebooks_Neighborhoods_24_0.png" />
 </div>
 </div>
 </section>

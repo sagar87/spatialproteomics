@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Rendering-Obs">Rendering Obs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Expert-Plotting">Expert Plotting</a></li>
 </ul>
@@ -68,6 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Neighborhoods.html">Neighborhood Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Neighborhoods.html#Comparison-of-different-neighborhood-methods">Comparison of different neighborhood methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoperability</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 </ul>
@@ -397,7 +399,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f68a8447580&gt;
+&lt;xarray.core.options.set_options at 0x7f4228263940&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -405,9 +407,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
-ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;, engine=&#39;zarr&#39;)
-ds[&quot;_properties&quot;] = ds[&quot;_labels&quot;]
-ds = ds.pp.drop_layers(&quot;_labels&quot;)
+ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK_2.zarr&#39;, engine=&#39;zarr&#39;)
 </pre></div>
 </div>
 </div>
@@ -426,25 +426,21 @@ ds
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (cells: 12560, channels: 56, y: 3000, x: 3000, features: 4,
-                    labels: 8, props: 2)
+Dimensions:         (channels: 56, y: 3000, x: 3000, labels: 8, la_props: 2,
+                     cells: 12560, features: 3)
 Coordinates:
-  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27; ... &#x27;_original_&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
-  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features        (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+  * la_props        (la_props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * labels          (labels) int64 1 2 3 4 5 6 7 8
+  * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
-    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
-    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _obs           (cells, features) float64 613.3 768.4 4.0 ... 8.0 7.0
-    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
-    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
-    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
-    _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
+    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
+    _obs            (cells, features) float64 7.0 613.3 ... 2.249e+03 2.237e+03
+    _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <section id="Plotting-Channel-Intensities">
 <h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Permalink to this heading"></a></h2>
@@ -660,11 +656,41 @@ _ = ds.pp[1000:1500, 500:1000].la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;].la.set_
 </div>
 </div>
 </section>
+<section id="Rendering-Neighborhoods">
+<h2>Rendering Neighborhoods<a class="headerlink" href="#Rendering-Neighborhoods" title="Permalink to this heading"></a></h2>
+<p>Lastly, we can also render neighborhoods. How to obtain such neighborhoods is shown in the <code class="docutils literal notranslate"><span class="pre">Neighborhoods</span></code> notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># obtaining an object which contains neighborhoods
+ds_neighborhood = xr.load_dataset(&#39;../../data/sample_1_with_neighborhoods.zarr&#39;, engine=&#39;zarr&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the neighborhoods
+fig = plt.figure(figsize=(8, 8))
+_ = ds_neighborhood.pl.show(render_image=False, render_neighborhoods=True)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_29_0.png" src="../_images/notebooks_Plotting_29_0.png" />
+</div>
+</div>
+</section>
 <section id="Annotation-of-Regions-or-Cells">
 <h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Permalink to this heading"></a></h2>
 <p>We can also annotate regions or cells within the plots.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># highlighting a region with pl.add_box()
@@ -677,11 +703,11 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_29_0.png" src="../_images/notebooks_Plotting_29_0.png" />
+<img alt="../_images/notebooks_Plotting_32_0.png" src="../_images/notebooks_Plotting_32_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># selecting all B cells and annotating them with pl.annotate()
@@ -699,7 +725,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_30_0.png" src="../_images/notebooks_Plotting_30_0.png" />
+<img alt="../_images/notebooks_Plotting_33_0.png" src="../_images/notebooks_Plotting_33_0.png" />
 </div>
 </div>
 </section>
@@ -707,7 +733,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Permalink to this heading"></a></h2>
 <p>To gain more control over your plots, you can use the functions <code class="docutils literal notranslate"><span class="pre">colorize</span></code>, <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, and <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">show</span></code>, which provides a high-level wrapper around these). Those methods allow for more nuanced adjustments of the final plot. Here are a few examples, for more details please consult the documentation of the corresponding methods.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.imshow()
@@ -718,11 +744,11 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_33_0.png" src="../_images/notebooks_Plotting_33_0.png" />
+<img alt="../_images/notebooks_Plotting_36_0.png" src="../_images/notebooks_Plotting_36_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pl.render_segmentation().pl.imshow()
@@ -733,46 +759,14 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_34_0.png" src="../_images/notebooks_Plotting_34_0.png" />
+<img alt="../_images/notebooks_Plotting_37_0.png" src="../_images/notebooks_Plotting_37_0.png" />
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pl.render_labels().pl.imshow()
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_35_0.png" src="../_images/notebooks_Plotting_35_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.render_segmentation().pl.imshow()
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_36_0.png" src="../_images/notebooks_Plotting_36_0.png" />
-</div>
-</div>
-<p>You can also use scatterplots instad of always plotting the images.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of the labels
-_ = ds.pl.scatter_labels(legend=False)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pl.render_labels().pl.imshow()
 </pre></div>
 </div>
 </div>
@@ -787,9 +781,50 @@ _ = ds.pl.scatter_labels(legend=False)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.render_segmentation().pl.imshow()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_39_0.png" src="../_images/notebooks_Plotting_39_0.png" />
+</div>
+</div>
+<p>You can also use scatterplots instad of always plotting the images.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of the labels
+_ = ds.pl.scatter_labels(legend=False)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_41_0.png" src="../_images/notebooks_Plotting_41_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># quickly adding a quantification
+ds = ds.pp.add_quantification(func=&#39;intensity_mean&#39;).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of any categorical variable in obs
 # as an example, we are adding a binarization column to the obs
-ds_with_binarization_cd4 = ds.la.threshold_labels({&#39;CD4&#39;: 2.5}, layer_key=&#39;_arcsinh_mean&#39;)
+ds_with_binarization_cd4 = ds.la.threshold_labels({&#39;CD4&#39;: 2.5}, layer_key=&#39;_intensity&#39;)
 
 fig, ax = plt.subplots(1, 2, figsize=(10, 20))
 _ = ds_with_binarization_cd4.pp[&#39;CD4&#39;].pl.colorize(&#39;blue&#39;).pl.show(ax=ax[0])
@@ -801,11 +836,11 @@ _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_39_0.png" src="../_images/notebooks_Plotting_39_0.png" />
+<img alt="../_images/notebooks_Plotting_43_0.png" src="../_images/notebooks_Plotting_43_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatterplot of continuous variables
@@ -827,12 +862,12 @@ Found _obs in image container. Concatenating.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_40_1.png" src="../_images/notebooks_Plotting_40_1.png" />
+<img alt="../_images/notebooks_Plotting_44_1.png" src="../_images/notebooks_Plotting_44_1.png" />
 </div>
 </div>
 <p>If you have multiple segmentation masks, you can show all of them at the same time like this.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].pl.colorize([&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show()
@@ -843,11 +878,11 @@ Found _obs in image container. Concatenating.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_42_0.png" src="../_images/notebooks_Plotting_42_0.png" />
+<img alt="../_images/notebooks_Plotting_46_0.png" src="../_images/notebooks_Plotting_46_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_multisegmentation = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].tl.cellpose()
@@ -870,22 +905,22 @@ Neither TORCH CUDA nor MPS version not installed/working.
 Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately.
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 7.92 sec
+estimated cell diameter(s) in 8.29 sec
 &gt;&gt;&gt; diameter(s) =
 [ 12.36 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 19.09 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 20.57 sec
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 9.11 sec
+estimated cell diameter(s) in 10.86 sec
 &gt;&gt;&gt; diameter(s) =
 [ 19.38 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 20.98 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 23.94 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(16, 16))
@@ -897,12 +932,12 @@ _ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).p
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_44_0.png" src="../_images/notebooks_Plotting_44_0.png" />
+<img alt="../_images/notebooks_Plotting_48_0.png" src="../_images/notebooks_Plotting_48_0.png" />
 </div>
 </div>
 <p>We can also plot histograms of any table, for example the observations (e. g. cell area) or the marker distribution.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># quick check what our object looks like
@@ -911,33 +946,30 @@ ds_tmp
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <pre>&lt;xarray.Dataset&gt;
-Dimensions:        (cells: 12560, channels: 56, features: 5, labels: 8,
-                    props: 2, x: 3000, y: 3000)
+Dimensions:         (cells: 12560, channels: 56, features: 4, la_props: 2,
+                     labels: 8, x: 3000, y: 3000)
 Coordinates:
-  * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
-  * channels       (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features       (features) &lt;U10 &#x27;_labels&#x27; &#x27;_original_&#x27; ... &#x27;centroid-1&#x27;
-  * labels         (labels) int64 1 2 3 4 5 6 7 8
-  * props          (props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * x              (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
-  * y              (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
+  * channels        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features        (features) &lt;U10 &#x27;_labels&#x27; &#x27;area&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+  * la_props        (la_props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
+  * labels          (labels) int64 1 2 3 4 5 6 7 8
+  * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _arcsinh_mean  (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174
-    _arcsinh_sum   (cells, channels) float64 8.346 0.0 6.564 ... 6.625 5.224
-    _image         (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _obs           (cells, features) float64 4.0 3.0 ... 2.249e+03 2.237e+03
-    _raw_mean      (cells, channels) float64 56.02 0.0 9.426 ... 8.727 2.148
-    _raw_sum       (cells, channels) float64 1.053e+04 0.0 ... 1.885e+03 464.0
-    _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
-    _properties    (labels, props) object &#x27;C3&#x27; ... &#x27;B (PAX5)&#x27;</pre></div>
+    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
+    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
+    _obs            (cells, features) float64 7.0 188.0 ... 2.249e+03 2.237e+03
+    _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
+    _intensity      (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the obs table
@@ -950,15 +982,15 @@ _ = plt.hist(df[&#39;area&#39;], bins=50)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_47_0.png" src="../_images/notebooks_Plotting_47_0.png" />
+<img alt="../_images/notebooks_Plotting_51_0.png" src="../_images/notebooks_Plotting_51_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the expression matrix
-df = ds_tmp.pp.get_layer_as_df(&#39;_arcsinh_mean&#39;)
+df = ds_tmp.pp.get_layer_as_df(&#39;_intensity&#39;)
 _ = plt.hist(df[&#39;DAPI&#39;], bins=50)
 </pre></div>
 </div>
@@ -967,12 +999,12 @@ _ = plt.hist(df[&#39;DAPI&#39;], bins=50)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_48_0.png" src="../_images/notebooks_Plotting_48_0.png" />
+<img alt="../_images/notebooks_Plotting_52_0.png" src="../_images/notebooks_Plotting_52_0.png" />
 </div>
 </div>
 <p>Sidenote: you can also create a Vornoi diagram of your data by simply growing segmentation masks by a specified distance.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(15, 15))
@@ -992,12 +1024,12 @@ Mask growing requires recalculation of the observations. All features other than
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_50_1.png" src="../_images/notebooks_Plotting_50_1.png" />
+<img alt="../_images/notebooks_Plotting_54_1.png" src="../_images/notebooks_Plotting_54_1.png" />
 </div>
 </div>
 <p>For visualization, it is also possible to adjust the background color of the image. However, caution is advised when plotting fluorescence intensities on light backgrounds, as the background colors get mixed with the actual fluorescence values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))
@@ -1012,7 +1044,7 @@ _ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.show(render_image=False, render_l
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_52_0.png" src="../_images/notebooks_Plotting_52_0.png" />
+<img alt="../_images/notebooks_Plotting_56_0.png" src="../_images/notebooks_Plotting_56_0.png" />
 </div>
 </div>
 </section>
