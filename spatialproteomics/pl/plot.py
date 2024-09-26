@@ -928,7 +928,7 @@ class PlotAccessor:
         if legend_obs:
             legend += self._obj.pl._create_obs_legend()
 
-        if legend_image or legend_segmentation or legend_label or legend_neighborhoods or legend_obs:
+        if legend_image or legend_segmentation or legend_label or legend_neighborhoods:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj

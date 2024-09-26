@@ -345,7 +345,7 @@ class NeighborhoodAccessor:
         if colors is not None:
             assert len(colors) == len(
                 unique_neighborhoods
-            ), "Colors does not have the same length as there are neighborhoods."
+            ), f"Colors does not have the same length as there are neighborhoods. Got {len(colors)} colors for {len(unique_neighborhoods)} neighborhoods."
         else:
             colors = np.random.choice(COLORS, size=len(unique_neighborhoods), replace=False)
 
@@ -452,8 +452,9 @@ class NeighborhoodAccessor:
                 logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
                 continue
 
-            # getting the id for the label
-            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+            # getting the id for the label (if the input was not numeric already)
+            if isinstance(neighborhood, str):
+                neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
 
             # setting the new color for the given label
             array[neighborhoods_layer.index(neighborhood), props_layer.index(Props.COLOR)] = color

@@ -92,7 +92,9 @@ def _construct_neighborhood_df_radius(
     # there are cases where the neighborhood profile is all zeros, in this case a warning is raised
     # check if the neighborhood profile contains na values
     if neighborhood_profile.isna().sum().sum() > 0:
-        logger.warning("Some neighborhoods contained no cells. This may be due to the neighborhood radius being too small, or the center cell not being included. These neighborhoods will be set to 0 everywhere.")
+        logger.warning(
+            "Some neighborhoods contained no cells. This may be due to the neighborhood radius being too small, or the center cell not being included. These neighborhoods will be set to 0 everywhere."
+        )
         neighborhood_profile.fillna(0, inplace=True)
 
     # setting the index back to the original ones
@@ -226,7 +228,7 @@ def _construct_neighborhood_df_delaunay(
 
     # Normalize the neighborhood profile so that each row sums to 1
     neighborhood_profile = neighborhood_profile.div(neighborhood_profile.sum(axis=1), axis=0)
-    
+
     # setting the index back to the original ones
     neighborhood_profile.index = original_index
 
