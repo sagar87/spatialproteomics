@@ -32,6 +32,9 @@ def load_files(data_dir):
     files_loaded["neighborhoods"] = pd.read_csv(
         os.path.join(str(data_dir), files[files.index("neighborhoods.csv")]), index_col=0
     )
+    files_loaded["neighborhoods_numeric"] = pd.read_csv(
+        os.path.join(str(data_dir), files[files.index("neighborhoods_numeric.csv")]), index_col=0
+    )
     files_loaded["zarr"] = xr.open_zarr(os.path.join(str(data_dir), files[files.index("test.zarr")]))
 
     return files_loaded
@@ -77,6 +80,18 @@ def load_dataset_neighborhoods(data_dic):
         segmentation=data_dic["segmentation"],
         labels=data_dic["labels"],
         neighborhood=data_dic["neighborhoods"],
+    )
+    return dataset
+
+
+@pytest.fixture(scope="session", name="dataset_neighborhoods_numeric")
+def load_dataset_neighborhoods_numeric(data_dic):
+    dataset = load_image_data(
+        data_dic["input"],
+        ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
+        segmentation=data_dic["segmentation"],
+        labels=data_dic["labels"],
+        neighborhood=data_dic["neighborhoods_numeric"],
     )
     return dataset
 
