@@ -1,6 +1,35 @@
+import numpy as np
 import pandas as pd
 from scipy.spatial import Delaunay, KDTree
+from skimage.segmentation import relabel_sequential
 from sklearn.neighbors import NearestNeighbors
+
+from ..base_logger import logger
+
+
+def _format_neighborhoods(neighborhoods):
+    """
+    Format the neighborhoods array to ensure consecutive numbering.
+
+    Parameters
+    ----------
+    neighborhoods : numpy.ndarray
+        The input array of neighborhoods.
+
+    Returns
+    -------
+    numpy.ndarray
+        The formatted array of neighborhoods with consecutive numbering.
+    """
+
+    formatted_neighborhoods = neighborhoods.copy()
+    unique_neighborhoods = np.unique(neighborhoods)
+
+    if ~np.all(np.diff(unique_neighborhoods) == 1):
+        logger.warning("Neighborhoods are non-consecutive. Relabeling...")
+        formatted_neighborhoods, _, _ = relabel_sequential(formatted_neighborhoods)
+
+    return formatted_neighborhoods
 
 
 def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", radius=100):

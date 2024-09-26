@@ -9,6 +9,7 @@ from .utils import (
     _construct_neighborhood_df_delaunay,
     _construct_neighborhood_df_knn,
     _construct_neighborhood_df_radius,
+    _format_neighborhoods,
 )
 
 
@@ -254,6 +255,9 @@ class NeighborhoodAccessor:
         if type(array) is list:
             array = np.array(array)
 
+        if prop == Features.NEIGHBORHOODS:
+            unique_neighborhoods = np.unique(_format_neighborhoods(array))
+
         da = xr.DataArray(
             array.reshape(-1, 1),
             coords=[unique_neighborhoods.astype(int), [prop]],
@@ -287,6 +291,20 @@ class NeighborhoodAccessor:
 
         neighborhoods = neighborhoods.squeeze()
         unique_neighborhoods = np.unique(neighborhoods)
+
+        if np.all([isinstance(i, str) for i in neighborhoods]):
+            unique_neighborhoods = np.unique(neighborhoods)
+
+            # converting the neighborhood labels to numeric values
+            neighborhood_to_num = dict(zip(unique_neighborhoods, range(1, len(unique_neighborhoods) + 1)))
+
+            neighborhoods = np.array([neighborhood_to_num[neighborhood] for neighborhood in neighborhoods])
+            names = [k for k, v in sorted(neighborhood_to_num.items(), key=lambda x: x[1])]
+
+        assert ~np.all(neighborhoods < 0), "Neighborhoods must be >= 0."
+
+        formated_neighborhoods = _format_neighborhoods(neighborhoods)
+        unique_neighborhoods = np.unique(formated_neighborhoods)
 
         # adding the neighborhoods into obs
         obj = self._obj.copy()
