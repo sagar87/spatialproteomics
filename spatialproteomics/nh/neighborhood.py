@@ -515,7 +515,9 @@ class NeighborhoodAccessor:
         # adding the new property layer
         return xr.merge([property_layer, obj])
 
-    def compute_neighborhoods_radius(self, radius=100, key_added: str = Layers.NEIGHBORHOODS):
+    def compute_neighborhoods_radius(
+        self, radius: int = 100, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS
+    ):
         """
         Compute the neighborhoods of each cell based on a specified radius.
 
@@ -526,7 +528,9 @@ class NeighborhoodAccessor:
         Parameters
         ----------
         radius : int, optional
-            The radius around each cell to define the neighborhood. Default is 100.
+            The radius around each cell to define the neighborhood (in pixels). Default is 100.
+        include_center : bool, optional
+            Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
 
@@ -552,6 +556,7 @@ class NeighborhoodAccessor:
             y=Features.Y,
             label_col=Features.LABELS,
             radius=radius,
+            include_center=include_center,
         )
 
         # putting the df into a data array
@@ -564,7 +569,7 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj, da])
 
-    def compute_neighborhoods_knn(self, k=10, key_added: str = Layers.NEIGHBORHOODS):
+    def compute_neighborhoods_knn(self, k=10, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
         """
         Compute the neighborhoods of each cell based on k-nearest neighbors.
 
@@ -575,6 +580,8 @@ class NeighborhoodAccessor:
         ----------
         k : int, optional
             The number of nearest neighbors to consider. Default is 10.
+        include_center : bool, optional
+            Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
 
@@ -596,6 +603,7 @@ class NeighborhoodAccessor:
             y=Features.Y,
             label_col=Features.LABELS,
             k=k,
+            include_center=include_center,
         )
 
         # Convert the DataFrame to an xarray DataArray
@@ -609,7 +617,7 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj, da])
 
-    def compute_neighborhoods_delaunay(self, key_added: str = Layers.NEIGHBORHOODS):
+    def compute_neighborhoods_delaunay(self, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
         """
         Compute the neighborhoods of each cell based on a Delaunay triangulation.
 
@@ -618,6 +626,8 @@ class NeighborhoodAccessor:
 
         Parameters
         ----------
+        include_center : bool, optional
+            Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
 
@@ -636,6 +646,7 @@ class NeighborhoodAccessor:
             x=Features.X,
             y=Features.Y,
             label_col=Features.LABELS,
+            include_center=include_center,
         )
 
         # Convert the DataFrame to an xarray DataArray

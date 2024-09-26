@@ -32,7 +32,9 @@ def _format_neighborhoods(neighborhoods):
     return formatted_neighborhoods
 
 
-def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", radius=100):
+def _construct_neighborhood_df_radius(
+    df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", radius=100, include_center=True
+):
     """
     Constructs a neighborhood profile DataFrame for each cell in the input DataFrame.
     Parameters
@@ -48,7 +50,10 @@ def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroi
     label_col : str, optional
         Column name for the cell type labels (default is 'labels').
     radius : float, optional
-        Radius within which to search for neighboring cells (default is 100).
+        Radius within which to search for neighboring cells (default is 100 pixels).
+    include_center : bool, optional
+        Whether to include the center cell in the neighborhood profile (default is True).
+
     Returns
     -------
     pandas.DataFrame
@@ -70,6 +75,10 @@ def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroi
         # Query the KDTree for neighbors within the radius (including the center cell)
         indices = tree.query_ball_point(df.loc[i, [x, y]], r=radius)
 
+        # If include_center is False, exclude the center cell (i.e., cell 'i') from the indices
+        if not include_center:
+            indices = [idx for idx in indices if idx != i]
+
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[indices, label_col].value_counts()
 
@@ -80,13 +89,21 @@ def _construct_neighborhood_df_radius(df, cell_types, x="centroid-1", y="centroi
     # Normalize the neighborhood profile so that each row sums to 1
     neighborhood_profile = neighborhood_profile.div(neighborhood_profile.sum(axis=1), axis=0)
 
+    # there are cases where the neighborhood profile is all zeros, in this case a warning is raised
+    # check if the neighborhood profile contains na values
+    if neighborhood_profile.isna().sum().sum() > 0:
+        logger.warning("Some neighborhoods contained no cells. This may be due to the neighborhood radius being too small, or the center cell not being included. These neighborhoods will be set to 0 everywhere.")
+        neighborhood_profile.fillna(0, inplace=True)
+
     # setting the index back to the original ones
     neighborhood_profile.index = original_index
 
     return neighborhood_profile
 
 
-def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", k=10):
+def _construct_neighborhood_df_knn(
+    df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", k=10, include_center=True
+):
     """
     Constructs a neighborhood profile DataFrame for each cell using k-nearest neighbors.
 
@@ -104,6 +121,8 @@ def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0
         Column name for the cell type labels (default is 'labels').
     k : int, optional
         The number of nearest neighbors to consider (default is 10).
+    include_center : bool, optional
+        Whether to include the center cell in the neighborhood profile (default is True).
 
     Returns
     -------
@@ -127,6 +146,10 @@ def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0
 
     # Iterate over each cell
     for i, neighbors in enumerate(indices):
+        if not include_center:
+            # Exclude the first element (the center cell)
+            neighbors = neighbors[1:]
+
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()
 
@@ -143,7 +166,9 @@ def _construct_neighborhood_df_knn(df, cell_types, x="centroid-1", y="centroid-0
     return neighborhood_profile
 
 
-def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centroid-0", label_col="labels"):
+def _construct_neighborhood_df_delaunay(
+    df, cell_types, x="centroid-1", y="centroid-0", label_col="labels", include_center=True
+):
     """
     Constructs a neighborhood profile DataFrame for each cell using Delaunay triangulation.
 
@@ -159,6 +184,8 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
         Column name for the y-coordinate (default is 'centroid-0').
     label_col : str, optional
         Column name for the cell type labels (default is 'labels').
+    include_center : bool, optional
+        Whether to include the center cell in the neighborhood profile (default is True).
 
     Returns
     -------
@@ -186,6 +213,10 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
             tri.vertex_neighbor_vertices[0][i] : tri.vertex_neighbor_vertices[0][i + 1]
         ]
 
+        # Optionally include the center cell (i.e., the cell itself)
+        if include_center:
+            neighbors = list(neighbors) + [i]
+
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()
 
@@ -195,7 +226,7 @@ def _construct_neighborhood_df_delaunay(df, cell_types, x="centroid-1", y="centr
 
     # Normalize the neighborhood profile so that each row sums to 1
     neighborhood_profile = neighborhood_profile.div(neighborhood_profile.sum(axis=1), axis=0)
-
+    
     # setting the index back to the original ones
     neighborhood_profile.index = original_index
 
