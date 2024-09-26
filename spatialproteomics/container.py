@@ -70,7 +70,7 @@ def load_image_data(
             dataset = dataset.la.add_labels_from_dataframe(labels, cell_col=cell_col, label_col=label_col)
 
             if neighborhood is not None:
-                dataset = dataset.nh.add_neighborhoods_from_dataframe(neighborhood[neighborhood_col].values)
+                dataset = dataset.nh.add_neighborhoods_from_dataframe(neighborhood, neighborhood_col=neighborhood_col)
 
     else:
         dataset = xr.Dataset(data_vars={Layers.IMAGE: im})

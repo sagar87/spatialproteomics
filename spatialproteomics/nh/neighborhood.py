@@ -1,6 +1,7 @@
 from typing import List, Union
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 from ..base_logger import logger
@@ -274,22 +275,52 @@ class NeighborhoodAccessor:
         return xr.merge([da, self._obj])
 
     def add_neighborhoods_from_dataframe(
-        self, neighborhoods: Union[np.ndarray, list], colors: Union[list, None] = None, names: Union[list, None] = None
+        self,
+        df: pd.DataFrame,
+        neighborhood_col: str = "neighborhood",
+        colors: Union[list, None] = None,
+        names: Union[list, None] = None,
     ) -> xr.Dataset:
+        """
+        Add neighborhoods to the dataset from a DataFrame.
+        Parameters
+        ----------
+        df : pd.DataFrame
+            DataFrame containing neighborhood information.
+        neighborhood_col : str, optional
+            Column name in the DataFrame that contains neighborhood labels, by default 'neighborhood'.
+        colors : list or None, optional
+            List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
+        names : list or None, optional
+            List of names for the neighborhoods, by default None. If None, default names will be assigned.
+        Returns
+        -------
+        xr.Dataset
+            Updated dataset with neighborhood information added.
+        Raises
+        ------
+        AssertionError
+            If neighborhood properties are already present in the object.
+            If the number of neighborhoods does not match the number of cells.
+            If the specified column does not exist in the DataFrame.
+            If neighborhoods contain negative values.
+            If the length of colors does not match the number of unique neighborhoods.
+            If the length of names does not match the number of unique neighborhoods.
+        """
         # check if properties are already present
         assert (
             Layers.NH_PROPERTIES not in self._obj
         ), f"Already found neighborhood properties in the object. Please remove them with pp.drop_layers('{Layers.NH_PROPERTIES}') first."
 
         # check that the labels have the same length as the cells
-        assert len(neighborhoods) == len(
+        assert df.shape[0] == len(
             self._obj.coords[Dims.CELLS]
         ), "The number of neighborhoods does not match the number of cells."
 
-        if type(neighborhoods) is list:
-            neighborhoods = neighborhoods.to_numpy()
+        # check that the column exists in the data frame
+        assert neighborhood_col in df.columns, f"Column {neighborhood_col} not found in the data frame."
 
-        neighborhoods = neighborhoods.squeeze()
+        neighborhoods = df.loc[:, neighborhood_col].to_numpy().squeeze()
         unique_neighborhoods = np.unique(neighborhoods)
 
         if np.all([isinstance(i, str) for i in neighborhoods]):
