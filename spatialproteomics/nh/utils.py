@@ -26,7 +26,6 @@ def _format_neighborhoods(neighborhoods):
     unique_neighborhoods = np.unique(neighborhoods)
 
     if ~np.all(np.diff(unique_neighborhoods) == 1):
-        logger.warning("Neighborhoods are non-consecutive. Relabeling...")
         formatted_neighborhoods, _, _ = relabel_sequential(formatted_neighborhoods)
 
     return formatted_neighborhoods

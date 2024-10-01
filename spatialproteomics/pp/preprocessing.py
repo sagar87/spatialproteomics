@@ -658,7 +658,7 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, da])
 
     def drop_layers(
-        self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None
+        self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None, drop_obs: bool = True
     ) -> xr.Dataset:
         """
         Drops layers from the image container. Can either drop all layers specified in layers or drop all layers but the ones specified in keep.
@@ -669,6 +669,8 @@ class PreprocessingAccessor:
             The name of the layer or a list of layer names to be dropped.
         keep : Union[str, list]
             The name of the layer or a list of layer names to be kept.
+        drop_obs : bool
+            If True, the observations are removed when the label or neighborhood properties are dropped. Default is True.
 
         Returns
         -------
@@ -717,7 +719,21 @@ class PreprocessingAccessor:
         for dim in obj.dims:
             if dim not in dims_to_keep:
                 obj = obj.drop_dims(dim)
-
+                
+        # if label props are dropped, we need to remove the labels from the obs as well
+        if Layers.LA_PROPERTIES in layers and Dims.FEATURES in obj.coords:
+            if Features.LABELS in obj.coords[Dims.FEATURES] and drop_obs:
+                logger.info("Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False.")
+                filtered_features = obj.coords[Dims.FEATURES].where(obj.coords[Dims.FEATURES] != Features.LABELS, drop=True)
+                obj = obj.sel(features=filtered_features)
+                
+        # if neighborhood props are dropped, we need to remove the neighborhoods from the obs as well
+        if Layers.NH_PROPERTIES in layers and Dims.FEATURES in obj.coords:
+            if Features.NEIGHBORHOODS in obj.coords[Dims.FEATURES] and drop_obs:
+                logger.info("Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.")
+                filtered_features = obj.coords[Dims.FEATURES].where(obj.coords[Dims.FEATURES] != Features.NEIGHBORHOODS, drop=True)
+                obj = obj.sel(features=filtered_features)
+        
         return obj
 
     def threshold(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
