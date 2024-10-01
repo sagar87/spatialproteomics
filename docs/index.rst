@@ -13,6 +13,7 @@ Welcome to the documentation of spatialproteomics!
 
    preprocessing
    label
+   neighborhood
    plot
    tool
 
