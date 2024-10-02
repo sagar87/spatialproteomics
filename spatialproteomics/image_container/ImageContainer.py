@@ -5,7 +5,6 @@ import pandas as pd
 import xarray as xr
 from sklearn.cluster import KMeans
 
-from ..base_logger import logger
 from ..constants import COLORS, Layers
 
 
@@ -26,7 +25,7 @@ class ImageContainer:
         return f"ImageContainer with {len(self.objects)} objects"
 
     def compute_neighborhoods(
-        self, neighborhood_method: str = "radius", radius=10, knn=10, k=5, overwrite: bool = False, seed: int = 0
+        self, neighborhood_method: str = "radius", radius=100, knn=10, k=5, overwrite: bool = False, seed: int = 0
     ):
         assert neighborhood_method in [
             "radius",
@@ -70,7 +69,7 @@ class ImageContainer:
         # at some point, we could also add more clustering algorithms
         clusterer = KMeans(n_clusters=k, random_state=seed)
         clusterer.fit(neighborhood_df)
-        kmeans_df = pd.DataFrame({"neighborhood": clusterer.labels_})
+        kmeans_df = pd.DataFrame({"neighborhood": [f"Neighborhood {x}" for x in clusterer.labels_]})
 
         # === ADDING CLUSTERS TO OBJECTS ===
         colors = np.random.choice(COLORS, size=k, replace=False)
@@ -84,7 +83,7 @@ class ImageContainer:
             # storing the neighborhoods in the spatialproteomics objects
             # we can also set custom neighborhood colors here using .nh.set_neighborhood_colors()
             self.objects[id] = sp_obj.nh.add_neighborhoods_from_dataframe(tmp_df).nh.set_neighborhood_colors(
-                list(range(k)), colors
+                [f"Neighborhood {x}" for x in range(k)], colors
             )
 
         # got to make sure the kmeans_df is empty, otherwise there was a critical error
