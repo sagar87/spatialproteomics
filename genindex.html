@@ -42,6 +42,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 </ul>
@@ -121,6 +122,8 @@
 </li>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer">add_layer() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe">add_neighborhoods_from_dataframe() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_obs_from_dataframe">add_obs_from_dataframe() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
   </ul></td>
@@ -128,7 +131,11 @@
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_observations">add_observations() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
       <li><a href="label.html#spatialproteomics.la.label.LabelAccessor.add_properties">add_properties() (spatialproteomics.la.label.LabelAccessor method)</a>
+
+      <ul>
+        <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties">(spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
 </li>
+      </ul></li>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_quantification">add_quantification() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_quantification_from_dataframe">add_quantification_from_dataframe() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
@@ -153,8 +160,14 @@
 </li>
       <li><a href="plot.html#spatialproteomics.pl.plot.PlotAccessor.colorize">colorize() (spatialproteomics.pl.plot.PlotAccessor method)</a>
 </li>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay">compute_neighborhoods_delaunay() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn">compute_neighborhoods_knn() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius">compute_neighborhoods_radius() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.convert_to_8bit">convert_to_8bit() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
       <li><a href="tool.html#spatialproteomics.tl.tool.ToolAccessor.convert_to_anndata">convert_to_anndata() (spatialproteomics.tl.tool.ToolAccessor method)</a>
@@ -168,7 +181,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="label.html#spatialproteomics.la.label.LabelAccessor.deselect">deselect() (spatialproteomics.la.label.LabelAccessor method)</a>
+
+      <ul>
+        <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect">(spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample">downsample() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
@@ -231,13 +248,13 @@
 </li>
       <li><a href="tool.html#spatialproteomics.tl.tool.ToolAccessor.mesmer">mesmer() (spatialproteomics.tl.tool.ToolAccessor method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
       <ul>
         <li><a href="label.html#module-spatialproteomics.la.label">spatialproteomics.la.label</a>
+</li>
+        <li><a href="neighborhood.html#module-spatialproteomics.nh.neighborhood">spatialproteomics.nh.neighborhood</a>
 </li>
         <li><a href="plot.html#module-spatialproteomics.pl.plot">spatialproteomics.pl.plot</a>
 </li>
@@ -251,6 +268,10 @@
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor">NeighborhoodAccessor (class in spatialproteomics.nh.neighborhood)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing.html#spatialproteomics.pp.preprocessing.PreprocessingAccessor.normalize">normalize() (spatialproteomics.pp.preprocessing.PreprocessingAccessor method)</a>
 </li>
@@ -300,6 +321,10 @@
 </li>
       <li><a href="label.html#spatialproteomics.la.label.LabelAccessor.set_label_name">set_label_name() (spatialproteomics.la.label.LabelAccessor method)</a>
 </li>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors">set_neighborhood_colors() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
+      <li><a href="neighborhood.html#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name">set_neighborhood_name() (spatialproteomics.nh.neighborhood.NeighborhoodAccessor method)</a>
+</li>
       <li><a href="plot.html#spatialproteomics.pl.plot.PlotAccessor.show">show() (spatialproteomics.pl.plot.PlotAccessor method)</a>
 </li>
       <li>
@@ -311,6 +336,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    spatialproteomics.nh.neighborhood
+
+      <ul>
+        <li><a href="neighborhood.html#module-spatialproteomics.nh.neighborhood">module</a>
+</li>
+      </ul></li>
       <li>
     spatialproteomics.pl.plot
 
