@@ -27,6 +27,7 @@ from .constants import (
     Yellow,
 )
 from .container import load_image_data, read_from_spatialdata
+from .image_container import ImageContainer
 from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
@@ -36,6 +37,7 @@ from .tl import ToolAccessor
 __all__ = [
     "load_image_data",
     "read_from_spatialdata",
+    "ImageContainer",
     "PreprocessingAccessor",
     "LabelAccessor",
     "PlotAccessor",
