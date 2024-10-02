@@ -658,7 +658,11 @@ class PreprocessingAccessor:
         return xr.merge([self._obj, da])
 
     def drop_layers(
-        self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None, drop_obs: bool = True
+        self,
+        layers: Optional[Union[str, list]] = None,
+        keep: Optional[Union[str, list]] = None,
+        drop_obs: bool = True,
+        suppress_warnings: bool = False,
     ) -> xr.Dataset:
         """
         Drops layers from the image container. Can either drop all layers specified in layers or drop all layers but the ones specified in keep.
@@ -671,6 +675,8 @@ class PreprocessingAccessor:
             The name of the layer or a list of layer names to be kept.
         drop_obs : bool
             If True, the observations are removed when the label or neighborhood properties are dropped. Default is True.
+        suppress_warnings : bool
+            If True, warnings are suppressed. Default is False.
 
         Returns
         -------
@@ -723,9 +729,10 @@ class PreprocessingAccessor:
         # if label props are dropped, we need to remove the labels from the obs as well
         if Layers.LA_PROPERTIES in layers and Dims.FEATURES in obj.coords:
             if Features.LABELS in obj.coords[Dims.FEATURES] and drop_obs:
-                logger.info(
-                    "Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False."
-                )
+                if not suppress_warnings:
+                    logger.info(
+                        "Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False."
+                    )
                 filtered_features = obj.coords[Dims.FEATURES].where(
                     obj.coords[Dims.FEATURES] != Features.LABELS, drop=True
                 )
@@ -734,9 +741,10 @@ class PreprocessingAccessor:
         # if neighborhood props are dropped, we need to remove the neighborhoods from the obs as well
         if Layers.NH_PROPERTIES in layers and Dims.FEATURES in obj.coords:
             if Features.NEIGHBORHOODS in obj.coords[Dims.FEATURES] and drop_obs:
-                logger.info(
-                    "Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False."
-                )
+                if not suppress_warnings:
+                    logger.info(
+                        "Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False."
+                    )
                 filtered_features = obj.coords[Dims.FEATURES].where(
                     obj.coords[Dims.FEATURES] != Features.NEIGHBORHOODS, drop=True
                 )
