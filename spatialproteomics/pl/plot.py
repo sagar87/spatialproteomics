@@ -12,9 +12,11 @@ from ..constants import Attrs, Dims, Features, Layers, Props
 from .utils import (
     _autocrop,
     _colorize,
+    _compute_erosion,
     _get_listed_colormap,
     _label_segmentation_mask,
     _render_labels,
+    _render_neighborhoods,
     _render_obs,
     _render_segmentation,
 )
@@ -117,6 +119,33 @@ class PlotAccessor:
             )
             for i in sorted(color_dict)
             if i in self._obj.coords[Dims.LABELS]
+        ]
+
+        return elements
+
+    def _create_neighborhood_legend(self):
+        """
+        Create a legend for the neighborhoods.
+
+        Returns:
+            elements (list): A list of Line2D objects representing the legend elements.
+        """
+        # getting colors and names for each cell type label
+        color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR)
+        names_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
+
+        elements = [
+            Line2D(
+                [0],
+                [0],
+                marker="^",
+                color="w",
+                label=names_dict[i],
+                markerfacecolor=color_dict[i],
+                markersize=15,
+            )
+            for i in sorted(color_dict)
+            if i in self._obj.coords[Dims.NEIGHBORHOODS]
         ]
 
         return elements
@@ -227,15 +256,18 @@ class PlotAccessor:
         render_image: bool = True,
         render_segmentation: bool = False,
         render_labels: bool = False,
+        render_neighborhoods: bool = False,
         ax=None,
         legend_image: bool = True,
         legend_segmentation: bool = True,
         legend_label: bool = True,
+        legend_neighborhoods: bool = True,
         background: str = "black",
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
         label_kwargs: dict = {},
+        neighborhood_kwargs: dict = {},
     ) -> xr.Dataset:
         """
         Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
@@ -244,15 +276,18 @@ class PlotAccessor:
         - render_image (bool): Whether to render the image with channel intensities. Default is True.
         - render_segmentation (bool): Whether to render segmentation. Default is False.
         - render_labels (bool): Whether to render labels. Default is False.
+        - render_neighborhoods(bool): Whether to render neighborhoods. Default is False.
         - ax: The matplotlib axes to plot on. If None, the current axes will be used.
         - legend_image (bool): Whether to show the channel legend. Default is True.
         - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
         - legend_label (bool): Whether to show the label legend. Default is True.
+        - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
         - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
         - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
+        - neighborhood_kwargs (dict): Keyword arguments for rendering the neighborhoods. Default is {}.
 
         Returns:
         - obj (xr.Dataset): The modified dataset object.
@@ -269,8 +304,8 @@ class PlotAccessor:
         """
         # check that at least one rendering element is specified
         assert any(
-            [render_image, render_labels, render_segmentation]
-        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', or 'render_segmentation' to True."
+            [render_image, render_labels, render_segmentation, render_neighborhoods]
+        ), "No rendering element specified. Please set at least one of 'render_image', 'render_labels', 'render_segmentation', or 'render_neighborhoods' to True."
 
         # store a copy of the original object to avoid overwriting it
         obj = self._obj.copy()
@@ -310,6 +345,9 @@ class PlotAccessor:
                     "The background color is set during the first color pass. If you called pl.colorize() before pl.show(), please set the background color there instead using pl.colorize(background='your_color')."
                 )
 
+        if render_neighborhoods:
+            obj = obj.pl.render_neighborhoods(**neighborhood_kwargs)
+
         if render_labels:
             obj = obj.pl.render_labels(**label_kwargs)
 
@@ -322,15 +360,16 @@ class PlotAccessor:
         legend_image = legend_image and render_image
         legend_segmentation = legend_segmentation and render_segmentation
         legend_label = legend_label and render_labels
+        legend_neighborhoods = legend_neighborhoods and render_neighborhoods
 
         return obj.pl.imshow(
             legend_image=legend_image,
             legend_segmentation=legend_segmentation,
             legend_label=legend_label,
+            legend_neighborhoods=legend_neighborhoods,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
-            segmentation_kwargs=segmentation_kwargs,
         )
 
     def annotate(
@@ -562,7 +601,7 @@ class PlotAccessor:
             - The `override_color` parameter can be used to override the label colors with a single color.
         """
         assert (
-            Layers.PROPERTIES in self._obj
+            Layers.LA_PROPERTIES in self._obj
         ), "No labels found in the object. Add labels first, for example by using la.predict_cell_types_argmax() or tl.astir()."
 
         color_dict = self._obj.la._label_to_dict(Props.COLOR, relabel=True)
@@ -605,6 +644,127 @@ class PlotAccessor:
 
         return xr.merge([self._obj, da])
 
+    def render_neighborhoods(
+        self,
+        style: str = "neighborhoods",
+        alpha: float = 1.0,
+        alpha_boundary: float = 1.0,
+        boundary_color: str = "dimgray",
+        boundary_thickness: int = 3,
+        dilation_strength: int = 40,
+        erosion_strength: int = 35,
+    ) -> xr.Dataset:
+        """
+        Render neighborhoods on the spatial data.
+        Parameters
+        ----------
+        style : str, optional
+            The style of rendering, either 'cells' or 'neighborhoods'. Default is 'neighborhoods'.
+        alpha : float, optional
+            The alpha transparency for the rendered image. Default is 1.0.
+        alpha_boundary : float, optional
+            The alpha transparency for the boundary of the rendered image. Default is 1.0.
+        boundary_color : str, optional
+            The color of the boundary lines. Default is 'dimgray'.
+        boundary_thickness : int, optional
+            The thickness of the boundary lines. Default is 3.
+        dilation_strength : int, optional
+            The strength of the dilation applied to the cells. Default is 40.
+        erosion_strength : int, optional
+            The strength of the erosion applied to the cells. Default is 35.
+        Returns
+        -------
+        xr.Dataset
+            The dataset with the rendered neighborhoods.
+        Raises
+        ------
+        AssertionError
+            If no neighborhoods are found in the object or if the style is not 'cells' or 'neighborhoods'.
+        """
+
+        assert (
+            Layers.NH_PROPERTIES in self._obj
+        ), "No neighborhoods found in the object. Add neighborhoods first, for example by using nh.compute_neighborhoods_radius()."
+        assert style in ["cells", "neighborhoods"], "Style must be either 'cells' or 'neighborhoods'."
+        assert dilation_strength > 0, "Dilation strength must be greater than 0."
+        assert erosion_strength > 0, "Erosion strength must be greater than 0."
+        assert (
+            dilation_strength >= erosion_strength
+        ), "Dilation strength must be greater than or equal to erosion strength."
+
+        color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR, relabel=True)
+
+        cmap = _get_listed_colormap(color_dict)
+        rendered = None
+
+        if style == "cells":
+            cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
+            segmentation = self._obj[Layers.SEGMENTATION].values
+            mask = _label_segmentation_mask(segmentation, cells_dict)
+
+            if Layers.PLOT in self._obj:
+                attrs = self._obj[Layers.PLOT].attrs
+                rendered = _render_labels(
+                    mask,
+                    cmap,
+                    self._obj[Layers.PLOT].values,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    mode="inner",
+                )
+                self._obj = self._obj.drop_vars(Layers.PLOT)
+            else:
+                attrs = {}
+                rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode="inner")
+        else:
+            cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
+
+            # step 1: apply a Voronoi tesselation to the neighborhoods
+            segmentation = self._obj.pp.grow_cells(dilation_strength, suppress_warning=True)[Layers.SEGMENTATION].values
+            eroded_mask = _compute_erosion(segmentation, erosion_strength=erosion_strength)
+
+            # multiplying the segmentation with the eroded mask
+            segmentation = segmentation * eroded_mask
+
+            mask = _label_segmentation_mask(segmentation, cells_dict)
+
+            if Layers.PLOT in self._obj:
+                attrs = self._obj[Layers.PLOT].attrs
+                rendered = _render_neighborhoods(
+                    mask,
+                    cmap,
+                    self._obj[Layers.PLOT].values,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    boundary_color=boundary_color,
+                    boundary_thickness=boundary_thickness,
+                )
+                self._obj = self._obj.drop_vars(Layers.PLOT)
+            else:
+                attrs = {}
+                rendered = _render_neighborhoods(
+                    mask,
+                    cmap,
+                    alpha=alpha,
+                    alpha_boundary=alpha_boundary,
+                    boundary_color=boundary_color,
+                    boundary_thickness=boundary_thickness,
+                )
+
+        da = xr.DataArray(
+            rendered,
+            coords=[
+                self._obj.coords[Dims.Y],
+                self._obj.coords[Dims.X],
+                ["r", "g", "b", "a"],
+            ],
+            dims=[Dims.Y, Dims.X, Dims.RGBA],
+            name=Layers.PLOT,
+            attrs=attrs,
+        )
+
+        return xr.merge([self._obj, da])
+
     def render_obs(
         self,
         feature: str = None,
@@ -625,18 +785,20 @@ class PlotAccessor:
         # creating a continuous colormap
         cmap = plt.cm.get_cmap(cmap)
         feature_values = obs.sel(features=feature).values
-        # we need to ensure that the feature values are normalized between 0 and 1
-        # feature_values = (feature_values - feature_values.min()) / (feature_values.max() - feature_values.min())
 
         # mapping the feature values onto the segmentation mask (replacing the cell indices with the feature values)
         # we need to ensure the mapping between the feature values and the segmentation is correct
         cell_indices = self._obj.coords[Dims.CELLS]
 
+        # creating a boolean mask for the background
+        # the reason why this needs to be computed before the mapping is that there could be obs values equal to 0
+        background_array = segmentation > 0
+
         # dict that maps each cell ID to its feature value
         feature_mapping = {k.item(): v for k, v in zip(cell_indices, feature_values)}
-        # setting the background to 0
+        # setting the background to zero
         feature_mapping[0] = 0
-        # mapping the feature values onto the segmentation mask (and setting to 0 for the background)
+        # mapping the feature values onto the segmentation mask
         segmentation = np.vectorize(feature_mapping.get)(segmentation)
 
         if Layers.PLOT in self._obj:
@@ -646,6 +808,7 @@ class PlotAccessor:
                 segmentation,
                 cmap,
                 self._obj[Layers.PLOT].values,
+                background_array=background_array,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -654,7 +817,14 @@ class PlotAccessor:
             self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
-            rendered = _render_obs(segmentation, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
+            rendered = _render_obs(
+                segmentation,
+                cmap,
+                background_array=background_array,
+                alpha=alpha,
+                alpha_boundary=alpha_boundary,
+                mode=mode,
+            )
 
         # adding information for rendering the colorbar
         # in here, we need the name of the feature, the colormap and the min and max values of the feature
@@ -684,10 +854,10 @@ class PlotAccessor:
         legend_image: bool = False,
         legend_segmentation: bool = False,
         legend_label: bool = False,
+        legend_neighborhoods: bool = False,
         legend_obs: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
-        segmentation_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -702,15 +872,15 @@ class PlotAccessor:
         legend_segmentation : bool, optional
             Show the legend for the segmentation. Default is False.
         legend_label : bool, optional
-            Show the labels. Default is False.
+            Show the label legend. Default is False.
+        legend_neighborhoods : bool, optional
+            Show the neighborhood legend. Default is False.
         legend_obs: bool, optional
             Show the observation colorbar. Default is False.
         downsample : int, optional
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
-        segmentation_kwargs : dict, optional
-            Additional keyword arguments for rendering the segmentation, e. g. colors when rendering multiple segmentation channels. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -746,6 +916,9 @@ class PlotAccessor:
         if legend_image:
             legend += self._obj.pl._create_channel_legend()
 
+        if legend_neighborhoods:
+            legend += self._obj.pl._create_neighborhood_legend()
+
         if legend_segmentation:
             legend += self._obj.pl._create_segmentation_legend()
 
@@ -755,7 +928,7 @@ class PlotAccessor:
         if legend_obs:
             legend += self._obj.pl._create_obs_legend()
 
-        if legend_image or legend_segmentation or legend_label:
+        if legend_image or legend_segmentation or legend_label or legend_neighborhoods:
             ax.legend(handles=legend, **legend_kwargs)
 
         return self._obj

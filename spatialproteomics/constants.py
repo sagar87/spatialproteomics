@@ -25,11 +25,13 @@ Black = "#000000"
 class Layers(object):
     IMAGE = "_image"
     SEGMENTATION = "_segmentation"
-    PROPERTIES = "_properties"
+    LA_PROPERTIES = "_la_properties"
+    NH_PROPERTIES = "_nh_properties"
     OBS = "_obs"
     INTENSITY = "_intensity"
     PLOT = "_plot"
     MASK = "_mask"
+    NEIGHBORHOODS = "_neighborhoods"
 
 
 class Dims(object):
@@ -41,12 +43,12 @@ class Dims(object):
     COORDINATES = "coordinates"
     LABELS = "labels"
     FEATURES = "features"
-    PROPS = "props"
-    NEIGHBORS = "neighbors"
+    LA_PROPS = "la_props"
+    NH_PROPS = "nh_props"
+    NEIGHBORHOODS = "neighborhoods"
     IMAGE = ["channels", "x", "y"]
     COLORED_IMAGE = ["channels", "x", "y", "rgba"]
     SEGMENTATION = ["x", "y"]
-    DATA = ["cell_idx", "channels"]
 
 
 class Attrs(object):
@@ -63,9 +65,10 @@ class Props(object):
 
 
 class Features(object):
-    LABELS = "_labels"
     X = "centroid-1"
     Y = "centroid-0"
+    LABELS = "_labels"
+    NEIGHBORHOODS = "_neighborhoods"
 
 
 class Labels(object):
@@ -173,6 +176,3 @@ COLORS = [
     "#A4E804",
     "#324E72",
 ]
-
-
-PROPS_DICT = {"centroid-1": Features.X, "centroid-0": Features.Y}

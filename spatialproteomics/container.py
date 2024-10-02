@@ -12,8 +12,10 @@ def load_image_data(
     channel_coords: Union[str, List[str]],
     segmentation: Union[None, np.ndarray] = None,
     labels: Union[None, pd.DataFrame] = None,
+    neighborhood: Union[None, pd.DataFrame] = None,
     cell_col: str = "cell",
     label_col: str = "label",
+    neighborhood_col: str = "neighborhood",
     copy_image: bool = False,
 ):
     """Creates a image container.
@@ -49,6 +51,9 @@ def load_image_data(
     if labels is not None:
         assert segmentation is not None, "Labels may only be provided in conjunction with a segmentation."
 
+    if neighborhood is not None:
+        assert labels is not None, "Neighborhoods may only be provided in conjunction with labels."
+
     im = xr.DataArray(
         image,
         coords=[channel_coords, range(y_dim), range(x_dim)],
@@ -62,7 +67,10 @@ def load_image_data(
         dataset = dataset.pp.add_segmentation(segmentation)
 
         if labels is not None:
-            dataset = dataset.pp.add_labels_from_dataframe(labels, cell_col=cell_col, label_col=label_col)
+            dataset = dataset.la.add_labels_from_dataframe(labels, cell_col=cell_col, label_col=label_col)
+
+            if neighborhood is not None:
+                dataset = dataset.nh.add_neighborhoods_from_dataframe(neighborhood, neighborhood_col=neighborhood_col)
 
     else:
         dataset = xr.Dataset(data_vars={Layers.IMAGE: im})

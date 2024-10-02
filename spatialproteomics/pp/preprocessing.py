@@ -9,8 +9,7 @@ from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Labels, Layers, Props
-from ..la.utils import _format_labels
+from ..constants import Dims, Features, Layers, Props
 from .utils import (
     _convert_to_8bit,
     _get_disconnected_cell,
@@ -658,185 +657,12 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_properties(
-        self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False
-    ) -> xr.Dataset:
-        """
-        Adds properties to the image container.
-
-        Parameters
-        ----------
-        array : Union[np.ndarray, list]
-            An array or list of properties to be added to the image container.
-        prop : str, optional
-            The name of the property. Default is Features.LABELS.
-        return_xarray : bool, optional
-            If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.
-
-        Returns
-        -------
-        xr.Dataset or xr.DataArray
-            The updated image container with added properties or the properties as a separate xarray.DataArray.
-        """
-        unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
-
-        if type(array) is list:
-            array = np.array(array)
-
-        if prop == Features.LABELS:
-            unique_labels = np.unique(_format_labels(array))
-
-        da = xr.DataArray(
-            array.reshape(-1, 1),
-            coords=[unique_labels.astype(int), [prop]],
-            dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.PROPERTIES,
-        )
-
-        if return_xarray:
-            return da
-
-        if Layers.PROPERTIES in self._obj:
-            da = xr.concat(
-                [self._obj[Layers.PROPERTIES], da],
-                dim=Dims.PROPS,
-            )
-
-        return xr.merge([da, self._obj])
-
-    def add_labels(self, labels: Union[dict, None] = None) -> xr.Dataset:
-        """
-        Add labels from a mapping (cell -> label) to the spatialproteomics object.
-
-        Parameters:
-        -----------
-        labels : Union[dict, None], optional
-            A dictionary containing cell labels as keys and corresponding labels as values.
-            If None, a default labeling will be added. Default is None.
-
-        Returns:
-        --------
-        xr.Dataset
-            The spatialproteomics object with added labels.
-
-        Notes:
-        ------
-        This method converts the input dictionary into a pandas DataFrame and then adds the labels to the object
-        using the `pp.add_labels_from_dataframe` method.
-        """
-        # converting the dict into a df
-        if labels is not None:
-            labels = pd.DataFrame(labels.items(), columns=["cell", "label"])
-
-        # adding the labels to the object
-        return self._obj.pp.add_labels_from_dataframe(labels)
-
-    def add_labels_from_dataframe(
-        self,
-        df: Union[pd.DataFrame, None] = None,
-        cell_col: str = "cell",
-        label_col: str = "label",
-        colors: Union[list, None] = None,
-        names: Union[list, None] = None,
-    ) -> xr.Dataset:
-        """
-        Adds labels to the image container.
-
-        Parameters
-        ----------
-        df : Union[pd.DataFrame, None], optional
-            A dataframe with the cell and label information. If None, a default labeling will be applied.
-        cell_col : str, optional
-            The name of the column in the dataframe representing cell coordinates. Default is "cell".
-        label_col : str, optional
-            The name of the column in the dataframe representing cell labels. Default is "label".
-        colors : Union[list, None], optional
-            A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.
-        names : Union[list, None], optional
-            A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.
-
-        Returns
-        -------
-        xr.Dataset
-            The updated image container with added labels.
-        """
-        # check if properties are already present
-        assert (
-            Layers.PROPERTIES not in self._obj
-        ), "Already found label properties in the object. Please remove them with pp.drop_layers('_properties') first."
-
-        if df is None:
-            cells = self._obj.coords[Dims.CELLS].values
-            labels = np.ones(len(cells))
-            formated_labels = np.ones(len(cells))
-            unique_labels = np.unique(formated_labels)
-        else:
-            sub = df.loc[:, [cell_col, label_col]].dropna()
-            cells = sub.loc[:, cell_col].to_numpy().squeeze()
-            labels = sub.loc[:, label_col].to_numpy().squeeze()
-
-            if np.all([isinstance(i, str) for i in labels]):
-                unique_labels = np.unique(labels)
-
-                # if zeroes are present in the labels, this means that there are unlabeled cells
-                # these should have a value of 0
-                # otherwise, we reindex the labels so they start at 1
-                if Labels.UNLABELED in unique_labels:
-                    # push unlabeled to the front of the list
-                    unique_labels = np.concatenate(
-                        ([Labels.UNLABELED], unique_labels[unique_labels != Labels.UNLABELED])
-                    )
-                    label_to_num = dict(zip(unique_labels, range(len(unique_labels))))
-                else:
-                    label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
-
-                labels = np.array([label_to_num[label] for label in labels])
-                names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
-
-            assert ~np.all(labels < 0), "Labels must be >= 0."
-
-            formated_labels = _format_labels(labels)
-            unique_labels = np.unique(formated_labels)
-
-        da = xr.DataArray(
-            np.stack([formated_labels], -1),
-            coords=[cells, [Features.LABELS]],
-            dims=[Dims.CELLS, Dims.FEATURES],
-            name=Layers.OBS,
-        )
-
-        da = da.where(
-            da.coords[Dims.CELLS].isin(
-                self._obj.coords[Dims.CELLS],
-            ),
-            drop=True,
-        )
-
-        obj = self._obj.copy()
-        obj = xr.merge([obj.sel(cells=da.cells), da])
-
-        if colors is not None:
-            assert len(colors) == len(unique_labels), "Colors has the same."
-        else:
-            colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
-
-        obj = obj.pp.add_properties(colors, Props.COLOR)
-
-        if names is not None:
-            assert len(names) == len(unique_labels), "Names has the same."
-        else:
-            # if there is a 0 in unique labels, we need to add an unlabeled category
-            if 0 in unique_labels:
-                names = [Labels.UNLABELED, *[f"Cell type {i+1}" for i in range(len(unique_labels) - 1)]]
-            else:
-                names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
-
-        obj = obj.pp.add_properties(names, Props.NAME)
-
-        return xr.merge([obj.sel(cells=da.cells), da])
-
     def drop_layers(
-        self, layers: Optional[Union[str, list]] = None, keep: Optional[Union[str, list]] = None
+        self,
+        layers: Optional[Union[str, list]] = None,
+        keep: Optional[Union[str, list]] = None,
+        drop_obs: bool = True,
+        suppress_warnings: bool = False,
     ) -> xr.Dataset:
         """
         Drops layers from the image container. Can either drop all layers specified in layers or drop all layers but the ones specified in keep.
@@ -847,6 +673,10 @@ class PreprocessingAccessor:
             The name of the layer or a list of layer names to be dropped.
         keep : Union[str, list]
             The name of the layer or a list of layer names to be kept.
+        drop_obs : bool
+            If True, the observations are removed when the label or neighborhood properties are dropped. Default is True.
+        suppress_warnings : bool
+            If True, warnings are suppressed. Default is False.
 
         Returns
         -------
@@ -895,6 +725,30 @@ class PreprocessingAccessor:
         for dim in obj.dims:
             if dim not in dims_to_keep:
                 obj = obj.drop_dims(dim)
+
+        # if label props are dropped, we need to remove the labels from the obs as well
+        if Layers.LA_PROPERTIES in layers and Dims.FEATURES in obj.coords:
+            if Features.LABELS in obj.coords[Dims.FEATURES] and drop_obs:
+                if not suppress_warnings:
+                    logger.info(
+                        "Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False."
+                    )
+                filtered_features = obj.coords[Dims.FEATURES].where(
+                    obj.coords[Dims.FEATURES] != Features.LABELS, drop=True
+                )
+                obj = obj.sel(features=filtered_features)
+
+        # if neighborhood props are dropped, we need to remove the neighborhoods from the obs as well
+        if Layers.NH_PROPERTIES in layers and Dims.FEATURES in obj.coords:
+            if Features.NEIGHBORHOODS in obj.coords[Dims.FEATURES] and drop_obs:
+                if not suppress_warnings:
+                    logger.info(
+                        "Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False."
+                    )
+                filtered_features = obj.coords[Dims.FEATURES].where(
+                    obj.coords[Dims.FEATURES] != Features.NEIGHBORHOODS, drop=True
+                )
+                obj = obj.sel(features=filtered_features)
 
         return obj
 
@@ -1177,13 +1031,16 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(self, iterations: int = 2, handle_disconnected: str = "ignore") -> xr.Dataset:
+    def grow_cells(
+        self, iterations: int = 2, handle_disconnected: str = "ignore", suppress_warning: bool = False
+    ) -> xr.Dataset:
         """
         Grows the segmentation masks by expanding the labels in the object.
 
         Parameters:
         - iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
         - handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
+        - suppress_warning (bool): Whether to suppress the warning about recalculating the observations. Used internally, default is False.
 
         Raises:
         - ValueError: If the object does not contain a segmentation mask.
@@ -1221,7 +1078,7 @@ class PreprocessingAccessor:
 
         # getting all of the obs features
         obs_features = sorted(list(self._obj.coords[Dims.FEATURES].values))
-        if obs_features != [Features.Y, Features.X]:
+        if obs_features != [Features.Y, Features.X] and not suppress_warning:
             logger.warning(
                 "Mask growing requires recalculation of the observations. All features other than the centroids will be removed and should be recalculated with pp.add_observations()."
             )
@@ -1335,10 +1192,16 @@ class PreprocessingAccessor:
         c1, c2 = coords[dims[0]].values, coords[dims[1]].values
         df = pd.DataFrame(data_array.values, index=c1, columns=c2)
 
-        # special case: when exporting obs, we can convert celltypes to strings
-        if celltypes_to_str and layer == Layers.OBS and Features.LABELS in df.columns:
-            label_dict = self._obj.la._label_to_dict(Props.NAME)
-            df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+        # special case: converting celltypes to strings
+        if celltypes_to_str:
+            # converting cts to strings in the obs df
+            if layer == Layers.OBS and Features.LABELS in df.columns:
+                label_dict = self._obj.la._label_to_dict(Props.NAME)
+                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+            # converting cts to strings in the neighborhood df
+            if layer == Layers.NEIGHBORHOODS:
+                label_dict = self._obj.la._label_to_dict(Props.NAME)
+                df.columns = [label_dict[x] for x in df.columns.values]
 
         if idx_to_str:
             df.index = df.index.astype(str)

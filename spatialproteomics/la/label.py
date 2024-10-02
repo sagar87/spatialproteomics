@@ -6,7 +6,8 @@ import xarray as xr
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props
+from ..constants import COLORS, Dims, Features, Labels, Layers, Props
+from ..la.utils import _format_labels
 
 
 @xr.register_dataset_accessor("la")
@@ -17,7 +18,7 @@ class LabelAccessor:
         self._obj = xarray_obj
 
     def __contains__(self, key):
-        if Layers.PROPERTIES not in self._obj:
+        if Layers.LA_PROPERTIES not in self._obj:
             return False
 
         label_dict = self._obj.la._label_to_dict(Props.NAME)
@@ -166,14 +167,14 @@ class LabelAccessor:
         reverse : bool
             If True, the dictionary will be reversed.
         relabel : bool
-            Deprecated.
+            If True, the dictionary keys will be relabeled.
 
         Returns
         -------
         label_dict : dict
             A dictionary that maps each label to a list to their property.
         """
-        labels_layer = self._obj[Layers.PROPERTIES]
+        labels_layer = self._obj[Layers.LA_PROPERTIES]
         labels = self._obj.coords[Dims.LABELS]
 
         label_dict = {}
@@ -334,19 +335,19 @@ class LabelAccessor:
             raise ValueError("No observation table found.")
 
         # Assert that label type is not already present
-        if Layers.PROPERTIES in self._obj:
-            if name in self._obj[Layers.PROPERTIES].sel({Dims.PROPS: Props.NAME}):
+        if Layers.LA_PROPERTIES in self._obj:
+            if name in self._obj[Layers.LA_PROPERTIES].sel({Dims.LA_PROPS: Props.NAME}):
                 raise ValueError("Label type already exists.")
 
         array = np.array([name, color]).reshape(1, -1)
 
-        # if label properties (Layers.PROPERTIES) are not present, create them
-        if Layers.PROPERTIES not in self._obj:
+        # if label properties (Layers.LA_PROPERTIES) are not present, create them
+        if Layers.LA_PROPERTIES not in self._obj:
             da = xr.DataArray(
                 array,
                 coords=[np.array([1]), [Props.NAME, Props.COLOR]],
-                dims=[Dims.LABELS, Dims.PROPS],
-                name=Layers.PROPERTIES,
+                dims=[Dims.LABELS, Dims.LA_PROPS],
+                name=Layers.LA_PROPERTIES,
             )
 
             db = xr.DataArray(
@@ -362,11 +363,11 @@ class LabelAccessor:
             da = xr.DataArray(
                 array,
                 coords=[np.array([new_coord]), [Props.NAME, Props.COLOR]],
-                dims=[Dims.LABELS, Dims.PROPS],
+                dims=[Dims.LABELS, Dims.LA_PROPS],
             )
 
             da = xr.concat(
-                [self._obj[Layers.PROPERTIES], da],
+                [self._obj[Layers.LA_PROPERTIES], da],
                 dim=Dims.LABELS,
             )
             obj = xr.merge([self._obj, da])
@@ -407,7 +408,7 @@ class LabelAccessor:
         if isinstance(cell_type, str):
             cell_type = [self._obj.la._label_name_to_id(cell_type)]
 
-        if Layers.PROPERTIES not in self._obj:
+        if Layers.LA_PROPERTIES not in self._obj:
             raise ValueError("No cell type labels found.")
 
         for i in cell_type:
@@ -449,10 +450,10 @@ class LabelAccessor:
         """
         # checking that we already have properties
         assert (
-            Layers.PROPERTIES in self._obj
+            Layers.LA_PROPERTIES in self._obj
         ), "No label layer found in the data object. Please add labels, e. g. via la.predict_cell_types_argmax() or tl.astir()."
         # making sure the property does not exist already
-        assert prop not in self._obj.coords[Dims.PROPS].values, f"Property {prop} already exists."
+        assert prop not in self._obj.coords[Dims.LA_PROPS].values, f"Property {prop} already exists."
 
         # checking that the length of the array matches the number of labels
         assert len(array) == len(
@@ -467,14 +468,14 @@ class LabelAccessor:
         da = xr.DataArray(
             array.reshape(-1, 1),
             coords=[unique_labels.astype(int), [prop]],
-            dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.PROPERTIES,
+            dims=[Dims.LABELS, Dims.LA_PROPS],
+            name=Layers.LA_PROPERTIES,
         )
 
-        if Layers.PROPERTIES in self._obj:
+        if Layers.LA_PROPERTIES in self._obj:
             da = xr.concat(
-                [self._obj[Layers.PROPERTIES], da],
-                dim=Dims.PROPS,
+                [self._obj[Layers.LA_PROPERTIES], da],
+                dim=Dims.LA_PROPS,
             )
 
         return xr.merge([da, self._obj])
@@ -503,16 +504,16 @@ class LabelAccessor:
         - It updates the name of the cell type label in the data object to the new 'name'.
         """
         # checking that a label layer is already present
-        assert Layers.PROPERTIES in self._obj, "No label layer found in the data object."
+        assert Layers.LA_PROPERTIES in self._obj, "No label layer found in the data object."
         # checking if the old label exists
         assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
         # checking if the new label already exists
-        assert name not in self._obj[Layers.PROPERTIES].sel(
-            {Dims.PROPS: Props.NAME}
+        assert name not in self._obj[Layers.LA_PROPERTIES].sel(
+            {Dims.LA_PROPS: Props.NAME}
         ), f"Label name {name} already exists."
 
         # getting the original label properties
-        property_layer = self._obj[Layers.PROPERTIES].copy()
+        property_layer = self._obj[Layers.LA_PROPERTIES].copy()
 
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
@@ -520,7 +521,7 @@ class LabelAccessor:
         property_layer.loc[label, Props.NAME] = name
 
         # removing the old property layer
-        obj = self._obj.pp.drop_layers(Layers.PROPERTIES)
+        obj = self._obj.pp.drop_layers(Layers.LA_PROPERTIES)
 
         # adding the new property layer
         return xr.merge([property_layer, obj])
@@ -558,13 +559,13 @@ class LabelAccessor:
 
         # checking that a label layer is already present
         assert (
-            Layers.PROPERTIES in self._obj
+            Layers.LA_PROPERTIES in self._obj
         ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or tl.astir()."
 
         # obtaining the current properties
-        props_layer = self._obj.coords[Dims.PROPS].values.tolist()
+        props_layer = self._obj.coords[Dims.LA_PROPS].values.tolist()
         labels_layer = self._obj.coords[Dims.LABELS].values.tolist()
-        array = self._obj[Layers.PROPERTIES].values.copy()
+        array = self._obj[Layers.LA_PROPERTIES].values.copy()
 
         for label, color in zip(labels, colors):
             # if the label does not exist in the object, a warning is thrown and we continue
@@ -581,11 +582,11 @@ class LabelAccessor:
         da = xr.DataArray(
             array,
             coords=[labels_layer, props_layer],
-            dims=[Dims.LABELS, Dims.PROPS],
-            name=Layers.PROPERTIES,
+            dims=[Dims.LABELS, Dims.LA_PROPS],
+            name=Layers.LA_PROPERTIES,
         )
 
-        return xr.merge([self._obj.drop_vars(Layers.PROPERTIES), da])
+        return xr.merge([self._obj.drop_vars(Layers.LA_PROPERTIES), da])
 
     def predict_cell_types_argmax(
         self,
@@ -660,10 +661,10 @@ class LabelAccessor:
             # ideally, we should select by Dims.FEATURES here, but that does not work syntactically
             obj[Layers.OBS] = obs.drop_sel(features=Features.LABELS)
             # removing the old colors
-            obj = obj.pp.drop_layers(Layers.PROPERTIES)
+            obj = obj.pp.drop_layers(Layers.LA_PROPERTIES)
 
         # adding the new labels
-        return obj.pp.add_labels_from_dataframe(celltype_prediction_df)
+        return obj.la.add_labels_from_dataframe(celltype_prediction_df)
 
     def _threshold_label(
         self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
@@ -747,3 +748,180 @@ class LabelAccessor:
             obj = obj.la._threshold_label(channel=channel, threshold=threshold, layer_key=layer_key, label=label)
 
         return obj
+
+    def add_labels(self, labels: Union[dict, None] = None) -> xr.Dataset:
+        """
+        Add labels from a mapping (cell -> label) to the spatialproteomics object.
+
+        Parameters:
+        -----------
+        labels : Union[dict, None], optional
+            A dictionary containing cell labels as keys and corresponding labels as values.
+            If None, a default labeling will be added. Default is None.
+
+        Returns:
+        --------
+        xr.Dataset
+            The spatialproteomics object with added labels.
+
+        Notes:
+        ------
+        This method converts the input dictionary into a pandas DataFrame and then adds the labels to the object
+        using the `la.add_labels_from_dataframe` method.
+        """
+        # converting the dict into a df
+        if labels is not None:
+            labels = pd.DataFrame(labels.items(), columns=["cell", "label"])
+
+        # adding the labels to the object
+        return self._obj.la.add_labels_from_dataframe(labels)
+
+    def add_labels_from_dataframe(
+        self,
+        df: Union[pd.DataFrame, None] = None,
+        cell_col: str = "cell",
+        label_col: str = "label",
+        colors: Union[list, None] = None,
+        names: Union[list, None] = None,
+    ) -> xr.Dataset:
+        """
+        Adds labels to the image container.
+
+        Parameters
+        ----------
+        df : Union[pd.DataFrame, None], optional
+            A dataframe with the cell and label information. If None, a default labeling will be applied.
+        cell_col : str, optional
+            The name of the column in the dataframe representing cell coordinates. Default is "cell".
+        label_col : str, optional
+            The name of the column in the dataframe representing cell labels. Default is "label".
+        colors : Union[list, None], optional
+            A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.
+        names : Union[list, None], optional
+            A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with added labels.
+        """
+        # check if properties are already present
+        assert (
+            Layers.LA_PROPERTIES not in self._obj
+        ), f"Already found label properties in the object. Please remove them with pp.drop_layers('{Layers.LA_PROPERTIES}') first."
+
+        if df is None:
+            cells = self._obj.coords[Dims.CELLS].values
+            labels = np.ones(len(cells))
+            formated_labels = np.ones(len(cells))
+            unique_labels = np.unique(formated_labels)
+        else:
+            sub = df.loc[:, [cell_col, label_col]].dropna()
+            cells = sub.loc[:, cell_col].to_numpy().squeeze()
+            labels = sub.loc[:, label_col].to_numpy().squeeze()
+
+            if np.all([isinstance(i, str) for i in labels]):
+                unique_labels = np.unique(labels)
+
+                # if zeroes are present in the labels, this means that there are unlabeled cells
+                # these should have a value of 0
+                # otherwise, we reindex the labels so they start at 1
+                if Labels.UNLABELED in unique_labels:
+                    # push unlabeled to the front of the list
+                    unique_labels = np.concatenate(
+                        ([Labels.UNLABELED], unique_labels[unique_labels != Labels.UNLABELED])
+                    )
+                    label_to_num = dict(zip(unique_labels, range(len(unique_labels))))
+                else:
+                    label_to_num = dict(zip(unique_labels, range(1, len(unique_labels) + 1)))
+
+                labels = np.array([label_to_num[label] for label in labels])
+                names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
+
+            assert ~np.all(labels < 0), "Labels must be >= 0."
+
+            formated_labels = _format_labels(labels)
+            unique_labels = np.unique(formated_labels)
+
+        da = xr.DataArray(
+            np.stack([formated_labels], -1),
+            coords=[cells, [Features.LABELS]],
+            dims=[Dims.CELLS, Dims.FEATURES],
+            name=Layers.OBS,
+        )
+
+        da = da.where(
+            da.coords[Dims.CELLS].isin(
+                self._obj.coords[Dims.CELLS],
+            ),
+            drop=True,
+        )
+
+        obj = self._obj.copy()
+        obj = xr.merge([obj.sel(cells=da.cells), da])
+
+        if colors is not None:
+            assert len(colors) == len(unique_labels), "Colors has the same."
+        else:
+            colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
+
+        obj = obj.la.add_properties(colors, Props.COLOR)
+
+        if names is not None:
+            assert len(names) == len(unique_labels), "Names has the same."
+        else:
+            # if there is a 0 in unique labels, we need to add an unlabeled category
+            if 0 in unique_labels:
+                names = [Labels.UNLABELED, *[f"Cell type {i+1}" for i in range(len(unique_labels) - 1)]]
+            else:
+                names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
+
+        obj = obj.la.add_properties(names, Props.NAME)
+
+        return xr.merge([obj.sel(cells=da.cells), da])
+
+    def add_properties(
+        self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False
+    ) -> xr.Dataset:
+        """
+        Adds properties to the image container. In order to add properties to an already existing property layer, use the la.add_label_property() method.
+
+        Parameters
+        ----------
+        array : Union[np.ndarray, list]
+            An array or list of properties to be added to the image container.
+        prop : str, optional
+            The name of the property. Default is Features.LABELS.
+        return_xarray : bool, optional
+            If True, the function returns an xarray.DataArray with the properties instead of adding them to the image container.
+
+        Returns
+        -------
+        xr.Dataset or xr.DataArray
+            The updated image container with added properties or the properties as a separate xarray.DataArray.
+        """
+        unique_labels = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}))
+
+        if type(array) is list:
+            array = np.array(array)
+
+        if prop == Features.LABELS:
+            unique_labels = np.unique(_format_labels(array))
+
+        da = xr.DataArray(
+            array.reshape(-1, 1),
+            coords=[unique_labels.astype(int), [prop]],
+            dims=[Dims.LABELS, Dims.LA_PROPS],
+            name=Layers.LA_PROPERTIES,
+        )
+
+        if return_xarray:
+            return da
+
+        if Layers.LA_PROPERTIES in self._obj:
+            da = xr.concat(
+                [self._obj[Layers.LA_PROPERTIES], da],
+                dim=Dims.LA_PROPS,
+            )
+
+        return xr.merge([da, self._obj])

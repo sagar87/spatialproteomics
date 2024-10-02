@@ -6,9 +6,9 @@ from spatialproteomics.constants import Dims, Layers, Props
 def test_add_label_property(dataset_labeled):
     ds = dataset_labeled.la.add_label_property(["black"] * 12, "alternative_color")
     # checking that the property got added correctly
-    assert "alternative_color" in ds.coords[Dims.PROPS].values
+    assert "alternative_color" in ds.coords[Dims.LA_PROPS].values
     # checking that previous properties are still there (subset)
-    assert len(set(dataset_labeled.coords[Dims.PROPS].values) - set(ds.coords[Dims.PROPS].values)) == 0
+    assert len(set(dataset_labeled.coords[Dims.LA_PROPS].values) - set(ds.coords[Dims.LA_PROPS].values)) == 0
 
     # making sure we can't add a property that already exists
     with pytest.raises(AssertionError, match="Property alternative_color already exists."):
@@ -39,7 +39,7 @@ def test_set_label_name(dataset_labeled):
 
 def test_set_label_colors(dataset_labeled):
     ds = dataset_labeled.la.set_label_colors("Cell type 1", "black")
-    colors = ds[Layers.PROPERTIES].sel(props=Props.COLOR).values
+    colors = ds[Layers.LA_PROPERTIES].sel(la_props=Props.COLOR).values
 
     # ensuring black is now a color
     assert "black" in colors
@@ -48,7 +48,7 @@ def test_set_label_colors(dataset_labeled):
 def test_set_label_colors_multiple_colors(dataset_labeled):
     # adding multiple colors
     ds = dataset_labeled.la.set_label_colors(["Cell type 1", "Cell type 2"], ["black", "white"])
-    colors = ds[Layers.PROPERTIES].sel(props=Props.COLOR).values
+    colors = ds[Layers.LA_PROPERTIES].sel(la_props=Props.COLOR).values
     assert "black" in colors
     assert "white" in colors
 
