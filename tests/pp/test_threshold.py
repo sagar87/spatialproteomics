@@ -1,17 +1,55 @@
+import numpy as np
 import pytest
+
+from spatialproteomics.constants import Layers
 
 
 def test_threshold_single_channel(dataset_full):
-    dataset_full.pp["CD8"].pp.threshold(intensity=10)
-    dataset_full.pp["CD8"].pp.threshold(quantile=0.9)
+    d1 = dataset_full.pp["CD8"].pp.threshold(intensity=10)
+    # check that there are no pixels with values between 0 and 10 in the resulting image
+    assert d1[Layers.IMAGE].values[d1[Layers.IMAGE].values > 0].min() >= 10
+
+    d1 = dataset_full.pp["CD8"].pp.threshold(quantile=0.9)
+    # check that there are no pixels with values between 0 and the 90th percentile in the resulting image
+    quantile_value = np.quantile(dataset_full.pp["CD8"][Layers.IMAGE].values, 0.9)
+    assert d1[Layers.IMAGE].values[d1[Layers.IMAGE].values > 0].min() >= quantile_value
 
 
 def test_threshold_multiple_channels(dataset_full):
-    dataset_full.pp[["CD8", "CD4"]].pp.threshold(intensity=10)
-    dataset_full.pp[["CD8", "CD4"]].pp.threshold(quantile=0.9)
+    d1 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(intensity=10)
+    d2 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(quantile=0.9)
 
-    dataset_full.pp[["CD8", "CD4"]].pp.threshold(intensity=[10, 20])
-    dataset_full.pp[["CD8", "CD4"]].pp.threshold(quantile=[0.9, 0.95])
+    # check that there are no pixels with values between 0 and 10 in the resulting image
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= 10
+    # check that there are no pixels with values between 0 and the 90th percentile in the resulting image
+    quantile_value = np.quantile(dataset_full.pp["CD8"][Layers.IMAGE].values, 0.9)
+    assert d2.pp["CD8"][Layers.IMAGE].values[d2.pp["CD8"][Layers.IMAGE].values > 0].min() >= quantile_value
+
+    d1 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(intensity=[10, 20])
+    d2 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(quantile=[0.9, 0.95])
+
+    # check that there are no pixels with values between 0 and 10 in the resulting image
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= 10
+    # check that there are no pixels with values between 0 and the 90th percentile in the resulting image
+    assert d2.pp["CD8"][Layers.IMAGE].values[d2.pp["CD8"][Layers.IMAGE].values > 0].min() >= quantile_value
+
+
+def test_threshold_equivalence(dataset_full):
+    d1 = dataset_full.pp["CD8"].pp.threshold(intensity=10)
+    d2 = dataset_full.pp["CD8"].pp.threshold(intensity=[10])
+    assert d1.equals(d2)
+
+    d1 = dataset_full.pp["CD8"].pp.threshold(quantile=0.9)
+    d2 = dataset_full.pp["CD8"].pp.threshold(quantile=[0.9])
+    assert d1.equals(d2)
+
+    d1 = dataset_full.pp["CD8"].pp.threshold(intensity=10)
+    d2 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(intensity=[10, 20])
+    assert np.all(d1[Layers.IMAGE] == d2.pp["CD8"][Layers.IMAGE])
+
+    d1 = dataset_full.pp["CD8"].pp.threshold(quantile=0.9)
+    d2 = dataset_full.pp[["CD8", "CD4"]].pp.threshold(quantile=[0.9, 0.95])
+    assert np.all(d1[Layers.IMAGE] == d2.pp["CD8"][Layers.IMAGE])
 
 
 def test_threshold_too_high_intensity(dataset_full):
@@ -68,3 +106,46 @@ def test_threshold_wrong_number_of_quantile_thresholds(dataset_full):
         match="Quantile threshold must be a single value or a list of values with the same length as the number of channels.",
     ):
         dataset_full.pp["CD8"].pp.threshold(quantile=[0.8, 0.9])
+
+
+def test_threshold_on_selected_channels(dataset_full):
+    quantile_value = np.quantile(dataset_full.pp["CD8"][Layers.IMAGE].values, 0.9)
+
+    d1 = dataset_full.pp.threshold(intensity=10, channels="CD8")
+    assert dataset_full[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= 10
+
+    d1 = dataset_full.pp.threshold(quantile=0.9, channels="CD8")
+    assert dataset_full[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= quantile_value
+
+    d1 = dataset_full.pp.threshold(intensity=10, channels=["CD8", "CD4"])
+    assert dataset_full[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= 10
+
+    d1 = dataset_full.pp.threshold(quantile=0.9, channels=["CD8", "CD4"])
+    assert dataset_full[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
+    assert d1.pp["CD8"][Layers.IMAGE].values[d1.pp["CD8"][Layers.IMAGE].values > 0].min() >= quantile_value
+
+
+def test_thresholds_nonexistent_channel(dataset_full):
+    with pytest.raises(
+        AssertionError,
+        match="The following channels are not present in the image layer",
+    ):
+        dataset_full.pp.threshold(intensity=10, channels="dummy_channel")
+    with pytest.raises(
+        AssertionError,
+        match="The following channels are not present in the image layer",
+    ):
+        dataset_full.pp.threshold(quantile=0.9, channels="dummy_channel")
+    with pytest.raises(
+        AssertionError,
+        match="The following channels are not present in the image layer",
+    ):
+        dataset_full.pp.threshold(intensity=10, channels=["dummy_channel", "CD4"])
+    with pytest.raises(
+        AssertionError,
+        match="The following channels are not present in the image layer",
+    ):
+        dataset_full.pp.threshold(quantile=0.9, channels=["dummy_channel", "CD4"])

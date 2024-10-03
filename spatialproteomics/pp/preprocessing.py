@@ -752,7 +752,13 @@ class PreprocessingAccessor:
 
         return obj
 
-    def threshold(self, quantile: float = None, intensity: int = None, key_added: Optional[str] = None):
+    def threshold(
+        self,
+        quantile: float = None,
+        intensity: int = None,
+        key_added: Optional[str] = None,
+        channels: Optional[Union[str, list]] = None,
+    ):
         """
         Apply thresholding to the image layer of the object.
 
@@ -760,6 +766,7 @@ class PreprocessingAccessor:
         - quantile (float): The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.
         - intensity (int): The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.
         - key_added (Optional[str]): The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.
+        - channels (Optional[Union[str, list]]): The channels to apply the thresholding to. If None, the thresholding will be applied to all channels.
 
         Returns:
         - xr.Dataset: The object with the thresholding applied to the image layer.
@@ -772,11 +779,28 @@ class PreprocessingAccessor:
 
         if Layers.PLOT in self._obj:
             logger.warning(
-                "Please only call pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
+                "Please only call plotting methods like pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
             )
 
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
+
+        # if a channels argument is provided, the thresholds for all other channels are set to 0 (i. e. no thresholding)
+        if channels is not None:
+            if isinstance(channels, str):
+                channels = [channels]
+
+            all_channels = image_layer.coords[Dims.CHANNELS].values.tolist()
+            assert all(
+                [channel in all_channels for channel in channels]
+            ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
+
+            if quantile is not None:
+                quantile_dict = {channel: quantile for channel in channels}
+                quantile = [quantile_dict.get(channel, 0) for channel in all_channels]
+            if intensity is not None:
+                intensity_dict = {channel: intensity for channel in channels}
+                intensity = [intensity_dict.get(channel, 0) for channel in all_channels]
 
         if quantile is not None:
             if isinstance(quantile, (float, int)):
@@ -786,13 +810,23 @@ class PreprocessingAccessor:
 
             assert (
                 len(quantile) == 1 or len(quantile) == image_layer.coords[Dims.CHANNELS].size
-            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels."
+            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
 
             assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
 
-            # calculate quantile
-            lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-            filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(min=0)
+            # Calculate the quantile-based intensity threshold for each channel.
+            flattened_values = image_layer.values.reshape(
+                image_layer.values.shape[0], -1
+            )  # Flatten height and width for each channel.
+            lower = np.array(
+                [np.quantile(flattened_values[i], q) for i, q in enumerate(quantile)]
+            )  # Compute quantile per channel.
+
+            # Reshape lower to match the broadcasting requirements.
+            lower = lower[:, np.newaxis, np.newaxis]  # Reshape to add height and width dimensions.
+
+            # Use np.where to apply the quantile threshold without shifting.
+            filtered = np.where(image_layer.values >= lower, image_layer.values, 0)
 
         if intensity is not None:
             if isinstance(intensity, (float, int)):
@@ -802,15 +836,21 @@ class PreprocessingAccessor:
 
             assert (
                 len(intensity) == 1 or len(intensity) == image_layer.coords[Dims.CHANNELS].size
-            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels."
+            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
 
             assert np.all(intensity >= 0), "Intensity values must be positive."
             assert np.all(
                 intensity <= np.max(image_layer.values)
             ), "Intensity values must be smaller than the maximum intensity."
 
-            # calculate intensity
-            filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
+            # Reshape intensity to broadcast correctly across all dimensions.
+            if len(intensity) == 1:
+                intensity = intensity[0]  # This will make it a scalar for simple broadcasting.
+            else:
+                intensity = intensity[:, np.newaxis, np.newaxis]  # Add two new axes for broadcasting.
+
+            # Apply thresholding: set all values below the intensity threshold to 0.
+            filtered = np.where(image_layer.values >= intensity, image_layer.values, 0)
 
         obj = self._obj.copy()
 
