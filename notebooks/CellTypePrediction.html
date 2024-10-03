@@ -406,7 +406,7 @@ xr.set_options(display_style=&#39;text&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f665d4f7310&gt;
+&lt;xarray.core.options.set_options at 0x7f0bc81cb9a0&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -498,6 +498,7 @@ ds_with_ct_predictions = ds_with_ct_predictions.la.set_label_colors(list(ct_mark
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
+Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False.
 Label Stroma PDPN not found in the data object. Skipping.
 </pre></div></div>
 </div>
@@ -650,7 +651,7 @@ ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;, celltypes_to_str=True)
     </tr>
     <tr>
       <th>12557</th>
-      <td>Macro</td>
+      <td>Stroma CD90</td>
       <td>2216.324138</td>
       <td>2296.089655</td>
     </tr>
@@ -709,8 +710,8 @@ Data variables:
     _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
     _obs            (cells, features) float64 7.0 613.3 ... 2.249e+03 2.237e+03
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
-    _image          (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
-    _intensity      (cells, channels) float64 0.0 2.413 0.0 ... 0.3745 0.01481</pre></div>
+    _image          (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
+    _intensity      (cells, channels) float64 0.002128 2.413 ... 1.612 0.3275</pre></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -744,8 +745,8 @@ Coordinates:
   * cells          (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
   * features       (features) &lt;U10 &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
 Data variables:
-    _image         (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
-    _intensity     (cells, channels) float64 0.0 2.413 0.0 ... 0.3745 0.01481
+    _image         (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
+    _intensity     (cells, channels) float64 0.002128 2.413 ... 1.612 0.3275
     _segmentation  (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
     _obs           (cells, features) float64 613.3 768.4 ... 2.249e+03 2.237e+03</pre></div>
 </div>
@@ -765,13 +766,12 @@ ds_with_ct_predictions_astir = ds_for_astir.tl.astir(ct_marker_dict)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-The image is not of type uint8, which is required for astir to work properly. Use pp.convert_to_8bit() to convert the image to uint8. If you applied operations such as filtering, you may ignore this warning.
-training restart 1/5: 100%|██████████| 5/5 [ 3.53s/epochs, current loss: -42378.8]
-training restart 2/5: 100%|██████████| 5/5 [ 3.42s/epochs, current loss: -44151.2]
-training restart 3/5: 100%|██████████| 5/5 [ 3.44s/epochs, current loss: -44696.0]
-training restart 4/5: 100%|██████████| 5/5 [ 3.32s/epochs, current loss: -42463.3]
-training restart 5/5: 100%|██████████| 5/5 [ 3.30s/epochs, current loss: -43272.8]
-training restart (final):   4%|▍         | 20/500 [ 3.49s/epochs, current loss: -72852.9]
+training restart 1/5: 100%|██████████| 5/5 [ 3.64s/epochs, current loss: -28080.6]
+training restart 2/5: 100%|██████████| 5/5 [ 3.30s/epochs, current loss: -28630.9]
+training restart 3/5: 100%|██████████| 5/5 [ 3.28s/epochs, current loss: -30071.7]
+training restart 4/5: 100%|██████████| 5/5 [ 3.31s/epochs, current loss: -28048.1]
+training restart 5/5: 100%|██████████| 5/5 [ 3.26s/epochs, current loss: -28901.7]
+training restart (final):   4%|▍         | 20/500 [ 3.71s/epochs, current loss: -49673.2]
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -809,8 +809,8 @@ Coordinates:
   * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
   * features        (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
 Data variables:
-    _image          (channels, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
-    _intensity      (cells, channels) float64 0.0 2.413 0.0 ... 0.3745 0.01481
+    _image          (channels, y, x) uint8 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0
+    _intensity      (cells, channels) float64 0.002128 2.413 ... 1.612 0.3275
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0
     _obs            (cells, features) float64 12.0 613.3 ... 2.249e+03 2.237e+03
     _la_properties  (labels, la_props) object &#x27;#e6194B&#x27; &#x27;B&#x27; ... &#x27;#3cb44b&#x27; &#x27;T&#x27;</pre></div>
