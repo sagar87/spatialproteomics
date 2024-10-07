@@ -382,7 +382,6 @@ div.rendered_html tbody tr:hover {
 import spatialproteomics
 import matplotlib.pyplot as plt
 import xarray as xr
-xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
 </div>
@@ -461,7 +460,8 @@ _ = ds_single_channel.pl.colorize(&#39;gold&#39;).pl.show()
 <img alt="../_images/notebooks_ImageProcessing_3_0.png" src="../_images/notebooks_ImageProcessing_3_0.png" />
 </div>
 </div>
-<p>The marker above seems to have worked fairly well, but you can observe some unspecific binding. To boost the signal-to-noise ratio, we can threshold the image. This basically means that every value below that threshold gets set to zero. You can either threshold using an absolute intensity, or using a quantile value.</p>
+<p>The marker above seems to have worked fairly well, but you can observe some unspecific binding. To boost the signal-to-noise ratio, we can threshold the image. This basically means that every value below that threshold gets set to zero. In addition, the other intensities get shifted downwards by your specified value (you can deactivate this behavior by setting <code class="docutils literal notranslate"><span class="pre">pp.threshold(shift=False)</span></code>, which will only set values below the threshold to 0 and keep the other values unchanged). You can either
+threshold using an absolute intensity, or using a quantile value.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
