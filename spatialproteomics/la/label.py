@@ -7,7 +7,11 @@ from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Labels, Layers, Props
-from ..la.utils import _format_labels
+from ..la.utils import (
+    _format_labels,
+    _get_markers_from_subtype_dict,
+    _predict_cell_subtypes,
+)
 
 
 @xr.register_dataset_accessor("la")
@@ -925,3 +929,44 @@ class LabelAccessor:
             )
 
         return xr.merge([da, self._obj])
+
+    def predict_cell_subtypes(self, subtype_dict: dict, overwrite_existing_labels: bool = True) -> xr.Dataset:
+        """
+        Predict cell subtypes based on the binarized marker intensities.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the predicted cell subtypes.
+        overwrite_existing_labels : bool
+            If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.
+        """
+        # check if we have labels in the object
+        assert Layers.LA_PROPERTIES in self._obj, "No cell type labels found in the object. Please add labels first."
+
+        # first, we want to recursively check if all markers are binarized
+        # if not, we throw an error and ask the user to binarize the markers first
+        binarized_markers = [
+            x.replace("_binarized", "") for x in self._obj.pp.get_layer_as_df().columns if "_binarized" in x
+        ]
+        markers_for_subtype_prediction = _get_markers_from_subtype_dict(subtype_dict)
+        # checking if all markers are binarized
+        assert all([marker in binarized_markers for marker in markers_for_subtype_prediction]), (
+            "All markers must be binarized before predicting cell subtypes. Please use the la.threshold_labels() method to binarize the markers first. Missing markers: "
+            + ", ".join([marker for marker in markers_for_subtype_prediction if marker not in binarized_markers])
+        )
+
+        # predicting all of the different levels
+        subtype_df = _predict_cell_subtypes(self._obj.pp.get_layer_as_df(), subtype_dict)
+
+        # adding the subtypes to the object
+        obj = self._obj.copy()
+        obj = obj.pp.add_obs_from_dataframe(subtype_df)
+
+        final_layer = subtype_df.columns[-1]
+        if overwrite_existing_labels:
+            obj = obj.pp.drop_layers(Layers.LA_PROPERTIES, suppress_warnings=True)
+            subtype_df["cell"] = subtype_df.index
+            obj = obj.la.add_labels_from_dataframe(subtype_df, cell_col="cell", label_col=final_layer)
+
+        return obj
