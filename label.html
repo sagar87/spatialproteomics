@@ -268,6 +268,21 @@ The deselection can be performed using slices, lists, tuples, or individual inte
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.la.label.LabelAccessor.predict_cell_subtypes">
+<span class="sig-name descname"><span class="pre">predict_cell_subtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtype_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.la.label.LabelAccessor.predict_cell_subtypes" title="Permalink to this definition"></a></dt>
+<dd><p>Predict cell subtypes based on the binarized marker intensities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>xr.Dataset</em> – The updated image container with the predicted cell subtypes.</p></li>
+<li><p><strong>overwrite_existing_labels</strong> (<em>bool</em>) – If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.la.label.LabelAccessor.predict_cell_types_argmax">
 <span class="sig-name descname"><span class="pre">predict_cell_types_argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.la.label.LabelAccessor.predict_cell_types_argmax" title="Permalink to this definition"></a></dt>
 <dd><p>Predicts cell types based on the argmax classification of marker intensities.</p>
