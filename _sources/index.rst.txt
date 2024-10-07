@@ -24,7 +24,7 @@ Welcome to the documentation of spatialproteomics!
    notebooks/ExampleWorkflow
    notebooks/Slicing
    notebooks/Segmentation
-   notebooks/Cropping
+   notebooks/ArtifactRemoval
    notebooks/Plotting
    notebooks/ImageProcessing
    notebooks/Extracting

@@ -32,7 +32,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Neighborhood Analsis with the ImageContainer\n",
+    "## Neighborhood Analysis with the ImageContainer\n",
     "\n",
     "As a first step, we open three datasets and store them inside of a dictionary."
    ]

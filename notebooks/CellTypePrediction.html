@@ -56,7 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cropping.html">Custom Cropping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArtifactRemoval.html">Interactive Removal of Artifacts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cell Type Prediction</a><ul>
@@ -377,7 +377,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Cell-Type-Prediction">
 <h1>Cell Type Prediction<a class="headerlink" href="#Cell-Type-Prediction" title="Permalink to this heading"></a></h1>
-<p>There are different ways to predict cell types, e. g. using astir or argmax. The following notebook demonstrates some common ways of predicting cell types and subtypes</p>
+<p>There are different ways to predict cell types, e. g. using astir or argmax. The following notebook demonstrates some common ways of predicting cell types and subtypes.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -387,7 +387,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -396,18 +396,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import xarray as xr
 from scipy.signal import medfilt2d
-xr.set_options(display_style=&#39;text&#39;)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f0bc81cb9a0&gt;
-</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -533,8 +523,8 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 <img alt="../_images/notebooks_CellTypePrediction_10_1.png" src="../_images/notebooks_CellTypePrediction_10_1.png" />
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># this is how the image in the README was created
@@ -561,122 +551,15 @@ plt.tight_layout()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_CellTypePrediction_11_0.png" src="../_images/notebooks_CellTypePrediction_11_0.png" />
-</div>
-</div>
-<p>Getting observations from the xarray object is very easy. However, since the cell types are stored as integers, the method <code class="docutils literal notranslate"><span class="pre">la.get_obs(celltypes_to_str=True)</span></code> allows you to export the obs in a more readable format.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<p>Getting observations from the xarray object is very easy. We can simply use the method <code class="docutils literal notranslate"><span class="pre">pp.get_layer_as_df()</span></code>, which can also parse our cell types into human-readable format automatically.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting the obs with get_layer_as_df() to get human readable cell type annotations in a pandas data frame
 ds_with_ct_predictions.pp.get_layer_as_df(&#39;_obs&#39;, celltypes_to_str=True)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>_labels</th>
-      <th>centroid-0</th>
-      <th>centroid-1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>T</td>
-      <td>613.329787</td>
-      <td>768.420213</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Macro</td>
-      <td>769.098446</td>
-      <td>707.544041</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>T</td>
-      <td>774.528409</td>
-      <td>644.284091</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>T</td>
-      <td>775.902878</td>
-      <td>592.744604</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Myeloid</td>
-      <td>668.844749</td>
-      <td>729.310502</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>12556</th>
-      <td>B</td>
-      <td>2340.362319</td>
-      <td>1846.492754</td>
-    </tr>
-    <tr>
-      <th>12557</th>
-      <td>Stroma CD90</td>
-      <td>2216.324138</td>
-      <td>2296.089655</td>
-    </tr>
-    <tr>
-      <th>12558</th>
-      <td>T</td>
-      <td>2265.910853</td>
-      <td>2231.992248</td>
-    </tr>
-    <tr>
-      <th>12559</th>
-      <td>B</td>
-      <td>2281.480687</td>
-      <td>2218.424893</td>
-    </tr>
-    <tr>
-      <th>12560</th>
-      <td>B</td>
-      <td>2249.069444</td>
-      <td>2236.564815</td>
-    </tr>
-  </tbody>
-</table>
-<p>12560 rows × 3 columns</p>
-</div></div>
 </div>
 </section>
 <section id="Cell-Type-Prediction-with-Astir">

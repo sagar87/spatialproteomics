@@ -56,7 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cropping.html">Custom Cropping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArtifactRemoval.html">Interactive Removal of Artifacts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
@@ -752,9 +752,9 @@ df.to_csv(&quot;tmp.csv&quot;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># putting the expression matrix into an anndata object
-adata = ds.ext.convert_to_anndata(expression_matrix_key=&quot;_arcsinh_mean&quot;,
-                                  additional_layers={&quot;arcsinh_sum&quot;: &quot;_arcsinh_sum&quot;, &quot;raw_mean&quot;: &quot;_raw_mean&quot;, &quot;raw_sum&quot;: &quot;_raw_sum&quot;},
-                                  additional_uns={&quot;label_colors&quot;: &quot;_labels&quot;})
+adata = ds.tl.convert_to_anndata(expression_matrix_key=&quot;_arcsinh_mean&quot;,
+                                 additional_layers={&quot;arcsinh_sum&quot;: &quot;_arcsinh_sum&quot;, &quot;raw_mean&quot;: &quot;_raw_mean&quot;, &quot;raw_sum&quot;: &quot;_raw_sum&quot;},
+                                 additional_uns={&quot;label_colors&quot;: &quot;_labels&quot;})
 adata
 </pre></div>
 </div>
@@ -788,7 +788,7 @@ adata.write(&#39;tmp.h5ad&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatialdata_object = ds.ext.convert_to_spatialdata(expression_matrix_key=&quot;_arcsinh_mean&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatialdata_object = ds.tl.convert_to_spatialdata(expression_matrix_key=&quot;_arcsinh_mean&quot;)
 spatialdata_object
 </pre></div>
 </div>
