@@ -50,9 +50,15 @@ def load_image_data(
 
     if labels is not None:
         assert segmentation is not None, "Labels may only be provided in conjunction with a segmentation."
+        assert (
+            labels.shape[0] == np.unique(segmentation).shape[0] - 1
+        ), f"Number of labels must match number of segments. Got {labels.shape[0]} labels, but segmentation contained {np.unique(segmentation).shape[0] - 1} cells."
 
     if neighborhood is not None:
         assert labels is not None, "Neighborhoods may only be provided in conjunction with labels."
+        assert (
+            neighborhood.shape[0] == labels.shape[0]
+        ), f"Number of neighborhoods must match number of labels. Got {neighborhood.shape[0]} neighborhoods, but {labels.shape[0]} labels."
 
     im = xr.DataArray(
         image,
