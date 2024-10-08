@@ -3,6 +3,7 @@ from typing import Callable, List, Optional, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
+import yaml
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
@@ -930,9 +931,19 @@ class LabelAccessor:
 
         return xr.merge([da, self._obj])
 
-    def predict_cell_subtypes(self, subtype_dict: dict, overwrite_existing_labels: bool = True) -> xr.Dataset:
+    def predict_cell_subtypes(
+        self, subtype_dict: Union[dict, str], overwrite_existing_labels: bool = True
+    ) -> xr.Dataset:
         """
         Predict cell subtypes based on the binarized marker intensities.
+
+        Parameters
+        ----------
+        subtype_dict : dict
+            A dictionary mapping cell subtypes to the binarized markers used for prediction.
+            Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.
+        overwrite_existing_labels : bool, optional
+            If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.
 
         Returns
         -------
@@ -943,6 +954,11 @@ class LabelAccessor:
         """
         # check if we have labels in the object
         assert Layers.LA_PROPERTIES in self._obj, "No cell type labels found in the object. Please add labels first."
+
+        # if the subtype dict is a path to a yaml file, we load it
+        if type(subtype_dict) == str:
+            with open(subtype_dict, "r") as file:
+                subtype_dict = yaml.safe_load(file)
 
         # first, we want to recursively check if all markers are binarized
         # if not, we throw an error and ask the user to binarize the markers first
