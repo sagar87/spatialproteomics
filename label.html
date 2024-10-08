@@ -269,11 +269,18 @@ The deselection can be performed using slices, lists, tuples, or individual inte
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.la.label.LabelAccessor.predict_cell_subtypes">
-<span class="sig-name descname"><span class="pre">predict_cell_subtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtype_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.la.label.LabelAccessor.predict_cell_subtypes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">predict_cell_subtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtype_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.la.label.LabelAccessor.predict_cell_subtypes" title="Permalink to this definition"></a></dt>
 <dd><p>Predict cell subtypes based on the binarized marker intensities.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subtype_dict</strong> (<em>dict</em>) – A dictionary mapping cell subtypes to the binarized markers used for prediction.
+Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.</p></li>
+<li><p><strong>overwrite_existing_labels</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p><em>xr.Dataset</em> – The updated image container with the predicted cell subtypes.</p></li>
 <li><p><strong>overwrite_existing_labels</strong> (<em>bool</em>) – If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.</p></li>
 </ul>
