@@ -36,6 +36,9 @@ def load_files(data_dir):
         os.path.join(str(data_dir), files[files.index("neighborhoods_numeric.csv")]), index_col=0
     )
     files_loaded["zarr"] = xr.open_zarr(os.path.join(str(data_dir), files[files.index("test.zarr")]))
+    files_loaded["zarr_binarized"] = xr.open_zarr(
+        os.path.join(str(data_dir), files[files.index("test_binarized.zarr")])
+    )
 
     return files_loaded
 
@@ -108,6 +111,11 @@ def load_dataset_segmentation(data_dic):
 @pytest.fixture(scope="session", name="full_zarr")
 def load_full_zarr(data_dic):
     return data_dic["zarr"]
+
+
+@pytest.fixture(scope="session", name="dataset_binarized")
+def load_binarized_zarr(data_dic):
+    return data_dic["zarr_binarized"]
 
 
 @pytest.fixture(scope="session", name="test_segmentation")

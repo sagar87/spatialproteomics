@@ -355,6 +355,43 @@ class PreprocessingAccessor:
         obj = self._obj.copy()
         return xr.merge([obj, da]).pp.add_observations()
 
+    def add_layer_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.LA_LAYERS) -> xr.Dataset:
+        """
+        Adds a dataframe as a layer to the xarray object. This is similar to add_obs, with the only difference that it can be used to add any kind of data to the xarray object.
+        Useful to add things like string-based labels or other metadata.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            A dataframe with the observation values.
+
+        Returns
+        -------
+        xr.DataSet
+            The amended image container.
+        """
+        assert (
+            Dims.CELLS in self._obj.coords
+        ), "No cell coordinates found. Please add cells by running pp.add_observations() before calling this method."
+
+        # pulls out the cell and feature coordinates from the image container
+        cells = self._obj.coords[Dims.CELLS].values
+
+        # ensuring that the shape of the data frame fits the number of cells in the segmentation
+        assert len(cells) == len(
+            df.index
+        ), "Number of cells in the image container does not match the number of cells in the dataframe."
+
+        # create a data array from the dataframe
+        da = xr.DataArray(
+            df,
+            coords=[cells, df.columns],
+            dims=[Dims.CELLS, Dims.LA_FEATURES],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])
+
     def add_observations(
         self,
         properties: Union[str, list, tuple] = ("label", "centroid"),
