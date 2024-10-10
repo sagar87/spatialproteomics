@@ -550,7 +550,7 @@ class NeighborhoodAccessor:
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
-        neighborhood_df = _construct_neighborhood_df_radius(
+        neighborhood_df, adjacency_matrix = _construct_neighborhood_df_radius(
             self._obj.pp.get_layer_as_df(celltypes_to_str=False),
             cell_types=self._obj.coords[Dims.LABELS].values,
             x=Features.X,
@@ -568,7 +568,22 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        return xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da])
+
+        #  ensuring that the adjacency matrix is symmetric
+        assert np.allclose(
+            adjacency_matrix, adjacency_matrix.T
+        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
+        # adding the adjacency matrix to the object
+        cells = obj.coords[Dims.CELLS].values
+        da = xr.DataArray(
+            adjacency_matrix,
+            coords=[cells, cells],
+            dims=[Dims.CELLS, Dims.CELLS],
+            name=Layers.ADJACENCY_MATRIX,
+        )
+
+        return xr.merge([obj, da])
 
     def compute_neighborhoods_knn(self, k=10, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
         """
@@ -597,7 +612,7 @@ class NeighborhoodAccessor:
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
-        neighborhood_df = _construct_neighborhood_df_knn(
+        neighborhood_df, adjacency_matrix = _construct_neighborhood_df_knn(
             self._obj.pp.get_layer_as_df(celltypes_to_str=False),
             cell_types=self._obj.coords[Dims.LABELS].values,
             x=Features.X,
@@ -616,7 +631,22 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        return xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da])
+
+        #  ensuring that the adjacency matrix is symmetric
+        assert np.allclose(
+            adjacency_matrix, adjacency_matrix.T
+        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
+        # adding the adjacency matrix to the object
+        cells = obj.coords[Dims.CELLS].values
+        da = xr.DataArray(
+            adjacency_matrix,
+            coords=[cells, cells],
+            dims=[Dims.CELLS, Dims.CELLS],
+            name=Layers.ADJACENCY_MATRIX,
+        )
+
+        return xr.merge([obj, da])
 
     def compute_neighborhoods_delaunay(self, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
         """
@@ -641,7 +671,7 @@ class NeighborhoodAccessor:
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
-        neighborhood_df = _construct_neighborhood_df_delaunay(
+        neighborhood_df, adjacency_matrix = _construct_neighborhood_df_delaunay(
             self._obj.pp.get_layer_as_df(celltypes_to_str=False),
             cell_types=self._obj.coords[Dims.LABELS].values,
             x=Features.X,
@@ -659,4 +689,19 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        return xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da])
+
+        #  ensuring that the adjacency matrix is symmetric
+        assert np.allclose(
+            adjacency_matrix, adjacency_matrix.T
+        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
+        # adding the adjacency matrix to the object
+        cells = obj.coords[Dims.CELLS].values
+        da = xr.DataArray(
+            adjacency_matrix,
+            coords=[cells, cells],
+            dims=[Dims.CELLS, Dims.CELLS],
+            name=Layers.ADJACENCY_MATRIX,
+        )
+
+        return xr.merge([obj, da])

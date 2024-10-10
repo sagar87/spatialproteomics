@@ -48,7 +48,7 @@ class ImageContainer:
             # if neighborhoods are already present, we remove them from the objects
             if Layers.NEIGHBORHOODS in sp_obj:
                 self.objects[id] = sp_obj.pp.drop_layers(
-                    [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS], suppress_warnings=True
+                    [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX], suppress_warnings=True
                 )
 
             # computing the neighborhood for each object

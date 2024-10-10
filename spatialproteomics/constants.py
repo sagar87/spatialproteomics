@@ -33,6 +33,7 @@ class Layers(object):
     PLOT = "_plot"
     MASK = "_mask"
     NEIGHBORHOODS = "_neighborhoods"
+    ADJACENCY_MATRIX = "_adjacency_matrix"
 
 
 class Dims(object):
