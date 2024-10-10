@@ -161,7 +161,9 @@ class LabelAccessor:
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
         return {fw[k]: v for k, v in dictionary.items()}
 
-    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
+    def _label_to_dict(
+        self, prop: str, reverse: bool = False, relabel: bool = False, keys_as_str: bool = False
+    ) -> dict:
         """
         Returns a dictionary that maps each label to a list to their property.
 
@@ -173,6 +175,8 @@ class LabelAccessor:
             If True, the dictionary will be reversed.
         relabel : bool
             If True, the dictionary keys will be relabeled.
+        keys_as_str : bool
+            If True, the dictionary keys will be converted to the cell type labels instead of the numeric keys.
 
         Returns
         -------
@@ -193,6 +197,10 @@ class LabelAccessor:
 
         if reverse:
             label_dict = {v: k for k, v in label_dict.items()}
+
+        if keys_as_str:
+            labels = dict(zip(labels.values, self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)[Props.NAME].values))
+            label_dict = {labels[k]: v for k, v in label_dict.items()}
 
         return label_dict
 
