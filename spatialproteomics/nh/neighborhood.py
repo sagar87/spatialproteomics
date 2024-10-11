@@ -755,6 +755,18 @@ class NeighborhoodAccessor:
             if isinstance(features, str):
                 features = [features]
             assert len(features) > 0, "At least one feature must be provided."
+            # ensuring that all features are valid
+            valid_features = [
+                "degree",
+                "closeness_centrality",
+                "betweenness_centrality",
+                "homophily",
+                "inter_label_connectivity",
+                "diversity_index",
+            ]
+            assert all(
+                [feature in valid_features for feature in features]
+            ), f"Invalid feature provided. Valid features are: {valid_features}."
 
             adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
             G = nx.from_numpy_array(adjacency_matrix)
