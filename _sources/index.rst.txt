@@ -16,6 +16,7 @@ Welcome to the documentation of spatialproteomics!
    neighborhood
    plot
    tool
+   image_container
 
 .. toctree::
    :maxdepth: 2
