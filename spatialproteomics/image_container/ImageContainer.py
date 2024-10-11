@@ -9,6 +9,8 @@ from ..constants import COLORS, Layers
 
 
 class ImageContainer:
+    """This class is used to store multiple SpatialProteomics objects and perform operations on them."""
+
     def __init__(self, sprot_dict: Dict[str, xr.Dataset]):
         # assert that the input is a dictionary
         assert isinstance(sprot_dict, dict), "Input must be a dictionary"

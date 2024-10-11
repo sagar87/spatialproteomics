@@ -279,37 +279,31 @@ def _compute_network_features(G, features):
 
     # Degree
     if "degree" in features:
-        print("computing degree")
         degree_dict = dict(G.degree())
         feature_df["degree"] = degree_dict
 
     # Closeness Centrality
     if "closeness_centrality" in features:
-        print("computing closeness")
         closeness_dict = nx.closeness_centrality(G)
         feature_df["closeness_centrality"] = closeness_dict
 
     # Betweenness Centrality
     if "betweenness_centrality" in features:
-        print("computing betweenness")
         betweenness_dict = nx.betweenness_centrality(G)
         feature_df["betweenness_centrality"] = betweenness_dict
 
     # Homophily
     if "homophily" in features:
-        print("computing homophily")
         homophily_dict = _compute_node_homophily(G)
         feature_df["homophily"] = homophily_dict
 
     # Inter-label Connectivity
     if "inter_label_connectivity" in features:
-        print("computing inter-label connectivity")
         inter_label_connectivity_dict = _compute_inter_label_connectivity(G)
         feature_df["inter_label_connectivity"] = inter_label_connectivity_dict
 
     # Diversity Index
     if "diversity_index" in features:
-        print("computing diversity index")
         diversity_dict = _compute_diversity_index(G)
         feature_df["diversity_index"] = diversity_dict
 

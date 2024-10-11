@@ -30,6 +30,10 @@ class NeighborhoodAccessor:
         return key in neighborhood_dict.keys() or key in neighborhood_dict.values()
 
     def __getitem__(self, indices):
+        # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
+        if type(indices) is {}.keys().__class__ or type(indices) is {}.values().__class__:
+            indices = list(indices)
+
         # type checking
         if isinstance(indices, float):
             raise TypeError("Neighborhood indices must be valid integers, str, slices, List[int] or List[str].")
@@ -516,7 +520,7 @@ class NeighborhoodAccessor:
         property_layer.loc[neighborhood, Props.NAME] = name
 
         # removing the old property layer
-        obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES)
+        obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES, drop_obs=False)
 
         # adding the new property layer
         return xr.merge([property_layer, obj])
@@ -780,7 +784,7 @@ class NeighborhoodAccessor:
             labels_dict = spatial_df[Features.LABELS].reset_index(drop=True).to_dict()
             nx.set_node_attributes(G, labels_dict, Features.LABELS)
             network_features = _compute_network_features(G, features)
-            return self._obj.pp.add_obs_from_dataframe(network_features)
+            return self._obj.pp.add_obs_from_dataframe(network_features, override=False)
 
         except ImportError:
             raise ImportError("The networkx package is required for this function. Please install it first.")

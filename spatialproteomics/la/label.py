@@ -30,6 +30,10 @@ class LabelAccessor:
         return key in label_dict.keys() or key in label_dict.values()
 
     def __getitem__(self, indices):
+        # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
+        if type(indices) is {}.keys().__class__ or type(indices) is {}.values().__class__:
+            indices = list(indices)
+
         # type checking
         if isinstance(indices, float):
             raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")

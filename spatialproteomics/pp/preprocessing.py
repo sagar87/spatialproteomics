@@ -536,7 +536,7 @@ class PreprocessingAccessor:
 
         return xr.merge([self._obj, da])
 
-    def add_obs_from_dataframe(self, df: pd.DataFrame) -> xr.Dataset:
+    def add_obs_from_dataframe(self, df: pd.DataFrame, override: bool = False) -> xr.Dataset:
         """
         Adds an observation table to the image container. Columns of the
         dataframe have to match the feature coordinates of the image
@@ -547,6 +547,8 @@ class PreprocessingAccessor:
         ----------
         df : pd.DataFrame
             A dataframe with the observation values.
+        override : bool, optional
+            If True, the function overrides existing observations in the image container. Default is False.
 
         Returns
         -------
@@ -572,6 +574,10 @@ class PreprocessingAccessor:
             name=Layers.OBS,
         )
 
+        if override:
+            # TODO: this does not work correctly for some reason
+            # return xr.merge([self._obj, da], compat="override")
+            raise NotImplementedError("Override is not yet implemented.")
         return xr.merge([self._obj, da])
 
     def add_quantification(
