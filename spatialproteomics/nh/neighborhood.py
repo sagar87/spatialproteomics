@@ -7,6 +7,7 @@ import xarray as xr
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from .utils import (
+    _compute_network_features,
     _construct_neighborhood_df_delaunay,
     _construct_neighborhood_df_knn,
     _construct_neighborhood_df_radius,
@@ -77,6 +78,10 @@ class NeighborhoodAccessor:
         cells = self._obj.nh._filter_cells_by_neighborhood(sel)
 
         obj = self._obj.sel({Dims.NEIGHBORHOODS: sel, Dims.CELLS: cells})
+
+        # ensuring that cells and cells_2 are synchronized
+        if Dims.CELLS_2 in obj.coords:
+            obj = obj.sel({Dims.CELLS_2: cells})
 
         # removing all cells from the segmentation mask that are not in the cells array
         # we need the copy() here, as this will otherwise modify the original self._obj due to the array referencing it
@@ -579,7 +584,8 @@ class NeighborhoodAccessor:
         da = xr.DataArray(
             adjacency_matrix,
             coords=[cells, cells],
-            dims=[Dims.CELLS, Dims.CELLS],
+            # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
+            dims=[Dims.CELLS, Dims.CELLS_2],
             name=Layers.ADJACENCY_MATRIX,
         )
 
@@ -642,7 +648,8 @@ class NeighborhoodAccessor:
         da = xr.DataArray(
             adjacency_matrix,
             coords=[cells, cells],
-            dims=[Dims.CELLS, Dims.CELLS],
+            # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
+            dims=[Dims.CELLS, Dims.CELLS_2],
             name=Layers.ADJACENCY_MATRIX,
         )
 
@@ -700,8 +707,68 @@ class NeighborhoodAccessor:
         da = xr.DataArray(
             adjacency_matrix,
             coords=[cells, cells],
-            dims=[Dims.CELLS, Dims.CELLS],
+            # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
+            dims=[Dims.CELLS, Dims.CELLS_2],
             name=Layers.ADJACENCY_MATRIX,
         )
 
         return xr.merge([obj, da])
+
+    def add_neighborhood_obs(
+        self, features: Union[str, List[str]] = ["degree", "homophily", "inter_label_connectivity", "diversity_index"]
+    ):
+        """
+        Adds neighborhood observations to the object by computing network features
+        from the adjacency matrix.
+        This method requires the `networkx` package to be installed. It checks if
+        the adjacency matrix is present in the object, constructs a graph from the
+        adjacency matrix, and computes network features.
+        Parameters
+        ----------
+        features : str or List[str], optional
+            The network features to compute. Possible features are ['degree', 'closeness_centrality', 'closeness_centrality', 'homophily', 'inter_label_connectivity', 'diversity_index'].
+        Raises
+        ------
+        ImportError
+            If the `networkx` package is not installed.
+        AssertionError
+            If the adjacency matrix is not found in the object.
+        Notes
+        -----
+        The adjacency matrix should be computed and stored in the object before
+        calling this method. You can compute the adjacency matrix using methods
+        from the `nh` module, such as `nh.compute_neighborhoods_radius()`.
+        Examples
+        --------
+        >>> obj.add_neighborhood_obs()
+        """
+
+        try:
+            import networkx as nx
+
+            assert Layers.OBS in self._obj, "No observations found in the object."
+            assert Layers.LA_PROPERTIES in self._obj, "No cell type labels found in the object."
+            assert (
+                Layers.ADJACENCY_MATRIX in self._obj
+            ), "No adjacency matrix found in the object. Please compute the adjacency matrix first by running either of the methods contained in the nh module (e. g. nh.compute_neighborhoods_radius())."
+
+            if isinstance(features, str):
+                features = [features]
+            assert len(features) > 0, "At least one feature must be provided."
+
+            adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
+            G = nx.from_numpy_array(adjacency_matrix)
+
+            # adding labels as node attributes
+            spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
+            assert (
+                Features.LABELS in spatial_df.columns
+            ), f"Feature {Features.LABELS} not found in the observation layer."
+            # need to reset the index here to ensure that the labels are correctly assigned to the nodes
+            labels_dict = spatial_df[Features.LABELS].reset_index(drop=True).to_dict()
+            nx.set_node_attributes(G, labels_dict, Features.LABELS)
+            network_features = _compute_network_features(G, features)
+            return self._obj.pp.add_obs_from_dataframe(network_features)
+
+        except ImportError:
+            raise ImportError("The networkx package is required for this function. Please install it first.")

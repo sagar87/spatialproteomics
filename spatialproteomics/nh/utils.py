@@ -5,6 +5,7 @@ from skimage.segmentation import relabel_sequential
 from sklearn.neighbors import NearestNeighbors
 
 from ..base_logger import logger
+from ..constants import Features
 
 
 def _format_neighborhoods(neighborhoods):
@@ -258,3 +259,175 @@ def _construct_neighborhood_df_delaunay(
     neighborhood_profile.index = original_index
 
     return neighborhood_profile, adjacency_matrix
+
+
+def _compute_network_features(G, features):
+    """
+    Computes various network features for each node in the graph.
+
+    Parameters:
+    G (networkx.Graph): Input network graph.
+    features (list): List of features to compute.
+
+    Returns:
+    pandas.DataFrame: DataFrame with node features.
+    """
+    import networkx as nx
+
+    # Initialize a dictionary to store features for each node
+    feature_df = {}
+
+    # Degree
+    if "degree" in features:
+        print("computing degree")
+        degree_dict = dict(G.degree())
+        feature_df["degree"] = degree_dict
+
+    # Closeness Centrality
+    if "closeness_centrality" in features:
+        print("computing closeness")
+        closeness_dict = nx.closeness_centrality(G)
+        feature_df["closeness_centrality"] = closeness_dict
+
+    # Betweenness Centrality
+    if "betweenness_centrality" in features:
+        print("computing betweenness")
+        betweenness_dict = nx.betweenness_centrality(G)
+        feature_df["betweenness_centrality"] = betweenness_dict
+
+    # Homophily
+    if "homophily" in features:
+        print("computing homophily")
+        homophily_dict = _compute_node_homophily(G)
+        feature_df["homophily"] = homophily_dict
+
+    # Inter-label Connectivity
+    if "inter_label_connectivity" in features:
+        print("computing inter-label connectivity")
+        inter_label_connectivity_dict = _compute_inter_label_connectivity(G)
+        feature_df["inter_label_connectivity"] = inter_label_connectivity_dict
+
+    # Diversity Index
+    if "diversity_index" in features:
+        print("computing diversity index")
+        diversity_dict = _compute_diversity_index(G)
+        feature_df["diversity_index"] = diversity_dict
+
+    # Create DataFrame from the features dictionary
+    feature_df = pd.DataFrame(feature_df)
+
+    return feature_df
+
+
+def _compute_node_homophily(G, label_col=Features.LABELS):
+    """
+    Computes the homophily score for each node in the graph.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        The input graph with node attributes.
+    label_col : str
+        The attribute name for node labels (default is '_labels').
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each node to its homophily score.
+    """
+    homophily_scores = {}
+
+    for node in G.nodes():
+        total_edges = G.degree(node)  # Total number of edges connected to the node
+        if total_edges == 0:
+            homophily_scores[node] = 0  # No edges connected, homophily score is 0
+            continue
+
+        homophilic_edges = 0
+
+        for neighbor in G.neighbors(node):
+            if G.nodes[node][label_col] == G.nodes[neighbor][label_col]:
+                homophilic_edges += 1
+
+        # Compute homophily score
+        homophily_score = homophilic_edges / total_edges
+        homophily_scores[node] = homophily_score
+
+    return homophily_scores
+
+
+def _compute_inter_label_connectivity(G, label_col=Features.LABELS):
+    """
+    Computes the inter-label connectivity score for each node in the graph.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        The input graph with node attributes.
+    label_col : str
+        The attribute name for node labels (default is '_labels').
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each node to its inter-label connectivity score.
+    """
+    inter_label_connectivity_scores = {}
+
+    for node in G.nodes():
+        total_edges = G.degree(node)
+        if total_edges == 0:
+            inter_label_connectivity_scores[node] = 0  # No edges connected, score is 0
+            continue
+
+        inter_label_edges = 0
+
+        for neighbor in G.neighbors(node):
+            if G.nodes[node][label_col] != G.nodes[neighbor][label_col]:
+                inter_label_edges += 1
+
+        # Compute inter-label connectivity score
+        inter_label_connectivity_score = inter_label_edges / total_edges
+        inter_label_connectivity_scores[node] = inter_label_connectivity_score
+
+    return inter_label_connectivity_scores
+
+
+def _compute_diversity_index(G, label_col=Features.LABELS):
+    """
+    Computes the diversity index (Shannon's diversity index) for each node in the graph.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        The input graph with node attributes.
+    label_col : str
+        The attribute name for node labels (default is '_labels').
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each node to its diversity index.
+    """
+    diversity_index_scores = {}
+
+    for node in G.nodes():
+        total_edges = G.degree(node)
+        if total_edges == 0:
+            diversity_index_scores[node] = 0  # No edges connected, diversity is 0
+            continue
+
+        # Count the occurrence of each label among the neighbors
+        label_counts = {}
+        for neighbor in G.neighbors(node):
+            neighbor_label = G.nodes[neighbor][label_col]
+            label_counts[neighbor_label] = label_counts.get(neighbor_label, 0) + 1
+
+        # Compute proportions of each label
+        proportions = np.array(list(label_counts.values())) / total_edges
+
+        # Compute Shannon's diversity index
+        diversity_index = -np.sum(proportions * np.log(proportions))
+        diversity_index_scores[node] = diversity_index
+
+    return diversity_index_scores

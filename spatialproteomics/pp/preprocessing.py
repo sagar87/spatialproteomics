@@ -166,6 +166,9 @@ class PreprocessingAccessor:
 
             # finalise query
             query[Dims.CELLS] = cells
+            # ensuring that cells and cells_2 are synchronized
+            if Dims.CELLS_2 in self._obj.coords:
+                query[Dims.CELLS_2] = cells
 
         return self._obj.sel(query)
 

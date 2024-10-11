@@ -77,6 +77,10 @@ class LabelAccessor:
 
         obj = self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
 
+        # ensuring that cells and cells_2 are synchronized
+        if Dims.CELLS_2 in obj.coords:
+            obj = obj.sel({Dims.CELLS_2: cells})
+
         # removing all cells from the segmentation mask that are not in the cells array
         # we need the copy() here, as this will otherwise modify the original self._obj due to the array referencing it
         segmentation = self._obj[Layers.SEGMENTATION].values.copy()

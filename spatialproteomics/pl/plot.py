@@ -781,6 +781,7 @@ class PlotAccessor:
         ), "No segmentation layer found in the object. Please add a segmentation layer first."
         obs = self._obj[Layers.OBS]
         segmentation = self._obj[Layers.SEGMENTATION].values
+
         assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
         # creating a continuous colormap
         cmap = plt.cm.get_cmap(cmap)
@@ -799,7 +800,7 @@ class PlotAccessor:
         # setting the background to zero
         feature_mapping[0] = 0
         # mapping the feature values onto the segmentation mask
-        segmentation = np.vectorize(feature_mapping.get)(segmentation)
+        segmentation = np.vectorize(lambda x: feature_mapping.get(x, 0), otypes=[np.float64])(segmentation)
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
