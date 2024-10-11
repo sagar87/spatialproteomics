@@ -121,6 +121,34 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialproteomics.nh.neighborhood.</span></span><span class="sig-name descname"><span class="pre">NeighborhoodAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor" title="Permalink to this definition"></a></dt>
 <dd><p>Adds functions for cellular neighborhoods.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs">
+<span class="sig-name descname"><span class="pre">add_neighborhood_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['degree',</span> <span class="pre">'homophily',</span> <span class="pre">'inter_label_connectivity',</span> <span class="pre">'diversity_index']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs" title="Permalink to this definition"></a></dt>
+<dd><p>Adds neighborhood observations to the object by computing network features
+from the adjacency matrix.
+This method requires the <cite>networkx</cite> package to be installed. It checks if
+the adjacency matrix is present in the object, constructs a graph from the
+adjacency matrix, and computes network features.
+:param features: The network features to compute. Possible features are [‘degree’, ‘closeness_centrality’, ‘closeness_centrality’, ‘homophily’, ‘inter_label_connectivity’, ‘diversity_index’].
+:type features: str or List[str], optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ImportError</strong> – If the <cite>networkx</cite> package is not installed.</p></li>
+<li><p><strong>AssertionError</strong> – If the adjacency matrix is not found in the object.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The adjacency matrix should be computed and stored in the object before
+calling this method. You can compute the adjacency matrix using methods
+from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe">
 <span class="sig-name descname"><span class="pre">add_neighborhoods_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighborhood_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neighborhood'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Add neighborhoods to the dataset from a DataFrame.
