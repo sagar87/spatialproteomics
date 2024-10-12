@@ -617,8 +617,8 @@ compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
 calling <code class="docutils literal notranslate"><span class="pre">ds.nh.add_neighborhood_obs()</span></code>. For more details on which features you can compute, refer to the documentation of the method.</p>
 <p>Let’s compute a couple of metrics. In the following codeblock, we compute: 1. Node degree: how many cells are connected to a cell. This can give you a hint about how dense the tissue is at any region (given you used the radius method for constructing your neighborhoods). 2. Homophily: ratio of cells of the same cell type as the center cell within the neighborhood. 3. Inter-Label Connectivity: ratio of cells of a different cell type as the center cell within the neighborhood. 4. Diversity Index:
 Shannon’s entropy. Measures the diversity of cells within a cells neighborhood.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setting label colors
@@ -628,17 +628,8 @@ ds = ds.nh.add_neighborhood_obs(features=[&#39;degree&#39;, &#39;homophily&#39;,
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/nh/neighborhood.py:19: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.nh.neighborhood.NeighborhoodAccessor&#39;&gt; under name &#39;nh&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
-  class NeighborhoodAccessor:
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(15, 10))
@@ -667,19 +658,25 @@ plt.tight_layout()
 </div>
 </div>
 <p>Note that we can also compute these on subsets of the sample. For example, we might want to select only the B and T cells within the B-rich neighborhood, and then compute the measures on this data alone.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># TODO: THIS SHOULD ALSO WORK WITHOUT THI
-ds = sp_dict[&#39;1&#39;].nh.set_neighborhood_colors([&#39;T high&#39;, &#39;T medium&#39;, &#39;B high&#39;, &#39;B medium&#39;], [&#39;darkgreen&#39;, &#39;green&#39;, &#39;darkred&#39;, &#39;red&#39;])
-# subselecting and recomputing the features
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># subselecting and recomputing the features
 ds = ds.nh[&#39;B high&#39;].la[[&#39;B&#39;, &#39;T&#39;]].nh.add_neighborhood_obs(features=[&#39;degree&#39;, &#39;closeness_centrality&#39;, &#39;homophily&#39;, &#39;inter_label_connectivity&#39;, &#39;diversity_index&#39;])
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversity_index&#39;, &#39;homophily&#39;, &#39;inter_label_connectivity&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(15, 10))
@@ -698,6 +695,13 @@ for i, axis in enumerate(ax):
 
 plt.tight_layout()
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_22_0.png" src="../_images/notebooks_Neighborhoods_22_0.png" />
 </div>
 </div>
 </section>
