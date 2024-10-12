@@ -784,7 +784,16 @@ class NeighborhoodAccessor:
             labels_dict = spatial_df[Features.LABELS].reset_index(drop=True).to_dict()
             nx.set_node_attributes(G, labels_dict, Features.LABELS)
             network_features = _compute_network_features(G, features)
-            return self._obj.pp.add_obs_from_dataframe(network_features, override=False)
+
+            # if the object already has neighborhood observations, we need to remove them from the obs
+            existing_obs = [x for x in self._obj[Dims.FEATURES].values if x in valid_features]
+            obj = self._obj.copy()
+            if len(existing_obs) > 0:
+                logger.warning(f"Overwriting existing neighborhood observations: {existing_obs}")
+                obs = obj[Layers.OBS]
+                obj[Layers.OBS] = obs.drop_sel(features=existing_obs)
+
+            return obj.pp.add_obs_from_dataframe(network_features)
 
         except ImportError:
             raise ImportError("The networkx package is required for this function. Please install it first.")
