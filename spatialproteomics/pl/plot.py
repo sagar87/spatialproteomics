@@ -716,7 +716,7 @@ class PlotAccessor:
             else:
                 attrs = {}
                 rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode="inner")
-        else:
+        elif style == "neighborhoods":
             cells_dict = self._obj.nh._cells_to_neighborhood(relabel=True)
 
             # step 1: apply a Voronoi tesselation to the neighborhoods
@@ -781,6 +781,7 @@ class PlotAccessor:
         ), "No segmentation layer found in the object. Please add a segmentation layer first."
         obs = self._obj[Layers.OBS]
         segmentation = self._obj[Layers.SEGMENTATION].values
+
         assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
         # creating a continuous colormap
         cmap = plt.cm.get_cmap(cmap)
@@ -799,7 +800,7 @@ class PlotAccessor:
         # setting the background to zero
         feature_mapping[0] = 0
         # mapping the feature values onto the segmentation mask
-        segmentation = np.vectorize(feature_mapping.get)(segmentation)
+        segmentation = np.vectorize(lambda x: feature_mapping.get(x, 0), otypes=[np.float64])(segmentation)
 
         if Layers.PLOT in self._obj:
             attrs = self._obj[Layers.PLOT].attrs
@@ -939,6 +940,7 @@ class PlotAccessor:
         size: float = 1.0,
         alpha: float = 0.9,
         zorder: int = 10,
+        render_edges: bool = False,
         ax=None,
         legend_kwargs: dict = {"framealpha": 1},
         scatter_kwargs: dict = {},
@@ -956,6 +958,8 @@ class PlotAccessor:
             Transparency of the scatter markers. Default is 0.9.
         zorder : int, optional
             The z-order of the scatter markers. Default is 10.
+        render_edges : bool, optional
+            Whether to render the edges between cells within the same neighborhood. Default is False.
         ax : matplotlib.axes.Axes, optional
             The axes on which to plot the scatter. If not provided, the current axes will be used.
         legend_kwargs : dict, optional
@@ -974,12 +978,54 @@ class PlotAccessor:
         color_dict = self._obj.la._label_to_dict(Props.COLOR)
         label_dict = self._obj.la._cells_to_label()
 
-        for celltype in label_dict.keys():
-            label_subset = self._obj.la[celltype]
-            obs_layer = label_subset[Layers.OBS]
-            x = obs_layer.loc[:, Features.X]
-            y = obs_layer.loc[:, Features.Y]
-            ax.scatter(x.values, y.values, s=size, c=color_dict[celltype], alpha=alpha, zorder=zorder, **scatter_kwargs)
+        if not render_edges:
+            for celltype in label_dict.keys():
+                label_subset = self._obj.la[celltype]
+                obs_layer = label_subset[Layers.OBS]
+                x = obs_layer.loc[:, Features.X]
+                y = obs_layer.loc[:, Features.Y]
+                ax.scatter(
+                    x.values, y.values, s=size, c=color_dict[celltype], alpha=alpha, zorder=zorder, **scatter_kwargs
+                )
+        else:
+            # if we want to render the edges, we need to use the adjacency matrix and networkx
+            assert (
+                Layers.ADJACENCY_MATRIX in self._obj
+            ), "No adjacency matrix found in the object. Please compute the adjacency matrix first by running either of the methods contained in the nh module (e. g. nh.compute_neighborhoods_radius())."
+
+            try:
+                import networkx as nx
+
+                adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
+                G = nx.from_numpy_array(adjacency_matrix)
+                spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
+                assert Features.X in spatial_df.columns, f"Feature {Features.X} not found in the observation layer."
+                assert Features.Y in spatial_df.columns, f"Feature {Features.Y} not found in the observation layer."
+                assert (
+                    Features.LABELS in spatial_df.columns
+                ), f"Feature {Features.LABELS} not found in the observation layer."
+                spatial_df = spatial_df[[Features.X, Features.Y, Features.LABELS]].reset_index(drop=True)
+                # Create node positions based on the centroid coordinates
+                positions = {
+                    i: (spatial_df.loc[i, Features.X], spatial_df.loc[i, Features.Y]) for i in range(len(spatial_df))
+                }
+                color_dict = self._obj.la._label_to_dict(Props.COLOR, keys_as_str=True)
+
+                # Assign node colors based on the label
+                node_colors = [color_dict[spatial_df.loc[i, Features.LABELS]] for i in range(len(spatial_df))]
+                # Use networkx to draw the graph
+                nx.draw(
+                    G,
+                    pos=positions,
+                    node_color=node_colors,
+                    with_labels=False,
+                    node_size=size,
+                    edge_color="gray",
+                    ax=ax,
+                    **scatter_kwargs,
+                )
+            except ImportError:
+                raise ImportError("Please install networkx to render edges between cells.")
 
         xmin, xmax, ymin, ymax = self._obj.pl._get_bounds()
         ax.set_ylim([ymin, ymax])

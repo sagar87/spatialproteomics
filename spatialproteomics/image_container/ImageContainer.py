@@ -9,6 +9,8 @@ from ..constants import COLORS, Layers
 
 
 class ImageContainer:
+    """This class is used to store multiple SpatialProteomics objects and perform operations on them."""
+
     def __init__(self, sprot_dict: Dict[str, xr.Dataset]):
         # assert that the input is a dictionary
         assert isinstance(sprot_dict, dict), "Input must be a dictionary"
@@ -48,7 +50,7 @@ class ImageContainer:
             # if neighborhoods are already present, we remove them from the objects
             if Layers.NEIGHBORHOODS in sp_obj:
                 self.objects[id] = sp_obj.pp.drop_layers(
-                    [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS], suppress_warnings=True
+                    [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX], suppress_warnings=True
                 )
 
             # computing the neighborhood for each object

@@ -33,6 +33,7 @@ class Layers(object):
     PLOT = "_plot"
     MASK = "_mask"
     NEIGHBORHOODS = "_neighborhoods"
+    ADJACENCY_MATRIX = "_adjacency_matrix"
 
 
 class Dims(object):
@@ -41,6 +42,9 @@ class Dims(object):
     Y = "y"
     RGBA = "rgba"
     CELLS = "cells"
+    # unfortunately, xarray does not support same-name coordinates
+    # this means that we have to use different names for the same coordinates when storing the adjacency matrix
+    CELLS_2 = "cells_2"
     COORDINATES = "coordinates"
     LABELS = "labels"
     FEATURES = "features"

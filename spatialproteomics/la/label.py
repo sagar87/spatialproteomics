@@ -30,6 +30,10 @@ class LabelAccessor:
         return key in label_dict.keys() or key in label_dict.values()
 
     def __getitem__(self, indices):
+        # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
+        if type(indices) is {}.keys().__class__ or type(indices) is {}.values().__class__:
+            indices = list(indices)
+
         # type checking
         if isinstance(indices, float):
             raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
@@ -76,6 +80,10 @@ class LabelAccessor:
         cells = self._obj.la._filter_cells_by_label(sel)
 
         obj = self._obj.sel({Dims.LABELS: sel, Dims.CELLS: cells})
+
+        # ensuring that cells and cells_2 are synchronized
+        if Dims.CELLS_2 in obj.coords:
+            obj = obj.sel({Dims.CELLS_2: cells})
 
         # removing all cells from the segmentation mask that are not in the cells array
         # we need the copy() here, as this will otherwise modify the original self._obj due to the array referencing it
@@ -161,7 +169,9 @@ class LabelAccessor:
         _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
         return {fw[k]: v for k, v in dictionary.items()}
 
-    def _label_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
+    def _label_to_dict(
+        self, prop: str, reverse: bool = False, relabel: bool = False, keys_as_str: bool = False
+    ) -> dict:
         """
         Returns a dictionary that maps each label to a list to their property.
 
@@ -173,6 +183,8 @@ class LabelAccessor:
             If True, the dictionary will be reversed.
         relabel : bool
             If True, the dictionary keys will be relabeled.
+        keys_as_str : bool
+            If True, the dictionary keys will be converted to the cell type labels instead of the numeric keys.
 
         Returns
         -------
@@ -193,6 +205,10 @@ class LabelAccessor:
 
         if reverse:
             label_dict = {v: k for k, v in label_dict.items()}
+
+        if keys_as_str:
+            labels = dict(zip(labels.values, self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)[Props.NAME].values))
+            label_dict = {labels[k]: v for k, v in label_dict.items()}
 
         return label_dict
 
