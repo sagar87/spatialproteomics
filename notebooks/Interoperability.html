@@ -507,23 +507,7 @@ Data variables:
 </section>
 <section id="Exporting-to-Zarr">
 <h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Permalink to this heading"></a></h2>
-<p>This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code.</p>
-<p>In case there are issues with simply running <code class="docutils literal notranslate"><span class="pre">ds.to_zarr(&quot;your_path.zarr&quot;)</span></code>, you might need to parse the dtypes correctly. This is a <a class="reference external" href="https://github.com/pydata/xarray/issues/3476">known issue</a> with xarray and will hopefully be fixed soon.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># parsing as unicode (only necessary if ds.to_zarr() does not work out of the box)
-for v in list(ds.coords.keys()):
-    if ds.coords[v].dtype == object:
-        ds.coords[v] = ds.coords[v].astype(&quot;unicode&quot;)
-
-for v in list(ds.variables.keys()):
-    if ds[v].dtype == object:
-        ds[v] = ds[v].astype(&quot;unicode&quot;)
-</pre></div>
-</div>
-</div>
+<p>This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code. It is highly recommended to call <code class="docutils literal notranslate"><span class="pre">drop_encoding()</span></code> before exporting to zarr. There are several open issues linked to encoding problems, and this is the easiest way to circumvent them. For more references, refer to these issues: <a class="reference external" href="https://github.com/pydata/xarray/issues/3476">issue 1</a>, <a class="reference external" href="https://github.com/pydata/xarray/issues/9037">issue 1</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -535,7 +519,7 @@ if os.path.exists(zarr_path):
     shutil.rmtree(zarr_path)
 
 # exporting as zarr
-ds.to_zarr(&quot;tmp.zarr&quot;)
+ds.drop_encoding().to_zarr(&quot;tmp.zarr&quot;)
 </pre></div>
 </div>
 </div>
