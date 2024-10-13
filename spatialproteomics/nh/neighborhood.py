@@ -526,7 +526,11 @@ class NeighborhoodAccessor:
         return xr.merge([property_layer, obj])
 
     def compute_neighborhoods_radius(
-        self, radius: int = 100, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS
+        self,
+        radius: int = 100,
+        include_center: bool = True,
+        key_added: str = Layers.NEIGHBORHOODS,
+        key_adjacency_matrix: str = Layers.ADJACENCY_MATRIX,
     ):
         """
         Compute the neighborhoods of each cell based on a specified radius.
@@ -543,6 +547,8 @@ class NeighborhoodAccessor:
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+        key_adjacency_matrix : str, optional
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
 
         Returns
         -------
@@ -590,12 +596,18 @@ class NeighborhoodAccessor:
             coords=[cells, cells],
             # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
             dims=[Dims.CELLS, Dims.CELLS_2],
-            name=Layers.ADJACENCY_MATRIX,
+            name=key_adjacency_matrix,
         )
 
         return xr.merge([obj, da])
 
-    def compute_neighborhoods_knn(self, k=10, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
+    def compute_neighborhoods_knn(
+        self,
+        k=10,
+        include_center: bool = True,
+        key_added: str = Layers.NEIGHBORHOODS,
+        key_adjacency_matrix: str = Layers.ADJACENCY_MATRIX,
+    ):
         """
         Compute the neighborhoods of each cell based on k-nearest neighbors.
 
@@ -610,6 +622,8 @@ class NeighborhoodAccessor:
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+        key_adjacency_matrix : str, optional
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
 
         Returns
         -------
@@ -654,12 +668,17 @@ class NeighborhoodAccessor:
             coords=[cells, cells],
             # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
             dims=[Dims.CELLS, Dims.CELLS_2],
-            name=Layers.ADJACENCY_MATRIX,
+            name=key_adjacency_matrix,
         )
 
         return xr.merge([obj, da])
 
-    def compute_neighborhoods_delaunay(self, include_center: bool = True, key_added: str = Layers.NEIGHBORHOODS):
+    def compute_neighborhoods_delaunay(
+        self,
+        include_center: bool = True,
+        key_added: str = Layers.NEIGHBORHOODS,
+        key_adjacency_matrix: str = Layers.ADJACENCY_MATRIX,
+    ):
         """
         Compute the neighborhoods of each cell based on a Delaunay triangulation.
 
@@ -672,6 +691,8 @@ class NeighborhoodAccessor:
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+        key_adjacency_matrix : str, optional
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
 
         Returns
         -------
@@ -713,7 +734,7 @@ class NeighborhoodAccessor:
             coords=[cells, cells],
             # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
             dims=[Dims.CELLS, Dims.CELLS_2],
-            name=Layers.ADJACENCY_MATRIX,
+            name=key_adjacency_matrix,
         )
 
         return xr.merge([obj, da])
