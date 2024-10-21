@@ -310,7 +310,7 @@ class PreprocessingAccessor:
                 # if reindex was called, we first need to propagate the mapping to the labels before we can add them
                 if reindex:
                     labels = {reindex_dict[k]: v for k, v in labels.items()}
-                obj = obj.pp.add_labels(labels)
+                obj = obj.la.add_labels(labels)
 
         return xr.merge([obj, da]).pp.add_observations()
 
