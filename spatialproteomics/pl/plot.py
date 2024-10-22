@@ -123,17 +123,29 @@ class PlotAccessor:
 
         return elements
 
-    def _create_neighborhood_legend(self):
+    def _create_neighborhood_legend(self, order=None):
         """
         Create a legend for the neighborhoods.
+
+        Parameters:
+            order (list, optional): A list specifying the order of the neighborhood indices.
+                                    If None, the default sorted order of color_dict is used.
 
         Returns:
             elements (list): A list of Line2D objects representing the legend elements.
         """
-        # getting colors and names for each cell type label
+        # Getting colors and names for each cell type label
         color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR)
         names_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
 
+        # Use the provided order, or default to sorting the color_dict keys
+        if order is None:
+            ordered_keys = sorted(color_dict)
+        else:
+            # Only include keys present in both order and neighborhoods
+            ordered_keys = [i for i in order if i in color_dict and i in self._obj.coords[Dims.NEIGHBORHOODS]]
+
+        # Creating legend elements based on the ordered keys
         elements = [
             Line2D(
                 [0],
@@ -144,8 +156,7 @@ class PlotAccessor:
                 markerfacecolor=color_dict[i],
                 markersize=15,
             )
-            for i in sorted(color_dict)
-            if i in self._obj.coords[Dims.NEIGHBORHOODS]
+            for i in ordered_keys
         ]
 
         return elements
@@ -297,6 +308,7 @@ class PlotAccessor:
         legend_neighborhoods: bool = True,
         background: str = "black",
         downsample: int = 1,
+        neighborhood_order: Optional[List] = None,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
         label_kwargs: dict = {},
@@ -317,6 +329,7 @@ class PlotAccessor:
         - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
         - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
+        - neighborhood_order (list): A list specifying the order of the neighborhood indices. Default is None.
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
         - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
@@ -400,6 +413,7 @@ class PlotAccessor:
             legend_segmentation=legend_segmentation,
             legend_label=legend_label,
             legend_neighborhoods=legend_neighborhoods,
+            neighborhood_order=neighborhood_order,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
@@ -891,6 +905,7 @@ class PlotAccessor:
         legend_neighborhoods: bool = False,
         legend_obs: bool = False,
         downsample: int = 1,
+        neighborhood_order: Optional[List[str]] = None,
         legend_kwargs: dict = {"framealpha": 1},
         cbar_kwargs: dict = {},
         ax=None,
@@ -918,6 +933,8 @@ class PlotAccessor:
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         cbar_kwargs : dict, optional
             Additional keyword arguments for configuring the colorbar. Default is {}.
+        neighborhood_order: Optional[List[str]], optional
+            The order in which the neighborhoods should be displayed. Default is None.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -954,7 +971,7 @@ class PlotAccessor:
             legend += self._obj.pl._create_channel_legend()
 
         if legend_neighborhoods:
-            legend += self._obj.pl._create_neighborhood_legend()
+            legend += self._obj.pl._create_neighborhood_legend(order=neighborhood_order)
 
         if legend_segmentation:
             legend += self._obj.pl._create_segmentation_legend()
