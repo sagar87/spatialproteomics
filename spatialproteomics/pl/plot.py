@@ -150,19 +150,52 @@ class PlotAccessor:
 
         return elements
 
-    def _create_obs_legend(self):
+    def _create_obs_legend(
+        self, ax, fraction=0.046, pad=0.04, shrink=1.0, aspect=20, location="right", cbar_label=True, **kwargs
+    ):
+        """
+        Create and adjust the observation colorbar.
+
+        Parameters:
+        - ax: The axis to place the colorbar.
+        - fraction: Fraction of the original axes to use for the colorbar.
+        - pad: Padding between the colorbar and the plot.
+        - shrink: Fraction by which to shrink the colorbar.
+        - aspect: Aspect ratio of the colorbar (length vs width).
+        - location: Location of the colorbar ('right', 'left', 'top', 'bottom').
+
+        Returns:
+        - cbar: The created colorbar.
+        """
         assert (
             Attrs.OBS_COLORS in self._obj[Layers.PLOT].attrs
         ), "No observation colors found. Please call pl.render_obs() first."
+
         obs_colors = self._obj[Layers.PLOT].attrs[Attrs.OBS_COLORS]
         feature = obs_colors["feature"]
         cmap = obs_colors["cmap"]
         min_val = obs_colors["min"]
         max_val = obs_colors["max"]
-        # creating a colorbar
+
+        # Create the colorbar with dynamic positioning and size
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
         sm.set_array([])
-        cbar = plt.colorbar(sm, ax=plt.gca(), label=feature)
+
+        # Adjust the colorbar using the provided arguments
+        if not cbar_label:
+            feature = ""
+        cbar = plt.colorbar(
+            sm,
+            ax=ax,
+            label=feature,
+            fraction=fraction,
+            pad=pad,
+            shrink=shrink,
+            aspect=aspect,
+            location=location,
+            **kwargs,
+        )
+
         return [cbar]
 
     def colorize(
@@ -859,6 +892,7 @@ class PlotAccessor:
         legend_obs: bool = False,
         downsample: int = 1,
         legend_kwargs: dict = {"framealpha": 1},
+        cbar_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -882,6 +916,8 @@ class PlotAccessor:
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        cbar_kwargs : dict, optional
+            Additional keyword arguments for configuring the colorbar. Default is {}.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -927,7 +963,7 @@ class PlotAccessor:
             legend += self._obj.pl._create_label_legend()
 
         if legend_obs:
-            legend += self._obj.pl._create_obs_legend()
+            legend += self._obj.pl._create_obs_legend(ax=ax, **cbar_kwargs)
 
         if legend_image or legend_segmentation or legend_label or legend_neighborhoods:
             ax.legend(handles=legend, **legend_kwargs)
