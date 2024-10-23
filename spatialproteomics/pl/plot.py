@@ -92,9 +92,13 @@ class PlotAccessor:
 
         return elements
 
-    def _create_label_legend(self):
+    def _create_label_legend(self, order=None):
         """
         Create a legend for the cell type labels.
+
+        Args:
+            order (list, optional): A list specifying the order of the labels in the legend.
+                                    If None, the labels will be sorted by default.
 
         Returns:
             elements (list): A list of Line2D objects representing the legend elements.
@@ -109,6 +113,12 @@ class PlotAccessor:
         color_dict = {k: v for k, v in color_dict.items() if k != 0 and k in present_labels}
         names_dict = {k: v for k, v in names_dict.items() if k != 0 and k in present_labels}
 
+        # Apply custom ordering if provided, else sort by default
+        if order is not None:
+            ordered_labels = [label for label in order if label in color_dict]
+        else:
+            ordered_labels = sorted(color_dict)
+
         elements = [
             Line2D(
                 [0],
@@ -119,7 +129,7 @@ class PlotAccessor:
                 markerfacecolor=color_dict[i],
                 markersize=15,
             )
-            for i in sorted(color_dict)
+            for i in ordered_labels
             if i in self._obj.coords[Dims.LABELS]
         ]
 
@@ -310,6 +320,7 @@ class PlotAccessor:
         legend_neighborhoods: bool = True,
         background: str = "black",
         downsample: int = 1,
+        label_order: Optional[List] = None,
         neighborhood_order: Optional[List] = None,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
@@ -331,6 +342,7 @@ class PlotAccessor:
         - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
         - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
+        - label_order (list): A list specifying the order of the label indices. Default is None.
         - neighborhood_order (list): A list specifying the order of the neighborhood indices. Default is None.
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
@@ -415,6 +427,7 @@ class PlotAccessor:
             legend_segmentation=legend_segmentation,
             legend_label=legend_label,
             legend_neighborhoods=legend_neighborhoods,
+            label_order=label_order,
             neighborhood_order=neighborhood_order,
             ax=ax,
             downsample=downsample,
@@ -907,6 +920,7 @@ class PlotAccessor:
         legend_neighborhoods: bool = False,
         legend_obs: bool = False,
         downsample: int = 1,
+        label_order: Optional[List[str]] = None,
         neighborhood_order: Optional[List[str]] = None,
         legend_kwargs: dict = {"framealpha": 1},
         cbar_kwargs: dict = {},
@@ -935,6 +949,8 @@ class PlotAccessor:
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         cbar_kwargs : dict, optional
             Additional keyword arguments for configuring the colorbar. Default is {}.
+        label_order: Optional[List[str]], optional
+            The order in which the labels should be displayed. Default is None.
         neighborhood_order: Optional[List[str]], optional
             The order in which the neighborhoods should be displayed. Default is None.
         ax : matplotlib.axes, optional
@@ -979,7 +995,7 @@ class PlotAccessor:
             legend += self._obj.pl._create_segmentation_legend()
 
         if legend_label:
-            legend += self._obj.pl._create_label_legend()
+            legend += self._obj.pl._create_label_legend(order=label_order)
 
         if legend_obs:
             legend += self._obj.pl._create_obs_legend(ax=ax, **cbar_kwargs)
