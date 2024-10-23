@@ -104,8 +104,10 @@ class PlotAccessor:
         names_dict = self._obj.la._label_to_dict(Props.NAME)
 
         # removing unlabeled cells (label = 0)
-        color_dict = {k: v for k, v in color_dict.items() if k != 0}
-        names_dict = {k: v for k, v in names_dict.items() if k != 0}
+        # also removing labels which are not present in the object
+        present_labels = np.unique(self._obj[Layers.OBS].sel(features=Features.LABELS).values)
+        color_dict = {k: v for k, v in color_dict.items() if k != 0 and k in present_labels}
+        names_dict = {k: v for k, v in names_dict.items() if k != 0 and k in present_labels}
 
         elements = [
             Line2D(
