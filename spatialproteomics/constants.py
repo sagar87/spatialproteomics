@@ -34,6 +34,7 @@ class Layers(object):
     MASK = "_mask"
     NEIGHBORHOODS = "_neighborhoods"
     ADJACENCY_MATRIX = "_adjacency_matrix"
+    DISTANCE_MATRIX = "_distance_matrix"
 
 
 class Dims(object):

@@ -3,10 +3,12 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
+from scipy.spatial.distance import pdist, squareform
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from .utils import (
+    _compute_global_network_features,
     _compute_network_features,
     _construct_neighborhood_df_delaunay,
     _construct_neighborhood_df_knn,
@@ -818,8 +820,8 @@ class NeighborhoodAccessor:
 
         except ImportError:
             raise ImportError("The networkx package is required for this function. Please install it first.")
-        
-    def compute_graph_features(self, features: Union[str, List[str]] = ['density', 'modularity', 'assortativity']):
+
+    def compute_graph_features(self, features: Union[str, List[str]] = ["density", "modularity", "assortativity"]):
         try:
             import networkx as nx
 
@@ -833,9 +835,7 @@ class NeighborhoodAccessor:
                 features = [features]
             assert len(features) > 0, "At least one feature must be provided."
             # ensuring that all features are valid
-            valid_features = [
-                'density', 'modularity', 'assortativity'
-            ]
+            valid_features = ["density", "modularity", "assortativity"]
             assert all(
                 [feature in valid_features for feature in features]
             ), f"Invalid feature provided. Valid features are: {valid_features}."
@@ -851,13 +851,51 @@ class NeighborhoodAccessor:
             # need to reset the index here to ensure that the labels are correctly assigned to the nodes
             labels_dict = spatial_df[Features.LABELS].reset_index(drop=True).to_dict()
             nx.set_node_attributes(G, labels_dict, Features.LABELS)
-            
+
             # computing the features
             network_features = _compute_global_network_features(G, features)
-            
+
             # for now this only gets returned
             # could later be added to the object as a new layer
             return network_features
-            
+
         except ImportError:
-            raise ImportError("The networkx package is required for this function. Please install it first. If you want to compute modularity of the network, you will also need to install 'python-louvain'.")
+            raise ImportError(
+                "The networkx package is required for this function. Please install it first. If you want to compute modularity of the network, you will also need to install 'python-louvain'."
+            )
+
+    def compute_pairwise_distances(self, metric: str = "euclidean", key_added: str = Layers.DISTANCE_MATRIX):
+        """
+        Compute pairwise distances between cells.
+
+        This method computes pairwise distances between cells in the object.
+        The distances are computed based on the specified metric.
+
+        Parameters
+        ----------
+        metric : str, optional
+            The metric to use for computing the distances. Default is 'euclidean'.
+
+        Returns
+        -------
+        xarray.Dataset
+            A merged xarray Dataset containing the original data and the computed pairwise distances.
+        """
+        assert Layers.OBS in self._obj, "No observations found in the object."
+
+        df = self._obj.pp.get_layer_as_df(Layers.OBS)[[Features.X, Features.Y]]
+        # the squareform function converts a condensed distance matrix into a square distance matrix
+        # ultimately, it would be better to store the condensed distance matrix in the object
+        distance_matrix = squareform(pdist(df, metric=metric))
+
+        # adding the adjacency matrix to the object
+        cells = self._obj.coords[Dims.CELLS].values
+        da = xr.DataArray(
+            distance_matrix,
+            coords=[cells, cells],
+            # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
+            dims=[Dims.CELLS, Dims.CELLS_2],
+            name=key_added,
+        )
+
+        return xr.merge([self._obj, da])

@@ -439,24 +439,25 @@ def _compute_global_network_features(G, features):
         results (dict): Dictionary with feature names as keys and computed values as values.
     """
     import networkx as nx
+
     results = {}
 
     # Compute graph density
-    if 'density' in features:
-        results['density'] = nx.density(G)
+    if "density" in features:
+        results["density"] = nx.density(G)
 
     # Compute modularity using the Louvain method
-    if 'modularity' in features:
+    if "modularity" in features:
         try:
             import community as community_louvain
+
             partition = community_louvain.best_partition(G)
-            results['modularity'] = community_louvain.modularity(partition, G)
+            results["modularity"] = community_louvain.modularity(partition, G)
         except ImportError:
             raise ImportError("Please install the 'python-louvain' package to compute modularity.")
 
     # Compute assortativity (degree assortativity coefficient)
-    if 'assortativity' in features:
-        results['assortativity'] = nx.degree_assortativity_coefficient(G)
+    if "assortativity" in features:
+        results["assortativity"] = nx.degree_assortativity_coefficient(G)
 
     return results
-

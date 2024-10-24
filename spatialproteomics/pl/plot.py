@@ -118,7 +118,7 @@ class PlotAccessor:
             # if all list items are strings, we want to convert them to the corresponding indices
             if all(isinstance(i, str) for i in order):
                 label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
-                order = [label_dict[i] for i in order]
+                order = [label_dict.get(i) for i in order]
             ordered_labels = [label for label in order if label in color_dict]
         else:
             ordered_labels = sorted(color_dict)
