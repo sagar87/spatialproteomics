@@ -92,9 +92,13 @@ class PlotAccessor:
 
         return elements
 
-    def _create_label_legend(self):
+    def _create_label_legend(self, order=None):
         """
         Create a legend for the cell type labels.
+
+        Args:
+            order (list, optional): A list specifying the order of the labels in the legend.
+                                    If None, the labels will be sorted by default.
 
         Returns:
             elements (list): A list of Line2D objects representing the legend elements.
@@ -104,8 +108,20 @@ class PlotAccessor:
         names_dict = self._obj.la._label_to_dict(Props.NAME)
 
         # removing unlabeled cells (label = 0)
-        color_dict = {k: v for k, v in color_dict.items() if k != 0}
-        names_dict = {k: v for k, v in names_dict.items() if k != 0}
+        # also removing labels which are not present in the object
+        present_labels = np.unique(self._obj[Layers.OBS].sel(features=Features.LABELS).values)
+        color_dict = {k: v for k, v in color_dict.items() if k != 0 and k in present_labels}
+        names_dict = {k: v for k, v in names_dict.items() if k != 0 and k in present_labels}
+
+        # Apply custom ordering if provided, else sort by default
+        if order is not None:
+            # if all list items are strings, we want to convert them to the corresponding indices
+            if all(isinstance(i, str) for i in order):
+                label_dict = self._obj.la._label_to_dict(Props.NAME, reverse=True)
+                order = [label_dict.get(i) for i in order]
+            ordered_labels = [label for label in order if label in color_dict]
+        else:
+            ordered_labels = sorted(color_dict)
 
         elements = [
             Line2D(
@@ -117,23 +133,35 @@ class PlotAccessor:
                 markerfacecolor=color_dict[i],
                 markersize=15,
             )
-            for i in sorted(color_dict)
+            for i in ordered_labels
             if i in self._obj.coords[Dims.LABELS]
         ]
 
         return elements
 
-    def _create_neighborhood_legend(self):
+    def _create_neighborhood_legend(self, order=None):
         """
         Create a legend for the neighborhoods.
+
+        Parameters:
+            order (list, optional): A list specifying the order of the neighborhood indices.
+                                    If None, the default sorted order of color_dict is used.
 
         Returns:
             elements (list): A list of Line2D objects representing the legend elements.
         """
-        # getting colors and names for each cell type label
+        # Getting colors and names for each cell type label
         color_dict = self._obj.nh._neighborhood_to_dict(Props.COLOR)
         names_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
 
+        # Use the provided order, or default to sorting the color_dict keys
+        if order is None:
+            ordered_keys = sorted(color_dict)
+        else:
+            # Only include keys present in both order and neighborhoods
+            ordered_keys = [i for i in order if i in color_dict and i in self._obj.coords[Dims.NEIGHBORHOODS]]
+
+        # Creating legend elements based on the ordered keys
         elements = [
             Line2D(
                 [0],
@@ -144,25 +172,57 @@ class PlotAccessor:
                 markerfacecolor=color_dict[i],
                 markersize=15,
             )
-            for i in sorted(color_dict)
-            if i in self._obj.coords[Dims.NEIGHBORHOODS]
+            for i in ordered_keys
         ]
 
         return elements
 
-    def _create_obs_legend(self):
+    def _create_obs_legend(
+        self, ax, fraction=0.046, pad=0.04, shrink=1.0, aspect=20, location="right", cbar_label=True, **kwargs
+    ):
+        """
+        Create and adjust the observation colorbar.
+
+        Parameters:
+        - ax: The axis to place the colorbar.
+        - fraction: Fraction of the original axes to use for the colorbar.
+        - pad: Padding between the colorbar and the plot.
+        - shrink: Fraction by which to shrink the colorbar.
+        - aspect: Aspect ratio of the colorbar (length vs width).
+        - location: Location of the colorbar ('right', 'left', 'top', 'bottom').
+
+        Returns:
+        - cbar: The created colorbar.
+        """
         assert (
             Attrs.OBS_COLORS in self._obj[Layers.PLOT].attrs
         ), "No observation colors found. Please call pl.render_obs() first."
+
         obs_colors = self._obj[Layers.PLOT].attrs[Attrs.OBS_COLORS]
         feature = obs_colors["feature"]
         cmap = obs_colors["cmap"]
         min_val = obs_colors["min"]
         max_val = obs_colors["max"]
-        # creating a colorbar
+
+        # Create the colorbar with dynamic positioning and size
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
         sm.set_array([])
-        cbar = plt.colorbar(sm, ax=plt.gca(), label=feature)
+
+        # Adjust the colorbar using the provided arguments
+        if not cbar_label:
+            feature = ""
+        cbar = plt.colorbar(
+            sm,
+            ax=ax,
+            label=feature,
+            fraction=fraction,
+            pad=pad,
+            shrink=shrink,
+            aspect=aspect,
+            location=location,
+            **kwargs,
+        )
+
         return [cbar]
 
     def colorize(
@@ -264,6 +324,8 @@ class PlotAccessor:
         legend_neighborhoods: bool = True,
         background: str = "black",
         downsample: int = 1,
+        label_order: Optional[List] = None,
+        neighborhood_order: Optional[List] = None,
         legend_kwargs: dict = {"framealpha": 1},
         segmentation_kwargs: dict = {},
         label_kwargs: dict = {},
@@ -284,6 +346,8 @@ class PlotAccessor:
         - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
         - background (str): Background color of the image. Default is "black".
         - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
+        - label_order (list): A list specifying the order of the label indices. Default is None.
+        - neighborhood_order (list): A list specifying the order of the neighborhood indices. Default is None.
         - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
         - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
         - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
@@ -367,6 +431,8 @@ class PlotAccessor:
             legend_segmentation=legend_segmentation,
             legend_label=legend_label,
             legend_neighborhoods=legend_neighborhoods,
+            label_order=label_order,
+            neighborhood_order=neighborhood_order,
             ax=ax,
             downsample=downsample,
             legend_kwargs=legend_kwargs,
@@ -858,7 +924,10 @@ class PlotAccessor:
         legend_neighborhoods: bool = False,
         legend_obs: bool = False,
         downsample: int = 1,
+        label_order: Optional[List[str]] = None,
+        neighborhood_order: Optional[List[str]] = None,
         legend_kwargs: dict = {"framealpha": 1},
+        cbar_kwargs: dict = {},
         ax=None,
     ):
         """
@@ -882,6 +951,12 @@ class PlotAccessor:
             Downsample factor for the image. Default is 1.
         legend_kwargs : dict, optional
             Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        cbar_kwargs : dict, optional
+            Additional keyword arguments for configuring the colorbar. Default is {}.
+        label_order: Optional[List[str]], optional
+            The order in which the labels should be displayed. Default is None.
+        neighborhood_order: Optional[List[str]], optional
+            The order in which the neighborhoods should be displayed. Default is None.
         ax : matplotlib.axes, optional
             The matplotlib axis to plot on. If not provided, the current axis will be used.
 
@@ -918,16 +993,16 @@ class PlotAccessor:
             legend += self._obj.pl._create_channel_legend()
 
         if legend_neighborhoods:
-            legend += self._obj.pl._create_neighborhood_legend()
+            legend += self._obj.pl._create_neighborhood_legend(order=neighborhood_order)
 
         if legend_segmentation:
             legend += self._obj.pl._create_segmentation_legend()
 
         if legend_label:
-            legend += self._obj.pl._create_label_legend()
+            legend += self._obj.pl._create_label_legend(order=label_order)
 
         if legend_obs:
-            legend += self._obj.pl._create_obs_legend()
+            legend += self._obj.pl._create_obs_legend(ax=ax, **cbar_kwargs)
 
         if legend_image or legend_segmentation or legend_label or legend_neighborhoods:
             ax.legend(handles=legend, **legend_kwargs)

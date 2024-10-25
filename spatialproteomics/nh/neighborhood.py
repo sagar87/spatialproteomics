@@ -7,6 +7,7 @@ import xarray as xr
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
 from .utils import (
+    _compute_global_network_features,
     _compute_network_features,
     _construct_neighborhood_df_delaunay,
     _construct_neighborhood_df_knn,
@@ -818,3 +819,48 @@ class NeighborhoodAccessor:
 
         except ImportError:
             raise ImportError("The networkx package is required for this function. Please install it first.")
+
+    def compute_graph_features(
+        self, features: Union[str, List[str]] = ["num_nodes", "num_edges", "density", "modularity", "assortativity"]
+    ):
+        try:
+            import networkx as nx
+
+            assert Layers.OBS in self._obj, "No observations found in the object."
+            assert Layers.LA_PROPERTIES in self._obj, "No cell type labels found in the object."
+            assert (
+                Layers.ADJACENCY_MATRIX in self._obj
+            ), "No adjacency matrix found in the object. Please compute the adjacency matrix first by running either of the methods contained in the nh module (e. g. nh.compute_neighborhoods_radius())."
+
+            if isinstance(features, str):
+                features = [features]
+            assert len(features) > 0, "At least one feature must be provided."
+            # ensuring that all features are valid
+            valid_features = ["num_nodes", "num_edges", "density", "modularity", "assortativity"]
+            assert all(
+                [feature in valid_features for feature in features]
+            ), f"Invalid feature provided. Valid features are: {valid_features}."
+
+            adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
+            G = nx.from_numpy_array(adjacency_matrix)
+
+            # adding labels as node attributes
+            spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
+            assert (
+                Features.LABELS in spatial_df.columns
+            ), f"Feature {Features.LABELS} not found in the observation layer."
+            # need to reset the index here to ensure that the labels are correctly assigned to the nodes
+            labels_dict = spatial_df[Features.LABELS].reset_index(drop=True).to_dict()
+            nx.set_node_attributes(G, labels_dict, Features.LABELS)
+
+            # computing the features
+            network_features = _compute_global_network_features(G, features)
+
+            # for now this only gets returned
+            # could later be added to the object as a new layer
+            return network_features
+
+        except ImportError:
+            raise ImportError(
+                "The networkx package is required for this function. Please install it first. If you want to compute modularity of the network, you will also need to install 'python-louvain'."
+            )
