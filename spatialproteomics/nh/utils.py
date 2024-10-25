@@ -442,6 +442,12 @@ def _compute_global_network_features(G, features):
 
     results = {}
 
+    if "num_nodes" in features:
+        results["num_nodes"] = G.number_of_nodes()
+
+    if "num_edges" in features:
+        results["num_edges"] = G.number_of_edges()
+
     # Compute graph density
     if "density" in features:
         results["density"] = nx.density(G)

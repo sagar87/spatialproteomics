@@ -821,7 +821,9 @@ class NeighborhoodAccessor:
         except ImportError:
             raise ImportError("The networkx package is required for this function. Please install it first.")
 
-    def compute_graph_features(self, features: Union[str, List[str]] = ["density", "modularity", "assortativity"]):
+    def compute_graph_features(
+        self, features: Union[str, List[str]] = ["num_nodes", "num_edges", "density", "modularity", "assortativity"]
+    ):
         try:
             import networkx as nx
 
@@ -835,7 +837,7 @@ class NeighborhoodAccessor:
                 features = [features]
             assert len(features) > 0, "At least one feature must be provided."
             # ensuring that all features are valid
-            valid_features = ["density", "modularity", "assortativity"]
+            valid_features = ["num_nodes", "num_edges", "density", "modularity", "assortativity"]
             assert all(
                 [feature in valid_features for feature in features]
             ), f"Invalid feature provided. Valid features are: {valid_features}."
@@ -863,39 +865,3 @@ class NeighborhoodAccessor:
             raise ImportError(
                 "The networkx package is required for this function. Please install it first. If you want to compute modularity of the network, you will also need to install 'python-louvain'."
             )
-
-    def compute_pairwise_distances(self, metric: str = "euclidean", key_added: str = Layers.DISTANCE_MATRIX):
-        """
-        Compute pairwise distances between cells.
-
-        This method computes pairwise distances between cells in the object.
-        The distances are computed based on the specified metric.
-
-        Parameters
-        ----------
-        metric : str, optional
-            The metric to use for computing the distances. Default is 'euclidean'.
-
-        Returns
-        -------
-        xarray.Dataset
-            A merged xarray Dataset containing the original data and the computed pairwise distances.
-        """
-        assert Layers.OBS in self._obj, "No observations found in the object."
-
-        df = self._obj.pp.get_layer_as_df(Layers.OBS)[[Features.X, Features.Y]]
-        # the squareform function converts a condensed distance matrix into a square distance matrix
-        # ultimately, it would be better to store the condensed distance matrix in the object
-        distance_matrix = squareform(pdist(df, metric=metric))
-
-        # adding the adjacency matrix to the object
-        cells = self._obj.coords[Dims.CELLS].values
-        da = xr.DataArray(
-            distance_matrix,
-            coords=[cells, cells],
-            # xarray does not support duplicate dimension names, hence we need to introduce a second cell variable here
-            dims=[Dims.CELLS, Dims.CELLS_2],
-            name=key_added,
-        )
-
-        return xr.merge([self._obj, da])
