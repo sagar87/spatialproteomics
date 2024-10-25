@@ -378,7 +378,7 @@ class PlotAccessor:
                 # if there are more than 20 channels, only the first one is plotted
                 if self._obj.sizes[Dims.CHANNELS] > 20:
                     logger.warning(
-                        "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pp.colorize() before calling pl.show()."
+                        "More than 20 channels are present in the image. Plotting first channel only. You can subset the channels via pp.[['channel1', 'channel2', ...]] or specify your own color scheme by calling pl.colorize() before calling pl.show()."
                     )
                     channel = str(self._obj.coords[Dims.CHANNELS].values[0])
                     obj = self._obj.pp[channel].pl.colorize(colors=["white"], background=background)
@@ -973,7 +973,7 @@ class PlotAccessor:
         if Layers.PLOT not in self._obj:
             logger.warning("No plot defined yet. Plotting the first channel only. Please call pl.colorize() first.")
             channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-            self._obj = self._obj.pp[channel].pp.colorize(colors=["white"])
+            self._obj = self._obj.pp[channel].pl.colorize(colors=["white"])
 
         if ax is None:
             ax = plt.gca()
