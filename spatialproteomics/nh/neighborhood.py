@@ -3,7 +3,6 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
-from scipy.spatial.distance import pdist, squareform
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
