@@ -111,7 +111,7 @@ class LabelAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the deselected label indices.
 
         Notes
@@ -459,15 +459,8 @@ class LabelAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the added label property.
-
-        Notes
-        -----
-        - The function ensures that 'array' is converted to a NumPy array.
-        - It creates a DataArray 'da' with the given 'array' as the property values and unique cell type labels as coords.
-        - The DataArray 'da' is then merged into the data object, associating properties with cell type labels.
-        - If the label property already exists in the data object, it will be updated with the new property values.
         """
         # checking that we already have properties
         assert (
@@ -563,7 +556,7 @@ class LabelAccessor:
 
         Returns
         -------
-        None
+        xr.Dataset
 
         Notes
         -----
@@ -774,14 +767,14 @@ class LabelAccessor:
         """
         Add labels from a mapping (cell -> label) to the spatialproteomics object.
 
-        Parameters:
-        -----------
-        labels : Union[dict, None], optional
+        Parameters
+        ----------
+        labels : Union[dict, None]
             A dictionary containing cell labels as keys and corresponding labels as values.
             If None, a default labeling will be added. Default is None.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The spatialproteomics object with added labels.
 
@@ -965,8 +958,6 @@ class LabelAccessor:
         -------
         xr.Dataset
             The updated image container with the predicted cell subtypes.
-        overwrite_existing_labels : bool
-            If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.
         """
         # check if we have labels in the object
         assert Layers.LA_PROPERTIES in self._obj, "No cell type labels found in the object. Please add labels first."
