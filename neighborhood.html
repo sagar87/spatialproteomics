@@ -127,7 +127,7 @@ from the adjacency matrix.
 This method requires the <cite>networkx</cite> package to be installed. It checks if
 the adjacency matrix is present in the object, constructs a graph from the
 adjacency matrix, and computes network features.
-:param features: The network features to compute. Possible features are [‘degree’, ‘closeness_centrality’, ‘closeness_centrality’, ‘homophily’, ‘inter_label_connectivity’, ‘diversity_index’].
+:param features: The network features to compute. Possible features are [‘degree’, ‘closeness_centrality’, ‘betweenness_centrality’, ‘homophily’, ‘inter_label_connectivity’, ‘diversity_index’].
 :type features: str or List[str], optional</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
@@ -141,33 +141,29 @@ adjacency matrix, and computes network features.
 <p>The adjacency matrix should be computed and stored in the object before
 calling this method. You can compute the adjacency matrix using methods
 from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()</cite>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">()</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe">
 <span class="sig-name descname"><span class="pre">add_neighborhoods_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighborhood_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neighborhood'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe" title="Permalink to this definition"></a></dt>
-<dd><p>Add neighborhoods to the dataset from a DataFrame.
-:param df: DataFrame containing neighborhood information.
-:type df: pd.DataFrame
-:param neighborhood_col: Column name in the DataFrame that contains neighborhood labels, by default ‘neighborhood’.
-:type neighborhood_col: str, optional
-:param colors: List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
-:type colors: list or None, optional
-:param names: List of names for the neighborhoods, by default None. If None, default names will be assigned.
-:type names: list or None, optional</p>
+<dd><p>Add neighborhoods to the dataset from a DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Updated dataset with neighborhood information added.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame containing neighborhood information.</p></li>
+<li><p><strong>neighborhood_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name in the DataFrame that contains neighborhood labels, by default ‘neighborhood’.</p></li>
+<li><p><strong>colors</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – List of colors for the neighborhoods, by default None. If None, random colors will be assigned.</p></li>
+<li><p><strong>names</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – List of names for the neighborhoods, by default None. If None, default names will be assigned.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>xr.Dataset</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Updated dataset with neighborhood information added.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>AssertionError</strong> – If neighborhood properties are already present in the object.
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If neighborhood properties are already present in the object.
     If the number of neighborhoods does not match the number of cells.
     If the specified column does not exist in the DataFrame.
     If neighborhoods contain negative values.
@@ -189,12 +185,42 @@ from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The updated image container with added properties or the properties as a separate xarray.DataArray.</p>
+<dd class="field-even"><p>The updated image container with added properties.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset or xr.DataArray</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features">
+<span class="sig-name descname"><span class="pre">compute_graph_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['num_nodes',</span> <span class="pre">'num_edges',</span> <span class="pre">'density',</span> <span class="pre">'modularity',</span> <span class="pre">'assortativity']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features" title="Permalink to this definition"></a></dt>
+<dd><p>Compute various graph features from the adjacency matrix of the data.
+:param features: A single feature or a list of features to compute. Valid features are:</p>
+<blockquote>
+<div><p>“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”.
+Default is [“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”].</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are the names of the computed features and values are the corresponding feature values.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ImportError</strong> – If the <cite>networkx</cite> package is not installed.</p></li>
+<li><p><strong>AssertionError</strong> – If required layers (OBS, LA_PROPERTIES, ADJACENCY_MATRIX) are not found in the object.
+    If no valid features are provided.
+    If the LABELS feature is not found in the observation layer.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method requires the <cite>networkx</cite> package to be installed. If you want to compute the modularity of the network,
+you will also need to install the <cite>python-louvain</cite> package.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -207,8 +233,8 @@ the frequency of each cell type within these k neighbors.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.</p></li>
-<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is ‘_neighborhoods’.</p></li>
+<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -231,8 +257,8 @@ the frequency of each cell type within these k neighbors.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nearest neighbors to consider. Default is 10.</p></li>
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.</p></li>
-<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is ‘_neighborhoods’.</p></li>
+<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -256,8 +282,8 @@ and computes the frequency of each cell type.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>radius</strong> (<em>int</em><em>, </em><em>optional</em>) – The radius around each cell to define the neighborhood (in pixels). Default is 100.</p></li>
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.</p></li>
-<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is ‘_neighborhoods’.</p></li>
+<li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -283,7 +309,7 @@ The deselection can be performed using slices, lists, tuples, or individual inte
 <dd class="field-even"><p>The updated data object with the deselected neighborhood indices.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>any</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -311,7 +337,7 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 <dd class="field-even"><p></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -323,7 +349,7 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name">
-<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Permalink to this definition"></a></dt>
 <dd><p>Set the name of a specific neighborhood.</p>
 <p>This method sets the ‘name’ of a specific neighborhood identified by the ‘neighborhood’.
 The ‘neighborhood’ can be either a neighborhood ID or the name of the neighborhood.</p>
@@ -338,7 +364,7 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 <dd class="field-even"><p></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

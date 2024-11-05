@@ -136,16 +136,9 @@ The property values are taken from the ‘array’ argument and assigned to each
 <dd class="field-even"><p>The updated data object with the added label property.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>any</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The function ensures that ‘array’ is converted to a NumPy array.</p></li>
-<li><p>It creates a DataArray ‘da’ with the given ‘array’ as the property values and unique cell type labels as coords.</p></li>
-<li><p>The DataArray ‘da’ is then merged into the data object, associating properties with cell type labels.</p></li>
-<li><p>If the label property already exists in the data object, it will be updated with the new property values.</p></li>
-</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -184,17 +177,22 @@ The label type is used to identify and categorize cells in the segmentation mask
 <dt class="sig sig-object py" id="spatialproteomics.la.label.LabelAccessor.add_labels">
 <span class="sig-name descname"><span class="pre">add_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.la.label.LabelAccessor.add_labels" title="Permalink to this definition"></a></dt>
 <dd><p>Add labels from a mapping (cell -&gt; label) to the spatialproteomics object.</p>
-<dl class="simple">
-<dt>labels<span class="classifier">Union[dict, None], optional</span></dt><dd><p>A dictionary containing cell labels as keys and corresponding labels as values.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>None</em><em>]</em>) – A dictionary containing cell labels as keys and corresponding labels as values.
 If None, a default labeling will be added. Default is None.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>xr.Dataset</dt><dd><p>The spatialproteomics object with added labels.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>xr.Dataset</em> – The spatialproteomics object with added labels.</p></li>
+<li><p><em>Notes</em></p></li>
+<li><p><em>——</em></p></li>
+<li><p><em>This method converts the input dictionary into a pandas DataFrame and then adds the labels to the object</em></p></li>
+<li><p>using the <cite>la.add_labels_from_dataframe</cite> method.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-<p>This method converts the input dictionary into a pandas DataFrame and then adds the labels to the object
-using the <cite>la.add_labels_from_dataframe</cite> method.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -255,7 +253,7 @@ The deselection can be performed using slices, lists, tuples, or individual inte
 <dd class="field-even"><p>The updated data object with the deselected label indices.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>any</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -279,11 +277,10 @@ Instead of a dictionary, a path to a yaml file containing the subtype dictionary
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>xr.Dataset</em> – The updated image container with the predicted cell subtypes.</p></li>
-<li><p><strong>overwrite_existing_labels</strong> (<em>bool</em>) – If True, existing labels will be overwritten by the new, more granular cell type predictions. Default is True.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>The updated image container with the predicted cell subtypes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -362,7 +359,7 @@ The ‘label’ can be either a label ID or the name of the cell type label.</p>
 <dd class="field-even"><p></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

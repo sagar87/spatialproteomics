@@ -185,30 +185,33 @@ is specified or not.</p>
 <dt class="sig sig-object py" id="spatialproteomics.tl.tool.ToolAccessor.convert_to_anndata">
 <span class="sig-name descname"><span class="pre">convert_to_anndata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression_matrix_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_obs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_uns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.convert_to_anndata" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the spatialproteomics object to an anndata.AnnData object. The resulting AnnData object does not store the original image or segmentation mask.</p>
-<dl class="simple">
-<dt>expression_matrix_key<span class="classifier">str, optional</span></dt><dd><p>The key of the expression matrix in the spatialproteomics object. Default is Layers.INTENSITY.</p>
-</dd>
-<dt>obs_key<span class="classifier">str, optional</span></dt><dd><p>The key of the observation data in the spatialproteomics object. Default is Layers.OBS.</p>
-</dd>
-<dt>additional_layers<span class="classifier">dict, optional</span></dt><dd><p>Additional layers to include in the anndata.AnnData object. The keys are the names of the layers and the values are the corresponding keys in the spatialproteomics object.</p>
-</dd>
-<dt>additional_uns<span class="classifier">dict, optional</span></dt><dd><p>Additional uns data to include in the anndata.AnnData object. The keys are the names of the uns data and the values are the corresponding keys in the spatialproteomics object.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>adata<span class="classifier">anndata.AnnData</span></dt><dd><p>The converted anndata.AnnData object.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>AssertionError</dt><dd><p>If the expression matrix key or additional layers are not found in the spatialproteomics object.</p>
-</dd>
-</dl>
-<ul class="simple">
-<li><p>The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.</p></li>
-<li><p>If additional layers are specified, they are extracted from the spatialproteomics object and added to the anndata.AnnData object.</p></li>
-<li><p>If obs_key is present in the spatialproteomics object, it is used to create the obs DataFrame of the anndata.AnnData object.</p></li>
-<li><p>If additional_uns is specified, the corresponding uns data is extracted from the spatialproteomics object and added to the anndata.AnnData object.</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expression_matrix_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key of the expression matrix in the spatialproteomics object. Default is ‘_intensity’.</p></li>
+<li><p><strong>obs_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key of the observation data in the spatialproteomics object. Default is ‘_obs’.</p></li>
+<li><p><strong>additional_layers</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional layers to include in the anndata.AnnData object. The keys are the names of the layers and the values are the corresponding keys in the spatialproteomics object.</p></li>
+<li><p><strong>additional_uns</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional uns data to include in the anndata.AnnData object. The keys are the names of the uns data and the values are the corresponding keys in the spatialproteomics object.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>adata</strong> – The converted anndata.AnnData object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>anndata.AnnData</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If the expression matrix key or additional layers are not found in the spatialproteomics object.</p></li>
+<li><p><strong>Notes:</strong> – </p></li>
+<li><p><strong>------</strong> – </p></li>
+<li><p><strong>- The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.</strong> – </p></li>
+<li><p><strong>- If additional layers are specified</strong><strong>, </strong><strong>they are extracted from the spatialproteomics object and added to the anndata.AnnData object.</strong> – </p></li>
+<li><p><strong>- If obs_key is present in the spatialproteomics object</strong><strong>, </strong><strong>it is used to create the obs DataFrame of the anndata.AnnData object.</strong> – </p></li>
+<li><p><strong>- If additional_uns is specified</strong><strong>, </strong><strong>the corresponding uns data is extracted from the spatialproteomics object and added to the anndata.AnnData object.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -259,28 +262,26 @@ with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane)
 <dt class="sig sig-object py" id="spatialproteomics.tl.tool.ToolAccessor.stardist">
 <span class="sig-name descname"><span class="pre">stardist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">'_stardist_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_tiles:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predict_big:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess_func:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.stardist" title="Permalink to this definition"></a></dt>
 <dd><p>Apply StarDist algorithm to perform instance segmentation on the nuclear image.</p>
-<dl class="simple">
-<dt>scale<span class="classifier">float, optional</span></dt><dd><p>Scaling factor for the StarDist model (default is 3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling factor for the StarDist model (default is 3).</p></li>
+<li><p><strong>n_tiles</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of tiles to split the image into for prediction (default is 12).</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to normalize the nuclear image (default is True).</p></li>
+<li><p><strong>nuclear_channel</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the nuclear channel in the image (default is “DAPI”).</p></li>
+<li><p><strong>predict_big</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to use the ‘predict_instances_big’ method for large images (default is False).</p></li>
+<li><p><strong>postprocess_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to apply to the segmentation masks after prediction (default is lambda x: x).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments to be passed to the StarDist prediction method.</p></li>
+</ul>
 </dd>
-<dt>n_tiles<span class="classifier">int, optional</span></dt><dd><p>Number of tiles to split the image into for prediction (default is 12).</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>obj</strong> – Xarray dataset containing the segmentation mask and centroids.</p>
 </dd>
-<dt>normalize<span class="classifier">bool, optional</span></dt><dd><p>Flag indicating whether to normalize the nuclear image (default is True).</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
-<dt>nuclear_channel<span class="classifier">str, optional</span></dt><dd><p>Name of the nuclear channel in the image (default is “DAPI”).</p>
-</dd>
-<dt>predict_big<span class="classifier">bool, optional</span></dt><dd><p>Flag indicating whether to use the ‘predict_instances_big’ method for large images (default is False).</p>
-</dd>
-<dt>postprocess_func<span class="classifier">Callable, optional</span></dt><dd><p>Function to apply to the segmentation masks after prediction (default is lambda x: x).</p>
-</dd>
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs<span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to be passed to the StarDist prediction method.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>obj<span class="classifier">xr.Dataset</span></dt><dd><p>Xarray dataset containing the segmentation mask and centroids.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>ValueError</dt><dd><p>If the object already contains a segmentation mask.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the object already contains a segmentation mask.</p>
 </dd>
 </dl>
 </dd></dl>

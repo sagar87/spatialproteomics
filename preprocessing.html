@@ -134,7 +134,7 @@
 <dd class="field-even"><p>The updated image container with added channel(s).</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray.Dataset</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -162,21 +162,22 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer">
 <span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_mask'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_layer" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>array<span class="classifier">np.ndarray</span></dt><dd><p>The array representing the segmentation mask or layer to be added.</p>
-</dd>
-<dt>key_added<span class="classifier">str, optional</span></dt><dd><p>The name of the added layer in the xarray dataset. Default is ‘_mask’.</p>
-</dd>
-</dl>
+<dd><p>Adds a layer (such as a mask highlighting artifacts) to the xarray dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>np.ndarray</em>) – The array representing the layer to be added.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the added layer in the xarray dataset. Default is ‘_mask’.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>The amended xarray dataset.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated dataset with the added layer.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>AssertionError</strong> – If the array is not 2-dimensional or its shape does not match the image shape.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the array is not 2-dimensional or its shape does not match the image shape.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -200,7 +201,7 @@ Useful to add things like string-based labels or other metadata.</p>
 <dd class="field-even"><p>The amended image container.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.DataSet</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -220,7 +221,7 @@ of the image container.</p>
 <dd class="field-even"><p>The amended image container.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.DataSet</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -243,7 +244,7 @@ instead of adding them to the image container.</p></li>
 <dd class="field-even"><p>The amended image container.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.DataSet</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -256,7 +257,7 @@ instead of adding them to the image container.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>Callable</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The function used for quantification. Can either be a string to specify a function from skimage.measure.regionprops_table or a custom function. Default is ‘intensity_mean’.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the quantification data will be stored in the image container. Default is ‘_intensity’.</p></li>
 <li><p><strong>return_xarray</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.</p></li>
 </ul>
 </dd>
@@ -287,7 +288,7 @@ of the image container.</p>
 <dd class="field-even"><p>The amended image container.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.DataSet</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -295,7 +296,7 @@ of the image container.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation">
 <span class="sig-name descname"><span class="pre">add_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_segmentation" title="Permalink to this definition"></a></dt>
-<dd><p>Adds a segmentation mask (_segmentation) field to the xarray dataset.</p>
+<dd><p>Adds a segmentation mask field to the xarray dataset. This will be stored in the ‘_segmentation’ layer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -305,10 +306,13 @@ that indicates the location of each cell, or a layer key.</p></li>
 <li><p><strong>reindex</strong> (<em>bool</em>) – If true the segmentation mask is relabeled to have continuous numbers from 1 to n.</p></li>
 <li><p><strong>keep_labels</strong> (<em>bool</em>) – When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
 If you want to keep those annotations, set this to True. Default is True.</p></li>
-<li><p><strong>Returns</strong> – </p></li>
-<li><p><strong>--------</strong> – </p></li>
-<li><p><strong>xr.Dataset</strong> – The amended xarray.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The amended xarray.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -321,8 +325,8 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>Callable</em>) – The function to apply to the layer.</p></li>
-<li><p><strong>key</strong> (<em>str</em>) – The key of the layer to apply the function to. Default is Layers.IMAGE.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em>) – The key under which the updated layer will be stored. Default is Layers.IMAGE (i. e. the original image will be overwritten).</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The key of the layer to apply the function to. Default is ‘_image’.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – The key under which the updated layer will be stored. Default is ‘_image’ (i. e. the original image will be overwritten).</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments to pass to the function.</p></li>
 </ul>
 </dd>
@@ -342,8 +346,8 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The key of the image layer in the object. Default is Layers.IMAGE.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em>) – The key to assign to the 8-bit image in the object. Default is Layers.IMAGE, which overwrites the original image.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The key of the image layer in the object. Default is ‘_image’.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – The key to assign to the 8-bit image in the object. Default is ‘_image’, which overwrites the original image.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -359,12 +363,20 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample">
 <span class="sig-name descname"><span class="pre">downsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample" title="Permalink to this definition"></a></dt>
 <dd><p>Downsamples the image and segmentation mask in the object by a given rate.</p>
-<p>Parameters:
-- rate (int): The downsampling rate. Only every <cite>rate</cite>-th pixel will be kept.</p>
-<p>Returns:
-- xr.Dataset: The downsampled object containing the updated image and segmentation mask.</p>
-<p>Raises:
-- AssertionError: If no image layer is found in the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rate</strong> (<em>int</em>) – The downsampling rate. Only every <cite>rate</cite>-th pixel will be kept.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The downsampled object containing the updated image and segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If no image layer is found in the object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -418,7 +430,7 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 </ul>
 <p class="rubric">Example</p>
 <p>To filter the object by the feature “area” and keep only the cells with an area greater than 70px:
-&gt;&gt;&gt; obj = obj.pp.add_observations(‘area’).pp.filter_by_obs(‘area’, lambda x: x &gt; 70)</p>
+<cite>obj = obj.pp.add_observations(‘area’).pp.filter_by_obs(‘area’, lambda x: x &gt; 70)</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -430,10 +442,13 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x_slice</strong> (<em>slice</em>) – The slice representing the x-coordinates for the bounding box.</p></li>
 <li><p><strong>y_slice</strong> (<em>slice</em>) – The slice representing the y-coordinates for the bounding box.</p></li>
-<li><p><strong>Returns</strong> – </p></li>
-<li><p><strong>--------</strong> – </p></li>
-<li><p><strong>xarray.Dataset</strong> – The updated image container.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated image container.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -442,10 +457,17 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_channels">
 <span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_channels" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the specified channels from the dataset.</p>
-<p>Parameters:
-channels (Union[List[str], str]): The channels to retrieve. Can be a single channel name or a list of channel names.</p>
-<p>Returns:
-xr.Dataset: The dataset containing the specified channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channels</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – The channels to retrieve. Can be a single channel name or a list of channel names.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dataset containing the specified channels.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -457,7 +479,7 @@ xr.Dataset: The dataset containing the specified channels.</p>
 <dd class="field-odd"><p>The first disconnected cell from the segmentation layer.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ndarray</p>
+<dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -487,14 +509,24 @@ xr.Dataset: The dataset containing the specified channels.</p>
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells">
 <span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ignore'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Permalink to this definition"></a></dt>
 <dd><p>Grows the segmentation masks by expanding the labels in the object.</p>
-<p>Parameters:
-- iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
-- handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are “ignore”, “remove”, or “fill”. Default is “ignore”.
-- suppress_warning (bool): Whether to suppress the warning about recalculating the observations. Used internally, default is False.</p>
-<p>Raises:
-- ValueError: If the object does not contain a segmentation mask.</p>
-<p>Returns:
-- obj (xarray.Dataset): The object with the grown segmentation masks and updated observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterations</strong> (<em>int</em>) – The number of iterations to grow the segmentation masks. Default is 2.</p></li>
+<li><p><strong>handle_disconnected</strong> (<em>str</em>) – The mode to handle disconnected segmentation masks. Options are “ignore”, “remove”, or “fill”. Default is “ignore”.</p></li>
+<li><p><strong>suppress_warning</strong> (<em>bool</em>) – Whether to suppress the warning about recalculating the observations. Used internally, default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the object does not contain a segmentation mask.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The object with the grown segmentation masks and updated observations.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>xr.Dataset</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -549,26 +581,27 @@ You can either just merge a multi-dimensional array, or merge to an existing 1D 
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The array containing the segmentation masks to be merged. It can be 2D or 3D.</p></li>
 <li><p><strong>from_key</strong> (<em>str</em>) – The key of the segmentation mask in the xarray object to be merged.</p></li>
-<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – Optional. The labels corresponding to each segmentation mask in the array.
+<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em><em>)</em>) – Optional. The labels corresponding to each segmentation mask in the array.
 If provided, the number of labels must match the number of arrays.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) – Optional. The threshold value for merging cells. Default is 1.0.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>)</em>) – Optional. The threshold value for merging cells. Default is 1.0.</p></li>
 <li><p><strong>handle_disconnected</strong> (<em>str</em>) – Optional. The method to handle disconnected cells. Default is “relabel”.</p></li>
 <li><p><strong>key_base_segmentation</strong> (<em>str</em>) – Optional. The key of the base segmentation mask in the xarray object to merge to.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em>) – Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is “_segmentation”.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – </p></li>
+<li><p><strong>&quot;_segmentation&quot;.</strong> (<em>Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The xarray object with the merged segmentation mask.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>obj (xarray.Dataset)</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>AssertionError</strong> – If no segmentation mask is found in the xarray object.</p></li>
-<li><p><strong>AssertionError</strong> – If the input array is not 2D or 3D.</p></li>
-<li><p><strong>AssertionError</strong> – If the input array is not of type int.</p></li>
-<li><p><strong>AssertionError</strong> – If the shape of the input array does not match the shape of the segmentation mask.</p></li>
+<li><p><strong>AssertionError</strong> – If no segmentation mask is found in the xarray object.:</p></li>
+<li><p><strong>AssertionError</strong> – If the input array is not 2D or 3D.:</p></li>
+<li><p><strong>AssertionError</strong> – If the input array is not of type int.:</p></li>
+<li><p><strong>AssertionError</strong> – If the shape of the input array does not match the shape of the segmentation mask.:</p></li>
 </ul>
 </dd>
 </dl>
@@ -584,10 +617,10 @@ If provided, the number of labels must match the number of arrays.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.normalize">
 <span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.normalize" title="Permalink to this definition"></a></dt>
-<dd><p>Performs a percentile normalization on each channel.</p>
+<dd><p>Performs a percentile normalization on each channel using the 3- and 99.8-percentile. Resulting values are in the range of 0 to 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The image container with the normalized image stored in Layers.PLOT.</p>
+<dd class="field-odd"><p>The image container with the normalized image stored in ‘_plot’.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>xr.Dataset</p>
@@ -599,13 +632,23 @@ If provided, the number of labels must match the number of arrays.</p></li>
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.rescale">
 <span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.rescale" title="Permalink to this definition"></a></dt>
 <dd><p>Rescales the image and segmentation mask in the object by a given scale.</p>
-<p>Parameters:
-- scale (int): The scale factor by which to rescale the image and segmentation mask.</p>
-<p>Returns:
-- xr.Dataset: The rescaled object containing the updated image and segmentation mask.</p>
-<p>Raises:
-- AssertionError: If no image layer is found in the object.
-- AssertionError: If no segmentation mask is found in the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scale</strong> (<em>int</em>) – The scale factor by which to rescale the image and segmentation mask.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The rescaled object containing the updated image and segmentation mask.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>- AssertionError</strong> – If no image layer is found in the object.:</p></li>
+<li><p><strong>- AssertionError</strong> – If no segmentation mask is found in the object.:</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -614,16 +657,26 @@ If provided, the number of labels must match the number of arrays.</p></li>
 <dd><p>Apply thresholding to the image layer of the object.
 By default, shift is set to true. This means that the threshold value is subtracted from the image, and all negative values are set to 0.
 If you instead want to set all values below the threshold to 0 while retaining the rest of the image at the original values, set shift to False.</p>
-<p>Parameters:
-- quantile (float): The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.
-- intensity (int): The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.
-- key_added (Optional[str]): The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.
-- channels (Optional[Union[str, list]]): The channels to apply the thresholding to. If None, the thresholding will be applied to all channels.
-- shift (bool): If True, the thresholded image will be shifted so that values do not start at an arbitrary value. Default is True.</p>
-<p>Returns:
-- xr.Dataset: The object with the thresholding applied to the image layer.</p>
-<p>Raises:
-- ValueError: If both quantile and intensity are None or if both quantile and intensity are provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quantile</strong> (<em>float</em>) – The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.</p></li>
+<li><p><strong>intensity</strong> (<em>int</em>) – The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.</p></li>
+<li><p><strong>key_added</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>)</em>) – The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.</p></li>
+<li><p><strong>channels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em><em>]</em><em>)</em>) – The channels to apply the thresholding to. If None, the thresholding will be applied to all channels.</p></li>
+<li><p><strong>shift</strong> (<em>bool</em>) – If True, the thresholded image will be shifted so that values do not start at an arbitrary value. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The object with the thresholding applied to the image layer.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If both quantile and intensity are None or if both quantile and intensity are provided.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
