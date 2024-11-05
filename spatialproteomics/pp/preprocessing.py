@@ -325,7 +325,7 @@ class PreprocessingAccessor:
     ) -> xr.Dataset:
         """
         Adds a layer (such as a mask highlighting artifacts) to the xarray dataset.
-        
+
         Parameters
         ----------
         array : np.ndarray
@@ -1018,7 +1018,7 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        rate : int 
+        rate : int
             The downsampling rate. Only every `rate`-th pixel will be kept.
 
         Returns
@@ -1243,7 +1243,7 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        array : np.ndarray 
+        array : np.ndarray
             The array containing the segmentation masks to be merged. It can be 2D or 3D.
         from_key : str
             The key of the segmentation mask in the xarray object to be merged.

@@ -293,7 +293,7 @@ class NeighborhoodAccessor:
     ) -> xr.Dataset:
         """
         Add neighborhoods to the dataset from a DataFrame.
-        
+
         Parameters
         ----------
         df : pd.DataFrame
@@ -304,12 +304,12 @@ class NeighborhoodAccessor:
             List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
         names : list or None, optional
             List of names for the neighborhoods, by default None. If None, default names will be assigned.
-            
+
         Returns
         -------
         xr.Dataset
             Updated dataset with neighborhood information added.
-            
+
         Raises
         ------
         AssertionError

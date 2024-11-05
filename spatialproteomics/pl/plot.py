@@ -740,7 +740,7 @@ class PlotAccessor:
     ) -> xr.Dataset:
         """
         Render neighborhoods on the spatial data.
-        
+
         Parameters
         ----------
         style : str, optional
@@ -757,12 +757,12 @@ class PlotAccessor:
             The strength of the dilation applied to the cells. Default is 40.
         erosion_strength : int, optional
             The strength of the erosion applied to the cells. Default is 35.
-            
+
         Returns
         -------
         xr.Dataset
             The dataset with the rendered neighborhoods.
-            
+
         Raises
         ------
         AssertionError
@@ -1161,7 +1161,7 @@ class PlotAccessor:
             Whether to show the legend. Default is True.
         layer_key : str, optional
             The key of the layer to be plotted. Default is Layers.OBS.
-        size : float, optional  
+        size : float, optional
             The size of the scatter points. Default is 1.0.
         alpha : float, optional
             The transparency of the scatter points. Default is 0.9.
@@ -1315,7 +1315,7 @@ class PlotAccessor:
             The downsampling factor for the image. Default is 10.
         key : str
             The key of the image to be cropped. Default is Layers.IMAGE.
-        channel : str, optional 
+        channel : str, optional
             The channel used for cropping. Default is None, which defaults to using the first available channel.
 
         Returns
