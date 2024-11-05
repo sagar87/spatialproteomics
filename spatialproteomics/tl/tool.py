@@ -126,7 +126,7 @@ class ToolAccessor:
         """
         Apply StarDist algorithm to perform instance segmentation on the nuclear image.
 
-        Parameters:
+        Parameters
         ----------
         scale : float, optional
             Scaling factor for the StarDist model (default is 3).
@@ -143,12 +143,12 @@ class ToolAccessor:
         **kwargs : dict, optional
             Additional keyword arguments to be passed to the StarDist prediction method.
 
-        Returns:
+        Returns
         -------
         obj : xr.Dataset
             Xarray dataset containing the segmentation mask and centroids.
 
-        Raises:
+        Raises
         ------
         ValueError
             If the object already contains a segmentation mask.
@@ -338,23 +338,23 @@ class ToolAccessor:
         """
         Convert the spatialproteomics object to an anndata.AnnData object. The resulting AnnData object does not store the original image or segmentation mask.
 
-        Parameters:
+        Parameters
         ----------
         expression_matrix_key : str, optional
-            The key of the expression matrix in the spatialproteomics object. Default is Layers.INTENSITY.
+            The key of the expression matrix in the spatialproteomics object. Default is '_intensity'.
         obs_key : str, optional
-            The key of the observation data in the spatialproteomics object. Default is Layers.OBS.
+            The key of the observation data in the spatialproteomics object. Default is '_obs'.
         additional_layers : dict, optional
             Additional layers to include in the anndata.AnnData object. The keys are the names of the layers and the values are the corresponding keys in the spatialproteomics object.
         additional_uns : dict, optional
             Additional uns data to include in the anndata.AnnData object. The keys are the names of the uns data and the values are the corresponding keys in the spatialproteomics object.
 
-        Returns:
+        Returns
         -------
         adata : anndata.AnnData
             The converted anndata.AnnData object.
 
-        Raises:
+        Raises
         ------
         AssertionError
             If the expression matrix key or additional layers are not found in the spatialproteomics object.
