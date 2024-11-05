@@ -259,7 +259,7 @@ class PlotAccessor:
         Parameters
         ----------
         colors : List[str], optional
-            A list of strings that denote the color of each channel. Default is ["C0", "C1", "C2", "C3"].
+            A list of strings that denote the color of each channel.
         background : str, optional
             Background color of the colorized image. Default is "black".
         normalize : bool, optional
@@ -270,11 +270,7 @@ class PlotAccessor:
         Returns
         -------
         xr.Dataset
-            The image container with the colorized image stored in Layers.PLOT.
-
-        Example Usage
-        --------------
-        >>> ds.pp['PAX5', 'CD3'].pl.colorize(['red', 'green']).pl.show()
+            The image container with the colorized image stored in '_plot'.
         """
         # check if a plot already exists
         assert (
@@ -334,32 +330,54 @@ class PlotAccessor:
         """
         Display an image with optional rendering elements. Can be used to render intensities, segmentation masks and labels, either individually or all at once.
 
-        Parameters:
-        - render_image (bool): Whether to render the image with channel intensities. Default is True.
-        - render_segmentation (bool): Whether to render segmentation. Default is False.
-        - render_labels (bool): Whether to render labels. Default is False.
-        - render_neighborhoods(bool): Whether to render neighborhoods. Default is False.
-        - ax: The matplotlib axes to plot on. If None, the current axes will be used.
-        - legend_image (bool): Whether to show the channel legend. Default is True.
-        - legend_segmentation (bool): Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
-        - legend_label (bool): Whether to show the label legend. Default is True.
-        - legend_neighborhoods (bool): Whether to show the neighborhood legend. Default is True.
-        - background (str): Background color of the image. Default is "black".
-        - downsample (int): Downsample factor for the image. Default is 1 (no downsampling).
-        - label_order (list): A list specifying the order of the label indices. Default is None.
-        - neighborhood_order (list): A list specifying the order of the neighborhood indices. Default is None.
-        - legend_kwargs (dict): Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
-        - segmentation_kwargs (dict): Keyword arguments for rendering the segmentation. Default is {}.
-        - label_kwargs (dict): Keyword arguments for rendering the labels. Default is {}.
-        - neighborhood_kwargs (dict): Keyword arguments for rendering the neighborhoods. Default is {}.
+        Parameters
+        ----------
+        render_image : bool
+            Whether to render the image with channel intensities. Default is True.
+        render_segmentation : bool
+            Whether to render segmentation. Default is False.
+        render_labels : bool
+            Whether to render labels. Default is False.
+        render_neighborhoods : bool
+            Whether to render neighborhoods. Default is False.
+        ax
+            The matplotlib axes to plot on. If None, the current axes will be used.
+        legend_image : bool
+            Whether to show the channel legend. Default is True.
+        legend_segmentation : bool
+            Whether to show the segmentation legend (only becomes relevant when dealing with multiple segmentation layers, e. g. when using cellpose). Default is False.
+        legend_label : bool
+            Whether to show the label legend. Default is True.
+        legend_neighborhoods : bool
+            Whether to show the neighborhood legend. Default is True.
+        background : str
+            Background color of the image. Default is "black".
+        downsample : int
+            Downsample factor for the image. Default is 1 (no downsampling).
+        label_order : list
+            A list specifying the order of the label indices. Default is None.
+        neighborhood_order : list
+            A list specifying the order of the neighborhood indices. Default is None.
+        legend_kwargs : dict
+            Keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        segmentation_kwargs : dict
+            Keyword arguments for rendering the segmentation. Default is {}.
+        label_kwargs : dict
+            Keyword arguments for rendering the labels. Default is {}.
+        neighborhood_kwargs : dict
+            Keyword arguments for rendering the neighborhoods. Default is {}.
 
-        Returns:
-        - obj (xr.Dataset): The modified dataset object.
+        Returns
+        -------
+        xr.Dataset
+            The dataset object including the plot.
 
-        Raises:
+        Raises
+        ------
         - AssertionError: If no rendering element is specified.
 
-        Note:
+        Notes
+        -----
         - This method displays an image with optional rendering elements such as intensities, labels, and segmentation.
         - The `render_intensities`, `render_labels`, and `render_segmentation` parameters control which rendering elements are displayed.
         - The `ax` parameter allows specifying a specific matplotlib axes to plot on. If None, the current axes will be used.
@@ -553,7 +571,7 @@ class PlotAccessor:
         Renders the segmentation mask with optional alpha blending and boundary rendering.
 
         Parameters:
-            layer_key (str, optional): The key of the layer containing the segmentation mask. Default is Layers.SEGMENTATION.
+            layer_key (str, optional): The key of the layer containing the segmentation mask. Default is '_segmentation'.
             colors (List[str], optional): A list of colors to be used for rendering the segmentation mask. Default is ['white'].
             alpha (float, optional): The alpha value for blending the segmentation mask with the plot. Default is 0.0.
             alpha_boundary (float, optional): The alpha value for rendering the boundary of the segmentation mask. Default is 1.0.
@@ -722,6 +740,7 @@ class PlotAccessor:
     ) -> xr.Dataset:
         """
         Render neighborhoods on the spatial data.
+
         Parameters
         ----------
         style : str, optional
@@ -738,10 +757,12 @@ class PlotAccessor:
             The strength of the dilation applied to the cells. Default is 40.
         erosion_strength : int, optional
             The strength of the erosion applied to the cells. Default is 35.
+
         Returns
         -------
         xr.Dataset
             The dataset with the rendered neighborhoods.
+
         Raises
         ------
         AssertionError
@@ -932,7 +953,7 @@ class PlotAccessor:
     ):
         """
         Plots the image after rendering certain layers.
-        Meant to be used in conjunction with pl.colorize(), pl.render_segmentation and pl.render_label().
+        Meant to be used in conjunction with pl.colorize(), pl.render_segmentation, pl.render_label() or pl.render_neighborhoods().
         For a more high level wrapper, please refer to pl.show() instead.
 
         Parameters
@@ -1023,8 +1044,8 @@ class PlotAccessor:
         """
         Scatter plot of labeled cells.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         legend : bool, optional
             Whether to show the legend. Default is True.
         size : float, optional
@@ -1042,8 +1063,8 @@ class PlotAccessor:
         scatter_kwargs : dict, optional
             Additional keyword arguments for configuring the scatter plot.
 
-        Returns:
-        --------
+        Returns
+        -------
         xr.Dataset
             The modified spatialproteomics object.
         """
@@ -1130,22 +1151,36 @@ class PlotAccessor:
         """
         Create a scatter plot of some feature. At the moment, only categorical features are supported.
 
-        Parameters:
-        - feature (str): The feature to be plotted.
-        - palette (dict, optional): A dictionary mapping feature values to colors. If not provided, a default palette will be used.
-        - legend (bool, optional): Whether to show the legend. Default is True.
-        - layer_key (str, optional): The key of the layer to be plotted. Default is Layers.OBS.
-        - size (float, optional): The size of the scatter points. Default is 1.0.
-        - alpha (float, optional): The transparency of the scatter points. Default is 0.9.
-        - zorder (int, optional): The z-order of the scatter points. Default is 10.
-        - ax (object, optional): The matplotlib axes object to plot on. If not provided, the current axes will be used.
-        - legend_kwargs (dict, optional): Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
-        - scatter_kws (dict, optional): Additional keyword arguments for configuring the scatter plot. Default is {}.
+        Parameters
+        ----------
+        feature : str
+            The feature to be plotted.
+        palette : dict, optional
+            A dictionary mapping feature values to colors. If not provided, a default palette will be used.
+        legend : bool, optional
+            Whether to show the legend. Default is True.
+        layer_key : str, optional
+            The key of the layer to be plotted. Default is Layers.OBS.
+        size : float, optional
+            The size of the scatter points. Default is 1.0.
+        alpha : float, optional
+            The transparency of the scatter points. Default is 0.9.
+        zorder : int, optional
+            The z-order of the scatter points. Default is 10.
+        ax : object, optional
+            The matplotlib axes object to plot on. If not provided, the current axes will be used.
+        legend_kwargs : dict, optional
+            Additional keyword arguments for configuring the legend. Default is {"framealpha": 1}.
+        scatter_kws : dict, optional
+            Additional keyword arguments for configuring the scatter plot. Default is {}.
 
-        Returns:
-        - xr.Dataset: The original data object.
+        Returns
+        -------
+        xr.Dataset
+            The original data object.
 
-        Raises:
+        Raises
+        ------
         - AssertionError: If the layer_key is not found in the data object.
         - AssertionError: If the feature is not found in the specified layer.
         - AssertionError: If the X or Y coordinates are not found in the specified layer.
@@ -1272,14 +1307,21 @@ class PlotAccessor:
         """
         Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 
-        Parameters:
-        - padding (int): The padding to be added around the cropped image in pixels. Default is 50.
-        - downsample (int): The downsampling factor for the image. Default is 10.
-        - key (str): The key of the image to be cropped. Default is Layers.IMAGE.
-        - channel (str, optional): The channel used for cropping. Default is None, which defaults to using the first available channel.
+        Parameters
+        ----------
+        padding : int
+            The padding to be added around the cropped image in pixels. Default is 50.
+        downsample : int
+            The downsampling factor for the image. Default is 10.
+        key : str
+            The key of the image to be cropped. Default is Layers.IMAGE.
+        channel : str, optional
+            The channel used for cropping. Default is None, which defaults to using the first available channel.
 
-        Returns:
-        - obj.pp (object): The cropped image.
+        Returns
+        -------
+        xr.Dataset
+            The cropped image.
         """
         if channel is None:
             channel = self._obj.coords[Dims.CHANNELS].values.tolist()[0]

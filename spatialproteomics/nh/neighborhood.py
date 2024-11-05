@@ -114,7 +114,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the deselected neighborhood indices.
 
         Notes
@@ -258,8 +258,8 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        xr.Dataset or xr.DataArray
-            The updated image container with added properties or the properties as a separate xarray.DataArray.
+        xr.Dataset
+            The updated image container with added properties.
         """
         unique_neighborhoods = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.NEIGHBORHOODS}))
 
@@ -293,6 +293,7 @@ class NeighborhoodAccessor:
     ) -> xr.Dataset:
         """
         Add neighborhoods to the dataset from a DataFrame.
+
         Parameters
         ----------
         df : pd.DataFrame
@@ -303,10 +304,12 @@ class NeighborhoodAccessor:
             List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
         names : list or None, optional
             List of names for the neighborhoods, by default None. If None, default names will be assigned.
+
         Returns
         -------
         xr.Dataset
             Updated dataset with neighborhood information added.
+
         Raises
         ------
         AssertionError
@@ -431,7 +434,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        None
+        xr.Dataset
 
         Notes
         -----
@@ -478,7 +481,7 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
 
-    def set_neighborhood_name(self, neighborhood, name):
+    def set_neighborhood_name(self, neighborhood: Union[int, str], name: str):
         """
         Set the name of a specific neighborhood.
 
@@ -494,7 +497,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        None
+        xr.Dataset
 
         Notes
         -----
@@ -547,9 +550,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -622,9 +625,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -691,9 +694,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -752,7 +755,7 @@ class NeighborhoodAccessor:
         Parameters
         ----------
         features : str or List[str], optional
-            The network features to compute. Possible features are ['degree', 'closeness_centrality', 'closeness_centrality', 'homophily', 'inter_label_connectivity', 'diversity_index'].
+            The network features to compute. Possible features are ['degree', 'closeness_centrality', 'betweenness_centrality', 'homophily', 'inter_label_connectivity', 'diversity_index'].
         Raises
         ------
         ImportError
@@ -764,9 +767,6 @@ class NeighborhoodAccessor:
         The adjacency matrix should be computed and stored in the object before
         calling this method. You can compute the adjacency matrix using methods
         from the `nh` module, such as `nh.compute_neighborhoods_radius()`.
-        Examples
-        --------
-        >>> obj.add_neighborhood_obs()
         """
 
         try:
@@ -823,6 +823,31 @@ class NeighborhoodAccessor:
     def compute_graph_features(
         self, features: Union[str, List[str]] = ["num_nodes", "num_edges", "density", "modularity", "assortativity"]
     ):
+        """
+        Compute various graph features from the adjacency matrix of the data.
+        Parameters
+        ----------
+        features : Union[str, List[str]], optional
+            A single feature or a list of features to compute. Valid features are:
+            "num_nodes", "num_edges", "density", "modularity", "assortativity".
+            Default is ["num_nodes", "num_edges", "density", "modularity", "assortativity"].
+        Returns
+        -------
+        dict
+            A dictionary where keys are the names of the computed features and values are the corresponding feature values.
+        Raises
+        ------
+        ImportError
+            If the `networkx` package is not installed.
+        AssertionError
+            If required layers (OBS, LA_PROPERTIES, ADJACENCY_MATRIX) are not found in the object.
+            If no valid features are provided.
+            If the LABELS feature is not found in the observation layer.
+        Notes
+        -----
+        This method requires the `networkx` package to be installed. If you want to compute the modularity of the network,
+        you will also need to install the `python-louvain` package.
+        """
         try:
             import networkx as nx
 

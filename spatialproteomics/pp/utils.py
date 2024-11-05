@@ -166,9 +166,9 @@ def _normalize(
     dataarray: xr.DataArray
         A xarray DataArray with an image field.
     pmin: float
-        Lower quantile (min value) used to perform qunatile normalization.
+        Lower quantile (min value) used to perform quantile normalization.
     pmax: float
-        Upper quantile (max value) used to perform qunatile normalization.
+        Upper quantile (max value) used to perform quantile normalization.
     eps: float
         Epsilon float added to prevent 0 division.
     clip: bool
