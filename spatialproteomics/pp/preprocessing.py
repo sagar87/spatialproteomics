@@ -856,8 +856,6 @@ class PreprocessingAccessor:
                 quantile_dict = dict(zip(channels, quantile))
                 quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
             if intensity is not None:
-                print(len(intensity))
-                print(len(channels))
                 assert len(channels) == len(
                     intensity
                 ), "The number of channels must match the number of intensity values."
