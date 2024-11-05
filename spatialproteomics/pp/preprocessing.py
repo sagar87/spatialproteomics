@@ -51,7 +51,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xarray.Dataset
+        xr.Dataset
             The subsetted image container.
         """
         # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
@@ -132,9 +132,9 @@ class PreprocessingAccessor:
         y_slice : slice
             The slice representing the y-coordinates for the bounding box.
 
-        Returns:
-        --------
-        xarray.Dataset
+        Returns
+        -------
+        xr.Dataset
             The updated image container.
         """
 
@@ -176,11 +176,15 @@ class PreprocessingAccessor:
         """
         Retrieve the specified channels from the dataset.
 
-        Parameters:
-        channels (Union[List[str], str]): The channels to retrieve. Can be a single channel name or a list of channel names.
+        Parameters
+        ----------
+        channels : Union[List[str], str]
+            The channels to retrieve. Can be a single channel name or a list of channel names.
 
-        Returns:
-        xr.Dataset: The dataset containing the specified channels.
+        Returns
+        -------
+        xr.Dataset
+            The dataset containing the specified channels.
         """
         if isinstance(channels, str):
             channels = [channels]
@@ -203,7 +207,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xarray.Dataset
+        xr.Dataset
             The updated image container with added channel(s).
         """
         assert type(array) is np.ndarray, "Added channels must be numpy arrays."
@@ -245,7 +249,7 @@ class PreprocessingAccessor:
         keep_labels: bool = True,
     ) -> xr.Dataset:
         """
-        Adds a segmentation mask (_segmentation) field to the xarray dataset.
+        Adds a segmentation mask field to the xarray dataset. This will be stored in the '_segmentation' layer.
 
         Parameters
         ----------
@@ -260,7 +264,7 @@ class PreprocessingAccessor:
             When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
             If you want to keep those annotations, set this to True. Default is True.
 
-        Returns:
+        Returns
         --------
         xr.Dataset
             The amended xarray.
@@ -320,13 +324,18 @@ class PreprocessingAccessor:
         key_added: str = Layers.MASK,
     ) -> xr.Dataset:
         """
+        Adds a layer (such as a mask highlighting artifacts) to the xarray dataset.
+        
+        Parameters
+        ----------
         array : np.ndarray
-            The array representing the segmentation mask or layer to be added.
+            The array representing the layer to be added.
         key_added : str, optional
             The name of the added layer in the xarray dataset. Default is '_mask'.
         Returns
         -------
-            The amended xarray dataset.
+        xr.Dataset
+            The updated dataset with the added layer.
         Raises
         ------
         AssertionError
@@ -370,7 +379,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xr.DataSet
+        xr.Dataset
             The amended image container.
         """
         assert (
@@ -417,7 +426,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xr.DataSet
+        xr.Dataset
             The amended image container.
         """
         if layer_key not in self._obj:
@@ -550,7 +559,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xr.DataSet
+        xr.Dataset
             The amended image container.
         """
         if Dims.CELLS not in self._obj.coords:
@@ -588,7 +597,7 @@ class PreprocessingAccessor:
         func : Callable or str, optional
             The function used for quantification. Can either be a string to specify a function from skimage.measure.regionprops_table or a custom function. Default is 'intensity_mean'.
         key_added : str, optional
-            The key under which the quantification data will be stored in the image container. Default is Layers.INTENSITY.
+            The key under which the quantification data will be stored in the image container. Default is '_intensity'.
         return_xarray : bool, optional
             If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.
 
@@ -670,7 +679,7 @@ class PreprocessingAccessor:
 
         Returns
         -------
-        xr.DataSet
+        xr.Dataset
             The amended image container.
         """
         if Layers.SEGMENTATION not in self._obj:
@@ -805,18 +814,28 @@ class PreprocessingAccessor:
         By default, shift is set to true. This means that the threshold value is subtracted from the image, and all negative values are set to 0.
         If you instead want to set all values below the threshold to 0 while retaining the rest of the image at the original values, set shift to False.
 
-        Parameters:
-        - quantile (float): The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.
-        - intensity (int): The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.
-        - key_added (Optional[str]): The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.
-        - channels (Optional[Union[str, list]]): The channels to apply the thresholding to. If None, the thresholding will be applied to all channels.
-        - shift (bool): If True, the thresholded image will be shifted so that values do not start at an arbitrary value. Default is True.
+        Parameters
+        ----------
+        quantile : float
+            The quantile value used for thresholding. If provided, the pixels below this quantile will be set to 0.
+        intensity : int
+            The absolute intensity value used for thresholding. If provided, the pixels below this intensity will be set to 0.
+        key_added : Optional[str])
+            The name of the new image layer after thresholding. If not provided, the original image layer will be replaced.
+        channels : Optional[Union[str, list]])
+            The channels to apply the thresholding to. If None, the thresholding will be applied to all channels.
+        shift : bool
+            If True, the thresholded image will be shifted so that values do not start at an arbitrary value. Default is True.
 
-        Returns:
-        - xr.Dataset: The object with the thresholding applied to the image layer.
+        Returns
+        -------
+        xr.Dataset
+            The object with the thresholding applied to the image layer.
 
-        Raises:
-        - ValueError: If both quantile and intensity are None or if both quantile and intensity are provided.
+        Raises
+        ------
+        ValueError
+            If both quantile and intensity are None or if both quantile and intensity are provided.
         """
         if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
             raise ValueError("Please provide a quantile or absolute intensity cut off.")
@@ -936,9 +955,9 @@ class PreprocessingAccessor:
         func : Callable
             The function to apply to the layer.
         key : str
-            The key of the layer to apply the function to. Default is Layers.IMAGE.
+            The key of the layer to apply the function to. Default is '_image'.
         key_added : str
-            The key under which the updated layer will be stored. Default is Layers.IMAGE (i. e. the original image will be overwritten).
+            The key under which the updated layer will be stored. Default is '_image' (i. e. the original image will be overwritten).
         **kwargs : dict, optional
             Additional keyword arguments to pass to the function.
 
@@ -976,12 +995,12 @@ class PreprocessingAccessor:
 
     def normalize(self):
         """
-        Performs a percentile normalization on each channel.
+        Performs a percentile normalization on each channel using the 3- and 99.8-percentile. Resulting values are in the range of 0 to 1.
 
         Returns
         -------
         xr.Dataset
-            The image container with the normalized image stored in Layers.PLOT.
+            The image container with the normalized image stored in '_plot'.
         """
         image_layer = self._obj[Layers.IMAGE]
         normed = xr.DataArray(
@@ -997,14 +1016,20 @@ class PreprocessingAccessor:
         """
         Downsamples the image and segmentation mask in the object by a given rate.
 
-        Parameters:
-        - rate (int): The downsampling rate. Only every `rate`-th pixel will be kept.
+        Parameters
+        ----------
+        rate : int 
+            The downsampling rate. Only every `rate`-th pixel will be kept.
 
-        Returns:
-        - xr.Dataset: The downsampled object containing the updated image and segmentation mask.
+        Returns
+        -------
+        xr.Dataset
+            The downsampled object containing the updated image and segmentation mask.
 
-        Raises:
-        - AssertionError: If no image layer is found in the object.
+        Raises
+        ------
+        AssertionError
+            If no image layer is found in the object.
         """
         # checking if the object contains an image layer
         assert Layers.IMAGE in self._obj, "No image layer found in the object."
@@ -1038,13 +1063,18 @@ class PreprocessingAccessor:
         """
         Rescales the image and segmentation mask in the object by a given scale.
 
-        Parameters:
-        - scale (int): The scale factor by which to rescale the image and segmentation mask.
+        Parameters
+        ----------
+        scale :int
+            The scale factor by which to rescale the image and segmentation mask.
 
-        Returns:
-        - xr.Dataset: The rescaled object containing the updated image and segmentation mask.
+        Returns
+        -------
+        xr.Dataset
+            The rescaled object containing the updated image and segmentation mask.
 
-        Raises:
+        Raises
+        ------
         - AssertionError: If no image layer is found in the object.
         - AssertionError: If no segmentation mask is found in the object.
         """
@@ -1092,7 +1122,7 @@ class PreprocessingAccessor:
 
         Example:
             To filter the object by the feature "area" and keep only the cells with an area greater than 70px:
-            >>> obj = obj.pp.add_observations('area').pp.filter_by_obs('area', lambda x: x > 70)
+            `obj = obj.pp.add_observations('area').pp.filter_by_obs('area', lambda x: x > 70)`
         """
         # checking if the feature exists in obs
         assert (
@@ -1139,16 +1169,24 @@ class PreprocessingAccessor:
         """
         Grows the segmentation masks by expanding the labels in the object.
 
-        Parameters:
-        - iterations (int): The number of iterations to grow the segmentation masks. Default is 2.
-        - handle_disconnected (str): The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
-        - suppress_warning (bool): Whether to suppress the warning about recalculating the observations. Used internally, default is False.
+        Parameters
+        ----------
+        iterations : int
+            The number of iterations to grow the segmentation masks. Default is 2.
+        handle_disconnected : str
+            The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
+        suppress_warning :bool
+            Whether to suppress the warning about recalculating the observations. Used internally, default is False.
 
-        Raises:
-        - ValueError: If the object does not contain a segmentation mask.
+        Raises
+        ------
+        ValueError
+            If the object does not contain a segmentation mask.
 
-        Returns:
-        - obj (xarray.Dataset): The object with the grown segmentation masks and updated observations.
+        Returns
+        -------
+        xr.Dataset
+            The object with the grown segmentation masks and updated observations.
         """
 
         if Layers.SEGMENTATION not in self._obj:
@@ -1203,26 +1241,38 @@ class PreprocessingAccessor:
         This can be done in two ways: either by merging a multi-dimensional array from the object directly, or by adding a numpy array.
         You can either just merge a multi-dimensional array, or merge to an existing 1D mask (e. g. a precomputed DAPI segmentation).
 
-        Parameters:
-            array (np.ndarray): The array containing the segmentation masks to be merged. It can be 2D or 3D.
-            from_key (str): The key of the segmentation mask in the xarray object to be merged.
-            labels (Optional[Union[str, List[str]]]): Optional. The labels corresponding to each segmentation mask in the array.
-                If provided, the number of labels must match the number of arrays.
-            threshold (float): Optional. The threshold value for merging cells. Default is 1.0.
-            handle_disconnected (str): Optional. The method to handle disconnected cells. Default is "relabel".
-            key_base_segmentation (str): Optional. The key of the base segmentation mask in the xarray object to merge to.
-            key_added (str): Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is "_segmentation".
+        Parameters
+        ----------
+        array : np.ndarray 
+            The array containing the segmentation masks to be merged. It can be 2D or 3D.
+        from_key : str
+            The key of the segmentation mask in the xarray object to be merged.
+        labels : Optional[Union[str, List[str]]])
+            Optional. The labels corresponding to each segmentation mask in the array.
+            If provided, the number of labels must match the number of arrays.
+        threshold : float)
+            Optional. The threshold value for merging cells. Default is 1.0.
+        handle_disconnected : str
+            Optional. The method to handle disconnected cells. Default is "relabel".
+        key_base_segmentation : str
+            Optional. The key of the base segmentation mask in the xarray object to merge to.
+        key_added : str
+        Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is "_segmentation".
 
-        Returns:
-            obj (xarray.Dataset): The xarray object with the merged segmentation mask.
+        Returns
+        -------
+        xr.Dataset
+            The xarray object with the merged segmentation mask.
 
-        Raises:
+        Raises
+        ------
             AssertionError: If no segmentation mask is found in the xarray object.
             AssertionError: If the input array is not 2D or 3D.
             AssertionError: If the input array is not of type int.
             AssertionError: If the shape of the input array does not match the shape of the segmentation mask.
 
-        Notes:
+        Notes
+        -----
             - If the input array is 2D, it will be expanded to 3D.
             - If labels are provided, they need to match the number of arrays.
             - The merging process starts with merging the biggest cells first, then the smaller ones.
@@ -1315,7 +1365,7 @@ class PreprocessingAccessor:
         Returns the first disconnected cell from the segmentation layer.
 
         Returns:
-            ndarray: The first disconnected cell from the segmentation layer.
+            np.ndarray: The first disconnected cell from the segmentation layer.
         """
         return _get_disconnected_cell(self._obj[Layers.SEGMENTATION])
 
@@ -1495,8 +1545,8 @@ class PreprocessingAccessor:
         Convert the image to 8-bit.
 
         Parameters:
-            key (str): The key of the image layer in the object. Default is Layers.IMAGE.
-            key_added (str): The key to assign to the 8-bit image in the object. Default is Layers.IMAGE, which overwrites the original image.
+            key (str): The key of the image layer in the object. Default is '_image'.
+            key_added (str): The key to assign to the 8-bit image in the object. Default is '_image', which overwrites the original image.
 
         Returns:
             xr.Dataset: The object with the image converted to 8-bit.
