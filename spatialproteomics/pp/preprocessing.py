@@ -912,10 +912,12 @@ class PreprocessingAccessor:
                 # Apply thresholding: set all values below the intensity threshold to 0.
                 filtered = np.where(image_layer.values >= intensity, image_layer.values, 0)
 
-        obj = self._obj.copy()
-
         if key_added is None:
-            obj = obj.drop_vars(Layers.IMAGE)
+            # drop_vars returns a copy of the data array and should not perform any in-place operations
+            obj = self._obj.drop_vars(Layers.IMAGE)
+        else:
+            # this is a reference, however xr.merge does not alter the original object, so it is safe to use it here
+            obj = self._obj
 
         filtered = xr.DataArray(
             filtered,
