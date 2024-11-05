@@ -114,7 +114,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        any
+        xr.Dataset
             The updated data object with the deselected neighborhood indices.
 
         Notes
@@ -258,8 +258,8 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        xr.Dataset or xr.DataArray
-            The updated image container with added properties or the properties as a separate xarray.DataArray.
+        xr.Dataset
+            The updated image container with added properties.
         """
         unique_neighborhoods = np.unique(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.NEIGHBORHOODS}))
 
@@ -293,6 +293,7 @@ class NeighborhoodAccessor:
     ) -> xr.Dataset:
         """
         Add neighborhoods to the dataset from a DataFrame.
+        
         Parameters
         ----------
         df : pd.DataFrame
@@ -303,10 +304,12 @@ class NeighborhoodAccessor:
             List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
         names : list or None, optional
             List of names for the neighborhoods, by default None. If None, default names will be assigned.
+            
         Returns
         -------
         xr.Dataset
             Updated dataset with neighborhood information added.
+            
         Raises
         ------
         AssertionError
@@ -431,7 +434,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        None
+        xr.Dataset
 
         Notes
         -----
@@ -478,7 +481,7 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
 
-    def set_neighborhood_name(self, neighborhood, name):
+    def set_neighborhood_name(self, neighborhood: Union[int, str], name: str):
         """
         Set the name of a specific neighborhood.
 
@@ -494,7 +497,7 @@ class NeighborhoodAccessor:
 
         Returns
         -------
-        None
+        xr.Dataset
 
         Notes
         -----
@@ -547,9 +550,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -622,9 +625,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -691,9 +694,9 @@ class NeighborhoodAccessor:
         include_center : bool, optional
             Whether to include the center cell in the neighborhood. Default is True.
         key_added : str, optional
-            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is Layers.NEIGHBORHOODS.
+            The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
-            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is Layers.ADJACENCY_MATRIX.
+            The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is '_adjacency_matrix'.
 
         Returns
         -------
@@ -764,9 +767,6 @@ class NeighborhoodAccessor:
         The adjacency matrix should be computed and stored in the object before
         calling this method. You can compute the adjacency matrix using methods
         from the `nh` module, such as `nh.compute_neighborhoods_radius()`.
-        Examples
-        --------
-        >>> obj.add_neighborhood_obs()
         """
 
         try:
