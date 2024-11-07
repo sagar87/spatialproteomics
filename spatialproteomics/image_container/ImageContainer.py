@@ -29,6 +29,34 @@ class ImageContainer:
     def compute_neighborhoods(
         self, neighborhood_method: str = "radius", radius=100, knn=10, k=5, overwrite: bool = False, seed: int = 0
     ):
+        """
+        Compute neighborhoods for spatial proteomics objects using the specified method and perform clustering.
+        Parameters
+        ----------
+        neighborhood_method : str, optional
+            The method to use for computing neighborhoods. Must be one of 'radius', 'knn', or 'delaunay'.
+            Default is 'radius'.
+        radius : int, optional
+            The radius to use for the 'radius' neighborhood method. Default is 100.
+        knn : int, optional
+            The number of nearest neighbors to use for the 'knn' neighborhood method. Default is 10.
+        k : int, optional
+            The number of clusters to form using K-Means clustering. Default is 5.
+        overwrite : bool, optional
+            Whether to overwrite existing neighborhoods in the objects. Default is False.
+        seed : int, optional
+            The random seed to use for K-Means clustering. Default is 0.
+        Returns
+        -------
+        dict
+            A dictionary of spatial proteomics objects with computed neighborhoods and clusters.
+        Raises
+        ------
+        ValueError
+            If neighborhoods are already present in the objects and `overwrite` is set to False.
+            If `neighborhood_method` is not one of 'radius', 'knn', or 'delaunay'.
+            If there is an error in the clustering process.
+        """
         assert neighborhood_method in [
             "radius",
             "knn",
@@ -49,8 +77,10 @@ class ImageContainer:
         for id, sp_obj in self.objects.items():
             # if neighborhoods are already present, we remove them from the objects
             if Layers.NEIGHBORHOODS in sp_obj:
+                # checking which of these three layers are present, since not all might be (e. g. NH_PROPERTIES could be missing if no colors were set)
+                present_layers = [layer for layer in [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX] if layer in sp_obj]
                 self.objects[id] = sp_obj.pp.drop_layers(
-                    [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX], suppress_warnings=True
+                    present_layers, suppress_warnings=True
                 )
 
             # computing the neighborhood for each object
