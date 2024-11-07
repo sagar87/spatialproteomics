@@ -78,10 +78,12 @@ class ImageContainer:
             # if neighborhoods are already present, we remove them from the objects
             if Layers.NEIGHBORHOODS in sp_obj:
                 # checking which of these three layers are present, since not all might be (e. g. NH_PROPERTIES could be missing if no colors were set)
-                present_layers = [layer for layer in [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX] if layer in sp_obj]
-                self.objects[id] = sp_obj.pp.drop_layers(
-                    present_layers, suppress_warnings=True
-                )
+                present_layers = [
+                    layer
+                    for layer in [Layers.NH_PROPERTIES, Layers.NEIGHBORHOODS, Layers.ADJACENCY_MATRIX]
+                    if layer in sp_obj
+                ]
+                self.objects[id] = sp_obj.pp.drop_layers(present_layers, suppress_warnings=True)
 
             # computing the neighborhood for each object
             if neighborhood_method == "radius":
