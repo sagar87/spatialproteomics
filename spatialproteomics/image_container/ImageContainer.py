@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 from ..constants import COLORS, Layers
 
@@ -22,6 +23,8 @@ class ImageContainer:
         ), "Dictionary values must be xarray Datasets"
 
         self.objects = sprot_dict
+        self.kmeans_df = None
+        self.neighborhood_df = None
 
     def __repr__(self) -> str:
         return f"ImageContainer with {len(self.objects)} objects"
@@ -31,6 +34,7 @@ class ImageContainer:
     ):
         """
         Compute neighborhoods for spatial proteomics objects using the specified method and perform clustering.
+
         Parameters
         ----------
         neighborhood_method : str, optional
@@ -105,6 +109,10 @@ class ImageContainer:
         clusterer.fit(neighborhood_df)
         kmeans_df = pd.DataFrame({"neighborhood": [f"Neighborhood {x}" for x in clusterer.labels_]})
 
+        # storing the neighborhood and k-means dataframes in the ImageContainer
+        self.neighborhood_df = neighborhood_df
+        self.kmeans_df = kmeans_df
+
         # === ADDING CLUSTERS TO OBJECTS ===
         colors = np.random.choice(COLORS, size=k, replace=False)
         for id, sp_obj in self.objects.items():
@@ -117,7 +125,7 @@ class ImageContainer:
             # storing the neighborhoods in the spatialproteomics objects
             # we can also set custom neighborhood colors here using .nh.set_neighborhood_colors()
             self.objects[id] = sp_obj.nh.add_neighborhoods_from_dataframe(tmp_df).nh.set_neighborhood_colors(
-                [f"Neighborhood {x}" for x in range(k)], colors
+                [f"Neighborhood {x}" for x in range(k)], colors, suppress_warnings=True
             )
 
         # got to make sure the kmeans_df is empty, otherwise there was a critical error
@@ -125,4 +133,39 @@ class ImageContainer:
             kmeans_df.empty
         ), "There was an error in the clustering process. If you encounter this issue, please report it to the developers."
 
+        # returning the objects in the form of a dictionary
         return self.objects
+
+    def get_neighborhood_composition(self, standardize: bool = True) -> pd.DataFrame:
+        """
+        Get the composition of neighborhoods across all objects in the ImageContainer.
+
+        Parameters
+        ----------
+        standardize : bool, optional
+            Whether to standardize the composition of neighborhoods. Default is True.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the composition of neighborhoods across all objects in the ImageContainer.
+        """
+        assert (
+            self.neighborhood_df is not None
+        ), "Neighborhoods have not been computed yet. Please call compute_neighborhoods() first."
+
+        # computing the composition of neighborhoods (grouping by the neighborhood labels and summing them up)
+        neighborhood_composition = self.neighborhood_df
+        neighborhood_composition["neighborhood"] = self.kmeans_df["neighborhood"].values
+
+        neighborhood_composition = neighborhood_composition.groupby("neighborhood").mean()
+
+        if standardize:
+            scaler = StandardScaler()
+            neighborhood_composition = pd.DataFrame(
+                scaler.fit_transform(neighborhood_composition),
+                index=neighborhood_composition.index,
+                columns=neighborhood_composition.columns,
+            )
+
+        return neighborhood_composition

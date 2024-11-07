@@ -329,7 +329,7 @@ class PreprocessingAccessor:
         Parameters
         ----------
         array : np.ndarray
-            The array representing the layer to be added.
+            The array representing the layer to be added. Can either be 2D or 3D (in this case, the first dimension should be the number of channels).
         key_added : str, optional
             The name of the added layer in the xarray dataset. Default is '_mask'.
         Returns
@@ -350,19 +350,39 @@ class PreprocessingAccessor:
         """
         # checking that the layer does not exist yet
         assert key_added not in self._obj, f"Layer {key_added} already exists."
-        assert array.ndim == 2, "The array to add mask must 2 dimensional."
-        y_dim, x_dim = array.shape
-        assert (x_dim == self._obj.sizes[Dims.X]) & (
-            y_dim == self._obj.sizes[Dims.Y]
-        ), f"The shape of array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
+        assert array.ndim in [2, 3], "The array to add mask must 2 or 3-dimensional."
 
-        # crete a data array with the segmentation mask
-        da = xr.DataArray(
-            array,
-            coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
-            dims=[Dims.Y, Dims.X],
-            name=key_added,
-        )
+        if array.ndim == 2:
+            # in the case of a 2D array
+            y_dim, x_dim = array.shape
+            assert (x_dim == self._obj.sizes[Dims.X]) & (
+                y_dim == self._obj.sizes[Dims.Y]
+            ), f"The shape of array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
+
+            # create a data array with the new layer
+            da = xr.DataArray(
+                array,
+                coords=[self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+                dims=[Dims.Y, Dims.X],
+                name=key_added,
+            )
+        else:
+            # in the case of a 3D array
+            channels, y_dim, x_dim = array.shape
+            assert channels == len(
+                self._obj.coords[Dims.CHANNELS]
+            ), f"The number of channels in the array does not match the number of channels in the image. Image has {len(self._obj.coords[Dims.CHANNELS])} channels, array has {channels} channels."
+            assert (x_dim == self._obj.sizes[Dims.X]) & (
+                y_dim == self._obj.sizes[Dims.Y]
+            ), f"The shape of array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
+
+            # create a data array with the new layer
+            da = xr.DataArray(
+                array,
+                coords=[self._obj.coords[Dims.CHANNELS], self._obj.coords[Dims.Y], self._obj.coords[Dims.X]],
+                dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+                name=key_added,
+            )
 
         obj = self._obj.copy()
         return xr.merge([obj, da]).pp.add_observations()
