@@ -1037,6 +1037,7 @@ class PlotAccessor:
         alpha: float = 0.9,
         zorder: int = 10,
         render_edges: bool = False,
+        render_self_edges: bool = False,
         ax=None,
         legend_kwargs: dict = {"framealpha": 1},
         scatter_kwargs: dict = {},
@@ -1056,6 +1057,8 @@ class PlotAccessor:
             The z-order of the scatter markers. Default is 10.
         render_edges : bool, optional
             Whether to render the edges between cells within the same neighborhood. Default is False.
+        render_self_edges : bool, optional
+            Whether to render the edges between cells and themselves. Default is False.
         ax : matplotlib.axes.Axes, optional
             The axes on which to plot the scatter. If not provided, the current axes will be used.
         legend_kwargs : dict, optional
@@ -1093,6 +1096,12 @@ class PlotAccessor:
                 import networkx as nx
 
                 adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
+
+                # removing self-edges
+                if not render_self_edges:
+                    # this works in-place
+                    np.fill_diagonal(adjacency_matrix, 0)
+
                 G = nx.from_numpy_array(adjacency_matrix)
                 spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
                 assert Features.X in spatial_df.columns, f"Feature {Features.X} not found in the observation layer."
@@ -1109,6 +1118,7 @@ class PlotAccessor:
 
                 # Assign node colors based on the label
                 node_colors = [color_dict[spatial_df.loc[i, Features.LABELS]] for i in range(len(spatial_df))]
+
                 # Use networkx to draw the graph
                 nx.draw(
                     G,

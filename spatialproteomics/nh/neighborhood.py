@@ -418,7 +418,9 @@ class NeighborhoodAccessor:
         }  # Create a mapping to consecutive numbers starting from 1
         return {relabel_map[k]: v for k, v in dictionary.items()}  # Apply the relabeling
 
-    def set_neighborhood_colors(self, neighborhoods: Union[str, List[str]], colors: Union[str, List[str]]):
+    def set_neighborhood_colors(
+        self, neighborhoods: Union[str, List[str]], colors: Union[str, List[str]], suppress_warnings: bool = False
+    ):
         """
         Set the color of a specific neighborhood.
 
@@ -431,6 +433,8 @@ class NeighborhoodAccessor:
             The ID or name of the neighborhood whose color will be updated.
         color : any
             The new color to be assigned to the specified neighborhood.
+        suppress_warnings : bool, optional
+            Whether to suppress warnings. Default is False.
 
         Returns
         -------
@@ -462,7 +466,8 @@ class NeighborhoodAccessor:
         for neighborhood, color in zip(neighborhoods, colors):
             # if the neighborhoods does not exist in the object, a warning is thrown and we continue
             if neighborhood not in self._obj.nh:
-                logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
+                if not suppress_warnings:
+                    logger.warning(f"Neighborhood {neighborhood} not found in the data object. Skipping.")
                 continue
 
             # getting the id for the label (if the input was not numeric already)
