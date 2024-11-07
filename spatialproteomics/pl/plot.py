@@ -252,6 +252,7 @@ class PlotAccessor:
         background: str = "black",
         normalize: bool = True,
         merge: bool = True,
+        layer_key: str = Layers.IMAGE,
     ) -> xr.Dataset:
         """
         Colorizes a stack of images.
@@ -266,6 +267,8 @@ class PlotAccessor:
             Normalize the image prior to colorizing it. Default is True.
         merge : True, optional
             Merge the channel dimension. Default is True.
+        layer_key : str, optional
+            The key of the layer containing the image. Default is '_image'.
 
         Returns
         -------
@@ -280,7 +283,7 @@ class PlotAccessor:
         if isinstance(colors, str):
             colors = [colors]
 
-        image_layer = self._obj[Layers.IMAGE]
+        image_layer = self._obj[layer_key]
         colored = _colorize(
             image_layer.values,
             colors=colors,
@@ -959,7 +962,7 @@ class PlotAccessor:
         Parameters
         ----------
         legend_image : bool, optional
-            Show the legendf for the channels. Default is False.
+            Show the legend for the channels. Default is False.
         legend_segmentation : bool, optional
             Show the legend for the segmentation. Default is False.
         legend_label : bool, optional

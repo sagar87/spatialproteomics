@@ -4,7 +4,7 @@ import pytest
 from spatialproteomics.constants import Dims, Layers
 
 
-def test_add_layer(dataset):
+def test_add_layer_2d(dataset):
     # x and y shape of the dataset
     x, y = dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
     # creating a dummy mask
@@ -14,17 +14,27 @@ def test_add_layer(dataset):
     assert Layers.MASK in ds
 
 
+def test_add_layer_3d(dataset):
+    # x and y shape of the dataset
+    channels, x, y = dataset.sizes[Dims.CHANNELS], dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
+
+    # creating a dummy mask
+    labels = np.ones((channels, x, y))
+    ds = dataset.pp.add_layer(labels, key_added=Layers.MASK)
+    assert Layers.MASK in ds
+
+
 def test_add_layer_wrong_dims(dataset):
     # x and y shape of the dataset
     x, y = dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
 
     # creating a dummy mask
-    labels = np.ones((x, y, 3))
+    labels = np.ones((x, y, 3, 3))
     labels[500:1000, 700:1200] = 0
 
     with pytest.raises(
         AssertionError,
-        match="The array to add mask must 2 dimensional.",
+        match="The array to add mask must 2 or 3-dimensional.",
     ):
         dataset.pp.add_layer(labels, key_added=Layers.MASK)
 
