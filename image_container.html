@@ -122,14 +122,12 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.image_container.ImageContainer.ImageContainer.compute_neighborhoods">
 <span class="sig-name descname"><span class="pre">compute_neighborhoods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhood_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'radius'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.image_container.ImageContainer.ImageContainer.compute_neighborhoods" title="Permalink to this definition"></a></dt>
-<dd><p>Compute neighborhoods for spatial proteomics objects using the specified method and perform clustering.
-:param neighborhood_method: The method to use for computing neighborhoods. Must be one of ‘radius’, ‘knn’, or ‘delaunay’.</p>
-<blockquote>
-<div><p>Default is ‘radius’.</p>
-</div></blockquote>
+<dd><p>Compute neighborhoods for spatial proteomics objects using the specified method and perform clustering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>neighborhood_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The method to use for computing neighborhoods. Must be one of ‘radius’, ‘knn’, or ‘delaunay’.
+Default is ‘radius’.</p></li>
 <li><p><strong>radius</strong> (<em>int</em><em>, </em><em>optional</em>) – The radius to use for the ‘radius’ neighborhood method. Default is 100.</p></li>
 <li><p><strong>knn</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nearest neighbors to use for the ‘knn’ neighborhood method. Default is 10.</p></li>
 <li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of clusters to form using K-Means clustering. Default is 5.</p></li>
@@ -147,6 +145,23 @@
 <dd class="field-even"><p><strong>ValueError</strong> – If neighborhoods are already present in the objects and <cite>overwrite</cite> is set to False.
     If <cite>neighborhood_method</cite> is not one of ‘radius’, ‘knn’, or ‘delaunay’.
     If there is an error in the clustering process.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.image_container.ImageContainer.ImageContainer.get_neighborhood_composition">
+<span class="sig-name descname"><span class="pre">get_neighborhood_composition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#spatialproteomics.image_container.ImageContainer.ImageContainer.get_neighborhood_composition" title="Permalink to this definition"></a></dt>
+<dd><p>Get the composition of neighborhoods across all objects in the ImageContainer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>standardize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to standardize the composition of neighborhoods. Default is True.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A DataFrame containing the composition of neighborhoods across all objects in the ImageContainer.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>

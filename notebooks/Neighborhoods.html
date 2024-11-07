@@ -390,6 +390,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+import seaborn as sns
 </pre></div>
 </div>
 </div>
@@ -415,7 +416,7 @@ sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&
 </div>
 </div>
 <p>Next, we put this dictionary into an <code class="docutils literal notranslate"><span class="pre">ImageContainer</span></code> and run the method <code class="docutils literal notranslate"><span class="pre">compute_neighborhoods()</span></code>. This will compute the neighborhoods for each object, and also run k-means clustering over all samples. If you want to do this yourself, please refer to the section at the end of this notebook.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -424,16 +425,6 @@ sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&
 sp_dict = image_container.compute_neighborhoods()
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Neighborhood Neighborhood 2 not found in the data object. Skipping.
-Neighborhood Neighborhood 2 not found in the data object. Skipping.
-Neighborhood Neighborhood 0 not found in the data object. Skipping.
-</pre></div></div>
 </div>
 <p>Let’s plot the cell type labels and the resulting neighborhoods.</p>
 <div class="nbinput docutils container">
@@ -477,9 +468,40 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
 <img alt="../_images/notebooks_Neighborhoods_8_1.png" src="../_images/notebooks_Neighborhoods_8_1.png" />
 </div>
 </div>
+<p>By using the function <code class="docutils literal notranslate"><span class="pre">get_neighborhood_composition()</span></code> from the image container, we can easily plot a heatmap showing the neighborhood composition. By default, this composition dataframe is standardized per cell type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># obtaining a data frame containing the neighborhood compositions
+nh_composition = image_container.get_neighborhood_composition()
+
+# plotting the neighborhood composition as a seaborn clustermap
+cluster_map = sns.clustermap(
+    nh_composition,
+    cmap=&#39;coolwarm&#39;,
+    cbar_pos=(1.02, 0.2, 0.03, 0.77),  # Position the colorbar to the right of the heatmap
+    dendrogram_ratio=(0.00001, 0),  # Remove row dendrogram
+    figsize=(9, 7),  # Adjust the size
+    annot=False  # No annotation
+)
+
+# customizations of the plot
+cluster_map.ax_heatmap.set_ylabel(&#39;&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_10_0.png" src="../_images/notebooks_Neighborhoods_10_0.png" />
+</div>
+</div>
 <p>We can also rename the neighborhoods for convenience.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 0&#39;, &#39;T high&#39;)
@@ -496,39 +518,14 @@ sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighb
 the resulting graph.</p>
 <p>Let’s look at how these three methods perform on the example data from above. To illustrate the differences better, we also cluster with a higher k, resulting in more neighborhoods. Note that you could do all of this with the <code class="docutils literal notranslate"><span class="pre">ImageContainer</span></code> as well.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># putting the strategy from above into a single method
 def compute_and_plot_clusters(sp_dict, k=5, method=&#39;radius&#39;):
-    # ===== CREATION OF THE JOINT NEIGHBORHOOD DF =====
-    df = []
-    for id, sp_obj in sp_dict.items():
-        if method == &#39;radius&#39;:
-            df.append(sp_obj.nh.compute_neighborhoods_radius().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
-        elif method == &#39;knn&#39;:
-            df.append(sp_obj.nh.compute_neighborhoods_knn().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
-        elif method == &#39;delaunay&#39;:
-            df.append(sp_obj.nh.compute_neighborhoods_delaunay().pp.get_layer_as_df(&#39;_neighborhoods&#39;))
-    # replacing nans with 0s (this means that the ct was never called in that specific sample)
-    df = pd.concat(df).fillna(0)
-
-    # ===== K-MEANS CLUSTERING =====
-    clusterer = KMeans(n_clusters=k, random_state=0)
-    clusterer.fit(df)
-    kmeans_df = pd.DataFrame({f&#39;neighborhood&#39;: clusterer.labels_})
-
-    # ===== ADDING NEIGHBORHOODS INTO SP OBJECTS =====
-    for sample_id, sp_obj in sp_dict.items():
-        # obtaining the number of cells contained in the object we are currently looking at
-        num_cells = sp_obj.sizes[&#39;cells&#39;]
-        # getting the labels for the number of cells
-        tmp_df = kmeans_df[:num_cells]
-        # removing those cells from the kmeans_df
-        kmeans_df = kmeans_df[num_cells:]
-        # storing the neighborhoods in the spatialproteomics objects
-        # we can also set custom neighborhood colors here using .nh.set_neighborhood_colors()
-        sp_dict[sample_id] = sp_obj.nh.add_neighborhoods_from_dataframe(tmp_df).nh.set_neighborhood_colors(np.arange(k), [&#39;deepskyblue&#39;, &#39;orange&#39;, &#39;red&#39;, &#39;purple&#39;, &#39;blue&#39;])
+    # computing the neighborhoods
+    image_container = sp.ImageContainer(sp_dict)
+    sp_dict = image_container.compute_neighborhoods(neighborhood_method=method)
 
     # ===== PLOTTING =====
     fig, ax = plt.subplots(2, 3, figsize=(15, 10))
@@ -553,53 +550,11 @@ def compute_and_plot_clusters(sp_dict, k=5, method=&#39;radius&#39;):
 </div>
 <p>Note that the colors for the neighborhoods were chosen arbitrarily here.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;radius&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Neighborhood 2 not found in the data object. Skipping.
-Neighborhood 2 not found in the data object. Skipping.
-Neighborhood 0 not found in the data object. Skipping.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_14_1.png" src="../_images/notebooks_Neighborhoods_14_1.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;knn&#39;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_15_0.png" src="../_images/notebooks_Neighborhoods_15_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;radius&#39;)
 </pre></div>
 </div>
 </div>
@@ -608,6 +563,73 @@ compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_Neighborhoods_16_0.png" src="../_images/notebooks_Neighborhoods_16_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;knn&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:24: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_17_1.png" src="../_images/notebooks_Neighborhoods_17_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/spatialproteomics/pp/preprocessing.py:24: AccessorRegistrationWarning: registration of accessor &lt;class &#39;spatialproteomics.pp.preprocessing.PreprocessingAccessor&#39;&gt; under name &#39;pp&#39; for type &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt; is overriding a preexisting attribute with the same name.
+  class PreprocessingAccessor:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_18_1.png" src="../_images/notebooks_Neighborhoods_18_1.png" />
+</div>
+</div>
+<p>As a small sidenote, let’s quickly see how we can plot the network.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(7, 7))
+_ = tmp_dict[&#39;1&#39;].pp[500:1000, 500:1000].pl.scatter_labels(size=15, render_edges=True)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Neighborhoods_20_0.png" src="../_images/notebooks_Neighborhoods_20_0.png" />
 </div>
 </div>
 </section>
@@ -654,7 +676,7 @@ plt.tight_layout()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_19_0.png" src="../_images/notebooks_Neighborhoods_19_0.png" />
+<img alt="../_images/notebooks_Neighborhoods_23_0.png" src="../_images/notebooks_Neighborhoods_23_0.png" />
 </div>
 </div>
 <p>Note that we can also compute these on subsets of the sample. For example, we might want to select only the B and T cells within the B-rich neighborhood, and then compute the measures on this data alone.</p>
@@ -701,7 +723,7 @@ plt.tight_layout()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_22_0.png" src="../_images/notebooks_Neighborhoods_22_0.png" />
+<img alt="../_images/notebooks_Neighborhoods_26_0.png" src="../_images/notebooks_Neighborhoods_26_0.png" />
 </div>
 </div>
 </section>
