@@ -607,6 +607,7 @@ class PreprocessingAccessor:
         self,
         func: Union[str, Callable] = "intensity_mean",
         key_added: str = Layers.INTENSITY,
+        layer_key: str = Layers.IMAGE,
         return_xarray=False,
     ) -> xr.Dataset:
         """
@@ -618,6 +619,8 @@ class PreprocessingAccessor:
             The function used for quantification. Can either be a string to specify a function from skimage.measure.regionprops_table or a custom function. Default is 'intensity_mean'.
         key_added : str, optional
             The key under which the quantification data will be stored in the image container. Default is '_intensity'.
+        layer_key : str, optional
+            The key of the layer to be quantified. Default is '_image'.
         return_xarray : bool, optional
             If True, the function returns an xarray.DataArray with the quantification data instead of adding it to the image container.
 
@@ -633,6 +636,8 @@ class PreprocessingAccessor:
             key_added not in self._obj
         ), f"Found {key_added} in image container. Please add a different key or remove the previous quantification."
 
+        assert layer_key in self._obj, f"Layer {layer_key} not found in image container."
+
         if Dims.CELLS not in self._obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
             self._obj = self._obj.pp.add_observations()
@@ -642,7 +647,7 @@ class PreprocessingAccessor:
 
         segmentation = self._obj[Layers.SEGMENTATION].values
 
-        image = np.rollaxis(self._obj[Layers.IMAGE].values, 0, 3)
+        image = np.rollaxis(self._obj[layer_key].values, 0, 3)
 
         # Check if the input is a string (referring to a default skimage property)
         if isinstance(func, str):
