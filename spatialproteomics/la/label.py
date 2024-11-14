@@ -823,6 +823,10 @@ class LabelAccessor:
         assert (
             Layers.LA_PROPERTIES not in self._obj
         ), f"Already found label properties in the object. Please remove them with pp.drop_layers('{Layers.LA_PROPERTIES}') first."
+        # check if neighborhoods are present in the object
+        assert (
+            Layers.NEIGHBORHOODS not in self._obj
+        ), f"Already found neighborhoods in the object. Since these are dependent on the labels, please remove them with pp.drop_layers('{Layers.NEIGHBORHOODS}') before adding new labels."
 
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values

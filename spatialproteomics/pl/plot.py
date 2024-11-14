@@ -178,7 +178,7 @@ class PlotAccessor:
         return elements
 
     def _create_obs_legend(
-        self, ax, fraction=0.046, pad=0.04, shrink=1.0, aspect=20, location="right", cbar_label=True, **kwargs
+        self, ax, fraction=0.046, pad=0.04, shrink=1.0, aspect=20, location="right", cbar_label=True, vmin=None, vmax=None, **kwargs
     ):
         """
         Create and adjust the observation colorbar.
@@ -190,6 +190,9 @@ class PlotAccessor:
         - shrink: Fraction by which to shrink the colorbar.
         - aspect: Aspect ratio of the colorbar (length vs width).
         - location: Location of the colorbar ('right', 'left', 'top', 'bottom').
+        - cbar_label: Whether to show the feature name as the colorbar label.
+        - vmin: The minimum value for the colorbar.
+        - vmax: The maximum value for the colorbar.
 
         Returns:
         - cbar: The created colorbar.
@@ -201,8 +204,12 @@ class PlotAccessor:
         obs_colors = self._obj[Layers.PLOT].attrs[Attrs.OBS_COLORS]
         feature = obs_colors["feature"]
         cmap = obs_colors["cmap"]
-        min_val = obs_colors["min"]
-        max_val = obs_colors["max"]
+        if vmin is not None and vmax is not None:
+            min_val = vmin
+            max_val = vmax
+        else:
+            min_val = obs_colors["min"]
+            max_val = obs_colors["max"]
 
         # Create the colorbar with dynamic positioning and size
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
