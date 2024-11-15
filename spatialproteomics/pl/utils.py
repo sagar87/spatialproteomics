@@ -211,9 +211,11 @@ def _render_obs(
     alpha: float = 0.2,
     alpha_boundary: float = 1.0,
     mode: str = "inner",
+    vmin: float = None,
+    vmax: float = None,
 ) -> np.ndarray:
     # normalize the segmentation to be in the range [0, 1]
-    segmentation = (segmentation - segmentation.min()) / (segmentation.max() - segmentation.min())
+    segmentation = (segmentation - vmin) / (vmax - vmin)
 
     colored_mask = cmap(segmentation)
 
