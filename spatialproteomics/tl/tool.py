@@ -21,7 +21,7 @@ class ToolAccessor:
         self,
         channel: Optional[str] = None,
         key_added: Optional[str] = "_cellpose_segmentation",
-        diameter: int = 0,
+        diameter: float = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
         cellprob_threshold: float = 0.0,
@@ -30,6 +30,7 @@ class ToolAccessor:
         gpu: bool = True,
         model_type: str = "cyto3",
         postprocess_func: Callable = lambda x: x,
+        return_diameters: bool = False,
     ):
         """
         Segment cells using Cellpose. Adds a layer to the spatialproteomics object
@@ -42,7 +43,7 @@ class ToolAccessor:
             Channel to use for segmentation. If None, all channels are used.
         key_added : str, optional
             Key to assign to the segmentation results.
-        diameter : int, optional
+        diameter : float, optional
             Expected cell diameter in pixels.
         channel_settings : List[int], optional
             Channels for Cellpose to use for segmentation. If [0, 0], independent segmentation is performed on all channels. If it is anything else (e. g. [1, 2]), joint segmentation is attempted.
@@ -60,6 +61,8 @@ class ToolAccessor:
             Type of Cellpose model to use.
         postprocess_func : Callable, optional
             Function to apply to the segmentation masks after prediction.
+        return_diameters : bool, optional
+            Whether to return the cell diameters.
 
         Returns
         -------
@@ -90,7 +93,7 @@ class ToolAccessor:
                     "Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately."
                 )
             for ch in channels:
-                masks_pred, _, _, _ = model.eval(
+                masks_pred, _, _, diams = model.eval(
                     self._obj.pp[ch]._image.values.squeeze(),
                     diameter=diameter,
                     channels=channel_settings,
@@ -104,7 +107,7 @@ class ToolAccessor:
                 all_masks.append(masks_pred)
         else:
             # if the channels are anything else, joint segmentation is attempted
-            masks_pred, _, _, _ = model.eval(
+            masks_pred, _, _, diams = model.eval(
                 self._obj._image.values.squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
@@ -118,6 +121,9 @@ class ToolAccessor:
             all_masks.append(masks_pred)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
+
+        if return_diameters:
+            return xr.merge([self._obj, da]), diams
 
         return xr.merge([self._obj, da])
 
