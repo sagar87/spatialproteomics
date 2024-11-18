@@ -26,6 +26,7 @@ class ToolAccessor:
         num_iterations: int = 2000,
         cellprob_threshold: float = 0.0,
         flow_threshold: float = 0.4,
+        batch_size: int = 8,
         gpu: bool = True,
         model_type: str = "cyto3",
         postprocess_func: Callable = lambda x: x,
@@ -47,6 +48,12 @@ class ToolAccessor:
             Channels for Cellpose to use for segmentation. If [0, 0], independent segmentation is performed on all channels. If it is anything else (e. g. [1, 2]), joint segmentation is attempted.
         num_iterations : int, optional
             Maximum number of iterations for segmentation.
+        cellprob_threshold : float, optional
+            Threshold for cell probability.
+        flow_threshold : float, optional
+            Threshold for flow.
+        batch_size : int, optional
+            Batch size for segmentation.
         gpu : bool, optional
             Whether to use GPU for segmentation.
         model_type : str, optional
@@ -90,6 +97,7 @@ class ToolAccessor:
                     niter=num_iterations,
                     cellprob_threshold=cellprob_threshold,
                     flow_threshold=flow_threshold,
+                    batch_size=batch_size,
                 )
 
                 masks_pred = postprocess_func(masks_pred)
@@ -103,6 +111,7 @@ class ToolAccessor:
                 niter=num_iterations,
                 cellprob_threshold=cellprob_threshold,
                 flow_threshold=flow_threshold,
+                batch_size=batch_size,
             )
 
             masks_pred = postprocess_func(masks_pred)

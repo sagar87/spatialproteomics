@@ -178,7 +178,17 @@ class PlotAccessor:
         return elements
 
     def _create_obs_legend(
-        self, ax, fraction=0.046, pad=0.04, shrink=1.0, aspect=20, location="right", cbar_label=True, **kwargs
+        self,
+        ax,
+        fraction=0.046,
+        pad=0.04,
+        shrink=1.0,
+        aspect=20,
+        location="right",
+        cbar_label=True,
+        vmin=None,
+        vmax=None,
+        **kwargs,
     ):
         """
         Create and adjust the observation colorbar.
@@ -190,6 +200,9 @@ class PlotAccessor:
         - shrink: Fraction by which to shrink the colorbar.
         - aspect: Aspect ratio of the colorbar (length vs width).
         - location: Location of the colorbar ('right', 'left', 'top', 'bottom').
+        - cbar_label: Whether to show the feature name as the colorbar label.
+        - vmin: The minimum value for the colorbar.
+        - vmax: The maximum value for the colorbar.
 
         Returns:
         - cbar: The created colorbar.
@@ -201,8 +214,12 @@ class PlotAccessor:
         obs_colors = self._obj[Layers.PLOT].attrs[Attrs.OBS_COLORS]
         feature = obs_colors["feature"]
         cmap = obs_colors["cmap"]
-        min_val = obs_colors["min"]
-        max_val = obs_colors["max"]
+        if vmin is not None and vmax is not None:
+            min_val = vmin
+            max_val = vmax
+        else:
+            min_val = obs_colors["min"]
+            max_val = obs_colors["max"]
 
         # Create the colorbar with dynamic positioning and size
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
@@ -862,7 +879,40 @@ class PlotAccessor:
         alpha: float = 1.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
+        vmin: Optional[float] = None,
+        vmax: Optional[float] = None,
     ) -> xr.Dataset:
+        """
+        Render the observation layer with the specified feature and colormap.
+
+        Parameters
+        ----------
+        feature : str, optional
+            The feature to be rendered from the observation layer. Default is None.
+        cmap : str, optional
+            The colormap to be used for rendering. Default is "viridis".
+        alpha : float, optional
+            The alpha value for the rendered image. Default is 1.0.
+        alpha_boundary : float, optional
+            The alpha value for the boundaries in the rendered image. Default is 1.0.
+        mode : str, optional
+            The mode for rendering. Default is "inner".
+        vmin : float, optional
+            The minimum value for colormap normalization. Default is None.
+        vmax : float, optional
+            The maximum value for colormap normalization. Default is None.
+
+        Returns
+        -------
+        xr.Dataset
+            The dataset with the rendered observation layer.
+
+        Raises
+        ------
+        AssertionError
+            If the observation layer or segmentation layer is not found in the object.
+            If the specified feature is not found in the observation layer.
+        """
         assert (
             Layers.OBS in self._obj
         ), "No observation layer found in the object. Please add an observation layer first."
@@ -873,6 +923,7 @@ class PlotAccessor:
         segmentation = self._obj[Layers.SEGMENTATION].values
 
         assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
+
         # creating a continuous colormap
         cmap = plt.cm.get_cmap(cmap)
         feature_values = obs.sel(features=feature).values
@@ -884,6 +935,10 @@ class PlotAccessor:
         # creating a boolean mask for the background
         # the reason why this needs to be computed before the mapping is that there could be obs values equal to 0
         background_array = segmentation > 0
+
+        # Ensure vmin and vmax are determined
+        vmin = vmin if vmin is not None else feature_values.min()
+        vmax = vmax if vmax is not None else feature_values.max()
 
         # dict that maps each cell ID to its feature value
         feature_mapping = {k.item(): v for k, v in zip(cell_indices, feature_values)}
@@ -903,6 +958,8 @@ class PlotAccessor:
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
+                vmin=vmin,
+                vmax=vmax,
             )
 
             self._obj = self._obj.drop_vars(Layers.PLOT)
@@ -915,6 +972,8 @@ class PlotAccessor:
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
+                vmin=vmin,
+                vmax=vmax,
             )
 
         # adding information for rendering the colorbar
@@ -922,8 +981,8 @@ class PlotAccessor:
         attrs[Attrs.OBS_COLORS] = {
             "feature": feature,
             "cmap": cmap,
-            "min": feature_values.min(),
-            "max": feature_values.max(),
+            "min": vmin,
+            "max": vmax,
         }
 
         da = xr.DataArray(
