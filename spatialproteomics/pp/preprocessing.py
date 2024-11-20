@@ -1349,7 +1349,11 @@ class PreprocessingAccessor:
         return xr.merge([obj, da])
 
     def get_layer_as_df(
-        self, layer: str = Layers.OBS, celltypes_to_str: bool = True, idx_to_str: bool = False
+        self,
+        layer: str = Layers.OBS,
+        celltypes_to_str: bool = True,
+        neighborhoods_to_str: bool = True,
+        idx_to_str: bool = False,
     ) -> pd.DataFrame:
         """
         Returns the specified layer as a pandas DataFrame.
@@ -1357,11 +1361,13 @@ class PreprocessingAccessor:
         Parameters:
             layer (str): The name of the layer to retrieve. Defaults to Layers.OBS.
             celltypes_to_str (bool): Whether to convert celltype labels to strings. Defaults to True.
+            neighborhoods_to_str (bool): Whether to convert neighborhood labels to strings. Defaults to True.
             idx_to_str (bool): Whether to convert the index to strings. Defaults to False.
 
         Returns:
             pandas.DataFrame: The layer data as a DataFrame.
         """
+        assert layer in self._obj, f"Layer {layer} not found in the object."
         data_array = self._obj[layer]
 
         dims = data_array.dims
@@ -1379,6 +1385,12 @@ class PreprocessingAccessor:
             if layer == Layers.NEIGHBORHOODS:
                 label_dict = self._obj.la._label_to_dict(Props.NAME)
                 df.columns = [label_dict[x] for x in df.columns.values]
+
+        if neighborhoods_to_str:
+            # converting neighborhoods to strings in the obs df
+            if layer == Layers.OBS and Features.NEIGHBORHOODS in df.columns:
+                label_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
+                df[Features.NEIGHBORHOODS] = df[Features.NEIGHBORHOODS].apply(lambda x: label_dict[x])
 
         if idx_to_str:
             df.index = df.index.astype(str)
