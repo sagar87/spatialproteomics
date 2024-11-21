@@ -1426,5 +1426,6 @@ class PlotAccessor:
         if channel is None:
             channel = self._obj.coords[Dims.CHANNELS].values.tolist()[0]
         img = self._obj.pp[channel].pp.downsample(downsample)[key].values.squeeze()
-        slices = _autocrop(img, downsample=downsample, padding=padding)
+        bounds = self._obj.pl._get_bounds()
+        slices = _autocrop(img, bounds=bounds, downsample=downsample, padding=padding)
         return self._obj.pp[slices[0], slices[1]]
