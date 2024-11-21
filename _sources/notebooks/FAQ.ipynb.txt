@@ -1,0 +1,68 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "dbdf1a03-663c-495d-b11e-0e08c4839de5",
+   "metadata": {},
+   "source": [
+    "# FAQ\n",
+    "\n",
+    "Here are some common questions and answers. If you can't find what you're looking for here, please file an issue on our [GitHub page](https://github.com/sagar87/spatialproteomics)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2f8155a8-5e86-4c83-97a2-4425dcf0f621",
+   "metadata": {},
+   "source": [
+    "## Notes on Memory Usage\n",
+    "\n",
+    "Running out of memory is a common problem when dealing with large images. Here are a couple of things you could consider to make your workflow more memory efficient.\n",
+    "\n",
+    "- **Subsetting:** if you already know that you will require only a subset of your data, e. g. looking at certain channels, it is advised to perform subsetting as early as possible. This can be done with `ds.pp[channels]`.\n",
+    "- **Deleting objects which are not required anymore:** spatialproteomics deliberately does not perform in-place operations, but rather copies the existing object to return a new one. This can be heavy on memory, if you do not remove intermediate variables once you do not need them anymore. You could consider removing them with `del` like this:\n",
+    "```\n",
+    "ds_new = ds.pp.your_workflow()\n",
+    "del ds\n",
+    "```\n",
+    "- **Downsampling:** when looking at large images, you can downsample the image before plotting using `ds.pp.downsample(rate=8)`. When zooming into a specific area, you can omit the downsampling again.\n",
+    "- **Garbage collection:** this is especially relevant if you perform operations in a for loop. If you try to store the dataset in the same variable, python's garbage collection might have some troubles freeing up memory due to cyclical references (for more information, please refer to [this post](https://dev.to/karishmashukla/how-python-uses-garbage-collection-for-efficient-memory-management-270h)). In this case, calling the garbage collector manually can help alleviate some of those issues:\n",
+    "```\n",
+    "import gc\n",
+    "for ds in [...]:\n",
+    "    ds = ds.pp.your_workflow()\n",
+    "    gc.collect()  # manually calling the garbage collector after each iteration\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d46c2043-de87-4b96-9db8-410b243aeef4",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "tmp_env_2",
+   "language": "python",
+   "name": "tmp_env_2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
