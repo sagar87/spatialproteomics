@@ -1990,6 +1990,20 @@ files = [
 ]
 
 [[package]]
+name = "pydata-sphinx-theme"
+version = "0.4.3"
+description = "Bootstrap-based Sphinx theme from the PyData community"
+optional = true
+python-versions = ">=3.5"
+files = [
+    {file = "pydata-sphinx-theme-0.4.3.tar.gz", hash = "sha256:8cf8fbc74c6c47d6ed497a91f3bedf94d57383b52eebb4fa05ae7fc4f50767a2"},
+    {file = "pydata_sphinx_theme-0.4.3-py3-none-any.whl", hash = "sha256:aa0ae055de5de36a637387941d0e18d8dad35d97d56f0faf25f5219658d49df2"},
+]
+
+[package.dependencies]
+sphinx = "*"
+
+[[package]]
 name = "pyflakes"
 version = "2.5.0"
 description = "passive checker of Python programs"
@@ -2773,6 +2787,31 @@ lint = ["flake8 (>=6.0)", "importlib-metadata (>=6.0)", "mypy (==1.10.1)", "pyte
 test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=8.0)", "setuptools (>=70.0)", "typing_extensions (>=4.9)"]
 
 [[package]]
+name = "sphinx-book-theme"
+version = "0.0.39"
+description = "Jupyter Book: Create an online book with Jupyter Notebooks"
+optional = true
+python-versions = ">=3.6"
+files = [
+    {file = "sphinx-book-theme-0.0.39.tar.gz", hash = "sha256:07f9651233cb8ad4f5bde2b88205597622c6ef57c4d9f8799e93999e7ac4f070"},
+    {file = "sphinx_book_theme-0.0.39-py3-none-any.whl", hash = "sha256:ca6c8e53b6b39a5ef61b2826fcddb82d81e6a29ca2399a6c18237ae4888e3c8c"},
+]
+
+[package.dependencies]
+beautifulsoup4 = "*"
+click = "*"
+docutils = ">=0.15"
+pydata-sphinx-theme = ">=0.4.1,<0.5.0"
+pyyaml = "*"
+sphinx = "*"
+
+[package.extras]
+code-style = ["pre-commit (>=2.7.0,<2.8.0)"]
+live-dev = ["sphinx-autobuild", "web-compile (>=0.2.1,<0.3.0)"]
+sphinx = ["ablog (>=0.10.11,<0.11.0)", "folium", "ipywidgets", "matplotlib", "myst-nb (>=0.10.1,<0.11.0)", "nbclient", "numpy", "pandas", "plotly", "sphinx-copybutton", "sphinx-thebe", "sphinx-togglebutton (>=0.2.1)", "sphinxcontrib-bibtex"]
+testing = ["coverage", "myst-nb (>=0.10.1,<0.11.0)", "pytest (>=6.0.1,<6.1.0)", "pytest-cov", "pytest-regressions (>=2.0.1,<2.1.0)", "sphinx-thebe"]
+
+[[package]]
 name = "sphinx-multiversion"
 version = "0.2.4"
 description = "Add support for multiple versions to sphinx"
@@ -3172,9 +3211,9 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 type = ["pytest-mypy"]
 
 [extras]
-docs = ["IPython", "Sphinx", "nbsphinx", "sphinx-multiversion", "sphinxcontrib-napoleon"]
+docs = ["IPython", "Sphinx", "nbsphinx", "sphinx-book-theme", "sphinx-multiversion", "sphinxcontrib-napoleon"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "3b99db873d750a0948444b8c333d3f40cf4b12df1d608656c7769473d1785f21"
+content-hash = "76a512585b2d91cdc92a64af862ac3f8107107ec213ef722463c040cc2fb2857"

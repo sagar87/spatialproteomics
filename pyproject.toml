@@ -21,6 +21,7 @@ numpy = "<2.0.0"
 Sphinx = { version = "^7.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
 nbsphinx = { version = "0.8.9", optional = true }
+"sphinx-book-theme" = { version = "^0.0.39", optional = true }
 sphinx-multiversion = { version = "^0.2.4", optional = true }
 IPython = { version = "^8.0.0", optional = true }
 
@@ -34,7 +35,7 @@ bandit = "^1.7.4"
 safety = "^2.1.1"
 
 [tool.poetry.extras]
-docs = ["IPython", "Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion"]
+docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion", "IPython"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
