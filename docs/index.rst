@@ -33,6 +33,7 @@ Welcome to the documentation of spatialproteomics!
    notebooks/Neighborhoods
    notebooks/Interoperability
    notebooks/Interactivity
+   notebooks/FAQ
 
 
 Indices and tables
