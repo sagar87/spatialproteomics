@@ -350,15 +350,16 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name">
-<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Permalink to this definition"></a></dt>
-<dd><p>Set the name of a specific neighborhood.</p>
-<p>This method sets the ‘name’ of a specific neighborhood identified by the ‘neighborhood’.
-The ‘neighborhood’ can be either a neighborhood ID or the name of the neighborhood.</p>
+<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhoods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Permalink to this definition"></a></dt>
+<dd><p>Set the name of one or more neighborhoods.</p>
+<p>This method updates the ‘name’ of specific neighborhoods identified by the ‘neighborhood’.
+The ‘neighborhoods’ can be a single neighborhood ID or name, or a list of IDs/names. Similarly,
+the ‘names’ parameter can be a single string or a list of strings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>neighborhood</strong> (<em>int</em><em> or </em><em>str</em>) – The ID or name of the neighborhood whose name will be updated.</p></li>
-<li><p><strong>name</strong> (<em>str</em>) – The new name to be assigned to the specified neighborhood.</p></li>
+<li><p><strong>neighborhoods</strong> (<em>int</em><em>, </em><em>str</em><em>, or </em><em>list</em>) – The ID(s) or name(s) of the neighborhoods whose names will be updated.</p></li>
+<li><p><strong>names</strong> (<em>str</em><em> or </em><em>list</em>) – The new name(s) to be assigned to the specified neighborhoods.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -370,8 +371,9 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 </dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>The function converts the ‘neighborhood’ from its name to the corresponding ID for internal processing.</p></li>
-<li><p>It updates the name of the neighborhood in the data object to the new ‘name’.</p></li>
+<li><p>When both parameters are lists, their lengths must match.</p></li>
+<li><p>The function converts each ‘neighborhood’ from its name to the corresponding ID for internal processing.</p></li>
+<li><p>It updates the name(s) of the neighborhood(s) in the data object to the new ‘name(s)’.</p></li>
 </ul>
 </dd></dl>
 
