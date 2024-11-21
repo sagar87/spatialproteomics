@@ -22,7 +22,6 @@ scikit-learn = "^1.2.2"
 zarr = "^2.14.2"
 numpy = "<2.0.0"
 sphinx-multiversion = "^0.2.4"
-sphinx-book-theme = "^1.1.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -34,7 +33,7 @@ bandit = "^1.7.4"
 safety = "^2.1.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon", "nbsphinx"]
+docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "Ipython"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
