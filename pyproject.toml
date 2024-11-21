@@ -18,6 +18,11 @@ tqdm = ">=4.64.0"
 scikit-learn = "^1.2.2"
 zarr = "^2.14.2"
 numpy = "<2.0.0"
+Sphinx = { version = "^7.0.0", optional = true }
+sphinxcontrib-napoleon = { version = "0.7", optional = true }
+nbsphinx = { version = "0.8.9", optional = true }
+sphinx-multiversion = { version = "^0.2.4", optional = true }
+IPython = { version = "^8.0.0", optional = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
