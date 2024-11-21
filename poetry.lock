@@ -2966,4 +2966,4 @@ docs = ["Sphinx", "nbsphinx", "sphinxcontrib-napoleon"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "65a00fc95d66855df3056952e4a2be3bed39285ccf4b53775b04ad2dad17695a"
+content-hash = "a9e147edfaaf1118c0d5a9c165e639e66b9f8ca0ae8e746bd684f59da48e3b13"

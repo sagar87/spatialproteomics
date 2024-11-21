@@ -33,7 +33,7 @@ bandit = "^1.7.4"
 safety = "^2.1.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "Ipython"]
+docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "IPython"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
