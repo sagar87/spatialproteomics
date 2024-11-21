@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to the documentation of spatialproteomics!
-=======================================
+==================================================
 
 
 .. toctree::
@@ -28,7 +28,6 @@ Welcome to the documentation of spatialproteomics!
    notebooks/ArtifactRemoval
    notebooks/Plotting
    notebooks/ImageProcessing
-   notebooks/Extracting
    notebooks/CellTypePrediction
    notebooks/Neighborhoods
    notebooks/Interoperability
