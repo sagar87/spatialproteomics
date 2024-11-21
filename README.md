@@ -25,4 +25,4 @@ pip install spatialproteomics
 
 Check the documentation for further information https://sagar87.github.io/spatialproteomics/.
 
-For a more interactive learning experience, you can also check out [this workshop](https://github.com/MeyerBender/spatialproteomics_workshop) on spatialproteomics (based on v0.5.7, some syntax details might have changed since).
+For a more interactive learning experience, you can also check out [this workshop](https://github.com/MeyerBender/spatialproteomics_workshop) on spatialproteomics (based on `v0.5.7`, some syntax details might have changed since).

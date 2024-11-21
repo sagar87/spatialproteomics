@@ -156,10 +156,33 @@ class PlotAccessor:
 
         # Use the provided order, or default to sorting the color_dict keys
         if order is None:
-            ordered_keys = sorted(color_dict)
+            order = sorted(color_dict)
         else:
-            # Only include keys present in both order and neighborhoods
-            ordered_keys = [i for i in order if i in color_dict and i in self._obj.coords[Dims.NEIGHBORHOODS]]
+            invalid_keys = set(order) - set(color_dict.keys())
+            missing_keys = set(color_dict.keys()) - set(order)
+
+            # if the order list contains strings, we want to convert them to the corresponding indices
+            # in that case, we also want to convert the invalid and missing keys to the corresponding strings
+            if all(isinstance(i, str) for i in order):
+                # getting neighborhoods for which we have invalid or missing keys
+                neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME)
+                invalid_keys = set(order) - set(neighborhood_dict.values())
+                missing_keys = set(neighborhood_dict.values()) - set(order)
+
+                # converting the strings into indices
+                neighborhood_dict = self._obj.nh._neighborhood_to_dict(Props.NAME, reverse=True)
+                order = [neighborhood_dict.get(i) for i in order]
+
+            # ensuring that the elements in order are the same as the ones present in the object
+            assert all(
+                i in color_dict for i in order
+            ), f"Some keys in the order list are not present in the object. Invalid keys: {invalid_keys}"
+            # ensuring that there are no duplicates in order
+            assert len(order) == len(set(order)), "The order list contains duplicates. Please remove them."
+            # checking that all keys in the object are present in the order list
+            assert all(
+                i in order for i in color_dict
+            ), f"Some keys in the object are not present in the order list. Missing keys: {missing_keys}"
 
         # Creating legend elements based on the ordered keys
         elements = [
@@ -172,7 +195,7 @@ class PlotAccessor:
                 markerfacecolor=color_dict[i],
                 markersize=15,
             )
-            for i in ordered_keys
+            for i in order
         ]
 
         return elements
@@ -1076,6 +1099,11 @@ class PlotAccessor:
             legend += self._obj.pl._create_channel_legend()
 
         if legend_neighborhoods:
+            # check that the neighborhood order is either a list of strings or a list of integers
+            if neighborhood_order is not None:
+                assert all(
+                    [isinstance(i, (str, int)) for i in neighborhood_order]
+                ), "The neighborhood order must be a list of strings or integers."
             legend += self._obj.pl._create_neighborhood_legend(order=neighborhood_order)
 
         if legend_segmentation:
@@ -1398,5 +1426,6 @@ class PlotAccessor:
         if channel is None:
             channel = self._obj.coords[Dims.CHANNELS].values.tolist()[0]
         img = self._obj.pp[channel].pp.downsample(downsample)[key].values.squeeze()
-        slices = _autocrop(img, downsample=downsample, padding=padding)
+        bounds = self._obj.pl._get_bounds()
+        slices = _autocrop(img, bounds=bounds, downsample=downsample, padding=padding)
         return self._obj.pp[slices[0], slices[1]]

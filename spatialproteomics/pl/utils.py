@@ -310,19 +310,19 @@ def _set_up_subplots(num_plots: int = 1, ncols: int = 4, width: int = 4, height:
     return fig, axes
 
 
-def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
+def _autocrop(img: np.ndarray, bounds=List, padding: int = 50, downsample: int = 10):
     """
     Crop an image based on the regions of interest so that the background around the tissue/TMA gets cropped away.
 
     Parameters:
         img (np.ndarray): The input image as a NumPy array.
+        bounds (list): The bounds for the cropping. Should be given as [xmin, xmax, ymin, ymax].
         padding (int, optional): The padding to be added around the cropped image in pixels. Defaults to 50.
         downsample (int, optional): The downsample factor to be used for the cropping. Defaults to 10.
 
     Returns:
         tuple: A tuple containing two slices representing the cropped image.
     """
-
     bw = closing(img > np.quantile(img, 0.8), square(20))
     label_image = label(bw)
     props = regionprops(label_image)
@@ -336,9 +336,21 @@ def _autocrop(img: np.ndarray, padding: int = 50, downsample: int = 10):
         region = props[max_idx]
         minr, minc, maxr, maxc = region.bbox
 
-    return slice(downsample * minc - padding, downsample * maxc + padding), slice(
+    slices = slice(downsample * minc - padding, downsample * maxc + padding), slice(
         downsample * minr - padding, downsample * maxr + padding
     )
+
+    # getting the minimum x and y bounds
+    min_bounds = [bounds[0], bounds[2]]
+    # adding the offset from the bounds
+    slices = [slice(s.start + min_bounds[i], s.stop + min_bounds[i]) for i, s in enumerate(slices)]
+    # if the slices are outside of the bounds, we need to adjust them
+    slices = [
+        slice(max(bounds[0], slices[0].start), min(bounds[1], slices[0].stop)),
+        slice(max(bounds[2], slices[1].start), min(bounds[3], slices[1].stop)),
+    ]
+
+    return slices
 
 
 def _compute_erosion(segmentation: np.ndarray, erosion_strength: int = 5) -> np.ndarray:
