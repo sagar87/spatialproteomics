@@ -1,50 +1,146 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interoperability &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Interoperability &#8212; spatialproteomics</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Interoperability';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interactivity" href="Interactivity.html" />
     <link rel="prev" title="Neighborhood Analysis" href="Neighborhoods.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
@@ -52,8 +148,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
@@ -62,43 +158,166 @@
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Neighborhoods.html">Neighborhood Analysis</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Interoperability</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Importing-Data">Importing Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Exporting-Data">Exporting Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Exporting-to-Zarr">Exporting to Zarr</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Exporting-to-AnnData">Exporting to AnnData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interoperability</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">spatial_proteomics</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Interoperability</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Interoperability.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Interoperability.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Interoperability</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Importing-Data">Importing Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-Data">Exporting Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-Zarr">Exporting to Zarr</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   
 <style>
 /* CSS for nbsphinx extension */
@@ -354,46 +573,24 @@ div.rendered_html tbody tr:nth-child(odd) {
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <section id="Interoperability">
-<h1>Interoperability<a class="headerlink" href="#Interoperability" title="Permalink to this heading"></a></h1>
+<h1>Interoperability<a class="headerlink" href="#Interoperability" title="Link to this heading">#</a></h1>
 <p>This notebook shows some way that you can import and export from <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
-%autoreload 2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-import spatialproteomics as sp
-import pandas as pd
-import xarray as xr
-import os
-import shutil
-import anndata
-xr.set_options(display_style=&#39;text&#39;)
+<span class="kn">import</span> <span class="nn">spatialproteomics</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">anndata</span>
+<span class="n">xr</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">display_style</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -407,14 +604,14 @@ xr.set_options(display_style=&#39;text&#39;)
 </pre></div></div>
 </div>
 <section id="Importing-Data">
-<h2>Importing Data<a class="headerlink" href="#Importing-Data" title="Permalink to this heading"></a></h2>
+<h2>Importing Data<a class="headerlink" href="#Importing-Data" title="Link to this heading">#</a></h2>
 <p>In the example workflow, you have already seen how to read data from a tiff file. If you already have your data in <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format, you can also read it in from there.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = sp.read_from_spatialdata(&#39;../../data/spatialdata_example.zarr&#39;, image_key=&#39;raccoon&#39;)
-ds
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">read_from_spatialdata</span><span class="p">(</span><span class="s1">&#39;../../data/spatialdata_example.zarr&#39;</span><span class="p">,</span> <span class="n">image_key</span><span class="o">=</span><span class="s1">&#39;raccoon&#39;</span><span class="p">)</span>
+<span class="n">ds</span>
 </pre></div>
 </div>
 </div>
@@ -454,16 +651,16 @@ Data variables:
 </div>
 </section>
 <section id="Exporting-Data">
-<h2>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Permalink to this heading"></a></h2>
+<h2>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Link to this heading">#</a></h2>
 <p>Once you are happy with your analysis, you will likely want to export the results. The easiest way to do this is by using the <code class="docutils literal notranslate"><span class="pre">zarr</span></code> format, but <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">anndata</span></code>, and <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> are also supported.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading a test file which we will export later
-# notice how easy it is to load the file from a zarr using xarray
-ds = xr.load_dataset(&#39;../../data/tmp.zarr&#39;, engine=&#39;zarr&#39;)
-ds
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading a test file which we will export later</span>
+<span class="c1"># notice how easy it is to load the file from a zarr using xarray</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/tmp.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
+<span class="n">ds</span>
 </pre></div>
 </div>
 </div>
@@ -507,20 +704,20 @@ Data variables:
 </div>
 </section>
 <section id="Exporting-to-Zarr">
-<h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Permalink to this heading"></a></h2>
+<h2>Exporting to Zarr<a class="headerlink" href="#Exporting-to-Zarr" title="Link to this heading">#</a></h2>
 <p>This is the easiest file format to work with. It allows you to store and load the xarray objects with a single line of code. It is highly recommended to call <code class="docutils literal notranslate"><span class="pre">drop_encoding()</span></code> before exporting to zarr. There are several open issues linked to encoding problems, and this is the easiest way to circumvent them. For more references, refer to these issues: <a class="reference external" href="https://github.com/pydata/xarray/issues/3476">issue 1</a>, <a class="reference external" href="https://github.com/pydata/xarray/issues/9037">issue 2</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>zarr_path = &quot;tmp.zarr&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zarr_path</span> <span class="o">=</span> <span class="s2">&quot;tmp.zarr&quot;</span>
 
-# removing the zarr if it exists
-if os.path.exists(zarr_path):
-    shutil.rmtree(zarr_path)
+<span class="c1"># removing the zarr if it exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">zarr_path</span><span class="p">):</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">zarr_path</span><span class="p">)</span>
 
-# exporting as zarr
-ds.drop_encoding().to_zarr(&quot;tmp.zarr&quot;)
+<span class="c1"># exporting as zarr</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">drop_encoding</span><span class="p">()</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">&quot;tmp.zarr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -535,14 +732,14 @@ ds.drop_encoding().to_zarr(&quot;tmp.zarr&quot;)
 </div>
 </section>
 <section id="Exporting-Tables-to-CSV">
-<h2>Exporting Tables to CSV<a class="headerlink" href="#Exporting-Tables-to-CSV" title="Permalink to this heading"></a></h2>
+<h2>Exporting Tables to CSV<a class="headerlink" href="#Exporting-Tables-to-CSV" title="Link to this heading">#</a></h2>
 <p>Let’s say you want to export some tables as csvs. This can be done with pandas.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = ds.pp.get_layer_as_df(&quot;_arcsinh_mean&quot;)
-df.head()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_arcsinh_mean&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -722,24 +919,24 @@ df.head()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># exporting as csv
-df.to_csv(&quot;tmp.csv&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># exporting as csv</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;tmp.csv&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Exporting-to-AnnData">
-<h2>Exporting to AnnData<a class="headerlink" href="#Exporting-to-AnnData" title="Permalink to this heading"></a></h2>
+<h2>Exporting to AnnData<a class="headerlink" href="#Exporting-to-AnnData" title="Link to this heading">#</a></h2>
 <p>AnnData is a format used by scanpy, which can be useful to create interesting plots and downstream analyses. For this reason, you can export the xarray object as an AnnData object. Note that this object will only store the tabular data, but not the image or the segmentation layer.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># putting the expression matrix into an anndata object
-adata = ds.tl.convert_to_anndata(expression_matrix_key=&quot;_arcsinh_mean&quot;,
-                                 additional_layers={&quot;arcsinh_sum&quot;: &quot;_arcsinh_sum&quot;, &quot;raw_mean&quot;: &quot;_raw_mean&quot;, &quot;raw_sum&quot;: &quot;_raw_sum&quot;},
-                                 additional_uns={&quot;label_colors&quot;: &quot;_labels&quot;})
-adata
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># putting the expression matrix into an anndata object</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_anndata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">&quot;_arcsinh_mean&quot;</span><span class="p">,</span>
+                                 <span class="n">additional_layers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arcsinh_sum&quot;</span><span class="p">:</span> <span class="s2">&quot;_arcsinh_sum&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;_raw_mean&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_sum&quot;</span><span class="p">:</span> <span class="s2">&quot;_raw_sum&quot;</span><span class="p">},</span>
+                                 <span class="n">additional_uns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label_colors&quot;</span><span class="p">:</span> <span class="s2">&quot;_labels&quot;</span><span class="p">})</span>
+<span class="n">adata</span>
 </pre></div>
 </div>
 </div>
@@ -759,21 +956,21 @@ AnnData object with n_obs × n_vars = 12560 × 56
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># writing to disk as hdf5
-adata.write(&#39;tmp.h5ad&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># writing to disk as hdf5</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;tmp.h5ad&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Exporting-to-SpatialData">
-<h2>Exporting to SpatialData<a class="headerlink" href="#Exporting-to-SpatialData" title="Permalink to this heading"></a></h2>
+<h2>Exporting to SpatialData<a class="headerlink" href="#Exporting-to-SpatialData" title="Link to this heading">#</a></h2>
 <p>SpatialData is a data format which is commonly used for spatial omics analysis and combines the power of zarr with anndata. You can export to this data format as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spatialdata_object = ds.tl.convert_to_spatialdata(expression_matrix_key=&quot;_arcsinh_mean&quot;)
-spatialdata_object
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spatialdata_object</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_spatialdata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">&quot;_arcsinh_mean&quot;</span><span class="p">)</span>
+<span class="n">spatialdata_object</span>
 </pre></div>
 </div>
 </div>
@@ -810,8 +1007,8 @@ with coordinate systems:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># storing as zarr file
-spatialdata_object.write(&quot;tmp.zarr&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># storing as zarr file</span>
+<span class="n">spatialdata_object</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tmp.zarr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -843,34 +1040,109 @@ resolution: 0
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Neighborhoods.html" class="btn btn-neutral float-left" title="Neighborhood Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Interactivity.html" class="btn btn-neutral float-right" title="Interactivity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Neighborhoods.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Neighborhood Analysis</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="Interactivity.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interactivity</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Importing-Data">Importing Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-Data">Exporting Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-Zarr">Exporting to Zarr</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-Tables-to-CSV">Exporting Tables to CSV</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-AnnData">Exporting to AnnData</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Exporting-to-SpatialData">Exporting to SpatialData</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

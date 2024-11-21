@@ -1,50 +1,146 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Plotting &#8212; spatialproteomics</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Plotting';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Image Processing" href="ImageProcessing.html" />
     <link rel="prev" title="Interactive Removal of Artifacts" href="ArtifactRemoval.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
@@ -52,22 +148,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArtifactRemoval.html">Interactive Removal of Artifacts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-Obs">Rendering Obs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-Labels">Rendering Labels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Expert-Plotting">Expert Plotting</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Neighborhoods.html">Neighborhood Analysis</a></li>
@@ -76,30 +163,162 @@
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">spatial_proteomics</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Plotting</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Plotting.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Plotting.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Plotting</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Obs">Rendering Obs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Labels">Rendering Labels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Expert-Plotting">Expert Plotting</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   
 <style>
 /* CSS for nbsphinx extension */
@@ -355,43 +574,21 @@ div.rendered_html tbody tr:nth-child(odd) {
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <section id="Plotting">
-<h1>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this heading"></a></h1>
+<h1>Plotting<a class="headerlink" href="#Plotting" title="Link to this heading">#</a></h1>
 <p>Spatialproteomics has a variety of plotting functions, enabling the plotting of intensities, segmentation masks, and predicted cell type labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
-%autoreload 2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-import spatialproteomics
-import matplotlib.pyplot as plt
-import xarray as xr
-xr.set_options(display_style=&#39;text&#39;)
+<span class="kn">import</span> <span class="nn">spatialproteomics</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="n">xr</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">display_style</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -408,8 +605,8 @@ xr.set_options(display_style=&#39;text&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># loading in a data set and performing some formatting for convenience
-ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK_2.zarr&#39;, engine=&#39;zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading in a data set and performing some formatting for convenience</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/BNHL_166_4_I2_LK_2.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -417,8 +614,8 @@ ds = xr.load_dataset(&#39;../../data/BNHL_166_4_I2_LK_2.zarr&#39;, engine=&#39;z
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># having a look at the dataset
-ds
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># having a look at the dataset</span>
+<span class="n">ds</span>
 </pre></div>
 </div>
 </div>
@@ -445,14 +642,14 @@ Data variables:
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <section id="Plotting-Channel-Intensities">
-<h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Permalink to this heading"></a></h2>
+<h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Link to this heading">#</a></h2>
 <p>The slicing capabilities of <code class="docutils literal notranslate"><span class="pre">xarray</span></code> make data visualization very easy. The general pattern is here to first select the channels, image regions and labels of interest, and then to use the plotting functions that are available via the <code class="docutils literal notranslate"><span class="pre">.pl</span></code> accessor. Images can be shown by using the <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> method.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># selecting the DAPI channel and showing the result with pl.show()
-_ = ds.pp[&#39;DAPI&#39;].pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># selecting the DAPI channel and showing the result with pl.show()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -468,7 +665,7 @@ _ = ds.pp[&#39;DAPI&#39;].pl.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[&#39;DAPI&#39;].pl.colorize([&#39;orange&#39;]).pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;orange&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -484,7 +681,7 @@ _ = ds.pp[&#39;DAPI&#39;].pl.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -500,14 +697,14 @@ _ = ds.pp[&#39;DAPI&#39;].pl.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating two subplots
-fig, ax = plt.subplots(1, 2, figsize=(16, 8))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating two subplots</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 
-# populating the first subplot
-# note how we set ax=ax[0] to tell the plotting function to use the first subplot
-_ = ds.pp[&#39;DAPI&#39;, 1000:1500, 500:1000].pl.colorize(colors=[&#39;red&#39;]).pl.show(ax=ax[0])
-# populating the second subplot
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show(ax=ax[1])
+<span class="c1"># populating the first subplot</span>
+<span class="c1"># note how we set ax=ax[0] to tell the plotting function to use the first subplot</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># populating the second subplot</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <br/></pre></div>
 </div>
 </div>
@@ -523,11 +720,11 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pp[&#39;DAPI&#39;].pl.autocrop().pl.colorize(colors=[&#39;red&#39;]).pl.show(legend_image=False)
-plt.xticks([])
-plt.yticks([])
-plt.tight_layout()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">legend_image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -540,14 +737,14 @@ plt.tight_layout()
 </div>
 </section>
 <section id="Rendering-Segmentation-Masks">
-<h2>Rendering Segmentation Masks<a class="headerlink" href="#Rendering-Segmentation-Masks" title="Permalink to this heading"></a></h2>
+<h2>Rendering Segmentation Masks<a class="headerlink" href="#Rendering-Segmentation-Masks" title="Link to this heading">#</a></h2>
 <p>If your spatialproteomics object contains a segmentation mask, you can simple plot it by setting <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code> to true.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -560,14 +757,14 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 </div>
 </section>
 <section id="Rendering-Obs">
-<h2>Rendering Obs<a class="headerlink" href="#Rendering-Obs" title="Permalink to this heading"></a></h2>
+<h2>Rendering Obs<a class="headerlink" href="#Rendering-Obs" title="Link to this heading">#</a></h2>
 <p>Sometimes, you might want to visualize specific features, such as the cell size. With <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>, you can do this while retaining the cell shapes obtained by the segmentation.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pp.add_observations(&#39;area&#39;).pl.autocrop().pl.render_obs(feature=&#39;area&#39;, cmap=&#39;plasma&#39;).pl.imshow(legend_obs=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -590,8 +787,8 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pl.autocrop().pl.render_obs(feature=&#39;centroid-0&#39;, cmap=&#39;plasma&#39;).pl.imshow(legend_obs=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;centroid-0&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -604,14 +801,14 @@ _ = ds.pl.autocrop().pl.render_obs(feature=&#39;centroid-0&#39;, cmap=&#39;plasm
 </div>
 </section>
 <section id="Rendering-Labels">
-<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Permalink to this heading"></a></h2>
+<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Link to this heading">#</a></h2>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> also has an argument called <code class="docutils literal notranslate"><span class="pre">render_labels</span></code>, which can be used to render cell type labels. We can simultaneously deactivate the rendering of the intensities to get an image of only the labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pp[1000:1500, 500:1000].pl.show(render_image=False, render_labels=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -627,8 +824,8 @@ _ = ds.pp[1000:1500, 500:1000].pl.show(render_image=False, render_labels=True)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize=(8, 8))
-_ = ds.pp[1000:1500, 500:1000].pl.show(render_image=False, render_segmentation=True, render_labels=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -644,9 +841,9 @@ _ = ds.pp[1000:1500, 500:1000].pl.show(render_image=False, render_segmentation=T
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(16, 8))
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize([&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show(ax=ax[0])
-_ = ds.pp[1000:1500, 500:1000].la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;].la.set_label_colors([&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;], [&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show(render_image=False, render_segmentation=True, render_labels=True, ax=ax[1])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s1">&#39;T (CD3)&#39;</span><span class="p">,</span> <span class="s1">&#39;B (PAX5)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s1">&#39;T (CD3)&#39;</span><span class="p">,</span> <span class="s1">&#39;B (PAX5)&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -659,14 +856,14 @@ _ = ds.pp[1000:1500, 500:1000].la[&#39;T (CD3)&#39;, &#39;B (PAX5)&#39;].la.set_
 </div>
 </section>
 <section id="Rendering-Neighborhoods">
-<h2>Rendering Neighborhoods<a class="headerlink" href="#Rendering-Neighborhoods" title="Permalink to this heading"></a></h2>
+<h2>Rendering Neighborhoods<a class="headerlink" href="#Rendering-Neighborhoods" title="Link to this heading">#</a></h2>
 <p>Lastly, we can also render neighborhoods. How to obtain such neighborhoods is shown in the <code class="docutils literal notranslate"><span class="pre">Neighborhoods</span></code> notebook.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># obtaining an object which contains neighborhoods
-ds_neighborhood = xr.load_dataset(&#39;../../data/sample_1_with_neighborhoods.zarr&#39;, engine=&#39;zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># obtaining an object which contains neighborhoods</span>
+<span class="n">ds_neighborhood</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/sample_1_with_neighborhoods.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -674,9 +871,9 @@ ds_neighborhood = xr.load_dataset(&#39;../../data/sample_1_with_neighborhoods.za
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the neighborhoods
-fig = plt.figure(figsize=(8, 8))
-_ = ds_neighborhood.pl.show(render_image=False, render_neighborhoods=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the neighborhoods</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_neighborhood</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -689,15 +886,15 @@ _ = ds_neighborhood.pl.show(render_image=False, render_neighborhoods=True)
 </div>
 </section>
 <section id="Annotation-of-Regions-or-Cells">
-<h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Permalink to this heading"></a></h2>
+<h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Link to this heading">#</a></h2>
 <p>We can also annotate regions or cells within the plots.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># highlighting a region with pl.add_box()
-fig = plt.figure(figsize=(8, 8))
-_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.add_box([1230, 1480], [640, 840]).pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># highlighting a region with pl.add_box()</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">add_box</span><span class="p">([</span><span class="mi">1230</span><span class="p">,</span> <span class="mi">1480</span><span class="p">],</span> <span class="p">[</span><span class="mi">640</span><span class="p">,</span> <span class="mi">840</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -712,14 +909,14 @@ _ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colo
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># selecting all B cells and annotating them with pl.annotate()
-fig = plt.figure(figsize=(8, 8))
-_ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
-       .la[&#39;B (PAX5)&#39;]
-       .pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;])
-       .la.set_label_colors([&#39;B (PAX5)&#39;], [&#39;deepskyblue&#39;])
-       .pl.annotate()
-       .pl.show(render_labels=True, label_kwargs={&#39;alpha&#39;: 0.0}))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># selecting all B cells and annotating them with pl.annotate()</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+       <span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s1">&#39;B (PAX5)&#39;</span><span class="p">]</span>
+       <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span>
+       <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s1">&#39;B (PAX5)&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span>
+       <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">annotate</span><span class="p">()</span>
+       <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}))</span>
 </pre></div>
 </div>
 </div>
@@ -732,13 +929,13 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 </div>
 </section>
 <section id="Expert-Plotting">
-<h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Permalink to this heading"></a></h2>
+<h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Link to this heading">#</a></h2>
 <p>To gain more control over your plots, you can use the functions <code class="docutils literal notranslate"><span class="pre">colorize</span></code>, <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, and <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">show</span></code>, which provides a high-level wrapper around these). Those methods allow for more nuanced adjustments of the final plot. Here are a few examples, for more details please consult the documentation of the corresponding methods.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -753,7 +950,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pl.render_segmentation().pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -768,7 +965,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pl.render_labels().pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -783,7 +980,7 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000].pl.colorize(colors=[&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.render_segmentation().pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;PAX5&#39;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -799,8 +996,8 @@ _ = (ds.pp[[&#39;CD3&#39;, &#39;PAX5&#39;], 1000:1500, 500:1000]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of the labels
-_ = ds.pl.scatter_labels(legend=False)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating a scatter plot of the labels</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter_labels</span><span class="p">(</span><span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -815,8 +1012,8 @@ _ = ds.pl.scatter_labels(legend=False)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># quickly adding a quantification
-ds = ds.pp.add_quantification(func=&#39;intensity_mean&#39;).pp.transform_expression_matrix(method=&#39;arcsinh&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># quickly adding a quantification</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="s1">&#39;intensity_mean&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;arcsinh&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -824,13 +1021,13 @@ ds = ds.pp.add_quantification(func=&#39;intensity_mean&#39;).pp.transform_expres
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatter plot of any categorical variable in obs
-# as an example, we are adding a binarization column to the obs
-ds_with_binarization_cd4 = ds.la.threshold_labels({&#39;CD4&#39;: 2.5}, layer_key=&#39;_intensity&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating a scatter plot of any categorical variable in obs</span>
+<span class="c1"># as an example, we are adding a binarization column to the obs</span>
+<span class="n">ds_with_binarization_cd4</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">threshold_labels</span><span class="p">({</span><span class="s1">&#39;CD4&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">},</span> <span class="n">layer_key</span><span class="o">=</span><span class="s1">&#39;_intensity&#39;</span><span class="p">)</span>
 
-fig, ax = plt.subplots(1, 2, figsize=(10, 20))
-_ = ds_with_binarization_cd4.pp[&#39;CD4&#39;].pl.colorize(&#39;blue&#39;).pl.show(ax=ax[0])
-_ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.1, palette={0: &#39;gray&#39;, 1: &#39;blue&#39;}, ax=ax[1])
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_binarization_cd4</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;CD4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_binarization_cd4</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;CD4_binarized&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">},</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -845,10 +1042,10 @@ _ = ds_with_binarization_cd4.pl.scatter(feature=&#39;CD4_binarized&#39;, size=0.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># creating a scatterplot of continuous variables
-# adding area of each cell and plotting it
-ds_tmp = ds.pp.add_observations(&#39;area&#39;)
-_ = ds_tmp.pl.scatter(feature=&#39;area&#39;, scatter_kws={&#39;cmap&#39;: &#39;YlOrRd&#39;})
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating a scatterplot of continuous variables</span>
+<span class="c1"># adding area of each cell and plotting it</span>
+<span class="n">ds_tmp</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cmap&#39;</span><span class="p">:</span> <span class="s1">&#39;YlOrRd&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -872,7 +1069,7 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].pl.colorize([&#39;orange&#39;, &#39;deepskyblue&#39;]).pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="s1">&#39;CD11c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -887,7 +1084,7 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_multisegmentation = ds.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;]].pp[2000:2500, 2000:2500].tl.cellpose()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_multisegmentation</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="s1">&#39;CD11c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -925,8 +1122,8 @@ estimated cell diameter(s) in 10.86 sec
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(16, 16))
-_ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show(render_segmentation=True, segmentation_kwargs={&#39;layer_key&#39;: &#39;_cellpose_segmentation&#39;, &#39;colors&#39;: [&#39;white&#39;, &#39;red&#39;]}))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds_multisegmentation</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">segmentation_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;layer_key&#39;</span><span class="p">:</span> <span class="s1">&#39;_cellpose_segmentation&#39;</span><span class="p">,</span> <span class="s1">&#39;colors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">]}))</span>
 </pre></div>
 </div>
 </div>
@@ -942,8 +1139,8 @@ _ = (ds_multisegmentation.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).p
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># quick check what our object looks like
-ds_tmp
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># quick check what our object looks like</span>
+<span class="n">ds_tmp</span>
 </pre></div>
 </div>
 </div>
@@ -974,9 +1171,9 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the obs table
-df = ds_tmp.pp.get_layer_as_df(&#39;_obs&#39;)
-_ = plt.hist(df[&#39;area&#39;], bins=50)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting a histogram for a feature in the obs table</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s1">&#39;_obs&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -991,9 +1188,9 @@ _ = plt.hist(df[&#39;area&#39;], bins=50)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting a histogram for a feature in the expression matrix
-df = ds_tmp.pp.get_layer_as_df(&#39;_intensity&#39;)
-_ = plt.hist(df[&#39;DAPI&#39;], bins=50)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting a histogram for a feature in the expression matrix</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s1">&#39;_intensity&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1009,8 +1206,8 @@ _ = plt.hist(df[&#39;DAPI&#39;], bins=50)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(15, 15))
-_ = ds_tmp.pp[&#39;DAPI&#39;].pp.grow_cells(iterations=20).pl.autocrop().pl.colorize(&#39;gold&#39;).pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;gold&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1034,11 +1231,11 @@ Mask growing requires recalculation of the observations. All features other than
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(20, 10))
-# you can pass the background either in the pl.colorize() method or in pl.show()
-_ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.colorize(&#39;gold&#39;, background=&#39;#2e2e2e&#39;).pl.show(ax=ax[0])
-_ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True,
-                                            background=&#39;lightgray&#39;, ax=ax[1])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="c1"># you can pass the background either in the pl.colorize() method or in pl.show()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s1">&#39;#2e2e2e&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                            <span class="n">background</span><span class="o">=</span><span class="s1">&#39;lightgray&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1053,34 +1250,110 @@ _ = ds_tmp.pp[&#39;DAPI&#39;].pl.autocrop().pl.show(render_image=False, render_l
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArtifactRemoval.html" class="btn btn-neutral float-left" title="Interactive Removal of Artifacts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ImageProcessing.html" class="btn btn-neutral float-right" title="Image Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ArtifactRemoval.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Interactive Removal of Artifacts</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="ImageProcessing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Image Processing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Obs">Rendering Obs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Labels">Rendering Labels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Expert-Plotting">Expert Plotting</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

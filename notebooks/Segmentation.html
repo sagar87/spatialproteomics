@@ -1,50 +1,146 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Segmentation &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Segmentation &#8212; spatialproteomics</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Segmentation';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interactive Removal of Artifacts" href="ArtifactRemoval.html" />
     <link rel="prev" title="Subselecting Data" href="Slicing.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
@@ -52,17 +148,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Segmentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Whole-Cell-Segmentation-with-Cellpose">Whole-Cell Segmentation with Cellpose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Whole-Cell-Segmentation-with-Mesmer">Whole-Cell Segmentation with Mesmer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArtifactRemoval.html">Interactive Removal of Artifacts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
@@ -73,30 +163,159 @@
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">spatial_proteomics</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Segmentation</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Segmentation.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Segmentation.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Segmentation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Cellpose">Whole-Cell Segmentation with Cellpose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Mesmer">Whole-Cell Segmentation with Mesmer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   
 <style>
 /* CSS for nbsphinx extension */
@@ -352,38 +571,16 @@ div.rendered_html tbody tr:nth-child(odd) {
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <section id="Segmentation">
-<h1>Segmentation<a class="headerlink" href="#Segmentation" title="Permalink to this heading"></a></h1>
+<h1>Segmentation<a class="headerlink" href="#Segmentation" title="Link to this heading">#</a></h1>
 <p>Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for StarDist, mesmer and cellpose.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
-%autoreload 2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 </pre></div>
 </div>
 </div>
@@ -391,10 +588,10 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import spatialproteomics
-import pandas as pd
-import matplotlib.pyplot as plt
-import xarray as xr
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">spatialproteomics</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 </pre></div>
 </div>
 </div>
@@ -402,7 +599,7 @@ import xarray as xr
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;../../data/segmentation_example.zarr&#39;, engine=&#39;zarr&#39;).pp[1000:1300, 1000:1300].pp.drop_layers(keep=&#39;_image&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/segmentation_example.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1300</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1300</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s1">&#39;_image&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -410,7 +607,7 @@ import xarray as xr
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span>
 </pre></div>
 </div>
 </div>
@@ -828,15 +1025,15 @@ Data variables:
       dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=301))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-922ab9cd-296d-4322-85cc-645ed4304761' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-922ab9cd-296d-4322-85cc-645ed4304761' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
 </div>
 <section id="Whole-Cell-Segmentation-with-Cellpose">
-<h2>Whole-Cell Segmentation with Cellpose<a class="headerlink" href="#Whole-Cell-Segmentation-with-Cellpose" title="Permalink to this heading"></a></h2>
+<h2>Whole-Cell Segmentation with Cellpose<a class="headerlink" href="#Whole-Cell-Segmentation-with-Cellpose" title="Link to this heading">#</a></h2>
 <p>Cellpose can either perform segmentation on nuclei only or on whole cells, using a nuclear and a membrane marker. In this dataset, we have DAPI as a nuclear marker and Na/K ATPase as a membrane marker. After selecting only the relevant markers, we need to tell cellpose at what position each marker is. You can refer to the <a class="reference external" href="https://cellpose.readthedocs.io/en/latest/settings.html">cellpose documentation</a> for more details.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># selecting only the relevant channels and running the segmentation
-ds_cellpose = ds.pp[[&#39;Na/K ATPase&#39;, &#39;DAPI&#39;]].tl.cellpose(channel_settings=[1, 2])
-ds_cellpose
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># selecting only the relevant channels and running the segmentation</span>
+<span class="n">ds_cellpose</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;Na/K ATPase&#39;</span><span class="p">,</span> <span class="s1">&#39;DAPI&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">channel_settings</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ds_cellpose</span>
 </pre></div>
 </div>
 </div>
@@ -1271,8 +1468,8 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = ds.pp.add_segmentation(ds_cellpose[&#39;_cellpose_segmentation&#39;])
-ds
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="n">ds_cellpose</span><span class="p">[</span><span class="s1">&#39;_cellpose_segmentation&#39;</span><span class="p">])</span>
+<span class="n">ds</span>
 </pre></div>
 </div>
 </div>
@@ -1746,8 +1943,8 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># for plotting, we subselect the two markers from before, but you could also show the other markers
-_ = ds.pp[[&#39;Na/K ATPase&#39;, &#39;DAPI&#39;]].pl.colorize([&#39;deepskyblue&#39;, &#39;gold&#39;]).pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># for plotting, we subselect the two markers from before, but you could also show the other markers</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;Na/K ATPase&#39;</span><span class="p">,</span> <span class="s1">&#39;DAPI&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;deepskyblue&#39;</span><span class="p">,</span> <span class="s1">&#39;gold&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1762,24 +1959,24 @@ _ = ds.pp[[&#39;Na/K ATPase&#39;, &#39;DAPI&#39;]].pl.colorize([&#39;deepskyblue
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># dropping the segmentation and obs again, so that we can use the dataset for the next example
-ds = ds.pp.drop_layers(keep=&#39;_image&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># dropping the segmentation and obs again, so that we can use the dataset for the next example</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s1">&#39;_image&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Whole-Cell-Segmentation-with-Mesmer">
-<h2>Whole-Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Permalink to this heading"></a></h2>
+<h2>Whole-Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Link to this heading">#</a></h2>
 <p>You can also do the same thing with mesmer. Note however that mesmer expects the channels to be in the order <code class="docutils literal notranslate"><span class="pre">[nuclear,</span> <span class="pre">membrane]</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># here, we add the segmentation directly to ds_mesmer instead of ds
-# note that whenever we want to make a segmentation the &quot;default&quot; segmentation of an object, we need to call &#39;pp.add_segmentation()&#39;
-ds_mesmer = ds.pp[[&#39;DAPI&#39;, &#39;Na/K ATPase&#39;]].tl.mesmer().pp.add_segmentation(&#39;_mesmer_segmentation&#39;)
-# plotting the result
-_ = ds_mesmer.pl.colorize([&#39;gold&#39;, &#39;deepskyblue&#39;]).pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># here, we add the segmentation directly to ds_mesmer instead of ds</span>
+<span class="c1"># note that whenever we want to make a segmentation the &quot;default&quot; segmentation of an object, we need to call &#39;pp.add_segmentation()&#39;</span>
+<span class="n">ds_mesmer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="s1">&#39;Na/K ATPase&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">mesmer</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="s1">&#39;_mesmer_segmentation&#39;</span><span class="p">)</span>
+<span class="c1"># plotting the result</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_mesmer</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1813,14 +2010,14 @@ Converting image dtype to float
 </div>
 </section>
 <section id="Nuclear-Segmentation-with-StarDist">
-<h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Permalink to this heading"></a></h2>
+<h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Link to this heading">#</a></h2>
 <p>Sometimes, you may not have a membrane stain available. In that case, you can perform nuclear segmentation. This is possible with cellpose (simply call <code class="docutils literal notranslate"><span class="pre">tl.cellpose(channel='DAPI')</span></code>) and StarDist. The following shows and example of how StarDist performs on such a task.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># running the segmentation
-ds_stardist = ds.tl.stardist(channel=&#39;DAPI&#39;, key_added=&#39;_stardist_segmentation&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># running the segmentation</span>
+<span class="n">ds_stardist</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">stardist</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;_stardist_segmentation&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1848,8 +2045,8 @@ Using default values: prob_thresh=0.479071, nms_thresh=0.3.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding the segmentation as default segmentation
-ds_stardist = ds_stardist.pp.add_segmentation(&#39;_stardist_segmentation&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding the segmentation as default segmentation</span>
+<span class="n">ds_stardist</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="s1">&#39;_stardist_segmentation&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1857,10 +2054,10 @@ ds_stardist = ds_stardist.pp.add_segmentation(&#39;_stardist_segmentation&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the segmentation
-fix, ax = plt.subplots(1, 2, figsize=(16, 8))
-_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(ax=ax[0])
-_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[1])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the segmentation</span>
+<span class="n">fix</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1876,8 +2073,8 @@ _ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># getting a histogram of the areas
-_ = plt.hist(ds_stardist.pp.add_observations(&#39;area&#39;).pp.get_layer_as_df()[&#39;area&#39;], bins=100)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># getting a histogram of the areas</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[</span><span class="s1">&#39;area&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1900,13 +2097,13 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># removing cells which have an area below 50 pixels
-ds_stardist = ds_stardist.pp.add_observations(&#39;area&#39;).pp.filter_by_obs(&#39;area&#39;, lambda x: x &gt; 50)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># removing cells which have an area below 50 pixels</span>
+<span class="n">ds_stardist</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_obs</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">)</span>
 
-# plotting the segmentation
-fix, ax = plt.subplots(1, 2, figsize=(16, 8))
-_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(ax=ax[0])
-_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[1])
+<span class="c1"># plotting the segmentation</span>
+<span class="n">fix</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1930,7 +2127,7 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_stardist_grown = ds_stardist.pp.grow_cells(2)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_stardist_grown</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1946,13 +2143,13 @@ Mask growing requires recalculation of the observations. All features other than
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the segmentation
-fix, ax = plt.subplots(1, 2, figsize=(16, 8))
-_ = ds_stardist.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[0])
-_ = ds_stardist_grown.pp[&#39;DAPI&#39;].pl.colorize(&#39;orange&#39;).pl.show(render_segmentation=True, ax=ax[1])
-ax[0].set_title(&#39;StarDist segmentation&#39;)
-ax[1].set_title(&#39;Grown masks&#39;)
-plt.tight_layout()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the segmentation</span>
+<span class="n">fix</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_stardist_grown</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;StarDist segmentation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Grown masks&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1965,15 +2162,15 @@ plt.tight_layout()
 </div>
 </section>
 <section id="Segmenting-Multiple-Channels-with-Cellpose">
-<h2>Segmenting Multiple Channels with Cellpose<a class="headerlink" href="#Segmenting-Multiple-Channels-with-Cellpose" title="Permalink to this heading"></a></h2>
+<h2>Segmenting Multiple Channels with Cellpose<a class="headerlink" href="#Segmenting-Multiple-Channels-with-Cellpose" title="Link to this heading">#</a></h2>
 <p>Next to predicting nuclei or whole cells using a universal membrane marker, you can also use cellpose to try to predict other cell types. In the following, we will see how we can use cellpose to segment three different channels independently and then merge the segmentation masks into one mask. There are some hyperparameters in cellpose which can help the prediction.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># segmenting on DAPI, CD11c (dendritic cells) and CD68 (macrophages)
-# note that when merging the masks later, the order matters (channels take precedence by position in the subsetting)
-ds_cellpose = ds.pp[[&#39;CD11c&#39;, &#39;CD68&#39;, &#39;DAPI&#39;]].tl.cellpose(key_added=&#39;_cellpose_segmentation&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># segmenting on DAPI, CD11c (dendritic cells) and CD68 (macrophages)</span>
+<span class="c1"># note that when merging the masks later, the order matters (channels take precedence by position in the subsetting)</span>
+<span class="n">ds_cellpose</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;CD11c&#39;</span><span class="p">,</span> <span class="s1">&#39;CD68&#39;</span><span class="p">,</span> <span class="s1">&#39;DAPI&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;_cellpose_segmentation&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2017,7 +2214,7 @@ estimated cell diameter(s) in 2.69 sec
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_cellpose</span>
 </pre></div>
 </div>
 </div>
@@ -2453,9 +2650,9 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># merging the segmentation masks into a single segmentation
-# the threshold value tells you how much of a mask need to overlap for the less important one to be removed
-ds_cellpose_merged = ds_cellpose.pp.merge_segmentation(&#39;_cellpose_segmentation&#39;, labels=[&#39;Dendritic Cell&#39;, &#39;Macrophage&#39;, &#39;Lymphocyte&#39;], threshold=0.8)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merging the segmentation masks into a single segmentation</span>
+<span class="c1"># the threshold value tells you how much of a mask need to overlap for the less important one to be removed</span>
+<span class="n">ds_cellpose_merged</span> <span class="o">=</span> <span class="n">ds_cellpose</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">merge_segmentation</span><span class="p">(</span><span class="s1">&#39;_cellpose_segmentation&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Dendritic Cell&#39;</span><span class="p">,</span> <span class="s1">&#39;Macrophage&#39;</span><span class="p">,</span> <span class="s1">&#39;Lymphocyte&#39;</span><span class="p">],</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2463,7 +2660,7 @@ ds_cellpose_merged = ds_cellpose.pp.merge_segmentation(&#39;_cellpose_segmentati
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose_merged
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_cellpose_merged</span>
 </pre></div>
 </div>
 </div>
@@ -2906,8 +3103,8 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># adding the merged segmentation as the main segmentation in the object
-ds_cellpose_merged = ds_cellpose_merged.pp.add_segmentation(&#39;_merged_segmentation&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding the merged segmentation as the main segmentation in the object</span>
+<span class="n">ds_cellpose_merged</span> <span class="o">=</span> <span class="n">ds_cellpose_merged</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="s1">&#39;_merged_segmentation&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2923,7 +3120,7 @@ Found _obs in image container. Concatenating.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_cellpose_merged
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_cellpose_merged</span>
 </pre></div>
 </div>
 </div>
@@ -3425,15 +3622,15 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(16, 8))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 
-# adding colors to match the channel colors
-colors = [&#39;orange&#39;, &#39;deepskyblue&#39;, &#39;darkred&#39;]
-ds_cellpose_merged = ds_cellpose_merged.la.set_label_colors([&#39;Lymphocyte&#39;, &#39;Dendritic Cell&#39;, &#39;Macrophage&#39;], colors)
+<span class="c1"># adding colors to match the channel colors</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;deepskyblue&#39;</span><span class="p">,</span> <span class="s1">&#39;darkred&#39;</span><span class="p">]</span>
+<span class="n">ds_cellpose_merged</span> <span class="o">=</span> <span class="n">ds_cellpose_merged</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s1">&#39;Lymphocyte&#39;</span><span class="p">,</span> <span class="s1">&#39;Dendritic Cell&#39;</span><span class="p">,</span> <span class="s1">&#39;Macrophage&#39;</span><span class="p">],</span> <span class="n">colors</span><span class="p">)</span>
 
-# merged masks
-_ = ds_cellpose_merged.pp[[&#39;DAPI&#39;, &#39;CD11c&#39;, &#39;CD68&#39;]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
-_ = ds_cellpose_merged.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[1])
+<span class="c1"># merged masks</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_cellpose_merged</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;DAPI&#39;</span><span class="p">,</span> <span class="s1">&#39;CD11c&#39;</span><span class="p">,</span> <span class="s1">&#39;CD68&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_cellpose_merged</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -3449,34 +3646,107 @@ _ = ds_cellpose_merged.pl.show(render_image=False, render_segmentation=True, ren
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Slicing.html" class="btn btn-neutral float-left" title="Subselecting Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArtifactRemoval.html" class="btn btn-neutral float-right" title="Interactive Removal of Artifacts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Slicing.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Subselecting Data</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="ArtifactRemoval.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interactive Removal of Artifacts</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Cellpose">Whole-Cell Segmentation with Cellpose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Mesmer">Whole-Cell Segmentation with Mesmer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

@@ -1,57 +1,153 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The neighborhood (nh) accessor &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The neighborhood (nh) accessor &#8212; spatialproteomics</title>
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'neighborhood';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The plot (pl) accessor" href="plot.html" />
     <link rel="prev" title="The label (la) accessor" href="label.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="notebooks/ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Segmentation.html">Segmentation</a></li>
@@ -65,64 +161,178 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">spatial_proteomics</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/neighborhood.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </div>
+</nav></div>
+    </div>
   
-<style>
-/* CSS overrides for sphinx_rtd_theme */
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
 
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
 
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
+<div class="sbt-scroll-pixel-helper"></div>
 
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="the-neighborhood-nh-accessor">
-<h1>The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor<a class="headerlink" href="#the-neighborhood-nh-accessor" title="Permalink to this heading"></a></h1>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/neighborhood.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>The neighborhood (nh) accessor</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_neighborhood_obs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_neighborhoods_from_dataframe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_properties()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_graph_features()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_delaunay()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_knn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_radius()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.deselect()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.set_neighborhood_colors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.set_neighborhood_name()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="the-neighborhood-nh-accessor">
+<h1>The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor<a class="headerlink" href="#the-neighborhood-nh-accessor" title="Link to this heading">#</a></h1>
 <p>The neighborhood accessor provides several functions associated with cellular neighborhoods.</p>
-<span class="target" id="module-spatialproteomics.nh.neighborhood"></span><dl class="py class">
+<dl class="py class" id="module-spatialproteomics.nh.neighborhood">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialproteomics.nh.neighborhood.</span></span><span class="sig-name descname"><span class="pre">NeighborhoodAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialproteomics.nh.neighborhood.</span></span><span class="sig-name descname"><span class="pre">NeighborhoodAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor" title="Link to this definition">#</a></dt>
 <dd><p>Adds functions for cellular neighborhoods.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs">
-<span class="sig-name descname"><span class="pre">add_neighborhood_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['degree',</span> <span class="pre">'homophily',</span> <span class="pre">'inter_label_connectivity',</span> <span class="pre">'diversity_index']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_neighborhood_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['degree',</span> <span class="pre">'homophily',</span> <span class="pre">'inter_label_connectivity',</span> <span class="pre">'diversity_index']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs" title="Link to this definition">#</a></dt>
 <dd><p>Adds neighborhood observations to the object by computing network features
 from the adjacency matrix.
 This method requires the <cite>networkx</cite> package to be installed. It checks if
@@ -131,7 +341,7 @@ adjacency matrix, and computes network features.
 :param features: The network features to compute. Possible features are [‘degree’, ‘closeness_centrality’, ‘betweenness_centrality’, ‘homophily’, ‘inter_label_connectivity’, ‘diversity_index’].
 :type features: str or List[str], optional</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ImportError</strong> – If the <cite>networkx</cite> package is not installed.</p></li>
 <li><p><strong>AssertionError</strong> – If the adjacency matrix is not found in the object.</p></li>
@@ -146,10 +356,10 @@ from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe">
-<span class="sig-name descname"><span class="pre">add_neighborhoods_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighborhood_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neighborhood'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_neighborhoods_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighborhood_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neighborhood'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe" title="Link to this definition">#</a></dt>
 <dd><p>Add neighborhoods to the dataset from a DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame containing neighborhood information.</p></li>
 <li><p><strong>neighborhood_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name in the DataFrame that contains neighborhood labels, by default ‘neighborhood’.</p></li>
@@ -157,13 +367,13 @@ from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()
 <li><p><strong>names</strong> (<em>list</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – List of names for the neighborhoods, by default None. If None, default names will be assigned.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Updated dataset with neighborhood information added.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AssertionError</strong> – If neighborhood properties are already present in the object.
     If the number of neighborhoods does not match the number of cells.
     If the specified column does not exist in the DataFrame.
@@ -176,19 +386,19 @@ from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties">
-<span class="sig-name descname"><span class="pre">add_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties" title="Link to this definition">#</a></dt>
 <dd><p>Adds neighborhood properties to the image container.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>list</em><em>]</em>) – An array or list of properties to be added to the image container.</p></li>
 <li><p><strong>prop</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the property. Default is Features.NEIGHBORHOODS.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The updated image container with added properties.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
@@ -196,22 +406,22 @@ from the <cite>nh</cite> module, such as <cite>nh.compute_neighborhoods_radius()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features">
-<span class="sig-name descname"><span class="pre">compute_graph_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['num_nodes',</span> <span class="pre">'num_edges',</span> <span class="pre">'density',</span> <span class="pre">'modularity',</span> <span class="pre">'assortativity']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features" title="Permalink to this definition"></a></dt>
-<dd><p>Compute various graph features from the adjacency matrix of the data.
-:param features: A single feature or a list of features to compute. Valid features are:</p>
-<blockquote>
-<div><p>“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”.
-Default is [“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”].</p>
-</div></blockquote>
+<span class="sig-name descname"><span class="pre">compute_graph_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['num_nodes',</span> <span class="pre">'num_edges',</span> <span class="pre">'density',</span> <span class="pre">'modularity',</span> <span class="pre">'assortativity']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features" title="Link to this definition">#</a></dt>
+<dd><p>Compute various graph features from the adjacency matrix of the data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A dictionary where keys are the names of the computed features and values are the corresponding feature values.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – A single feature or a list of features to compute. Valid features are:
+“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”.
+Default is [“num_nodes”, “num_edges”, “density”, “modularity”, “assortativity”].</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where keys are the names of the computed features and values are the corresponding feature values.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>ImportError</strong> – If the <cite>networkx</cite> package is not installed.</p></li>
 <li><p><strong>AssertionError</strong> – If required layers (OBS, LA_PROPERTIES, ADJACENCY_MATRIX) are not found in the object.
     If no valid features are provided.
@@ -226,22 +436,22 @@ you will also need to install the <cite>python-louvain</cite> package.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay">
-<span class="sig-name descname"><span class="pre">compute_neighborhoods_delaunay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_neighborhoods_delaunay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay" title="Link to this definition">#</a></dt>
 <dd><p>Compute the neighborhoods of each cell based on a Delaunay triangulation.</p>
 <p>This method identifies the neighbors for each cell and computes
 the frequency of each cell type within these k neighbors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is ‘_neighborhoods’.</p></li>
 <li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A merged xarray Dataset containing the original data and the computed neighborhoods.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xarray.Dataset</p>
 </dd>
 </dl>
@@ -249,12 +459,12 @@ the frequency of each cell type within these k neighbors.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn">
-<span class="sig-name descname"><span class="pre">compute_neighborhoods_knn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_neighborhoods_knn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn" title="Link to this definition">#</a></dt>
 <dd><p>Compute the neighborhoods of each cell based on k-nearest neighbors.</p>
 <p>This method identifies the k-nearest neighbors for each cell and computes
 the frequency of each cell type within these k neighbors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nearest neighbors to consider. Default is 10.</p></li>
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
@@ -262,10 +472,10 @@ the frequency of each cell type within these k neighbors.</p>
 <li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A merged xarray Dataset containing the original data and the computed neighborhoods.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xarray.Dataset</p>
 </dd>
 </dl>
@@ -273,13 +483,13 @@ the frequency of each cell type within these k neighbors.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius">
-<span class="sig-name descname"><span class="pre">compute_neighborhoods_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_neighborhoods_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_neighborhoods'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_adjacency_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_adjacency_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius" title="Link to this definition">#</a></dt>
 <dd><p>Compute the neighborhoods of each cell based on a specified radius.</p>
 <p>This method defines a radius around each cell and identifies all cells within this radius.
 It then examines the predicted cell types of these cells, including the center cell itself,
 and computes the frequency of each cell type.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>radius</strong> (<em>int</em><em>, </em><em>optional</em>) – The radius around each cell to define the neighborhood (in pixels). Default is 100.</p></li>
 <li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
@@ -287,10 +497,10 @@ and computes the frequency of each cell type.</p>
 <li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A merged xarray Dataset containing the original data and the computed neighborhoods.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xarray.Dataset</p>
 </dd>
 </dl>
@@ -298,18 +508,18 @@ and computes the frequency of each cell type.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect">
-<span class="sig-name descname"><span class="pre">deselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">deselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect" title="Link to this definition">#</a></dt>
 <dd><p>Deselect specific neighborhood indices from the data object.</p>
 <p>This method deselects specific neighborhood indices from the data object, effectively removing them from the selection.
 The deselection can be performed using slices, lists, tuples, or individual integers.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>indices</strong> (<em>slice</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em>, or </em><em>int</em>) – The neighborhood indices to be deselected. Can be a slice, list, tuple, or an individual integer.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The updated data object with the deselected neighborhood indices.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 </dl>
@@ -323,23 +533,20 @@ The deselection can be performed using slices, lists, tuples, or individual inte
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors">
-<span class="sig-name descname"><span class="pre">set_neighborhood_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhoods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_neighborhood_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhoods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors" title="Link to this definition">#</a></dt>
 <dd><p>Set the color of a specific neighborhood.</p>
 <p>This method sets the ‘color’ of a specific neighborhood identified by the ‘neighborhood’.
 The ‘neighborhood’ can be either a neighborhood ID or the name of the neighborhood.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>label</strong> (<em>int</em><em> or </em><em>str</em>) – The ID or name of the neighborhood whose color will be updated.</p></li>
 <li><p><strong>color</strong> (<em>any</em>) – The new color to be assigned to the specified neighborhood.</p></li>
 <li><p><strong>suppress_warnings</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to suppress warnings. Default is False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -351,23 +558,20 @@ The ‘neighborhood’ can be either a neighborhood ID or the name of the neighb
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name">
-<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhoods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_neighborhood_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighborhoods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name" title="Link to this definition">#</a></dt>
 <dd><p>Set the name of one or more neighborhoods.</p>
 <p>This method updates the ‘name’ of specific neighborhoods identified by the ‘neighborhood’.
 The ‘neighborhoods’ can be a single neighborhood ID or name, or a list of IDs/names. Similarly,
 the ‘names’ parameter can be a single string or a list of strings.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>neighborhoods</strong> (<em>int</em><em>, </em><em>str</em><em>, or </em><em>list</em>) – The ID(s) or name(s) of the neighborhoods whose names will be updated.</p></li>
 <li><p><strong>names</strong> (<em>str</em><em> or </em><em>list</em>) – The new name(s) to be assigned to the specified neighborhoods.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xr.Dataset</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.Dataset</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -383,34 +587,116 @@ the ‘names’ parameter can be a single string or a list of strings.</p>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="label.html" class="btn btn-neutral float-left" title="The label (la) accessor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="plot.html" class="btn btn-neutral float-right" title="The plot (pl) accessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="label.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="plot.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhood_obs"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_neighborhood_obs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_neighborhoods_from_dataframe"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_neighborhoods_from_dataframe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.add_properties"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.add_properties()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_graph_features"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_graph_features()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_delaunay"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_delaunay()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_knn"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_knn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.compute_neighborhoods_radius"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.compute_neighborhoods_radius()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.deselect"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.deselect()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_colors"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.set_neighborhood_colors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.nh.neighborhood.NeighborhoodAccessor.set_neighborhood_name"><code class="docutils literal notranslate"><span class="pre">NeighborhoodAccessor.set_neighborhood_name()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

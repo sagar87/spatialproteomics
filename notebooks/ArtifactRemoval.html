@@ -1,50 +1,146 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interactive Removal of Artifacts &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Interactive Removal of Artifacts &#8212; spatialproteomics</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ArtifactRemoval';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plotting" href="Plotting.html" />
     <link rel="prev" title="Segmentation" href="Segmentation.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
@@ -52,19 +148,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Interactive Removal of Artifacts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Loading-the-image-from-a-zarr-file">Loading the image from a zarr file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Drawing-in-the-healthy-regions-using-TissueTag">Drawing in the healthy regions using TissueTag</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Putting-the-mask-into-the-spatialproteomics-object">Putting the mask into the spatialproteomics object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region">Using the mask to set every pixel intensity to 0 in that region</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Using-the-mask-to-remove-cells-in-that-region">Using the mask to remove cells in that region</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interactive Removal of Artifacts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
@@ -74,30 +163,160 @@
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">spatial_proteomics</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Interactive Removal of Artifacts</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/ArtifactRemoval.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/ArtifactRemoval.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Interactive Removal of Artifacts</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Loading-the-image-from-a-zarr-file">Loading the image from a zarr file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Drawing-in-the-healthy-regions-using-TissueTag">Drawing in the healthy regions using TissueTag</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Putting-the-mask-into-the-spatialproteomics-object">Putting the mask into the spatialproteomics object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region">Using the mask to set every pixel intensity to 0 in that region</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Using-the-mask-to-remove-cells-in-that-region">Using the mask to remove cells in that region</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   
 <style>
 /* CSS for nbsphinx extension */
@@ -353,56 +572,34 @@ div.rendered_html tbody tr:nth-child(odd) {
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <section id="Interactive-Removal-of-Artifacts">
-<h1>Interactive Removal of Artifacts<a class="headerlink" href="#Interactive-Removal-of-Artifacts" title="Permalink to this heading"></a></h1>
+<h1>Interactive Removal of Artifacts<a class="headerlink" href="#Interactive-Removal-of-Artifacts" title="Link to this heading">#</a></h1>
 <p>Sometimes, it can happen that only a part of the tissue is usable for analysis, for example due to artifacts or poor tissue quality in a certain region. In such cases, it can make sense to mask out problematic regions. This way, the image can still be used for downstream analysis, but the artifact will not influence results in a negative way. <code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> allows users to upload a binary mask, which indicates which part of the image is suitable for further analysis and which part is not.</p>
 <p>The example below shows how one could for example use <a class="reference external" href="https://github.com/Teichlab/TissueTag/tree/main">TissueTag</a> to obtain such a mask, load it into the spatialproteomics and use the mask to remove the artifact. Note that TissueTag runs in jupyter notebooks or jupyter lab, but has no implementation for jupyterhub at the moment.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import xarray as xr
-import spatialproteomics as sp
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">spatialproteomics</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 </pre></div>
 </div>
 </div>
 <section id="Loading-the-image-from-a-zarr-file">
-<h2>Loading the image from a zarr file<a class="headerlink" href="#Loading-the-image-from-a-zarr-file" title="Permalink to this heading"></a></h2>
+<h2>Loading the image from a zarr file<a class="headerlink" href="#Loading-the-image-from-a-zarr-file" title="Link to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds = xr.load_dataset(&#39;4_B4.zarr&#39;, engine=&#39;zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;4_B4.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
 
-# quick plotting of some channels
-plt.figure(figsize=(10, 10))
-ds.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl.autocrop().pl.show()
+<span class="c1"># quick plotting of some channels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -920,20 +1117,20 @@ Data variables:
 </div>
 </section>
 <section id="Drawing-in-the-healthy-regions-using-TissueTag">
-<h2>Drawing in the healthy regions using TissueTag<a class="headerlink" href="#Drawing-in-the-healthy-regions-using-TissueTag" title="Permalink to this heading"></a></h2>
+<h2>Drawing in the healthy regions using TissueTag<a class="headerlink" href="#Drawing-in-the-healthy-regions-using-TissueTag" title="Link to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># first, we need to get our image as an RGBA image
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># first, we need to get our image as an RGBA image</span>
 
-# here, we extract the Podoplanin channel and assign it to the red and green channel, while keeping the blue channel at 0 and setting alpha to 1 everywhere
-podoplanin_img = ds.pp[&#39;Podoplanin&#39;][&#39;_image&#39;].values[0]
-# Create the RGBA image by stacking channels (R, G, B, A)
-rgba_image = np.stack((podoplanin_img, podoplanin_img, np.zeros_like(podoplanin_img), np.ones_like(podoplanin_img) * 255), axis=-1)
+<span class="c1"># here, we extract the Podoplanin channel and assign it to the red and green channel, while keeping the blue channel at 0 and setting alpha to 1 everywhere</span>
+<span class="n">podoplanin_img</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;Podoplanin&#39;</span><span class="p">][</span><span class="s1">&#39;_image&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># Create the RGBA image by stacking channels (R, G, B, A)</span>
+<span class="n">rgba_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-plt.figure(figsize=(10, 10))
-plt.imshow(rgba_image)
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rgba_image</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -957,9 +1154,9 @@ plt.imshow(rgba_image)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># next, we set up the annotation layer, which will ultimately become the binary mask that tells us where the tissue is
-annodict = {&#39;Artifact&#39;:&#39;yellow&#39;}
-labels = np.zeros((rgba_image.shape[0], rgba_image.shape[1]), dtype=np.uint8)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># next, we set up the annotation layer, which will ultimately become the binary mask that tells us where the tissue is</span>
+<span class="n">annodict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Artifact&#39;</span><span class="p">:</span><span class="s1">&#39;yellow&#39;</span><span class="p">}</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rgba_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rgba_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -967,14 +1164,14 @@ labels = np.zeros((rgba_image.shape[0], rgba_image.shape[1]), dtype=np.uint8)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setup for TissueTag
-import panel as pn
-import socket
-import os
-import tissue_tag as tt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup for TissueTag</span>
+<span class="kn">import</span> <span class="nn">panel</span> <span class="k">as</span> <span class="nn">pn</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tissue_tag</span> <span class="k">as</span> <span class="nn">tt</span>
 
-os.environ[&quot;BOKEH_ALLOW_WS_ORIGIN&quot;] = &quot;*&quot;
-host = &#39;8888&#39;
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;BOKEH_ALLOW_WS_ORIGIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+<span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;8888&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -982,9 +1179,9 @@ host = &#39;8888&#39;
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># use annotator to label tissue regions according to categories indicated above
-annotator, render_dict = tt.annotator(rgba_image, labels, anno_dict=annodict, use_datashader=True)
-pn.io.notebook.show_server(annotator, notebook_url=f&#39;{socket.gethostname()}:{host}&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># use annotator to label tissue regions according to categories indicated above</span>
+<span class="n">annotator</span><span class="p">,</span> <span class="n">render_dict</span> <span class="o">=</span> <span class="n">tt</span><span class="o">.</span><span class="n">annotator</span><span class="p">(</span><span class="n">rgba_image</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">anno_dict</span><span class="o">=</span><span class="n">annodict</span><span class="p">,</span> <span class="n">use_datashader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">notebook</span><span class="o">.</span><span class="n">show_server</span><span class="p">(</span><span class="n">annotator</span><span class="p">,</span> <span class="n">notebook_url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1052,12 +1249,12 @@ ServerConnection created
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>labels = tt.update_annotator(
-    imarray=rgba_image,
-    labels=labels,
-    anno_dict=annodict,
-    render_dict=render_dict
-)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">tt</span><span class="o">.</span><span class="n">update_annotator</span><span class="p">(</span>
+    <span class="n">imarray</span><span class="o">=</span><span class="n">rgba_image</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+    <span class="n">anno_dict</span><span class="o">=</span><span class="n">annodict</span><span class="p">,</span>
+    <span class="n">render_dict</span><span class="o">=</span><span class="n">render_dict</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1080,21 +1277,21 @@ Artifact
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># inverting the labels so that 0 becomes 1 and 1 becomes 0
-# the region where the artifact is should be 0, everything else should be 1
-labels = 1 - labels
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># inverting the labels so that 0 becomes 1 and 1 becomes 0</span>
+<span class="c1"># the region where the artifact is should be 0, everything else should be 1</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">labels</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Putting-the-mask-into-the-spatialproteomics-object">
-<h2>Putting the mask into the spatialproteomics object<a class="headerlink" href="#Putting-the-mask-into-the-spatialproteomics-object" title="Permalink to this heading"></a></h2>
+<h2>Putting the mask into the spatialproteomics object<a class="headerlink" href="#Putting-the-mask-into-the-spatialproteomics-object" title="Link to this heading">#</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># by default, this method adds a layer with the key &#39;_mask&#39;
-ds = ds.pp.add_layer(labels)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># by default, this method adds a layer with the key &#39;_mask&#39;</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1102,8 +1299,8 @@ ds = ds.pp.add_layer(labels)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># plotting the mask (by using the render_segmentation method, since the data structure is conceptually similar to the segmentation)
-_ = ds.pl.render_segmentation(layer_key=&#39;_mask&#39;, alpha=0.7).pl.imshow()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the mask (by using the render_segmentation method, since the data structure is conceptually similar to the segmentation)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">(</span><span class="n">layer_key</span><span class="o">=</span><span class="s1">&#39;_mask&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1116,13 +1313,13 @@ _ = ds.pl.render_segmentation(layer_key=&#39;_mask&#39;, alpha=0.7).pl.imshow()
 </div>
 </section>
 <section id="Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region">
-<h2>Using the mask to set every pixel intensity to 0 in that region<a class="headerlink" href="#Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region" title="Permalink to this heading"></a></h2>
+<h2>Using the mask to set every pixel intensity to 0 in that region<a class="headerlink" href="#Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region" title="Link to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_masked_intensities = ds.pp.mask_region()
-_ = ds_masked_intensities.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_masked_intensities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_region</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1138,7 +1335,7 @@ _ = ds_masked_intensities.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds_masked_intensities.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1152,13 +1349,13 @@ _ = ds_masked_intensities.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39
 <p>Most of the time, what we want to do instead is to remove all cells that were segmented in the area. This way we still stick to the original data, but remove the problematic region from analysis.</p>
 </section>
 <section id="Using-the-mask-to-remove-cells-in-that-region">
-<h2>Using the mask to remove cells in that region<a class="headerlink" href="#Using-the-mask-to-remove-cells-in-that-region" title="Permalink to this heading"></a></h2>
+<h2>Using the mask to remove cells in that region<a class="headerlink" href="#Using-the-mask-to-remove-cells-in-that-region" title="Link to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ds_masked_cells = ds.pp.mask_cells()
-_ = ds_masked_cells.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_masked_cells</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_cells</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_cells</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1174,7 +1371,7 @@ _ = ds_masked_cells.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>_ = ds.pp.mask_region().pp.mask_cells().pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl.show(render_segmentation=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_region</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_cells</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1189,34 +1386,108 @@ _ = ds_masked_cells.pp[[&#39;PAX5&#39;, &#39;CD3&#39;, &#39;Podoplanin&#39;]].pl
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Segmentation.html" class="btn btn-neutral float-left" title="Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Plotting.html" class="btn btn-neutral float-right" title="Plotting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Segmentation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Segmentation</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="Plotting.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Plotting</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Loading-the-image-from-a-zarr-file">Loading the image from a zarr file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Drawing-in-the-healthy-regions-using-TissueTag">Drawing in the healthy regions using TissueTag</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Putting-the-mask-into-the-spatialproteomics-object">Putting the mask into the spatialproteomics object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Using-the-mask-to-set-every-pixel-intensity-to-0-in-that-region">Using the mask to set every pixel intensity to 0 in that region</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Using-the-mask-to-remove-cells-in-that-region">Using the mask to remove cells in that region</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

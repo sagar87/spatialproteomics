@@ -1,50 +1,146 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neighborhood Analysis &mdash; spatial_proteomics 0.5.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Neighborhood Analysis &#8212; spatialproteomics</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=3adeb80e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Neighborhoods';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interoperability" href="Interoperability.html" />
     <link rel="prev" title="Cell Type Prediction" href="CellTypePrediction.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
-</head>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> spatial_proteomics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">spatialproteomics</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
@@ -52,8 +148,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
@@ -61,41 +157,164 @@
 <li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Neighborhood Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Neighborhood-Analysis-with-the-ImageContainer">Neighborhood Analysis with the ImageContainer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Comparison-of-different-neighborhood-methods">Comparison of different neighborhood methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Computing-network-features">Computing network features</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Neighborhood Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoperability</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">spatial_proteomics</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Neighborhood Analysis</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/Neighborhoods.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Neighborhoods.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Neighborhood Analysis</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Neighborhood-Analysis-with-the-ImageContainer">Neighborhood Analysis with the ImageContainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Comparison-of-different-neighborhood-methods">Comparison of different neighborhood methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Computing-network-features">Computing network features</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   
 <style>
 /* CSS for nbsphinx extension */
@@ -351,60 +570,38 @@ div.rendered_html tbody tr:nth-child(odd) {
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <section id="Neighborhood-Analysis">
-<h1>Neighborhood Analysis<a class="headerlink" href="#Neighborhood-Analysis" title="Permalink to this heading"></a></h1>
+<h1>Neighborhood Analysis<a class="headerlink" href="#Neighborhood-Analysis" title="Link to this heading">#</a></h1>
 <p>To find structures within our tissues, we can use the concept of cellular neighborhoods. The idea is that we start by defining neighborhoods for each cell, which consist of the relative abundances of the surrounding cell types. Afterwards, we can use clustering across multiple samples to define the neighborhoods. Finally, we can add these neighborhood labels back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> object and use them to select specific regions of the tissue. Methods relating to neighborhoods are
 contained in the <code class="docutils literal notranslate"><span class="pre">nh</span></code> module. For convenience, you can use the <code class="docutils literal notranslate"><span class="pre">sp.ImageContainer</span></code> to perform this analysis with a single function call.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%reload_ext autoreload
-%autoreload 2
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-import spatialproteomics as sp
-import matplotlib.pyplot as plt
-import xarray as xr
-import numpy as np
-import pandas as pd
-from sklearn.cluster import KMeans
-import seaborn as sns
+<span class="kn">import</span> <span class="nn">spatialproteomics</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 </pre></div>
 </div>
 </div>
 <section id="Neighborhood-Analysis-with-the-ImageContainer">
-<h2>Neighborhood Analysis with the ImageContainer<a class="headerlink" href="#Neighborhood-Analysis-with-the-ImageContainer" title="Permalink to this heading"></a></h2>
+<h2>Neighborhood Analysis with the ImageContainer<a class="headerlink" href="#Neighborhood-Analysis-with-the-ImageContainer" title="Link to this heading">#</a></h2>
 <p>As a first step, we open three datasets and store them inside of a dictionary.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_obj_1 = xr.open_dataset(&#39;../../data/sample_1.zarr&#39;, engine=&#39;zarr&#39;)
-sp_obj_2 = xr.open_dataset(&#39;../../data/sample_2.zarr&#39;, engine=&#39;zarr&#39;)
-sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp_obj_1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/sample_1.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
+<span class="n">sp_obj_2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/sample_2.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
+<span class="n">sp_obj_3</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/sample_3.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -412,7 +609,7 @@ sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -421,9 +618,9 @@ sp_obj_3 = xr.open_dataset(&#39;../../data/sample_3.zarr&#39;, engine=&#39;zarr&
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>image_container = sp.ImageContainer(sp_dict)
-# this method returns a dict in the same format as we provided as input
-sp_dict = image_container.compute_neighborhoods()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image_container</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ImageContainer</span><span class="p">(</span><span class="n">sp_dict</span><span class="p">)</span>
+<span class="c1"># this method returns a dict in the same format as we provided as input</span>
+<span class="n">sp_dict</span> <span class="o">=</span> <span class="n">image_container</span><span class="o">.</span><span class="n">compute_neighborhoods</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -432,23 +629,23 @@ sp_dict = image_container.compute_neighborhoods()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(15, 10))
-ax = ax.flatten()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-# setting custom colors to be more in line with the cell types
-neighborhoods, colors = [f&#39;Neighborhood {x}&#39; for x in np.arange(5)], [&#39;darkgreen&#39;, &#39;red&#39;, &#39;yellow&#39;, &#39;darkred&#39;, &#39;green&#39;]
+<span class="c1"># setting custom colors to be more in line with the cell types</span>
+<span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Neighborhood </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)],</span> <span class="p">[</span><span class="s1">&#39;darkgreen&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">]</span>
 
-# plotting labels
-_ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[0])
-_ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[1])
-_ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[2])
+<span class="c1"># plotting labels</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-# plotting neighborhoods
-_ = sp_dict[&#39;1&#39;].pl.autocrop().nh.set_neighborhood_colors(neighborhoods, colors).pl.show(render_image=False, render_neighborhoods=True, ax=ax[3])
-_ = sp_dict[&#39;2&#39;].pl.autocrop().nh.set_neighborhood_colors(neighborhoods, colors).pl.show(render_image=False, render_neighborhoods=True, ax=ax[4])
-_ = sp_dict[&#39;3&#39;].pl.autocrop().nh.set_neighborhood_colors(neighborhoods, colors).pl.show(render_image=False, render_neighborhoods=True, ax=ax[5])
+<span class="c1"># plotting neighborhoods</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 
-plt.tight_layout()
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -474,22 +671,22 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># obtaining a data frame containing the neighborhood compositions
-nh_composition = image_container.get_neighborhood_composition()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># obtaining a data frame containing the neighborhood compositions</span>
+<span class="n">nh_composition</span> <span class="o">=</span> <span class="n">image_container</span><span class="o">.</span><span class="n">get_neighborhood_composition</span><span class="p">()</span>
 
-# plotting the neighborhood composition as a seaborn clustermap
-cluster_map = sns.clustermap(
-    nh_composition,
-    cmap=&#39;coolwarm&#39;,
-    cbar_pos=(1.02, 0.2, 0.03, 0.77),  # Position the colorbar to the right of the heatmap
-    dendrogram_ratio=(0.00001, 0),  # Remove row dendrogram
-    figsize=(9, 7),  # Adjust the size
-    annot=False  # No annotation
-)
+<span class="c1"># plotting the neighborhood composition as a seaborn clustermap</span>
+<span class="n">cluster_map</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">clustermap</span><span class="p">(</span>
+    <span class="n">nh_composition</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">,</span>
+    <span class="n">cbar_pos</span><span class="o">=</span><span class="p">(</span><span class="mf">1.02</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.77</span><span class="p">),</span>  <span class="c1"># Position the colorbar to the right of the heatmap</span>
+    <span class="n">dendrogram_ratio</span><span class="o">=</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Remove row dendrogram</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>  <span class="c1"># Adjust the size</span>
+    <span class="n">annot</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># No annotation</span>
+<span class="p">)</span>
 
-# customizations of the plot
-cluster_map.ax_heatmap.set_ylabel(&#39;&#39;)
-plt.show()
+<span class="c1"># customizations of the plot</span>
+<span class="n">cluster_map</span><span class="o">.</span><span class="n">ax_heatmap</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -505,16 +702,16 @@ plt.show()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 0&#39;, &#39;T high&#39;)
-sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 1&#39;, &#39;B medium&#39;)
-sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 3&#39;, &#39;B high&#39;)
-sp_dict[&#39;1&#39;] = sp_dict[&#39;1&#39;].nh.set_neighborhood_name(&#39;Neighborhood 4&#39;, &#39;T medium&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_name</span><span class="p">(</span><span class="s1">&#39;Neighborhood 0&#39;</span><span class="p">,</span> <span class="s1">&#39;T high&#39;</span><span class="p">)</span>
+<span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_name</span><span class="p">(</span><span class="s1">&#39;Neighborhood 1&#39;</span><span class="p">,</span> <span class="s1">&#39;B medium&#39;</span><span class="p">)</span>
+<span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_name</span><span class="p">(</span><span class="s1">&#39;Neighborhood 3&#39;</span><span class="p">,</span> <span class="s1">&#39;B high&#39;</span><span class="p">)</span>
+<span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_name</span><span class="p">(</span><span class="s1">&#39;Neighborhood 4&#39;</span><span class="p">,</span> <span class="s1">&#39;T medium&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Comparison-of-different-neighborhood-methods">
-<h2>Comparison of different neighborhood methods<a class="headerlink" href="#Comparison-of-different-neighborhood-methods" title="Permalink to this heading"></a></h2>
+<h2>Comparison of different neighborhood methods<a class="headerlink" href="#Comparison-of-different-neighborhood-methods" title="Link to this heading">#</a></h2>
 <p>There are three main ways how a neighborhood can be computed: via a radius, a k-nearest neighborh graph, or a Delaunay triangulation. In the <code class="docutils literal notranslate"><span class="pre">radius</span></code> method, a circle with a certain radius is drawn around a cell, and the cell type frequencies are aggregated. With <code class="docutils literal notranslate"><span class="pre">knn</span></code>, the k nearest neighbors of a cell are counted as the neighborhood. Finally, <code class="docutils literal notranslate"><span class="pre">delaunay</span></code> creates a Delaunay triangulation from the cell centroids and counts cells as part of each other’s neighborhood if they are connected in
 the resulting graph.</p>
 <p>Let’s look at how these three methods perform on the example data from above. To illustrate the differences better, we also cluster with a higher k, resulting in more neighborhoods. Note that you could do all of this with the <code class="docutils literal notranslate"><span class="pre">ImageContainer</span></code> as well.</p>
@@ -522,30 +719,30 @@ the resulting graph.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># putting the strategy from above into a single method
-def compute_and_plot_clusters(sp_dict, k=5, method=&#39;radius&#39;):
-    # computing the neighborhoods
-    image_container = sp.ImageContainer(sp_dict)
-    sp_dict = image_container.compute_neighborhoods(neighborhood_method=method)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># putting the strategy from above into a single method</span>
+<span class="k">def</span> <span class="nf">compute_and_plot_clusters</span><span class="p">(</span><span class="n">sp_dict</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">):</span>
+    <span class="c1"># computing the neighborhoods</span>
+    <span class="n">image_container</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ImageContainer</span><span class="p">(</span><span class="n">sp_dict</span><span class="p">)</span>
+    <span class="n">sp_dict</span> <span class="o">=</span> <span class="n">image_container</span><span class="o">.</span><span class="n">compute_neighborhoods</span><span class="p">(</span><span class="n">neighborhood_method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    # ===== PLOTTING =====
-    fig, ax = plt.subplots(2, 3, figsize=(15, 10))
-    ax = ax.flatten()
+    <span class="c1"># ===== PLOTTING =====</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-    _ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[0])
-    _ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[1])
-    _ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_neighborhoods=True, ax=ax[2])
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-    _ = sp_dict[&#39;1&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[3])
-    _ = sp_dict[&#39;2&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[4])
-    _ = sp_dict[&#39;3&#39;].pl.autocrop().pl.show(render_image=False, render_labels=True, ax=ax[5])
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 
-    for axis in ax:
-        axis.set_xticks([])
-        axis.set_yticks([])
-    plt.suptitle(method)
-    plt.tight_layout()
-    plt.show()
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -554,8 +751,8 @@ def compute_and_plot_clusters(sp_dict, k=5, method=&#39;radius&#39;):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;radius&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
+<span class="n">compute_and_plot_clusters</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -570,8 +767,8 @@ compute_and_plot_clusters(tmp_dict, k=5, method=&#39;radius&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;knn&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
+<span class="n">compute_and_plot_clusters</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;knn&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -595,8 +792,8 @@ compute_and_plot_clusters(tmp_dict, k=5, method=&#39;knn&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tmp_dict = {&#39;1&#39;: sp_obj_1, &#39;2&#39;: sp_obj_2, &#39;3&#39;: sp_obj_3}
-compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
+<span class="n">compute_and_plot_clusters</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;delaunay&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -621,8 +818,8 @@ compute_and_plot_clusters(tmp_dict, k=5, method=&#39;delaunay&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(7, 7))
-_ = tmp_dict[&#39;1&#39;].pp[500:1000, 500:1000].pl.scatter_labels(size=15, render_edges=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">tmp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter_labels</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">render_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -635,7 +832,7 @@ _ = tmp_dict[&#39;1&#39;].pp[500:1000, 500:1000].pl.scatter_labels(size=15, rend
 </div>
 </section>
 <section id="Computing-network-features">
-<h2>Computing network features<a class="headerlink" href="#Computing-network-features" title="Permalink to this heading"></a></h2>
+<h2>Computing network features<a class="headerlink" href="#Computing-network-features" title="Link to this heading">#</a></h2>
 <p>Neighborhoods naturally lend themselves to being defined via networks. Each cell represents a node in the network, and two cells are connected if they are in the same neighborhood. For example, if we define neighborhoods with the distance-based <code class="docutils literal notranslate"><span class="pre">radius</span></code> method, we can connect two cells if their centroids are less than <code class="docutils literal notranslate"><span class="pre">radius</span></code> units apart. This means that we can now employ techniques from network analysis to further analyse structures within the tissue. This step can be performed simply by
 calling <code class="docutils literal notranslate"><span class="pre">ds.nh.add_neighborhood_obs()</span></code>. For more details on which features you can compute, refer to the documentation of the method.</p>
 <p>Let’s compute a couple of metrics. In the following codeblock, we compute: 1. Node degree: how many cells are connected to a cell. This can give you a hint about how dense the tissue is at any region (given you used the radius method for constructing your neighborhoods). 2. Homophily: ratio of cells of the same cell type as the center cell within the neighborhood. 3. Inter-Label Connectivity: ratio of cells of a different cell type as the center cell within the neighborhood. 4. Diversity Index:
@@ -644,10 +841,10 @@ Shannon’s entropy. Measures the diversity of cells within a cells neighborhood
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setting label colors
-ds = sp_dict[&#39;1&#39;].nh.set_neighborhood_colors([&#39;T high&#39;, &#39;T medium&#39;, &#39;B high&#39;, &#39;B medium&#39;], [&#39;darkgreen&#39;, &#39;green&#39;, &#39;darkred&#39;, &#39;red&#39;])
-# computing the neighborhood features
-ds = ds.nh.add_neighborhood_obs(features=[&#39;degree&#39;, &#39;homophily&#39;, &#39;inter_label_connectivity&#39;, &#39;diversity_index&#39;]).pl.autocrop()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting label colors</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">([</span><span class="s1">&#39;T high&#39;</span><span class="p">,</span> <span class="s1">&#39;T medium&#39;</span><span class="p">,</span> <span class="s1">&#39;B high&#39;</span><span class="p">,</span> <span class="s1">&#39;B medium&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;darkgreen&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">])</span>
+<span class="c1"># computing the neighborhood features</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;degree&#39;</span><span class="p">,</span> <span class="s1">&#39;homophily&#39;</span><span class="p">,</span> <span class="s1">&#39;inter_label_connectivity&#39;</span><span class="p">,</span> <span class="s1">&#39;diversity_index&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -655,21 +852,21 @@ ds = ds.nh.add_neighborhood_obs(features=[&#39;degree&#39;, &#39;homophily&#39;,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(15, 10))
-ax = ax.flatten()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-_ = ds.pl.show(render_image=False, render_labels=True, ax=ax[0])
-_ = ds.pl.show(render_image=False, render_neighborhoods=True, ax=ax[1])
-_ = ds.pl.render_obs(feature=&#39;degree&#39;).pl.imshow(ax=ax[2])
-_ = ds.pl.render_obs(feature=&#39;homophily&#39;).pl.imshow(ax=ax[3])
-_ = ds.pl.render_obs(feature=&#39;inter_label_connectivity&#39;).pl.imshow(ax=ax[4])
-_ = ds.pl.render_obs(feature=&#39;diversity_index&#39;).pl.imshow(ax=ax[5])
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;degree&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;homophily&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;inter_label_connectivity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;diversity_index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 
-titles = [&#39;Labels&#39;, &#39;Neighborhoods&#39;, &#39;Node degree&#39;, &#39;Homophily&#39;, &#39;Inter-Label Connectivity&#39;, &#39;Diversity Index&#39;]
-for i, axis in enumerate(ax):
-    axis.set_title(titles[i])
+<span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Labels&#39;</span><span class="p">,</span> <span class="s1">&#39;Neighborhoods&#39;</span><span class="p">,</span> <span class="s1">&#39;Node degree&#39;</span><span class="p">,</span> <span class="s1">&#39;Homophily&#39;</span><span class="p">,</span> <span class="s1">&#39;Inter-Label Connectivity&#39;</span><span class="p">,</span> <span class="s1">&#39;Diversity Index&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-plt.tight_layout()
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -685,8 +882,8 @@ plt.tight_layout()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># subselecting and recomputing the features
-ds = ds.nh[&#39;B high&#39;].la[[&#39;B&#39;, &#39;T&#39;]].nh.add_neighborhood_obs(features=[&#39;degree&#39;, &#39;closeness_centrality&#39;, &#39;homophily&#39;, &#39;inter_label_connectivity&#39;, &#39;diversity_index&#39;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># subselecting and recomputing the features</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">nh</span><span class="p">[</span><span class="s1">&#39;B high&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">la</span><span class="p">[[</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;degree&#39;</span><span class="p">,</span> <span class="s1">&#39;closeness_centrality&#39;</span><span class="p">,</span> <span class="s1">&#39;homophily&#39;</span><span class="p">,</span> <span class="s1">&#39;inter_label_connectivity&#39;</span><span class="p">,</span> <span class="s1">&#39;diversity_index&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -702,21 +899,21 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2, 3, figsize=(15, 10))
-ax = ax.flatten()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-_ = ds.pl.show(render_image=False, render_labels=True, ax=ax[0])
-_ = ds.pl.show(render_image=False, render_neighborhoods=True, ax=ax[1])
-_ = ds.pl.render_obs(feature=&#39;degree&#39;).pl.imshow(ax=ax[2])
-_ = ds.pl.render_obs(feature=&#39;homophily&#39;).pl.imshow(ax=ax[3])
-_ = ds.pl.render_obs(feature=&#39;inter_label_connectivity&#39;).pl.imshow(ax=ax[4])
-_ = ds.pl.render_obs(feature=&#39;diversity_index&#39;).pl.imshow(ax=ax[5])
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;degree&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;homophily&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;inter_label_connectivity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;diversity_index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 
-titles = [&#39;Labels&#39;, &#39;Neighborhoods&#39;, &#39;Node degree&#39;, &#39;Homophily&#39;, &#39;Inter-Label Connectivity&#39;, &#39;Diversity Index&#39;]
-for i, axis in enumerate(ax):
-    axis.set_title(titles[i])
+<span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Labels&#39;</span><span class="p">,</span> <span class="s1">&#39;Neighborhoods&#39;</span><span class="p">,</span> <span class="s1">&#39;Node degree&#39;</span><span class="p">,</span> <span class="s1">&#39;Homophily&#39;</span><span class="p">,</span> <span class="s1">&#39;Inter-Label Connectivity&#39;</span><span class="p">,</span> <span class="s1">&#39;Diversity Index&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-plt.tight_layout()
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -731,34 +928,106 @@ plt.tight_layout()
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CellTypePrediction.html" class="btn btn-neutral float-left" title="Cell Type Prediction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Interoperability.html" class="btn btn-neutral float-right" title="Interoperability" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+                </article>
+              
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024, Harald Vohringer, Matthias Meyer-Bender.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="CellTypePrediction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Cell Type Prediction</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="Interoperability.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interoperability</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Neighborhood-Analysis-with-the-ImageContainer">Neighborhood Analysis with the ImageContainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Comparison-of-different-neighborhood-methods">Comparison of different neighborhood methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Computing-network-features">Computing network features</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>
