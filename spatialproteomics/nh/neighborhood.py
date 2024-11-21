@@ -486,19 +486,20 @@ class NeighborhoodAccessor:
 
         return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
 
-    def set_neighborhood_name(self, neighborhood: Union[int, str], name: str):
+    def set_neighborhood_name(self, neighborhoods: Union[int, str, List], names: Union[str, List]):
         """
-        Set the name of a specific neighborhood.
+        Set the name of one or more neighborhoods.
 
-        This method sets the 'name' of a specific neighborhood identified by the 'neighborhood'.
-        The 'neighborhood' can be either a neighborhood ID or the name of the neighborhood.
+        This method updates the 'name' of specific neighborhoods identified by the 'neighborhood'.
+        The 'neighborhoods' can be a single neighborhood ID or name, or a list of IDs/names. Similarly,
+        the 'names' parameter can be a single string or a list of strings.
 
         Parameters
         ----------
-        neighborhood : int or str
-            The ID or name of the neighborhood whose name will be updated.
-        name : str
-            The new name to be assigned to the specified neighborhood.
+        neighborhoods : int, str, or list
+            The ID(s) or name(s) of the neighborhoods whose names will be updated.
+        names : str or list
+            The new name(s) to be assigned to the specified neighborhoods.
 
         Returns
         -------
@@ -506,32 +507,78 @@ class NeighborhoodAccessor:
 
         Notes
         -----
-        - The function converts the 'neighborhood' from its name to the corresponding ID for internal processing.
-        - It updates the name of the neighborhood in the data object to the new 'name'.
+        - When both parameters are lists, their lengths must match.
+        - The function converts each 'neighborhood' from its name to the corresponding ID for internal processing.
+        - It updates the name(s) of the neighborhood(s) in the data object to the new 'name(s)'.
         """
-        # checking that a neighborhood layer is already present
+        # Ensure the neighborhood layer exists
         assert Layers.NH_PROPERTIES in self._obj, "No neighborhood layer found in the data object."
-        # checking if the old neighborhood exists
-        assert (
-            neighborhood in self._obj.nh
-        ), f"Neighborhood {neighborhood} not found. Existing cell types: {self._obj.nh}"
-        # checking if the new label already exists
-        assert name not in self._obj[Layers.NH_PROPERTIES].sel(
-            {Dims.NH_PROPS: Props.NAME}
-        ), f"Neighborhood name {name} already exists."
 
-        # getting the original neighborhood properties
+        # checking if the user provided dict_values or dict_keys and turns them into a list if that is the case
+        if type(neighborhoods) is {}.keys().__class__ or type(neighborhoods) is {}.values().__class__:
+            neighborhoods = list(neighborhoods)
+        if type(names) is {}.keys().__class__ or type(names) is {}.values().__class__:
+            names = list(names)
+
+        # Handle single inputs by converting them into lists for uniform processing
+        if not isinstance(neighborhoods, list):
+            neighborhoods = [neighborhoods]
+        if not isinstance(names, list):
+            names = [names]
+
+        # Ensure the lengths of neighborhoods and names match
+        assert len(neighborhoods) == len(
+            names
+        ), f"Mismatch in lengths: {len(neighborhoods)} neighborhoods and {len(names)} names provided."
+
+        # ensure that the neighborhoods are provided as either strings or integers, but not mixed
+        assert all([isinstance(n, str) for n in neighborhoods]) or all(
+            [isinstance(n, int) for n in neighborhoods]
+        ), "Neighborhoods must be provided as either strings or integers, but not mixed."
+
+        # ensure that the names are provided as strings
+        assert all([isinstance(n, str) for n in names]), "Names must be provided as strings."
+
+        # ensure that there are no duplicates in the names
+        assert len(names) == len(set(names)), "Names must be unique."
+
+        # Check that all neighborhoods exist
+        invalid_neighborhoods = [n for n in neighborhoods if n not in self._obj.nh]
+
+        # if the neighborhoods are provided as strings
+        if all([isinstance(n, str) for n in neighborhoods]):
+            existing_names = self._obj[Layers.NH_PROPERTIES].sel({Dims.NH_PROPS: Props.NAME}).values
+            assert not invalid_neighborhoods, (
+                f"Neighborhood(s) {invalid_neighborhoods} not found. " f"Existing neighborhoods: {existing_names}"
+            )
+
+        # if they are provided as integers
+        if all([isinstance(n, int) for n in neighborhoods]):
+            existing_names = self._obj.coords["neighborhoods"].values
+            assert not invalid_neighborhoods, (
+                f"Neighborhood(s) {invalid_neighborhoods} not found. " f"Existing neighborhoods: {existing_names}"
+            )
+
+        # Check that all new names are unique and do not already exist
+        existing_names = set(self._obj[Layers.NH_PROPERTIES].sel({Dims.NH_PROPS: Props.NAME}).values)
+        duplicate_names = [n for n in names if n in existing_names]
+        assert not duplicate_names, f"Neighborhood name(s) {duplicate_names} already exist in the data object."
+
+        # Retrieve the original neighborhood properties
         property_layer = self._obj[Layers.NH_PROPERTIES].copy()
 
-        if isinstance(neighborhood, str):
-            neighborhood = self._obj.nh._neighborhood_name_to_id(neighborhood)
+        for n, new_name in zip(neighborhoods, names):
+            # Convert neighborhood name to ID if necessary
+            if isinstance(n, str):
+                n = self._obj.nh._neighborhood_name_to_id(n)
 
-        property_layer.loc[neighborhood, Props.NAME] = name
+            # Update the name
+            property_layer.loc[n, Props.NAME] = new_name
 
-        # removing the old property layer
+        # Remove the old property layer
         obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES, drop_obs=False)
 
-        # adding the new property layer
+        # Add the updated property layer
         return xr.merge([property_layer, obj])
 
     def compute_neighborhoods_radius(
