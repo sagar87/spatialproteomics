@@ -14,14 +14,10 @@ cffi = "^1.15.0"
 xarray = "^2023.0.0"
 scikit-image = ">=0.19.3"
 matplotlib = "^3.5.3"
-Sphinx = { version = "^7.0.0", optional = true }
-sphinxcontrib-napoleon = { version = "0.7", optional = true }
-nbsphinx = { version = "0.8.9", optional = true }
 tqdm = ">=4.64.0"
 scikit-learn = "^1.2.2"
 zarr = "^2.14.2"
 numpy = "<2.0.0"
-sphinx-multiversion = "^0.2.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -33,7 +29,7 @@ bandit = "^1.7.4"
 safety = "^2.1.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "IPython"]
+docs = ["IPython", "Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
