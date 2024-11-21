@@ -877,16 +877,19 @@ class NeighborhoodAccessor:
     ):
         """
         Compute various graph features from the adjacency matrix of the data.
+
         Parameters
         ----------
         features : Union[str, List[str]], optional
             A single feature or a list of features to compute. Valid features are:
             "num_nodes", "num_edges", "density", "modularity", "assortativity".
             Default is ["num_nodes", "num_edges", "density", "modularity", "assortativity"].
+
         Returns
         -------
         dict
             A dictionary where keys are the names of the computed features and values are the corresponding feature values.
+
         Raises
         ------
         ImportError
@@ -895,6 +898,7 @@ class NeighborhoodAccessor:
             If required layers (OBS, LA_PROPERTIES, ADJACENCY_MATRIX) are not found in the object.
             If no valid features are provided.
             If the LABELS feature is not found in the observation layer.
+
         Notes
         -----
         This method requires the `networkx` package to be installed. If you want to compute the modularity of the network,
