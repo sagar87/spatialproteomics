@@ -32,7 +32,7 @@ exclude_patterns = ["_build", "_build/*", "Thumbs.db", ".DS_Store", "**.ipynb_ch
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
 html_title = project
-# html_logo = "_static/img/spatialproteomics_horizontal.png"
+html_logo = "_static/img/spatialproteomics_logo.png"
 html_theme_options = {
     "navigation_with_keys": True,
 }
