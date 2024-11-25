@@ -401,8 +401,8 @@ class ToolAccessor:
             adata.obs = self._obj.pp.get_layer_as_df(obs_key, idx_to_str=True)
 
             # if we have labels and colors for them, we add them to the anndata object
-            if Dims.LABELS in self._obj.dims and Layers.PROPERTIES in self._obj:
-                properties = self._obj.pp.get_layer_as_df(Layers.PROPERTIES)
+            if Dims.LABELS in self._obj.dims and Layers.LA_PROPERTIES in self._obj:
+                properties = self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)
                 if Props.COLOR in properties.columns:
                     # putting it into the anndata object
                     adata.uns[f"{Features.LABELS}_colors"] = list(properties[Props.COLOR].values)

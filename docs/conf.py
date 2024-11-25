@@ -12,7 +12,7 @@ copyright = "2024, Matthias Meyer-Bender, Harald Vohringer"
 author = "Matthias Meyer-Bender, Harald Vohringer"
 
 # Dynamically set the release version for multi-version builds
-release = os.getenv("SPHINX_MULTIVERSION_NAME", "0.6.6")
+release = os.getenv("SPHINX_MULTIVERSION_NAME", "0.6.7")
 
 # -- General configuration ---------------------------------------------------
 
