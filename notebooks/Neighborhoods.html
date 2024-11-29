@@ -30,7 +30,7 @@
     
   <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script src="../_static/documentation_options.js?v=358b1b55"></script>
+    <script src="../_static/documentation_options.js?v=97fcea12"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -654,7 +654,8 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
     <span class="n">cbar_pos</span><span class="o">=</span><span class="p">(</span><span class="mf">1.02</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.77</span><span class="p">),</span>  <span class="c1"># Position the colorbar to the right of the heatmap</span>
     <span class="n">dendrogram_ratio</span><span class="o">=</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Remove row dendrogram</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>  <span class="c1"># Adjust the size</span>
-    <span class="n">annot</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># No annotation</span>
+    <span class="n">annot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># No annotation</span>
+    <span class="n">center</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># Setting the center of the colorbar to 0</span>
 <span class="p">)</span>
 
 <span class="c1"># customizations of the plot</span>
@@ -672,7 +673,7 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
 </div>
 <p>We can also rename the neighborhoods for convenience.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># note that sp_dict[&#39;1&#39;] does not contain any cells belonging to neighborhood 2, hence we do not set a value for this one here</span>
@@ -688,7 +689,7 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
 the resulting graph.</p>
 <p>Let’s look at how these three methods perform on the example data from above. To illustrate the differences better, we also cluster with a higher k, resulting in more neighborhoods. Note that you could do all of this with the <code class="docutils literal notranslate"><span class="pre">ImageContainer</span></code> as well.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># putting the strategy from above into a single method</span>
@@ -720,7 +721,7 @@ the resulting graph.</p>
 </div>
 <p>Note that the colors for the neighborhoods were chosen arbitrarily here.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
@@ -736,7 +737,7 @@ the resulting graph.</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
@@ -752,7 +753,7 @@ the resulting graph.</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">sp_obj_1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">sp_obj_2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">sp_obj_3</span><span class="p">}</span>
@@ -769,7 +770,7 @@ the resulting graph.</p>
 </div>
 <p>As a small sidenote, let’s quickly see how we can plot the network.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
@@ -792,7 +793,7 @@ calling <code class="docutils literal notranslate"><span class="pre">ds.nh.add_n
 <p>Let’s compute a couple of metrics. In the following codeblock, we compute: 1. Node degree: how many cells are connected to a cell. This can give you a hint about how dense the tissue is at any region (given you used the radius method for constructing your neighborhoods). 2. Homophily: ratio of cells of the same cell type as the center cell within the neighborhood. 3. Inter-Label Connectivity: ratio of cells of a different cell type as the center cell within the neighborhood. 4. Diversity Index:
 Shannon’s entropy. Measures the diversity of cells within a cells neighborhood.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting label colors</span>
@@ -803,7 +804,7 @@ Shannon’s entropy. Measures the diversity of cells within a cells neighborhood
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -833,7 +834,7 @@ Shannon’s entropy. Measures the diversity of cells within a cells neighborhood
 </div>
 <p>Note that we can also compute these on subsets of the sample. For example, we might want to select only the B and T cells within the B-rich neighborhood, and then compute the measures on this data alone.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># subselecting and recomputing the features</span>
@@ -850,7 +851,7 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
