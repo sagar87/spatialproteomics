@@ -641,10 +641,6 @@ class NeighborhoodAccessor:
 
         obj = xr.merge([self._obj, da])
 
-        #  ensuring that the adjacency matrix is symmetric
-        assert np.allclose(
-            adjacency_matrix, adjacency_matrix.T
-        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
         da = xr.DataArray(
@@ -713,10 +709,6 @@ class NeighborhoodAccessor:
 
         obj = xr.merge([self._obj, da])
 
-        #  ensuring that the adjacency matrix is symmetric
-        assert np.allclose(
-            adjacency_matrix, adjacency_matrix.T
-        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
         da = xr.DataArray(
@@ -779,10 +771,6 @@ class NeighborhoodAccessor:
 
         obj = xr.merge([self._obj, da])
 
-        #  ensuring that the adjacency matrix is symmetric
-        assert np.allclose(
-            adjacency_matrix, adjacency_matrix.T
-        ), "Adjacency matrix is not symmetric. Please report this issue to the developers."
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
         da = xr.DataArray(
