@@ -13,6 +13,7 @@ from ..constants import Dims, Features, Layers, Props
 from .utils import (
     _convert_to_8bit,
     _get_disconnected_cell,
+    _get_dtype_for_quantile,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -914,10 +915,15 @@ class PreprocessingAccessor:
             assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
 
             if shift:
-                # calculate quantile
-                lower = np.quantile(image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1)
-                filtered = (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2))).clip(
-                    min=0
+                # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
+                # in the case of unsigned integers, we need to convert to signed integers, since otherwise we run into overflow issues
+                lower = np.quantile(
+                    image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1
+                ).astype(_get_dtype_for_quantile(image_layer.dtype))
+                filtered = (
+                    (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)))
+                    .clip(min=0)
+                    .astype(image_layer.dtype)
                 )
             else:
                 # Calculate the quantile-based intensity threshold for each channel.

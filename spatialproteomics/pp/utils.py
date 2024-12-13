@@ -392,3 +392,39 @@ def _convert_to_8bit(image):
         raise ValueError(
             f"Could not convert image of type {image.dtype} to 8-bit. Please make sure that the image is of type uint8, uint16, uint32, float32, or float64. If the image is of type float, make sure that the values are in the range [0, 1]."
         )
+
+
+def _get_dtype_for_quantile(img_dtype):
+    """
+    Determines the appropriate dtype for the quantile result based on the image dtype.
+
+    If img_dtype is unsigned integer, use the next higher signed integer precision.
+    If img_dtype exceeds int32, use float64.
+    Handles both NumPy and non-NumPy types.
+
+    Parameters:
+    ----------
+    img_dtype : dtype
+        The dtype of the input image.
+
+    Returns:
+    -------
+    dtype
+        The dtype for the quantile result.
+    """
+    # Ensure the dtype is resolved to a NumPy dtype
+    img_dtype = np.dtype(img_dtype)
+
+    if np.issubdtype(img_dtype, np.unsignedinteger):
+        # Mapping from unsigned to the next higher signed type
+        dtype_mapping = {np.uint8: np.int8, np.uint16: np.int16, np.uint32: np.int32, np.uint64: np.int64}
+        return dtype_mapping.get(img_dtype.type, np.float64)
+    elif np.issubdtype(img_dtype, np.integer):
+        # For signed integers, retain the same type
+        return img_dtype
+    elif np.issubdtype(img_dtype, np.floating):
+        # For floating-point, retain the same type
+        return img_dtype
+    else:
+        # Default to float64 for unknown or unsupported dtypes
+        return np.float64
