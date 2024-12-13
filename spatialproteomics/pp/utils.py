@@ -417,7 +417,7 @@ def _get_dtype_for_quantile(img_dtype):
 
     if np.issubdtype(img_dtype, np.unsignedinteger):
         # Mapping from unsigned to the next higher signed type
-        dtype_mapping = {np.uint8: np.int8, np.uint16: np.int16, np.uint32: np.int32, np.uint64: np.int64}
+        dtype_mapping = {np.uint8: np.int16, np.uint16: np.int32, np.uint32: np.int64}
         return dtype_mapping.get(img_dtype.type, np.float64)
     elif np.issubdtype(img_dtype, np.integer):
         # For signed integers, retain the same type
