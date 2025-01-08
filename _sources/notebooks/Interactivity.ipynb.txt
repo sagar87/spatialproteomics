@@ -581,7 +581,7 @@
    ],
    "source": [
     "# loading in a data set and performing some formatting for convenience\n",
-    "ds = xr.open_zarr('../../data/BNHL_166_4_I2_LK.zarr')\n",
+    "ds = xr.open_zarr(\"../../data/BNHL_166_4_I2_LK.zarr\")\n",
     "ds[\"_properties\"] = ds[\"_labels\"]\n",
     "ds = ds.pp.drop_layers(\"_labels\")\n",
     "ds"
@@ -622,7 +622,7 @@
    ],
    "source": [
     "# turning the spatialproteomics object into a spatialdata object\n",
-    "sd_obj = ds.tl.convert_to_spatialdata(expression_matrix_key='_arcsinh_mean')\n",
+    "sd_obj = ds.tl.convert_to_spatialdata(expression_matrix_key=\"_arcsinh_mean\")\n",
     "sd_obj"
    ]
   },

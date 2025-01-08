@@ -544,7 +544,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading in a data set and performing some formatting for convenience</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s1">&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/BNHL_166_4_I2_LK.zarr&quot;</span><span class="p">)</span>
 <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="s2">&quot;_labels&quot;</span><span class="p">)</span>
 <span class="n">ds</span>
@@ -1079,7 +1079,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># turning the spatialproteomics object into a spatialdata object</span>
-<span class="n">sd_obj</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_spatialdata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s1">&#39;_arcsinh_mean&#39;</span><span class="p">)</span>
+<span class="n">sd_obj</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_spatialdata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">&quot;_arcsinh_mean&quot;</span><span class="p">)</span>
 <span class="n">sd_obj</span>
 </pre></div>
 </div>

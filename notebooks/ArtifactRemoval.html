@@ -576,11 +576,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s1">&#39;4_B4.zarr&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;4_B4.zarr&quot;</span><span class="p">)</span>
 
 <span class="c1"># quick plotting of some channels</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1106,9 +1106,11 @@ Data variables:
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># first, we need to get our image as an RGBA image</span>
 
 <span class="c1"># here, we extract the Podoplanin channel and assign it to the red and green channel, while keeping the blue channel at 0 and setting alpha to 1 everywhere</span>
-<span class="n">podoplanin_img</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s1">&#39;Podoplanin&#39;</span><span class="p">][</span><span class="s1">&#39;_image&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">podoplanin_img</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;Podoplanin&quot;</span><span class="p">][</span><span class="s2">&quot;_image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1"># Create the RGBA image by stacking channels (R, G, B, A)</span>
-<span class="n">rgba_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">rgba_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">podoplanin_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">podoplanin_img</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span>
+<span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rgba_image</span><span class="p">)</span>
@@ -1136,7 +1138,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># next, we set up the annotation layer, which will ultimately become the binary mask that tells us where the tissue is</span>
-<span class="n">annodict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Artifact&#39;</span><span class="p">:</span><span class="s1">&#39;yellow&#39;</span><span class="p">}</span>
+<span class="n">annodict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Artifact&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">}</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rgba_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rgba_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1152,7 +1154,7 @@ Data variables:
 <span class="kn">import</span><span class="w"> </span><span class="nn">tissue_tag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tt</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;BOKEH_ALLOW_WS_ORIGIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
-<span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;8888&#39;</span>
+<span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;8888&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -1162,7 +1164,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># use annotator to label tissue regions according to categories indicated above</span>
 <span class="n">annotator</span><span class="p">,</span> <span class="n">render_dict</span> <span class="o">=</span> <span class="n">tt</span><span class="o">.</span><span class="n">annotator</span><span class="p">(</span><span class="n">rgba_image</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">anno_dict</span><span class="o">=</span><span class="n">annodict</span><span class="p">,</span> <span class="n">use_datashader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">notebook</span><span class="o">.</span><span class="n">show_server</span><span class="p">(</span><span class="n">annotator</span><span class="p">,</span> <span class="n">notebook_url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">notebook</span><span class="o">.</span><span class="n">show_server</span><span class="p">(</span><span class="n">annotator</span><span class="p">,</span> <span class="n">notebook_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1230,12 +1232,7 @@ ServerConnection created
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">tt</span><span class="o">.</span><span class="n">update_annotator</span><span class="p">(</span>
-    <span class="n">imarray</span><span class="o">=</span><span class="n">rgba_image</span><span class="p">,</span>
-    <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
-    <span class="n">anno_dict</span><span class="o">=</span><span class="n">annodict</span><span class="p">,</span>
-    <span class="n">render_dict</span><span class="o">=</span><span class="n">render_dict</span>
-<span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">tt</span><span class="o">.</span><span class="n">update_annotator</span><span class="p">(</span><span class="n">imarray</span><span class="o">=</span><span class="n">rgba_image</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">anno_dict</span><span class="o">=</span><span class="n">annodict</span><span class="p">,</span> <span class="n">render_dict</span><span class="o">=</span><span class="n">render_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1281,7 +1278,7 @@ Artifact
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the mask (by using the render_segmentation method, since the data structure is conceptually similar to the segmentation)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">(</span><span class="n">layer_key</span><span class="o">=</span><span class="s1">&#39;_mask&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">(</span><span class="n">layer_key</span><span class="o">=</span><span class="s2">&quot;_mask&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1300,7 +1297,7 @@ Artifact
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_masked_intensities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_region</span><span class="p">()</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1316,7 +1313,7 @@ Artifact
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_intensities</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1336,7 +1333,7 @@ Artifact
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_masked_cells</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_cells</span><span class="p">()</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_cells</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_masked_cells</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1352,7 +1349,7 @@ Artifact
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_region</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_cells</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s1">&#39;PAX5&#39;</span><span class="p">,</span> <span class="s1">&#39;CD3&#39;</span><span class="p">,</span> <span class="s1">&#39;Podoplanin&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_region</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">mask_cells</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

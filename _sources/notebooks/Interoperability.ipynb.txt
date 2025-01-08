@@ -37,7 +37,8 @@
     "import os\n",
     "import shutil\n",
     "import anndata\n",
-    "xr.set_options(display_style='text')"
+    "\n",
+    "xr.set_options(display_style=\"text\")"
    ]
   },
   {
@@ -108,7 +109,7 @@
     }
    ],
    "source": [
-    "ds = sp.read_from_spatialdata('../../data/spatialdata_example.zarr', image_key='raccoon')\n",
+    "ds = sp.read_from_spatialdata(\"../../data/spatialdata_example.zarr\", image_key=\"raccoon\")\n",
     "ds"
    ]
   },
@@ -193,7 +194,7 @@
    "source": [
     "# loading a test file which we will export later\n",
     "# notice how easy it is to load the file from a zarr using xarray\n",
-    "ds = xr.open_zarr('../../data/tmp.zarr')\n",
+    "ds = xr.open_zarr(\"../../data/tmp.zarr\")\n",
     "ds"
    ]
   },
@@ -489,9 +490,11 @@
    ],
    "source": [
     "# putting the expression matrix into an anndata object\n",
-    "adata = ds.tl.convert_to_anndata(expression_matrix_key=\"_arcsinh_mean\", \n",
-    "                                 additional_layers={\"arcsinh_sum\": \"_arcsinh_sum\", \"raw_mean\": \"_raw_mean\", \"raw_sum\": \"_raw_sum\"}, \n",
-    "                                 additional_uns={\"label_colors\": \"_labels\"})\n",
+    "adata = ds.tl.convert_to_anndata(\n",
+    "    expression_matrix_key=\"_arcsinh_mean\",\n",
+    "    additional_layers={\"arcsinh_sum\": \"_arcsinh_sum\", \"raw_mean\": \"_raw_mean\", \"raw_sum\": \"_raw_sum\"},\n",
+    "    additional_uns={\"label_colors\": \"_labels\"},\n",
+    ")\n",
     "adata"
    ]
   },
@@ -502,7 +505,7 @@
    "outputs": [],
    "source": [
     "# writing to disk as hdf5\n",
-    "adata.write('tmp.h5ad')"
+    "adata.write(\"tmp.h5ad\")"
    ]
   },
   {
