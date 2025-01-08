@@ -6,6 +6,9 @@
 Spatialproteomics - a unified framework for analyzing highly multiplexed fluorescence images
 ============================================================================================
 
+Spatialproteomics is a lightweight python package that provides a unified framework which facilitates the parallel (pre-)processing and analysis of high-dimensional imaging datasets. 
+The underlying data structure ensures synchronization of shared coordinates across data modalities, which enables users to run analyses on subsets of their data. 
+Built on top of xarray and dask, spatialproteomics can process high-dimensional larger-than-memory imaging datasets.
 
 .. toctree::
    :maxdepth: 1
@@ -22,6 +25,7 @@ Spatialproteomics - a unified framework for analyzing highly multiplexed fluores
    :maxdepth: 1
    :caption: Tutorials:
    
+   notebooks/Installation
    notebooks/ExampleWorkflow
    notebooks/Slicing
    notebooks/Segmentation
