@@ -9,6 +9,10 @@ def test_compute_neighborhoods_knn(dataset_labeled):
     # checking that each row sums to 1
     assert neighborhod_df.sum(axis=1).all() == pytest.approx(1.0)
     assert Layers.ADJACENCY_MATRIX in dataset_neighborhoods
+    # checking that the adjacency matrix is symmetric
+    assert (
+        (dataset_neighborhoods[Layers.ADJACENCY_MATRIX] == dataset_neighborhoods[Layers.ADJACENCY_MATRIX].T).all().all()
+    )
 
 
 def test_compute_neighborhoods_knn_no_labels(dataset):
