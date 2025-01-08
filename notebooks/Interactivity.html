@@ -544,7 +544,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading in a data set and performing some formatting for convenience</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s1">&#39;../../data/BNHL_166_4_I2_LK.zarr&#39;</span><span class="p">)</span>
 <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="s2">&quot;_labels&quot;</span><span class="p">)</span>
 <span class="n">ds</span>

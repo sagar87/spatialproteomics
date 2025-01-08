@@ -19,6 +19,7 @@
     "\n",
     "Running out of memory is a common problem when dealing with large images. Here are a couple of things you could consider to make your workflow more memory efficient.\n",
     "\n",
+    "- **Using zarr:** if you already have your objects stored in `zarr` format, it is more memory-efficient to load them using `xr.open_zarr(file)` than `xr.load_dataset(file)`.\n",
     "- **Subsetting:** if you already know that you will require only a subset of your data, e. g. looking at certain channels, it is advised to perform subsetting as early as possible. This can be done with `ds.pp[channels]`.\n",
     "- **Deleting objects which are not required anymore:** spatialproteomics deliberately does not perform in-place operations, but rather copies the existing object to return a new one. This can be heavy on memory, if you do not remove intermediate variables once you do not need them anymore. You could consider removing them with `del` like this:\n",
     "```\n",
@@ -34,6 +35,14 @@
     "    gc.collect()  # manually calling the garbage collector after each iteration\n",
     "```"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bf1424c0-6d11-4ad0-98cf-324e7395cc0f",
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {

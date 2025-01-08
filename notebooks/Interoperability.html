@@ -644,7 +644,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading a test file which we will export later</span>
 <span class="c1"># notice how easy it is to load the file from a zarr using xarray</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;../../data/tmp.zarr&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;zarr&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s1">&#39;../../data/tmp.zarr&#39;</span><span class="p">)</span>
 <span class="n">ds</span>
 </pre></div>
 </div>
