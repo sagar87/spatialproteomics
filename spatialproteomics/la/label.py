@@ -827,6 +827,7 @@ class LabelAccessor:
         assert (
             Layers.NEIGHBORHOODS not in self._obj
         ), f"Already found neighborhoods in the object. Since these are dependent on the labels, please remove them with pp.drop_layers('{Layers.NEIGHBORHOODS}') before adding new labels."
+        assert self._obj.coords[Dims.CELLS].shape[0] != 0, "No cells found in the object. Cannot add labels."
 
         if df is None:
             cells = self._obj.coords[Dims.CELLS].values
@@ -835,6 +836,11 @@ class LabelAccessor:
             unique_labels = np.unique(formated_labels)
         else:
             sub = df.loc[:, [cell_col, label_col]].dropna()
+            # removing cells that are not in the object
+            sub = sub[sub[cell_col].isin(self._obj.coords[Dims.CELLS].values)]
+            assert (
+                sub.shape[0] != 0
+            ), f"Could not find any overlap between the cells in the data frame's {cell_col} column and the cells in the object. Please make sure the cells for which you want to add labels are present in the object."
             cells = sub.loc[:, cell_col].to_numpy().squeeze()
             labels = sub.loc[:, label_col].to_numpy().squeeze()
 
@@ -866,13 +872,6 @@ class LabelAccessor:
             coords=[cells, [Features.LABELS]],
             dims=[Dims.CELLS, Dims.FEATURES],
             name=Layers.OBS,
-        )
-
-        da = da.where(
-            da.coords[Dims.CELLS].isin(
-                self._obj.coords[Dims.CELLS],
-            ),
-            drop=True,
         )
 
         obj = self._obj.copy()

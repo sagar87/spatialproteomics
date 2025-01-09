@@ -45,6 +45,24 @@ def test_add_labels_from_dataframe_unassigned_cells(dataset):
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
 
 
+def test_add_labels_from_dataframe_invalid_cells(dataset):
+    # creating a dummy data frame
+    cells = dataset.coords[Dims.CELLS].values
+    num_cells = len(cells)
+    df = pd.DataFrame(
+        {
+            "cell": [num_cells + 5],
+            "label": ["CT1"],
+        }
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="Could not find any overlap between the cells in the data frame",
+    ):
+        dataset.la.add_labels_from_dataframe(df)
+
+
 def test_add_labels(dataset):
     # creating a dummy dict
     cells = dataset.coords[Dims.CELLS].values
