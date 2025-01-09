@@ -373,6 +373,9 @@ class NeighborhoodAccessor:
 
         obj = obj.nh.add_properties(names, Props.NAME)
 
+        # finally converting the properties to strings, because str and np.str cannot be mixed
+        obj[Layers.NH_PROPERTIES] = obj[Layers.NH_PROPERTIES].astype(str)
+
         return obj
 
     def _neighborhood_to_dict(self, prop: str, reverse: bool = False, relabel: bool = False) -> dict:
