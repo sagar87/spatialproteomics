@@ -506,7 +506,6 @@ class PreprocessingAccessor:
                 )
                 obj = obj.drop_layers(Layers.OBSERVATIONS)
             else:
-                logger.info("Found _obs in image container. Concatenating.")
                 da = xr.concat(
                     [obj[Layers.OBS].copy(), da],
                     dim=Dims.FEATURES,
