@@ -622,6 +622,9 @@ class NeighborhoodAccessor:
         assert radius > 0, "Radius must be greater than 0."
         assert Layers.OBS in self._obj, "No observations found in the object."
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+        assert (
+            Layers.ADJACENCY_MATRIX not in self._obj
+        ), "Adjacency matrix already found in the object. Please remove it first with pp.drop_layers('_adjacency_matrix')."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
         neighborhood_df, adjacency_matrix = _construct_neighborhood_df_radius(
@@ -689,6 +692,9 @@ class NeighborhoodAccessor:
         assert k > 0, "K must be greater than 0."
         assert Layers.OBS in self._obj, "No observations found in the object."
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+        assert (
+            Layers.ADJACENCY_MATRIX not in self._obj
+        ), "Adjacency matrix already found in the object. Please remove it first with pp.drop_layers('_adjacency_matrix')."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
         neighborhood_df, adjacency_matrix = _construct_neighborhood_df_knn(
@@ -752,6 +758,9 @@ class NeighborhoodAccessor:
         """
         assert Layers.OBS in self._obj, "No observations found in the object."
         assert Features.LABELS in self._obj.coords[Dims.FEATURES].values, "No cell type labels found in the object."
+        assert (
+            Layers.ADJACENCY_MATRIX not in self._obj
+        ), "Adjacency matrix already found in the object. Please remove it first with pp.drop_layers('_adjacency_matrix')."
 
         # here we use the numeric labels in order to keep them synchronized with the rest of the object
         neighborhood_df, adjacency_matrix = _construct_neighborhood_df_delaunay(

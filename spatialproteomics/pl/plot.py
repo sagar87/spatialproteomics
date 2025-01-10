@@ -899,6 +899,7 @@ class PlotAccessor:
         self,
         feature: str = None,
         cmap: str = "viridis",
+        background: str = "black",
         alpha: float = 1.0,
         alpha_boundary: float = 1.0,
         mode: str = "inner",
@@ -914,6 +915,8 @@ class PlotAccessor:
             The feature to be rendered from the observation layer. Default is None.
         cmap : str, optional
             The colormap to be used for rendering. Default is "viridis".
+        background : str, optional
+            The background color of the rendered image. Default is "black".
         alpha : float, optional
             The alpha value for the rendered image. Default is 1.0.
         alpha_boundary : float, optional
@@ -978,6 +981,7 @@ class PlotAccessor:
                 cmap,
                 self._obj[Layers.PLOT].values,
                 background_array=background_array,
+                background=background,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,
@@ -992,6 +996,7 @@ class PlotAccessor:
                 segmentation,
                 cmap,
                 background_array=background_array,
+                background=background,
                 alpha=alpha,
                 alpha_boundary=alpha_boundary,
                 mode=mode,

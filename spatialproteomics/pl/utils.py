@@ -208,6 +208,7 @@ def _render_obs(
     cmap: list,
     img: np.ndarray = None,
     background_array: np.ndarray = None,
+    background: str = "red",
     alpha: float = 0.2,
     alpha_boundary: float = 1.0,
     mode: str = "inner",
@@ -229,6 +230,10 @@ def _render_obs(
         img[..., -1] = 1
 
     im = img.copy()
+
+    # Set the background color
+    background_indices = ~background_array
+    im[background_indices] = mcolors.to_rgba(background)
 
     im[background_array] = alpha * colored_mask[background_array] + (1 - alpha) * img[background_array]
     im[mask_bound] = alpha_boundary * colored_mask[mask_bound] + (1 - alpha_boundary) * img[mask_bound]
