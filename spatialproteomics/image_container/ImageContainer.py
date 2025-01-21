@@ -6,7 +6,7 @@ import xarray as xr
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from ..constants import COLORS, Layers
+from ..constants import COLORS, Features, Layers
 
 
 class ImageContainer:
@@ -97,7 +97,7 @@ class ImageContainer:
             elif neighborhood_method == "delaunay":
                 self.objects[id] = self.objects[id].nh.compute_neighborhoods_delaunay()
             # adding the neighborhoods to the big neighborhood data frame
-            neighborhood_df.append(self.objects[id].pp.get_layer_as_df("_neighborhoods"))
+            neighborhood_df.append(self.objects[id].pp.get_layer_as_df(Layers.NEIGHBORHOODS))
 
         # replacing nans with 0s (this means that the ct was never called in that specific sample)
         neighborhood_df = pd.concat(neighborhood_df).fillna(0)
@@ -107,7 +107,7 @@ class ImageContainer:
         # at some point, we could also add more clustering algorithms
         clusterer = KMeans(n_clusters=k, random_state=seed)
         clusterer.fit(neighborhood_df)
-        kmeans_df = pd.DataFrame({"neighborhood": [f"Neighborhood {x}" for x in clusterer.labels_]})
+        kmeans_df = pd.DataFrame({Features.NEIGHBORHOODS: [f"Neighborhood {x}" for x in clusterer.labels_]})
 
         # storing the neighborhood and k-means dataframes in the ImageContainer
         self.neighborhood_df = neighborhood_df
@@ -136,7 +136,9 @@ class ImageContainer:
         # returning the objects in the form of a dictionary
         return self.objects
 
-    def get_neighborhood_composition(self, standardize: bool = True) -> pd.DataFrame:
+    def get_neighborhood_composition(
+        self, standardize: bool = True, neighborhood_col: str = Features.NEIGHBORHOODS
+    ) -> pd.DataFrame:
         """
         Get the composition of neighborhoods across all objects in the ImageContainer.
 
@@ -144,21 +146,24 @@ class ImageContainer:
         ----------
         standardize : bool, optional
             Whether to standardize the composition of neighborhoods. Default is True.
+        neighborhood_col : str, optional
+            The column in the object's DataFrame that contains the neighborhood labels. Default is 'neighborhoods'.
 
         Returns
         -------
         pd.DataFrame
             A DataFrame containing the composition of neighborhoods across all objects in the ImageContainer.
         """
-        assert (
-            self.neighborhood_df is not None
-        ), "Neighborhoods have not been computed yet. Please call compute_neighborhoods() first."
+        # in case the neighborhood and k-means dataframes are not present, we need to compute them
+        # this can for example happen when the user computed neighborhoods, saved to zarr, and is now trying to have them in the image container again
+        if self.neighborhood_df is None:
+            self._compute_dataframes_from_existing_neighborhoods(neighborhood_col=neighborhood_col)
 
         # computing the composition of neighborhoods (grouping by the neighborhood labels and summing them up)
         neighborhood_composition = self.neighborhood_df
-        neighborhood_composition["neighborhood"] = self.kmeans_df["neighborhood"].values
+        neighborhood_composition[Features.NEIGHBORHOODS] = self.kmeans_df[Features.NEIGHBORHOODS].values
 
-        neighborhood_composition = neighborhood_composition.groupby("neighborhood").mean()
+        neighborhood_composition = neighborhood_composition.groupby(Features.NEIGHBORHOODS).mean()
 
         if standardize:
             scaler = StandardScaler()
@@ -169,3 +174,27 @@ class ImageContainer:
             )
 
         return neighborhood_composition
+
+    def _compute_dataframes_from_existing_neighborhoods(self, neighborhood_col: str = Features.NEIGHBORHOODS):
+        neighborhood_df = []
+        kmeans_df = []
+        for id, sp_obj in self.objects.items():
+            assert (
+                Layers.NEIGHBORHOODS in sp_obj
+            ), "Neighborhoods have not been computed yet. Please call compute_neighborhoods() first."
+
+            # adding the neighborhoods to the big neighborhood data frame
+            neighborhood_df.append(self.objects[id].pp.get_layer_as_df(Layers.NEIGHBORHOODS))
+            # adding the cluster annotations to the k-means df
+            assert (
+                neighborhood_col in self.objects[id].pp.get_layer_as_df().columns
+            ), f"Column {neighborhood_col} not found in the object. Please set the column with the parameter 'neighborhood_col'. Available columns are {self.objects[id].pp.get_layer_as_df().columns}"
+            kmeans_df.append(self.objects[id].pp.get_layer_as_df()[[neighborhood_col]])
+
+        # replacing nans with 0s (this means that the ct was never called in that specific sample)
+        neighborhood_df = pd.concat(neighborhood_df).fillna(0)
+        kmeans_df = pd.concat(kmeans_df)
+
+        # storing the neighborhood and k-means dataframes in the ImageContainer
+        self.neighborhood_df = neighborhood_df
+        self.kmeans_df = kmeans_df
