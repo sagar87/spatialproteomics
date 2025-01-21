@@ -287,7 +287,7 @@ class NeighborhoodAccessor:
     def add_neighborhoods_from_dataframe(
         self,
         df: pd.DataFrame,
-        neighborhood_col: str = "neighborhood",
+        neighborhood_col: str = Features.NEIGHBORHOODS,
         colors: Union[list, None] = None,
         names: Union[list, None] = None,
     ) -> xr.Dataset:
@@ -299,7 +299,7 @@ class NeighborhoodAccessor:
         df : pd.DataFrame
             DataFrame containing neighborhood information.
         neighborhood_col : str, optional
-            Column name in the DataFrame that contains neighborhood labels, by default 'neighborhood'.
+            Column name in the DataFrame that contains neighborhood labels, by default '_neighborhoods'.
         colors : list or None, optional
             List of colors for the neighborhoods, by default None. If None, random colors will be assigned.
         names : list or None, optional
