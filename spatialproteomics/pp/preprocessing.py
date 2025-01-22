@@ -13,7 +13,6 @@ from ..constants import Dims, Features, Layers, Props
 from .utils import (
     _convert_to_8bit,
     _get_disconnected_cell,
-    _get_dtype_for_quantile,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -915,14 +914,16 @@ class PreprocessingAccessor:
 
             if shift:
                 # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
-                # in the case of unsigned integers, we need to convert to signed integers, since otherwise we run into overflow issues
+                # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
                 lower = np.quantile(
                     image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1
-                ).astype(_get_dtype_for_quantile(image_layer.dtype))
-                filtered = (
-                    (image_layer - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)))
-                    .clip(min=0)
-                    .astype(image_layer.dtype)
+                ).astype(image_layer.dtype)
+                filtered = np.clip(
+                    image_layer, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
+                ).astype(image_layer.dtype) - np.expand_dims(
+                    np.diag(lower) if lower.ndim > 1 else lower, (1, 2)
+                ).astype(
+                    image_layer.dtype
                 )
             else:
                 # Calculate the quantile-based intensity threshold for each channel.
