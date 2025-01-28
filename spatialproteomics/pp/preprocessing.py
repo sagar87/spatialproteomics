@@ -1169,8 +1169,11 @@ class PreprocessingAccessor:
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
 
-        # selecting only the cells that are in cells_sel
-        obj = self._obj.sel({Dims.CELLS: cells_sel})
+        # making sure that if there is a cells_2 coordinate, this is also subset correctly
+        query = {Dims.CELLS: cells_sel}
+        if Dims.CELLS_2 in self._obj.coords:
+            query[Dims.CELLS_2] = cells_sel
+        obj = self._obj.sel(query)
 
         # synchronizing the segmentation mask with the selected cells
         segmentation = obj[segmentation_key].values
@@ -1233,7 +1236,11 @@ class PreprocessingAccessor:
 
         # removing outlying cells
         cells_sel = _remove_outlying_cells(segmentation, dilation_size, threshold)
-        obj = self._obj.sel({Dims.CELLS: cells_sel})
+        # making sure that if there is a cells_2 coordinate, this is also subset correctly
+        query = {Dims.CELLS: cells_sel}
+        if Dims.CELLS_2 in self._obj.coords:
+            query[Dims.CELLS_2] = cells_sel
+        obj = self._obj.sel(query)
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
         # relabeling cells in the segmentation mask so the IDs go from 1 to n again
@@ -1251,7 +1258,6 @@ class PreprocessingAccessor:
 
         # removing the old segmentation
         obj = obj.drop_vars(segmentation_key)
-
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
