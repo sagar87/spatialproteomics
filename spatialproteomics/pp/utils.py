@@ -1,5 +1,7 @@
+from collections import defaultdict
 from typing import List, Tuple
 
+import cv2
 import numpy as np
 import scipy.ndimage
 from skimage.measure import label, regionprops
@@ -392,3 +394,52 @@ def _convert_to_8bit(image):
         raise ValueError(
             f"Could not convert image of type {image.dtype} to 8-bit. Please make sure that the image is of type uint8, uint16, uint32, float32, or float64. If the image is of type float, make sure that the values are in the range [0, 1]."
         )
+
+
+def _remove_outlying_cells(segmentation, dilation_size, threshold):
+    # Create a binary mask where non-zero pixels are 1
+    binary_mask = (segmentation != 0).astype(np.uint8)
+
+    # Create the dilation kernel (elliptical shape)
+    kernel_size = 2 * dilation_size + 1
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+
+    # Apply dilation to the binary mask
+    dilated_mask = cv2.dilate(binary_mask, kernel)
+
+    # Find connected components in the dilated mask
+    num_clusters, cluster_labels = cv2.connectedComponents(dilated_mask, connectivity=8)
+
+    # Flatten the original image and cluster labels for efficient indexing
+    flat_image = segmentation.ravel()
+    flat_cluster = cluster_labels.ravel()
+
+    # Get unique cell labels and their first occurrence indices
+    unique_cells, cell_indices = np.unique(flat_image, return_index=True)
+
+    # Filter out the background (label 0)
+    mask = unique_cells != 0
+    unique_cells = unique_cells[mask]
+    cell_indices = cell_indices[mask]
+
+    # Map each cell to its corresponding cluster label
+    cell_clusters = flat_cluster[cell_indices]
+    cell_to_cluster = dict(zip(unique_cells, cell_clusters))
+
+    # Group cells by their cluster
+    cluster_to_cells = defaultdict(list)
+    for cell in unique_cells:
+        cluster = cell_to_cluster[cell]
+        cluster_to_cells[cluster].append(cell)
+
+    # Collect cells from clusters that are too small
+    outlying_cells = set()
+    for cluster, cells in cluster_to_cells.items():
+        if len(cells) < threshold:
+            outlying_cells.update(cells)
+
+    # Identify the retained cells (cells not in outlying_cells)
+    retained_cells = set(unique_cells) - outlying_cells
+
+    # Return the indices of the retained cells
+    return sorted(retained_cells)

@@ -16,6 +16,7 @@ from .utils import (
     _merge_segmentation,
     _normalize,
     _relabel_cells,
+    _remove_outlying_cells,
     _remove_unlabeled_cells,
 )
 
@@ -1178,7 +1179,67 @@ class PreprocessingAccessor:
         # relabeling cells in the segmentation mask so the IDs go from 1 to n again
         segmentation, relabel_dict = _relabel_cells(segmentation)
         # updating the cell coords of the object
-        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
+        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
+
+        # creating a data array with the segmentation mask, so that we can merge it to the original
+        da = xr.DataArray(
+            segmentation,
+            coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
+            dims=[Dims.Y, Dims.X],
+            name=segmentation_key,
+        )
+
+        # removing the old segmentation
+        obj = obj.drop_vars(segmentation_key)
+
+        # adding the new filtered and relabeled segmentation
+        return xr.merge([obj, da])
+
+    def remove_outlying_cells(
+        self, dilation_size: int = 25, threshold: int = 5, segmentation_key: str = Layers.SEGMENTATION
+    ):
+        """
+        Removes outlying cells from the image container. It does so by dilating the segmentation mask and removing cells that belong to a connected component with less than 'threshold' cells.
+
+        Parameters
+        ----------
+        dilation_size : int
+            The size of the dilation kernel. Default is 25.
+        threshold : int
+            The minimum number of cells in a connected component required for the cells to be kept. Default is 5.
+        segmentation_key : str
+            The key of the segmentation mask in the object. Default is '_segmentation'.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the outlying cells removed.
+
+        Raises
+        ------
+        ValueError
+            If the object does not contain a segmentation mask.
+        """
+        # Validate input parameters
+        if dilation_size <= 0 or threshold <= 0:
+            raise ValueError("Dilation size and threshold must be positive integers.")
+
+        # Check if the segmentation mask exists
+        if segmentation_key not in self._obj:
+            raise ValueError(f"No segmentation mask found with key '{segmentation_key}' in the object.")
+
+        # getting the segmentation mask
+        segmentation = self._obj[segmentation_key].values
+
+        # removing outlying cells
+        cells_sel = _remove_outlying_cells(segmentation, dilation_size, threshold)
+        obj = self._obj.sel({Dims.CELLS: cells_sel})
+        # setting all cells that are not in cells to 0
+        segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
+        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+        segmentation, relabel_dict = _relabel_cells(segmentation)
+        # updating the cell coords of the object
+        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
