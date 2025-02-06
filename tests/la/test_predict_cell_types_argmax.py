@@ -8,7 +8,7 @@ from spatialproteomics.constants import Dims, Labels, Layers, Props
 def test_predict_cell_types_argmax(dataset_full):
     quantified = dataset_full.pp.add_quantification()
 
-    ct_dict = {"T_CD4": "CD4", "T_CD8": "CD8"}
+    ct_dict = {"CD4": "T_CD4", "CD8": "T_CD8"}
     quantified.la.predict_cell_types_argmax(ct_dict)
 
     # no quantification layer found
@@ -20,7 +20,7 @@ def test_predict_cell_types_argmax(dataset_full):
 
     # not all markers found
     with pytest.raises(AssertionError, match="The following markers were not found in quantification layer"):
-        ct_dict = {"T_CD4": "CD4", "dummy": "dummy"}
+        ct_dict = {"CD4": "T_CD4", "dummy": "dummy"}
         quantified.la.predict_cell_types_argmax(ct_dict)
 
 
@@ -46,7 +46,7 @@ def test_predict_cell_types_argmax_without_overwriting_existing_annotations(data
     assert "CT1" in ds[Layers.LA_PROPERTIES].sel(la_props=Props.NAME).values
     assert Labels.UNLABELED in ds[Layers.LA_PROPERTIES].sel(la_props=Props.NAME).values
 
-    ct_dict = {"T_CD4": "CD4", "T_CD8": "CD8"}
+    ct_dict = {"CD4": "T_CD4", "CD8": "T_CD8"}
     ds = ds.la.predict_cell_types_argmax(ct_dict)
 
     # checking that we have all cell types and no unassigned cells
