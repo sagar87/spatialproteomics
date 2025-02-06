@@ -614,14 +614,14 @@ class LabelAccessor:
         Predicts cell types based on the argmax classification of marker intensities.
 
         Parameters:
-            marker_dict (dict): A dictionary mapping cell types to markers.
-            key (str, optional): The key of the quantification layer to use for classification. Defaults to Layers.INTENSITY.
+            marker_dict (dict): A dictionary mapping markers to cell types. Each marker should be associated to one specific cell type.
+            key (str, optional): The key of the quantification layer to use for classification. Defaults to "_intensity".
             overwrite_existing_labels (bool, optional): Whether to overwrite existing labels. Defaults to False.
             cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
             label_col (str, optional): The name of the column to store predicted cell types in the output dataframe. Defaults to "label".
 
         Returns:
-            spatial_data.SpatialData: A new SpatialData object with the predicted cell types added as labels.
+            xr.Dataset: A new spatialproteomics object with the predicted cell types added as labels.
 
         Raises:
             AssertionError: If the quantification layer with the specified key is not found.
@@ -631,7 +631,7 @@ class LabelAccessor:
         assert (
             key in self._obj
         ), f"Quantification layer with key {key} not found. Please run pp.add_quantification() before classifying cell types."
-        celltypes, markers = list(marker_dict.keys()), list(marker_dict.values())
+        markers, celltypes = list(marker_dict.keys()), list(marker_dict.values())
         # asserting that all markers are present in the quantification layer
         markers_present = self._obj.coords[Dims.CHANNELS].values
         assert (
