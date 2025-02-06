@@ -575,18 +575,18 @@ Instead of a dictionary, a path to a yaml file containing the subtype dictionary
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>marker_dict</strong> (<em>dict</em>) – A dictionary mapping cell types to markers.</p></li>
-<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key of the quantification layer to use for classification. Defaults to Layers.INTENSITY.</p></li>
+<li><p><strong>marker_dict</strong> (<em>dict</em>) – A dictionary mapping markers to cell types. Each marker should be associated to one specific cell type.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key of the quantification layer to use for classification. Defaults to “_intensity”.</p></li>
 <li><p><strong>overwrite_existing_labels</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overwrite existing labels. Defaults to False.</p></li>
 <li><p><strong>cell_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column to store cell IDs in the output dataframe. Defaults to “cell”.</p></li>
 <li><p><strong>label_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column to store predicted cell types in the output dataframe. Defaults to “label”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new SpatialData object with the predicted cell types added as labels.</p>
+<dd class="field-even"><p>A new spatialproteomics object with the predicted cell types added as labels.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>spatial_data.SpatialData</p>
+<dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
