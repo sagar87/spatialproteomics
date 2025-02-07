@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from skimage.measure import label, regionprops
-from skimage.morphology import closing, dilation, disk, erosion, square
+from skimage.morphology import closing, dilation, disk, erosion, footprint_rectangle
 from skimage.segmentation import find_boundaries
 
 from ..base_logger import logger
@@ -328,7 +328,7 @@ def _autocrop(img: np.ndarray, bounds=List, padding: int = 50, downsample: int =
     Returns:
         tuple: A tuple containing two slices representing the cropped image.
     """
-    bw = closing(img > np.quantile(img, 0.8), square(20))
+    bw = closing(img > np.quantile(img, 0.8), footprint_rectangle((20, 20)))
     label_image = label(bw)
     props = regionprops(label_image)
 
