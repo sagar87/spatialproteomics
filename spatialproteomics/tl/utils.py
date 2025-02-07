@@ -12,7 +12,10 @@ def _get_channels(obj, key_added, channel):
         raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
 
     if channel is not None:
-        channels = [channel]
+        if isinstance(channel, list):
+            channels = channel
+        else:
+            channels = [channel]
     else:
         channels = obj.coords[Dims.CHANNELS].values.tolist()
 

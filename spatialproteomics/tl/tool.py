@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -40,7 +40,7 @@ class ToolAccessor:
         Parameters
         ----------
         channel : str, optional
-            Channel to use for segmentation. If None, all channels are used.
+            Channel to use for segmentation. If None, all channels are used for independent segmentation.
         key_added : str, optional
             Key to assign to the segmentation results.
         diameter : float, optional
@@ -197,6 +197,7 @@ class ToolAccessor:
     def mesmer(
         self,
         key_added: Optional[str] = "_mesmer_segmentation",
+        channel: Optional[List] = None,
         postprocess_func: Callable = lambda x: x,
         **kwargs,
     ):
@@ -208,6 +209,8 @@ class ToolAccessor:
         ----------
         key_added : str, optional
             Key to assign to the segmentation results.
+        channel : List, optional
+            Channel to use for segmentation. If None, all channels are used.
         postprocess_func : Callable, optional
             Function to apply to the segmentation masks after prediction.
 
@@ -220,11 +223,11 @@ class ToolAccessor:
         -----
         This method requires the 'mesmer' package to be installed.
         """
-        channels = _get_channels(self._obj, key_added, None)
+        channels = _get_channels(self._obj, key_added, channel)
 
         assert (
             len(channels) == 2
-        ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel."
+        ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
         from deepcell.applications import Mesmer
 
