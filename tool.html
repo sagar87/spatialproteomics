@@ -389,7 +389,7 @@ is specified or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>str</em><em>, </em><em>optional</em>) – Channel to use for segmentation. If None, all channels are used.</p></li>
+<li><p><strong>channel</strong> (<em>str</em><em>, </em><em>optional</em>) – Channel to use for segmentation. If None, all channels are used for independent segmentation.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
 <li><p><strong>diameter</strong> (<em>float</em><em>, </em><em>optional</em>) – Expected cell diameter in pixels.</p></li>
 <li><p><strong>channel_settings</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Channels for Cellpose to use for segmentation. If [0, 0], independent segmentation is performed on all channels. If it is anything else (e. g. [1, 2]), joint segmentation is attempted.</p></li>
@@ -470,13 +470,14 @@ is specified or not.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.tl.tool.ToolAccessor.mesmer">
-<span class="sig-name descname"><span class="pre">mesmer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'_mesmer_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess_func:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.mesmer" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">mesmer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_added:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'_mesmer_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel:</span> <span class="pre">~typing.List</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess_func:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolAccessor.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.tl.tool.ToolAccessor.mesmer" title="Link to this definition">¶</a></dt>
 <dd><p>Segment cells using Mesmer. Adds a layer to the spatialproteomics object
 with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – Key to assign to the segmentation results.</p></li>
+<li><p><strong>channel</strong> (<em>List</em><em>, </em><em>optional</em>) – Channel to use for segmentation. If None, all channels are used.</p></li>
 <li><p><strong>postprocess_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to apply to the segmentation masks after prediction.</p></li>
 </ul>
 </dd>

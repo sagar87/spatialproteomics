@@ -2225,7 +2225,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this dictionary maps from cell types to markers</span>
-<span class="n">marker_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;T_h&quot;</span><span class="p">:</span> <span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">:</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;T_reg&quot;</span><span class="p">:</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;T_fh&quot;</span><span class="p">:</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">}</span>
+<span class="n">marker_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CD4&quot;</span><span class="p">:</span> <span class="s2">&quot;T_h&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">:</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">:</span> <span class="s2">&quot;T_reg&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">:</span> <span class="s2">&quot;T_fh&quot;</span><span class="p">}</span>
 <span class="n">sp_object</span> <span class="o">=</span> <span class="n">sp_object</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span><span class="n">marker_dict</span><span class="p">)</span>
 </pre></div>
 </div>

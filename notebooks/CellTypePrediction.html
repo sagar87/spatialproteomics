@@ -685,37 +685,37 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 <h2>Cell Type Prediction with Argmax<a class="headerlink" href="#Cell-Type-Prediction-with-Argmax" title="Link to this heading">¶</a></h2>
 <p>Given the thresholded image, the simplest way to derive cell type labels is to define associations between cell types and markers, and then assign the cell type whose marker is most highly expressed (i. e. taking the argmax). This technique, also termed <code class="docutils literal notranslate"><span class="pre">argmax</span></code>, is demonstrated below.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ct_marker_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;CD3&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Myeloid&quot;</span><span class="p">:</span> <span class="s2">&quot;CD11b&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Dendritic&quot;</span><span class="p">:</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Granulo&quot;</span><span class="p">:</span> <span class="s2">&quot;CD15&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Macro&quot;</span><span class="p">:</span> <span class="s2">&quot;CD68&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma PDPN&quot;</span><span class="p">:</span> <span class="s2">&quot;Podoplanin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD31&quot;</span><span class="p">:</span> <span class="s2">&quot;CD31&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD34&quot;</span><span class="p">:</span> <span class="s2">&quot;CD34&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD90&quot;</span><span class="p">:</span> <span class="s2">&quot;CD90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;NK&quot;</span><span class="p">:</span> <span class="s2">&quot;CD56&quot;</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marker_ct_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;PAX5&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="s2">&quot;Myeloid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD11c&quot;</span><span class="p">:</span> <span class="s2">&quot;Dendritic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD15&quot;</span><span class="p">:</span> <span class="s2">&quot;Granulo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD68&quot;</span><span class="p">:</span> <span class="s2">&quot;Macro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Podoplanin&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal PDPN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD31&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD34&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD34&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD90&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD90&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD56&quot;</span><span class="p">:</span> <span class="s2">&quot;NK&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># predicting the cell type using the argmay</span>
 <span class="n">ds_with_ct_predictions</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span>
-    <span class="n">ct_marker_dict</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_labels</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">marker_ct_dict</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_labels</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># adding colors to match the markers</span>
 
-<span class="n">ds_with_ct_predictions</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ct_marker_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">colors</span><span class="p">)</span>
+<span class="n">ds_with_ct_predictions</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">marker_ct_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">colors</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -725,11 +725,11 @@ Text(0.5, 1.0, &#39;Processed&#39;)
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False.
-Label Stroma PDPN not found in the data object. Skipping.
+Label Stromal PDPN not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the ct predictions next to the processed image</span>
@@ -744,7 +744,7 @@ Label Stroma PDPN not found in the data object. Skipping.
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -760,7 +760,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is how the image in the README was created</span>
@@ -796,7 +796,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 <p>Getting observations from the xarray object is very easy. We can simply use the method <code class="docutils literal notranslate"><span class="pre">pp.get_layer_as_df()</span></code>, which can also parse our cell types into human-readable format automatically.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># getting the obs with get_layer_as_df() to get human readable cell type annotations in a pandas data frame</span>
@@ -805,7 +805,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
