@@ -167,9 +167,34 @@ class PreprocessingAccessor:
 
             # finalise query
             query[Dims.CELLS] = cells
+
             # ensuring that cells and cells_2 are synchronized
             if Dims.CELLS_2 in self._obj.coords:
                 query[Dims.CELLS_2] = cells
+
+            # if the centroids of a cell are outside the bounding box, the cell is removed
+            # to ensure proper synchronization between the segmentation and the observations,
+            # we also remove the cell from the segmentation
+            # synchronizing the segmentation mask with the selected cells
+            obj = self._obj.sel(query)
+            cells = obj.coords[Dims.CELLS].values
+            segmentation = obj[Layers.SEGMENTATION].values
+            # setting all cells that are not in cells to 0
+            segmentation = _remove_unlabeled_cells(segmentation, cells)
+
+            # creating a data array with the segmentation mask, so that we can merge it to the original
+            da = xr.DataArray(
+                segmentation,
+                coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
+                dims=[Dims.Y, Dims.X],
+                name=Layers.SEGMENTATION,
+            )
+
+            # removing the old segmentation
+            obj = obj.drop_vars(Layers.SEGMENTATION)
+
+            # adding the new filtered and relabeled segmentation
+            return xr.merge([obj, da])
 
         return self._obj.sel(query)
 
