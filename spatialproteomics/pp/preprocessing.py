@@ -1071,50 +1071,31 @@ class PreprocessingAccessor:
 
     def downsample(self, rate: int):
         """
-        Downsamples the image and segmentation mask in the object by a given rate.
+        Downsamples the entire dataset by selecting every `rate`-th element along the x and y dimensions.
 
         Parameters
         ----------
         rate : int
-            The downsampling rate. Only every `rate`-th pixel will be kept.
+            The downsampling rate. Only every `rate`-th pixel (or coordinate) is kept.
 
         Returns
         -------
         xr.Dataset
-            The downsampled object containing the updated image and segmentation mask.
-
-        Raises
-        ------
-        AssertionError
-            If no image layer is found in the object.
+            The downsampled dataset with updated x and y coordinates.
         """
-        # checking if the object contains an image layer
-        assert Layers.IMAGE in self._obj, "No image layer found in the object."
+        # Make a copy of the original dataset
+        new_obj = self._obj.copy()
 
-        image_layer = self._obj[Layers.IMAGE]
+        # Use isel to select every `rate`-th element along the x and y dimensions.
+        # This applies to every variable that depends on these dimensions.
+        new_obj = new_obj.isel({Dims.X: slice(None, None, rate), Dims.Y: slice(None, None, rate)})
 
-        x = self._obj.x.values[::rate]
-        y = self._obj.y.values[::rate]
-        c = self._obj.channels.values
-        img = image_layer.values[:, ::rate, ::rate]
-        new_img = xr.DataArray(img, coords=[c, y, x], dims=[Dims.CHANNELS, Dims.Y, Dims.X], name=Layers.IMAGE)
-        obj = self._obj.drop(Layers.IMAGE)
+        # Optionally, update the x and y coordinate arrays if needed.
+        # In many cases, isel will automatically update the coordinate arrays,
+        # but you can explicitly assign them if required.
+        new_obj = new_obj.assign_coords({Dims.X: new_obj.coords[Dims.X].values, Dims.Y: new_obj.coords[Dims.Y].values})
 
-        if Layers.SEGMENTATION in self._obj:
-            # if a segmentation mask is present in the object
-            seg_layer = self._obj[Layers.SEGMENTATION]
-            new_seg = xr.DataArray(
-                seg_layer.values[::rate, ::rate], coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION
-            )
-            obj = obj.drop(Layers.SEGMENTATION)
-
-            obj = obj.drop_dims([Dims.Y, Dims.X])
-
-            return xr.merge([obj, new_img, new_seg])
-        else:
-            # if no segmentation is present in the object
-            obj = obj.drop_dims([Dims.Y, Dims.X])
-            return xr.merge([obj, new_img])
+        return new_obj
 
     def rescale(self, scale: int):
         """
