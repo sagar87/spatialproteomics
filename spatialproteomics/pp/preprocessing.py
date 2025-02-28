@@ -1033,7 +1033,7 @@ class PreprocessingAccessor:
         # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
         processed_layers = []
         for channel in layer.coords[Dims.CHANNELS].values:
-            channel_data = layer.sel({Dims.CHANNELS: channel})
+            channel_data = layer.sel({Dims.CHANNELS: channel}).values
             processed_channel_data = func(channel_data, **kwargs)
             processed_layers.append(processed_channel_data)
 
