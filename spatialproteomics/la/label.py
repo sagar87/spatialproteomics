@@ -797,6 +797,7 @@ class LabelAccessor:
         label_col: str = "label",
         colors: Union[list, None] = None,
         names: Union[list, None] = None,
+        ignore_neighborhoods: bool = False,
     ) -> xr.Dataset:
         """
         Adds labels to the image container.
@@ -813,6 +814,8 @@ class LabelAccessor:
             A list of colors corresponding to the cell labels. If None, random colors will be assigned. Default is None.
         names : Union[list, None], optional
             A list of names corresponding to the cell labels. If None, default names will be assigned. Default is None.
+        ignore_neighborhoods : bool, optional
+            If True, the function will ignore the neighborhoods in the object. Default is False.
 
         Returns
         -------
@@ -824,9 +827,10 @@ class LabelAccessor:
             Layers.LA_PROPERTIES not in self._obj
         ), f"Already found label properties in the object. Please remove them with pp.drop_layers('{Layers.LA_PROPERTIES}') first."
         # check if neighborhoods are present in the object
-        assert (
-            Layers.NEIGHBORHOODS not in self._obj
-        ), f"Already found neighborhoods in the object. Since these are dependent on the labels, please remove them with pp.drop_layers('{Layers.NEIGHBORHOODS}') before adding new labels."
+        if not ignore_neighborhoods:
+            assert (
+                Layers.NEIGHBORHOODS not in self._obj
+            ), "Already found neighborhoods in the object. If you want to keep the current neighborhoods in obs, set ignore_neighborhoods=True. Note that this will remove the neighborhoods compositions from the object."
         assert self._obj.coords[Dims.CELLS].shape[0] != 0, "No cells found in the object. Cannot add labels."
 
         if df is None:
@@ -875,6 +879,8 @@ class LabelAccessor:
         )
 
         obj = self._obj.copy()
+        if ignore_neighborhoods:
+            obj = obj.pp.drop_layers(Layers.NEIGHBORHOODS)
         obj = xr.merge([obj.sel(cells=da.cells), da])
 
         if colors is not None:
@@ -1004,5 +1010,46 @@ class LabelAccessor:
             obj = obj.pp.drop_layers(Layers.LA_PROPERTIES, suppress_warnings=True)
             subtype_df["cell"] = subtype_df.index
             obj = obj.la.add_labels_from_dataframe(subtype_df, cell_col="cell", label_col=final_layer)
+
+        return obj
+
+    def set_label_level(self, level: str, ignore_neighborhoods: bool = False) -> xr.Dataset:
+        """
+        Set the label level to a specific level.
+
+        Parameters
+        ----------
+        level : str
+            The name of the label level to set.
+        ignore_neighborhoods : bool, optional
+            If True, the function will ignore the neighborhoods in the object. Default is False.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the label level set to the specified level.
+        """
+        assert (
+            Layers.LA_LAYERS in self._obj
+        ), "No label levels found in the object. Please add label levels first, for example by using la.predict_cell_subtypes()."
+
+        layer_df = self._obj.pp.get_layer_as_df(Layers.LA_LAYERS)
+        assert (
+            level in layer_df.columns
+        ), f"Level {level} not found in the label levels. Available levels: {layer_df.columns}."
+
+        # checking if the selected level is equivalent to the current one
+        # if they are equivalent, we can avoid copying the object and just do nothing
+        if np.all(layer_df[level].values == self._obj.pp.get_layer_as_df()[Features.LABELS].values):
+            return self._obj
+
+        layer_df["cell"] = layer_df.index
+        obj = self._obj.copy()
+        # removing the old labels
+        obj = obj.pp.drop_layers(Layers.LA_PROPERTIES, suppress_warnings=True)
+        # adding the new labels
+        obj = obj.la.add_labels_from_dataframe(
+            layer_df, cell_col="cell", label_col=level, ignore_neighborhoods=ignore_neighborhoods
+        )
 
         return obj
