@@ -7,6 +7,7 @@ import pytest
 import xarray as xr
 from skimage.io import imread
 
+import spatialproteomics as sp
 from spatialproteomics.container import load_image_data
 
 
@@ -73,6 +74,33 @@ def load_labeled_dataset(data_dic):
         labels=data_dic["labels"],
     )
     return dataset
+
+
+@pytest.fixture(scope="session", name="dataset_labeled_multilevel")
+def load_labeled_dataset_multilevel(data_dic):
+    basic_subtype_dict = {
+        "Cell type 1": {"subtypes": [{"name": "Treg", "markers": ["FOXP3+"]}]},
+        "Cell type 2": {"subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox", "markers": ["CD8+"]}]},
+    }
+
+    dataset = load_image_data(
+        data_dic["input"],
+        ["Hoechst", "CD4", "CD8", "FOXP3", "BCL6"],
+        segmentation=data_dic["segmentation"],
+        labels=data_dic["labels"],
+    )
+
+    # predicting subtypes
+    binarization_dict = {"CD4": 0.5, "CD8": 0.6, "FOXP3": 0.5, "BCL6": 0.7}
+    ds = (
+        dataset.pp[["CD4", "CD8", "FOXP3", "BCL6"]]
+        .pp.threshold(quantile=[0.9, 0.9, 0.9, 0.9])
+        .pp.add_quantification(func=sp.percentage_positive, key_added="_percentage_positive")
+        .la.threshold_labels(binarization_dict, layer_key="_percentage_positive")
+    )
+    ds = ds.la.predict_cell_subtypes(basic_subtype_dict)
+
+    return ds
 
 
 @pytest.fixture(scope="session", name="dataset_neighborhoods")

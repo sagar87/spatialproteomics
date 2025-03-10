@@ -6,7 +6,7 @@ import spatialproteomics as sp
 from spatialproteomics.constants import Layers
 
 basic_subtype_dict = {
-    "Cell type 1": {"subtypes": [{"name": "nTreg", "markers": ["FOXP3+"]}]},
+    "Cell type 1": {"subtypes": [{"name": "Treg", "markers": ["FOXP3+"]}]},
     "Cell type 2": {"subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox", "markers": ["CD8+"]}]},
 }
 
