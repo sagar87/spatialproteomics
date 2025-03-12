@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -158,6 +158,8 @@ def _normalize(
     pmax: float = 99.8,
     eps: float = 1e-20,
     clip: bool = False,
+    amin: Optional[float] = None,
+    amax: Optional[float] = None,
 ) -> np.ndarray:
     """
     Performs a min max normalisation.
@@ -175,6 +177,10 @@ def _normalize(
         Epsilon float added to prevent 0 division.
     clip: bool
         Ensures that normed image array contains no values greater than 1.
+    amin: float
+        Absolute value to perform normalization. If set, this overrides pmin.
+    amax: float
+        Absolute value to perform normalization. If set, this overrides pmax.
 
     Returns
     -------
@@ -182,6 +188,11 @@ def _normalize(
         A min-max normalized image.
     """
     perc = np.percentile(img, [pmin, pmax], axis=(1, 2)).T
+
+    if amin is not None:
+        perc[:, 0] = amin
+    if amax is not None:
+        perc[:, 1] = amax
 
     norm = (img - np.expand_dims(perc[:, 0], (1, 2))) / (np.expand_dims(perc[:, 1] - perc[:, 0], (1, 2)) + eps)
 
