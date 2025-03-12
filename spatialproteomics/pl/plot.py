@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 
 import matplotlib.colors as mcolors
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -293,6 +294,8 @@ class PlotAccessor:
         normalize: bool = True,
         merge: bool = True,
         layer_key: str = Layers.IMAGE,
+        amin: Optional[float] = None,
+        amax: Optional[float] = None,
     ) -> xr.Dataset:
         """
         Colorizes a stack of images.
@@ -304,11 +307,15 @@ class PlotAccessor:
         background : str, optional
             Background color of the colorized image. Default is "black".
         normalize : bool, optional
-            Normalize the image prior to colorizing it. Default is True.
+            Normalize the image prior to colorizing it. Default is True. When amin and amax are not specified, this uses the 3- and 99.8-percentile for normalization. If they are specified, it uses them as absolute values.
         merge : True, optional
             Merge the channel dimension. Default is True.
         layer_key : str, optional
             The key of the layer containing the image. Default is '_image'.
+        amin : float, optional
+            The minimum absolute value for normalization. Default is None.
+        amax : float, optional
+            The maximum absolute value for normalization. Default is None.
 
         Returns
         -------
@@ -329,6 +336,8 @@ class PlotAccessor:
             colors=colors,
             background=background,
             normalize=normalize,
+            amin=amin,
+            amax=amax,
         )
 
         da = xr.DataArray(
@@ -1365,7 +1374,7 @@ class PlotAccessor:
         ax=None,
     ):
         """
-        Adds a box to the current plot.
+        Adds a rectangular box to the current plot.
 
         Parameters
         ----------
@@ -1384,24 +1393,20 @@ class PlotAccessor:
         -------
         xr.Dataset
             The updated spatialproteomics object.
-
-        Notes
-        -----
-        - The function adds a rectangular box to the current plot with specified x and y bounds.
-        - The box can be customized using the 'color' and 'linewidth' parameters.
         """
-
         if ax is None:
             ax = plt.gca()
 
-        # unpack data
-        xmin, xmax = xlim
-        ymin, ymax = ylim
-
-        ax.hlines(xmin=xmin, xmax=xmax, y=ymin, color=color, linewidth=linewidth)
-        ax.hlines(xmin=xmin, xmax=xmax, y=ymax, color=color, linewidth=linewidth)
-        ax.vlines(ymin=ymin, ymax=ymax, x=xmin, color=color, linewidth=linewidth)
-        ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
+        # Create a rectangle and add it to the axis
+        rect = patches.Rectangle(
+            (xlim[0], ylim[0]),  # Bottom-left corner
+            xlim[1] - xlim[0],  # Width
+            ylim[1] - ylim[0],  # Height
+            edgecolor=color,
+            linewidth=linewidth,
+            facecolor="none",  # Ensure it's just an outline
+        )
+        ax.add_patch(rect)
 
         return self._obj
 
