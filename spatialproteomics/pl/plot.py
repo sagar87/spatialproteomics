@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 
 import matplotlib.colors as mcolors
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -1373,7 +1374,7 @@ class PlotAccessor:
         ax=None,
     ):
         """
-        Adds a box to the current plot.
+        Adds a rectangular box to the current plot.
 
         Parameters
         ----------
@@ -1392,24 +1393,20 @@ class PlotAccessor:
         -------
         xr.Dataset
             The updated spatialproteomics object.
-
-        Notes
-        -----
-        - The function adds a rectangular box to the current plot with specified x and y bounds.
-        - The box can be customized using the 'color' and 'linewidth' parameters.
         """
-
         if ax is None:
             ax = plt.gca()
 
-        # unpack data
-        xmin, xmax = xlim
-        ymin, ymax = ylim
-
-        ax.hlines(xmin=xmin, xmax=xmax, y=ymin, color=color, linewidth=linewidth)
-        ax.hlines(xmin=xmin, xmax=xmax, y=ymax, color=color, linewidth=linewidth)
-        ax.vlines(ymin=ymin, ymax=ymax, x=xmin, color=color, linewidth=linewidth)
-        ax.vlines(ymin=ymin, ymax=ymax, x=xmax, color=color, linewidth=linewidth)
+        # Create a rectangle and add it to the axis
+        rect = patches.Rectangle(
+            (xlim[0], ylim[0]),  # Bottom-left corner
+            xlim[1] - xlim[0],  # Width
+            ylim[1] - ylim[0],  # Height
+            edgecolor=color,
+            linewidth=linewidth,
+            facecolor="none",  # Ensure it's just an outline
+        )
+        ax.add_patch(rect)
 
         return self._obj
 
