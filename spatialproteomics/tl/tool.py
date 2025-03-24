@@ -7,7 +7,7 @@ import xarray as xr
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
 from ..pp.utils import _normalize
-from .utils import _convert_masks_to_data_array, _get_channels
+from .utils import _cellpose, _convert_masks_to_data_array, _get_channels
 
 
 @xr.register_dataset_accessor("tl")
@@ -31,6 +31,7 @@ class ToolAccessor:
         model_type: str = "cyto3",
         postprocess_func: Callable = lambda x: x,
         return_diameters: bool = False,
+        **kwargs,
     ):
         """
         Segment cells using Cellpose. Adds a layer to the spatialproteomics object
@@ -75,50 +76,20 @@ class ToolAccessor:
         """
         channels = _get_channels(self._obj, key_added, channel)
 
-        # checking that if segmentation should be performed jointly, there are exactly two channels
-        if channel_settings != [0, 0]:
-            assert (
-                len(channels) == 2
-            ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {len(channels)} channels in the object."
-
-        from cellpose import models
-
-        model = models.Cellpose(gpu=gpu, model_type=model_type)
-
-        all_masks = []
-        # if the channels are [0, 0], independent segmentation is performed on all channels
-        if channel_settings == [0, 0]:
-            if len(channels) > 1:
-                logger.warn(
-                    "Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately."
-                )
-            for ch in channels:
-                masks_pred, _, _, diams = model.eval(
-                    self._obj.pp[ch]._image.values.squeeze(),
-                    diameter=diameter,
-                    channels=channel_settings,
-                    niter=num_iterations,
-                    cellprob_threshold=cellprob_threshold,
-                    flow_threshold=flow_threshold,
-                    batch_size=batch_size,
-                )
-
-                masks_pred = postprocess_func(masks_pred)
-                all_masks.append(masks_pred)
-        else:
-            # if the channels are anything else, joint segmentation is attempted
-            masks_pred, _, _, diams = model.eval(
-                self._obj._image.values.squeeze(),
-                diameter=diameter,
-                channels=channel_settings,
-                niter=num_iterations,
-                cellprob_threshold=cellprob_threshold,
-                flow_threshold=flow_threshold,
-                batch_size=batch_size,
-            )
-
-            masks_pred = postprocess_func(masks_pred)
-            all_masks.append(masks_pred)
+        all_masks, diams = _cellpose(
+            self._obj._image.values,
+            channel=channels,
+            diameter=diameter,
+            channel_settings=channel_settings,
+            num_iterations=num_iterations,
+            cellprob_threshold=cellprob_threshold,
+            flow_threshold=flow_threshold,
+            batch_size=batch_size,
+            gpu=gpu,
+            model_type=model_type,
+            postprocess_func=postprocess_func,
+            **kwargs,
+        )
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 

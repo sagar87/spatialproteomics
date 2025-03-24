@@ -32,6 +32,7 @@ from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor, is_positive, percentage_positive
+from .sd import cellpose
 from .tl import ToolAccessor
 
 __all__ = [
@@ -51,6 +52,7 @@ __all__ = [
     "merge_segmentation",
     "percentage_positive",
     "is_positive",
+    "cellpose",
     "Apricot",
     "Beige",
     "Black",
