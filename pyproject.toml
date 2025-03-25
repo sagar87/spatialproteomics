@@ -28,6 +28,7 @@ IPython = {version = "^8.0.0", optional = true}
 spatialdata = {version = "^0.3.0", optional = true}
 cellpose = {version = "^3.1", optional = true}
 anndata = {version = "^0.11.3", optional = true}
+stardist = {version = "^0.9.1", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -40,7 +41,7 @@ safety = "^2.1.1"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion", "IPython"]
-all = ["cellpose", "anndata", "spatialdata"]
+all = ["cellpose", "stardist", "anndata", "spatialdata"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

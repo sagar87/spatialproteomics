@@ -32,7 +32,7 @@ from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor, is_positive, percentage_positive
-from .sd import cellpose
+from .sd import cellpose, stardist
 from .tl import ToolAccessor
 
 __all__ = [
@@ -53,6 +53,7 @@ __all__ = [
     "percentage_positive",
     "is_positive",
     "cellpose",
+    "stardist",
     "Apricot",
     "Beige",
     "Black",

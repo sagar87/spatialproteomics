@@ -1,35 +1,61 @@
 from typing import Optional
 
-from spatialdata import SpatialData
+import spatialdata
 
 from ..constants import Layers
-from ..tl.utils import _cellpose
+from ..tl.utils import _cellpose, _stardist
+from .utils import _get_channels, _process_image
 
 
 def cellpose(
-    sdata: SpatialData,
+    sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = "raw_image",
+    image_key: str = "image",
     key_added: str = Layers.SEGMENTATION,
     **kwargs,
 ):
-    assert (
-        image_key in sdata.images
-    ), f"Image key {image_key} not found in spatial data object. Available keys: {list(sdata.images.keys())}"
-    assert (
-        key_added not in sdata.labels.keys()
-    ), f"Key {key_added} already exists in spatial data object. Please choose another key."
+    channels = _get_channels(channel)
 
-    # access the image data
-    image = sdata.images[image_key]
-
-    # extract only the relevant channels
-    image = image.sel(c=channel)
-    # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
-    # image = image['scale0']['image'].values
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels, image_key, key_added)
 
     # run cellpose
     segmentation_masks, _ = _cellpose(image, **kwargs)
 
     # add the segmentation masks to the spatial data object
-    sdata.labels[key_added] = segmentation_masks
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
+
+
+def stardist(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str],
+    image_key: str = "image",
+    key_added: str = Layers.SEGMENTATION,
+    **kwargs,
+):
+    channels = _get_channels(channel)
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels, image_key, key_added)
+
+    # run stardist
+    segmentation_masks = _stardist(image, **kwargs)
+
+    # add the segmentation masks to the spatial data object
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
