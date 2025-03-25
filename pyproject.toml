@@ -19,13 +19,13 @@ scikit-learn = "^1.2.2"
 zarr = "<3.0.0"
 numpy = "<2.0.0"
 opencv-python = "^4.11.0"
+spatialdata = "^0.3.0"
 Sphinx = {version = "^7.0.0", optional = true}
 sphinxcontrib-napoleon = {version = "0.7", optional = true}
 nbsphinx = {version = "0.8.9", optional = true}
 "sphinx-book-theme" = {version = "^0.0.39", optional = true}
 sphinx-multiversion = {version = "^0.2.4", optional = true}
 IPython = {version = "^8.0.0", optional = true}
-spatialdata = {version = "^0.3.0", optional = true}
 cellpose = {version = "^3.1", optional = true}
 anndata = {version = "^0.11.3", optional = true}
 stardist = {version = "^0.9.1", optional = true}
@@ -41,7 +41,7 @@ safety = "^2.1.1"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion", "IPython"]
-all = ["cellpose", "stardist", "anndata", "spatialdata"]
+all = ["cellpose", "stardist", "anndata"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

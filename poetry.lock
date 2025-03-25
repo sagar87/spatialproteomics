@@ -4,7 +4,7 @@
 name = "aiobotocore"
 version = "2.21.1"
 description = "Async client for aws services using botocore and aiohttp"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:bd7c49a6d6f8a3d9444b0a94417c8da13813b5c7eec1c4f0ec2db7e8ce8f23e7"},
@@ -28,7 +28,7 @@ boto3 = ["boto3 (>=1.37.0,<1.37.2)"]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 description = "Happy Eyeballs for asyncio"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "aiohappyeyeballs-2.6.1-py3-none-any.whl", hash = "sha256:f349ba8f4b75cb25c99c5c2d84e997e485204d2902a9597802b0371f09331fb8"},
@@ -39,7 +39,7 @@ files = [
 name = "aiohttp"
 version = "3.11.14"
 description = "Async http client/server framework (asyncio)"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "aiohttp-3.11.14-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:e2bc827c01f75803de77b134afdbf74fa74b62970eafdf190f3244931d7a5c0d"},
@@ -142,7 +142,7 @@ speedups = ["Brotli", "aiodns (>=3.2.0)", "brotlicffi"]
 name = "aioitertools"
 version = "0.12.0"
 description = "itertools and builtins for AsyncIO and mixed iterables"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "aioitertools-0.12.0-py3-none-any.whl", hash = "sha256:fc1f5fac3d737354de8831cbba3eb04f79dd649d8f3afb4c5b114925e662a796"},
@@ -157,7 +157,7 @@ docs = ["sphinx (==8.0.2)", "sphinx-mdinclude (==0.6.2)"]
 name = "aiosignal"
 version = "1.3.2"
 description = "aiosignal: a list of registered asynchronous callbacks"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "aiosignal-1.3.2-py2.py3-none-any.whl", hash = "sha256:45cde58e409a301715980c2b01d0c28bdde3770d8290b5eb2173759d9acb31a5"},
@@ -182,7 +182,7 @@ files = [
 name = "anndata"
 version = "0.11.3"
 description = "Annotated data."
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "anndata-0.11.3-py3-none-any.whl", hash = "sha256:2ce220c4c03b7dba31fab0540d3d64f6811bc343cd3f273d7bdeed50a5cd6367"},
@@ -214,7 +214,7 @@ test = ["awkward (>=2.3)", "boltons", "dask[array] (>=2022.09.2,<2024.8.dev0 || 
 name = "array-api-compat"
 version = "1.11.2"
 description = "A wrapper around NumPy and other array libraries to make them compatible with the Array API standard"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "array_api_compat-1.11.2-py3-none-any.whl", hash = "sha256:b1d0059714a4153b3ae37c989e47b07418f727be5b22908dd3cf9d19bdc2c547"},
@@ -258,7 +258,7 @@ test = ["astroid (>=2,<4)", "pytest", "pytest-cov", "pytest-xdist"]
 name = "async-timeout"
 version = "5.0.1"
 description = "Timeout context manager for asyncio programs"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c"},
@@ -269,7 +269,7 @@ files = [
 name = "attrs"
 version = "25.3.0"
 description = "Classes Without Boilerplate"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3"},
@@ -402,7 +402,7 @@ css = ["tinycss2 (>=1.1.0,<1.5)"]
 name = "botocore"
 version = "1.37.1"
 description = "Low-level, data-driven core of boto 3."
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "botocore-1.37.1-py3-none-any.whl", hash = "sha256:c1db1bfc5d8c6b3b6d1ca6794f605294b4264e82a7e727b88e0fef9c2b9fbb9c"},
@@ -658,7 +658,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 name = "cloudpickle"
 version = "3.1.1"
 description = "Pickler class to extend the standard pickle.Pickler functionality"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "cloudpickle-3.1.1-py3-none-any.whl", hash = "sha256:c8c5a44295039331ee9dad40ba100a9c7297b6f988e50e87ccdf3765a668350e"},
@@ -680,7 +680,7 @@ files = [
 name = "colorcet"
 version = "3.1.0"
 description = "Collection of perceptually uniform colormaps"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "colorcet-3.1.0-py3-none-any.whl", hash = "sha256:2a7d59cc8d0f7938eeedd08aad3152b5319b4ba3bcb7a612398cc17a384cb296"},
@@ -890,7 +890,7 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 name = "dask"
 version = "2024.11.2"
 description = "Parallel PyData with Task Scheduling"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "dask-2024.11.2-py3-none-any.whl", hash = "sha256:6115c4b76015e8d9d9c2922b6a0a1c850e283fb7fee74eebbd2e28e9c117c30d"},
@@ -922,7 +922,7 @@ test = ["pandas[test]", "pre-commit", "pytest", "pytest-cov", "pytest-rerunfailu
 name = "dask-expr"
 version = "1.1.19"
 description = "High Level Expressions for Dask"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "dask_expr-1.1.19-py3-none-any.whl", hash = "sha256:b2931c20241a3bc1978ccccc4b8a2f7b27b15bb85ce89fec04595bc5bcf20cf5"},
@@ -941,7 +941,7 @@ analyze = ["crick", "distributed", "graphviz"]
 name = "dask-image"
 version = "2024.5.3"
 description = "Distributed image processing"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "dask_image-2024.5.3-py3-none-any.whl", hash = "sha256:b936f6d19a52974094cf8b7c6b51a3fdea77d9c7c80ca9862d764eda7ffbcd9a"},
@@ -964,7 +964,7 @@ test = ["Flake8-pyproject", "build (>=1.2.1)", "coverage (>=7.2.1)", "flake8 (>=
 name = "datashader"
 version = "0.17.0"
 description = "Data visualization toolchain based on aggregating into a grid"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "datashader-0.17.0-py3-none-any.whl", hash = "sha256:39421ff999294913e63d41954af955a5dece5d0c55d8fce1426043d70b22d07a"},
@@ -1014,7 +1014,7 @@ files = [
 name = "distributed"
 version = "2024.11.2"
 description = "Distributed scheduler for Dask"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "distributed-2024.11.2-py3-none-any.whl", hash = "sha256:a455ae031689aee151172b3492de5dd637b67531720619c171df988974985cdf"},
@@ -1286,7 +1286,7 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 name = "frozenlist"
 version = "1.5.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "frozenlist-1.5.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:5b6a66c18b5b9dd261ca98dffcb826a525334b2f29e7caa54e182255c5f6a65a"},
@@ -1387,7 +1387,7 @@ files = [
 name = "fsspec"
 version = "2025.3.0"
 description = "File-system specification"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "fsspec-2025.3.0-py3-none-any.whl", hash = "sha256:efb87af3efa9103f94ca91a7f8cb7a4df91af9f74fc106c9c7ea0efd7277c1b3"},
@@ -1429,7 +1429,7 @@ tqdm = ["tqdm"]
 name = "geopandas"
 version = "1.0.1"
 description = "Geographic pandas extensions"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "geopandas-1.0.1-py3-none-any.whl", hash = "sha256:01e147d9420cc374d26f51fc23716ac307f32b49406e4bd8462c07e82ed1d3d6"},
@@ -1452,7 +1452,7 @@ dev = ["black", "codecov", "pre-commit", "pytest (>=3.1.0)", "pytest-cov", "pyte
 name = "h5py"
 version = "3.13.0"
 description = "Read and write HDF5 files from Python"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "h5py-3.13.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:5540daee2b236d9569c950b417f13fd112d51d78b4c43012de05774908dff3f5"},
@@ -1600,7 +1600,7 @@ files = [
 name = "importlib-metadata"
 version = "8.6.1"
 description = "Read metadata from Python packages"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "importlib_metadata-8.6.1-py3-none-any.whl", hash = "sha256:02a89390c1e15fdfdc0d7c6b25cb3e62650d0494005c97d6f148bf5b9787525e"},
@@ -1705,7 +1705,7 @@ testing = ["Django", "attrs", "colorama", "docopt", "pytest (<9.0.0)"]
 name = "jinja2"
 version = "3.1.6"
 description = "A very fast and expressive template engine."
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"},
@@ -1722,7 +1722,7 @@ i18n = ["Babel (>=2.7)"]
 name = "jmespath"
 version = "1.0.1"
 description = "JSON Matching Expressions"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
@@ -1940,7 +1940,7 @@ test = ["pytest (>=7.4)", "pytest-cov (>=4.1)"]
 name = "llvmlite"
 version = "0.44.0"
 description = "lightweight wrapper around basic LLVM functionality"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "llvmlite-0.44.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:9fbadbfba8422123bab5535b293da1cf72f9f478a65645ecd73e781f962ca614"},
@@ -1970,7 +1970,7 @@ files = [
 name = "locket"
 version = "1.0.0"
 description = "File-based locks for Python on Linux and Windows"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "locket-1.0.0-py2.py3-none-any.whl", hash = "sha256:b6c819a722f7b6bd955b80781788e4a66a55628b858d347536b7e81325a3a5e3"},
@@ -2005,7 +2005,7 @@ testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 name = "markupsafe"
 version = "3.0.2"
 description = "Safely add untrusted strings to HTML/XML markup."
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "MarkupSafe-3.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7e94c425039cde14257288fd61dcfb01963e658efbc0ff54f5306b06054700f8"},
@@ -2199,7 +2199,7 @@ tests = ["pytest (>=4.6)"]
 name = "msgpack"
 version = "1.1.0"
 description = "MessagePack serializer"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "msgpack-1.1.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7ad442d527a7e358a469faf43fda45aaf4ac3249c8310a82f0ccff9164e5dccd"},
@@ -2272,7 +2272,7 @@ files = [
 name = "multidict"
 version = "6.2.0"
 description = "multidict implementation"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "multidict-6.2.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:b9f6392d98c0bd70676ae41474e2eecf4c7150cb419237a41f8f96043fcb81d1"},
@@ -2376,7 +2376,7 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
 name = "multipledispatch"
 version = "1.0.0"
 description = "Multiple dispatch"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "multipledispatch-1.0.0-py3-none-any.whl", hash = "sha256:0c53cd8b077546da4e48869f49b13164bebafd0c2a5afceb6bb6a316e7fb46e4"},
@@ -2387,7 +2387,7 @@ files = [
 name = "multiscale-spatial-image"
 version = "2.0.2"
 description = "Generate a multiscale, chunked, multi-dimensional spatial image data structure that can be serialized to OME-NGFF."
-optional = true
+optional = false
 python-versions = "<3.13,>=3.10"
 files = [
     {file = "multiscale_spatial_image-2.0.2-py3-none-any.whl", hash = "sha256:0c25fe7d743293bec06811ccd19842c0998dcdb99b58a0102116340d97d7dfcc"},
@@ -2424,7 +2424,7 @@ files = [
 name = "natsort"
 version = "8.4.0"
 description = "Simple yet flexible natural sorting in Python."
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
@@ -2556,7 +2556,7 @@ test = ["pytest (>=7.2)", "pytest-cov (>=4.0)"]
 name = "numba"
 version = "0.61.0"
 description = "compiling Python code using LLVM"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "numba-0.61.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:9cab9783a700fa428b1a54d65295122bc03b3de1d01fb819a6b9dbbddfdb8c43"},
@@ -2839,7 +2839,7 @@ files = [
 name = "ome-zarr"
 version = "0.10.2"
 description = "Implementation of images in Zarr files."
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "ome_zarr-0.10.2-py3-none-any.whl", hash = "sha256:524f17e2e2d7277fc11da0c527e743b427cc3953ec27d82215fff1c4c11adb00"},
@@ -3017,7 +3017,7 @@ files = [
 name = "param"
 version = "2.2.0"
 description = "Make your Python code clearer and more reliable by declaring Parameters."
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "param-2.2.0-py3-none-any.whl", hash = "sha256:777f8c7b66ab820b70ea5ad09faaa6818308220caae89da3b5c5f359faa72a5e"},
@@ -3051,7 +3051,7 @@ testing = ["docopt", "pytest"]
 name = "partd"
 version = "1.4.2"
 description = "Appendable key-value storage"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "partd-1.4.2-py3-none-any.whl", hash = "sha256:978e4ac767ec4ba5b86c6eaa52e5a2a3bc748a2ca839e8cc798f1cc6ce6efb0f"},
@@ -3196,7 +3196,7 @@ xmp = ["defusedxml"]
 name = "pims"
 version = "0.7"
 description = "Python Image Sequence"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "pims-0.7.tar.gz", hash = "sha256:55907a4c301256086d2aa4e34a5361b9109f24e375c2071e1117b9491e82946b"},
@@ -3258,7 +3258,7 @@ six = ">=1.5.2"
 name = "pooch"
 version = "1.8.2"
 description = "A friend to fetch your data files"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "pooch-1.8.2-py3-none-any.whl", hash = "sha256:3529a57096f7198778a5ceefd5ac3ef0e4d06a6ddaf9fc2d609b806f25302c47"},
@@ -3293,7 +3293,7 @@ wcwidth = "*"
 name = "propcache"
 version = "0.3.0"
 description = "Accelerated property cache"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "propcache-0.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:efa44f64c37cc30c9f05932c740a8b40ce359f51882c70883cc95feac842da4d"},
@@ -3400,7 +3400,7 @@ files = [
 name = "psutil"
 version = "7.0.0"
 description = "Cross-platform lib for process and system monitoring in Python.  NOTE: the syntax of this script MUST be kept compatible with Python 2.7."
-optional = true
+optional = false
 python-versions = ">=3.6"
 files = [
     {file = "psutil-7.0.0-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:101d71dc322e3cffd7cea0650b09b3d08b8e7c4109dd6809fe452dfd00e58b25"},
@@ -3448,7 +3448,7 @@ tests = ["pytest"]
 name = "pyarrow"
 version = "19.0.1"
 description = "Python library for Apache Arrow"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "pyarrow-19.0.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:fc28912a2dc924dddc2087679cc8b7263accc71b9ff025a1362b004711661a69"},
@@ -3524,7 +3524,7 @@ files = [
 name = "pyct"
 version = "0.5.0"
 description = "Python package common tasks for users (e.g. copy examples, fetch data, ...)"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "pyct-0.5.0-py2.py3-none-any.whl", hash = "sha256:a4038a8885059ab8cac6f946ea30e0b5e6bdbe0b92b6723f06737035f9d65e8c"},
@@ -3583,7 +3583,7 @@ windows-terminal = ["colorama (>=0.4.6)"]
 name = "pyogrio"
 version = "0.10.0"
 description = "Vectorized spatial vector file format I/O using GDAL/OGR"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "pyogrio-0.10.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:046eeeae12a03a3ebc3dc5ff5a87664e4f5fc0a4fb1ea5d5c45d547fa941072b"},
@@ -3648,7 +3648,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 name = "pyproj"
 version = "3.7.1"
 description = "Python interface to PROJ (cartographic projections and coordinate transformations library)"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "pyproj-3.7.1-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:bf09dbeb333c34e9c546364e7df1ff40474f9fddf9e70657ecb0e4f670ff0b0e"},
@@ -4203,7 +4203,7 @@ files = [
 name = "s3fs"
 version = "2025.3.0"
 description = "Convenient Filesystem interface over S3"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "s3fs-2025.3.0-py3-none-any.whl", hash = "sha256:88d803615baa04945156ca0e1498009b7acd3132c07198bd81b3e874846e0aa2"},
@@ -4432,7 +4432,7 @@ type = ["importlib_metadata (>=7.0.2)", "jaraco.develop (>=7.21)", "mypy (==1.14
 name = "shapely"
 version = "2.0.7"
 description = "Manipulation and analysis of geometric objects"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "shapely-2.0.7-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:33fb10e50b16113714ae40adccf7670379e9ccf5b7a41d0002046ba2b8f0f691"},
@@ -4501,7 +4501,7 @@ files = [
 name = "slicerator"
 version = "1.1.0"
 description = "A lazy-loading, fancy-sliceable iterable."
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "slicerator-1.1.0-py3-none-any.whl", hash = "sha256:167668d48c6d3a5ba0bd3d54b2688e81ee267dc20aef299e547d711e6f3c441a"},
@@ -4523,7 +4523,7 @@ files = [
 name = "sortedcontainers"
 version = "2.4.0"
 description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
@@ -4545,7 +4545,7 @@ files = [
 name = "spatial-image"
 version = "1.2.1"
 description = "A multi-dimensional spatial image data structure for scientific Python."
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "spatial_image-1.2.1-py3-none-any.whl", hash = "sha256:312c7f289284ed7f72eae50ca1b29b25b74db73f6daff745666af5ec27ad5436"},
@@ -4561,7 +4561,7 @@ xarray-dataclasses = "*"
 name = "spatialdata"
 version = "0.3.0"
 description = "Spatial data format."
-optional = true
+optional = false
 python-versions = "<3.13,>=3.10"
 files = [
     {file = "spatialdata-0.3.0-py3-none-any.whl", hash = "sha256:e060c4c93f1829771ee7a4b51c12722f658f607a2e446f981aaca54bd11a251e"},
@@ -4888,7 +4888,7 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 name = "tblib"
 version = "3.0.0"
 description = "Traceback serialization library."
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "tblib-3.0.0-py3-none-any.whl", hash = "sha256:80a6c77e59b55e83911e1e607c649836a69c103963c5f28a46cbeef44acf8129"},
@@ -5002,7 +5002,7 @@ files = [
 name = "toolz"
 version = "1.0.0"
 description = "List processing tools and functional utilities"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "toolz-1.0.0-py3-none-any.whl", hash = "sha256:292c8f1c4e7516bf9086f8850935c799a874039c8bcf959d47b600e4c44a6236"},
@@ -5069,7 +5069,7 @@ optree = ["optree (>=0.13.0)"]
 name = "tornado"
 version = "6.4.2"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "tornado-6.4.2-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:e828cce1123e9e44ae2a50a9de3055497ab1d0aeb440c5ac23064d9e44880da1"},
@@ -5205,7 +5205,7 @@ files = [
 name = "wrapt"
 version = "1.17.2"
 description = "Module for decorators, wrappers and monkey patching."
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "wrapt-1.17.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3d57c572081fed831ad2d26fd430d565b76aa277ed1d30ff4d40670b1c0dd984"},
@@ -5318,7 +5318,7 @@ viz = ["cartopy", "matplotlib", "nc-time-axis", "seaborn"]
 name = "xarray-dataclasses"
 version = "1.9.1"
 description = "xarray data creation by data classes"
-optional = true
+optional = false
 python-versions = "<3.14,>=3.8"
 files = [
     {file = "xarray_dataclasses-1.9.1-py3-none-any.whl", hash = "sha256:3590556ef795ebbb33908b484a58311192d880cbb511666fe4c354569c3c468f"},
@@ -5334,7 +5334,7 @@ xarray = {version = ">=2022.3,<2025.0", markers = "python_version >= \"3.9\" and
 name = "xarray-schema"
 version = "0.0.3"
 description = "Schema validation for Xarray objects"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "xarray-schema-0.0.3.tar.gz", hash = "sha256:9c6c760489c0690a70394b2ad1368b32f8fa1333911c361b4adf249384212920"},
@@ -5349,7 +5349,7 @@ xarray = ">=0.16"
 name = "xarray-spatial"
 version = "0.4.0"
 description = "xarray-based spatial analysis tools"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "xarray_spatial-0.4.0-py3-none-any.whl", hash = "sha256:6c207c90142f3fbba142e67bfd7f69767246aba6146aca9e130581b35799c9df"},
@@ -5371,7 +5371,7 @@ tests = ["flake8", "isort", "noise (>=1.2.2)", "pytest", "pytest-cov"]
 name = "yarl"
 version = "1.18.3"
 description = "Yet another URL library"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "yarl-1.18.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7df647e8edd71f000a5208fe6ff8c382a1de8edfbccdbbfe649d263de07d8c34"},
@@ -5488,7 +5488,7 @@ jupyter = ["ipytree (>=0.2.2)", "ipywidgets (>=8.0.0)", "notebook"]
 name = "zict"
 version = "3.0.0"
 description = "Mutable mapping tools"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "zict-3.0.0-py2.py3-none-any.whl", hash = "sha256:5796e36bd0e0cc8cf0fbc1ace6a68912611c1dbd74750a3f3026b9b9d6a327ae"},
@@ -5499,7 +5499,7 @@ files = [
 name = "zipp"
 version = "3.21.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931"},
@@ -5515,10 +5515,10 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 type = ["pytest-mypy"]
 
 [extras]
-all = ["anndata", "cellpose", "spatialdata", "stardist"]
+all = ["anndata", "cellpose", "stardist"]
 docs = ["IPython", "Sphinx", "nbsphinx", "sphinx-book-theme", "sphinx-multiversion", "sphinxcontrib-napoleon"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "44bbba8b80dff01fe29b9a029ad4906576e7de5673967f43d71ccdcd19e9c3aa"
+content-hash = "5a963dbafb2f0efffea1ae92e833aec0ee0ed15e5e3df8543d5bd94c005af899"
