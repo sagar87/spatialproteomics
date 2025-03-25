@@ -6,8 +6,13 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
-from ..pp.utils import _normalize
-from .utils import _cellpose, _convert_masks_to_data_array, _get_channels
+from .utils import (
+    _cellpose,
+    _convert_masks_to_data_array,
+    _get_channels,
+    _mesmer,
+    _stardist,
+)
 
 
 @xr.register_dataset_accessor("tl")
@@ -142,24 +147,15 @@ class ToolAccessor:
         """
         channels = _get_channels(self._obj, key_added, channel)
 
-        from stardist.models import StarDist2D
-
-        model = StarDist2D.from_pretrained("2D_versatile_fluo")
-
-        all_masks = []
-        for ch in channels:
-            img = self._obj.pp[ch]._image.values
-            if normalize:
-                img = _normalize(img)
-
-            # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
-            if predict_big:
-                labels, _ = model.predict_instances_big(img.squeeze(), scale=scale, **kwargs)
-            else:
-                labels, _ = model.predict_instances(img.squeeze(), scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
-
-            labels = postprocess_func(labels)
-            all_masks.append(labels)
+        all_masks = _stardist(
+            self._obj.pp[channels]._image.values,
+            scale=scale,
+            n_tiles=n_tiles,
+            normalize=n_tiles,
+            predict_big=predict_big,
+            postprocess_func=postprocess_func,
+            **kwargs,
+        )
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
@@ -200,16 +196,7 @@ class ToolAccessor:
             len(channels) == 2
         ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
-        from deepcell.applications import Mesmer
-
-        app = Mesmer()
-        # at this point, the shape of image is (channels (2), x, y)
-        image = self._obj.pp[channels][Layers.IMAGE].values
-        # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
-        image = np.expand_dims(np.transpose(image, (1, 2, 0)), 0)
-
-        all_masks = app.predict(image, **kwargs)
-        all_masks = postprocess_func(all_masks)
+        all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 

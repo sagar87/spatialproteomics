@@ -20,7 +20,7 @@ jobs:
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
-        run: poetry install -E docs --with dev
+        run: poetry install -E docs --with dev,all
       - name: Run tests
         run: poetry run pytest --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov

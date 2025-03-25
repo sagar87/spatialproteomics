@@ -28,7 +28,7 @@ def _get_channels(obj, key_added, channel):
 
 def _convert_masks_to_data_array(obj, all_masks, key_added):
     # if there is one channel, we can squeeze the mask tensor
-    if len(all_masks) == 1:
+    if all_masks.shape[0] == 1:
         da = xr.DataArray(
             all_masks[0].squeeze(),
             coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
@@ -159,5 +159,27 @@ def _stardist(
 
         labels = postprocess_func(labels)
         all_masks.append(labels)
+
+    return np.array(all_masks)
+
+
+def _mesmer(img: np.ndarray, postprocess_func: Callable = lambda x: x, **kwargs):
+    # checking that the input is 2D or 3D
+    if img.ndim not in [2, 3]:
+        raise ValueError(f"Input image must be 2D or 3D, got {img.ndim}.")
+
+    # if the input is 2D, we add a channel dimension
+    if img.ndim == 2:
+        img = img[np.newaxis, :, :]
+
+    from deepcell.applications import Mesmer
+
+    app = Mesmer()
+
+    # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
+    img = np.expand_dims(np.transpose(img, (1, 2, 0)), 0)
+
+    all_masks = app.predict(img, **kwargs)
+    all_masks = postprocess_func(all_masks)
 
     return np.array(all_masks)
