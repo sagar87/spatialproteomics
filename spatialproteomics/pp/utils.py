@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Union
 import cv2
 import numpy as np
 import scipy.ndimage
+from scipy.stats import norm, zscore
 from skimage.measure import label, regionprops, regionprops_table
 from skimage.segmentation import relabel_sequential
 
@@ -599,3 +600,39 @@ def _threshold(
             filtered = np.where(image.values >= intensity, image.values, 0)
 
     return filtered
+
+
+def _transform_expression_matrix(
+    expression_matrix,
+    method: str = "arcsinh",
+    cofactor: float = 5.0,
+    min_percentile: float = 1.0,
+    max_percentile: float = 99.0,
+):
+    # applying the appropriate transform
+    if method == "arcsinh":
+        transformed_matrix = np.arcsinh(expression_matrix / cofactor)
+    elif method == "zscore":
+        # z-scoring along each channel
+        transformed_matrix = zscore(expression_matrix, axis=0)
+    elif method == "minmax":
+        # applying min max scaling, so that the lowest value is 0 and the highest is 1
+        transformed_matrix = (expression_matrix - np.min(expression_matrix, axis=0)) / (
+            np.max(expression_matrix, axis=0) - np.min(expression_matrix, axis=0)
+        )
+    elif method == "double_zscore":
+        # z-scoring along each channel
+        transformed_matrix = zscore(expression_matrix, axis=0)
+        # z-scoring along each cell
+        transformed_matrix = zscore(transformed_matrix, axis=1)
+        # turning the z-scores into probabilities using the cumulative density function
+        transformed_matrix = norm.cdf(transformed_matrix)
+        # taking the negative log of the inverse probability to amplify positive values
+        transformed_matrix = -np.log(1 - transformed_matrix)
+    elif method == "clip":
+        min_value, max_value = np.percentile(expression_matrix, [min_percentile, max_percentile])
+        transformed_matrix = np.clip(expression_matrix, min_value, max_value)
+    else:
+        raise ValueError(f"Unknown transformation method: {method}")
+
+    return transformed_matrix

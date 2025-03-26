@@ -40,6 +40,7 @@ from .sd import (
     mesmer,
     stardist,
     threshold,
+    transform_expression_matrix,
 )
 from .tl import ToolAccessor
 
@@ -67,6 +68,7 @@ __all__ = [
     "add_quantification",
     "apply",
     "threshold",
+    "transform_expression_matrix",
     "Apricot",
     "Beige",
     "Black",

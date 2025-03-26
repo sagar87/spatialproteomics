@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import skimage
 import xarray as xr
-from scipy.stats import norm, zscore
 from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
 
@@ -21,6 +20,7 @@ from .utils import (
     _remove_outlying_cells,
     _remove_unlabeled_cells,
     _threshold,
+    _transform_expression_matrix,
 )
 
 
@@ -835,6 +835,7 @@ class PreprocessingAccessor:
         key_added: Optional[str] = None,
         channels: Optional[Union[str, list]] = None,
         shift: bool = True,
+        **kwargs,
     ):
         """
         Apply thresholding to the image layer of the object.
@@ -873,7 +874,9 @@ class PreprocessingAccessor:
         image_layer = self._obj[Layers.IMAGE]
 
         # performing the thresholding
-        filtered = _threshold(image_layer)
+        filtered = _threshold(
+            image_layer, quantile=quantile, intensity=intensity, channels=channels, shift=shift, **kwargs
+        )
 
         if key_added is None:
             # drop_vars returns a copy of the data array and should not perform any in-place operations
@@ -1371,6 +1374,7 @@ class PreprocessingAccessor:
         cofactor: float = 5.0,
         min_percentile: float = 1.0,
         max_percentile: float = 99.0,
+        **kwargs,
     ):
         """
         Transforms the expression matrix based on the specified mode.
@@ -1396,31 +1400,14 @@ class PreprocessingAccessor:
         # getting the expression matrix from the object
         expression_matrix = self._obj[key].values
 
-        # applying the appropriate transform
-        if method == "arcsinh":
-            transformed_matrix = np.arcsinh(expression_matrix / cofactor)
-        elif method == "zscore":
-            # z-scoring along each channel
-            transformed_matrix = zscore(expression_matrix, axis=0)
-        elif method == "minmax":
-            # applying min max scaling, so that the lowest value is 0 and the highest is 1
-            transformed_matrix = (expression_matrix - np.min(expression_matrix, axis=0)) / (
-                np.max(expression_matrix, axis=0) - np.min(expression_matrix, axis=0)
-            )
-        elif method == "double_zscore":
-            # z-scoring along each channel
-            transformed_matrix = zscore(expression_matrix, axis=0)
-            # z-scoring along each cell
-            transformed_matrix = zscore(transformed_matrix, axis=1)
-            # turning the z-scores into probabilities using the cumulative density function
-            transformed_matrix = norm.cdf(transformed_matrix)
-            # taking the negative log of the inverse probability to amplify positive values
-            transformed_matrix = -np.log(1 - transformed_matrix)
-        elif method == "clip":
-            min_value, max_value = np.percentile(expression_matrix, [min_percentile, max_percentile])
-            transformed_matrix = np.clip(expression_matrix, min_value, max_value)
-        else:
-            raise ValueError(f"Unknown transformation method: {method}")
+        transformed_matrix = _transform_expression_matrix(
+            expression_matrix,
+            method=method,
+            cofactor=cofactor,
+            min_percentile=min_percentile,
+            max_percentile=max_percentile,
+            **kwargs,
+        )
 
         # creating a new data array with the transformed matrix
         da = xr.DataArray(

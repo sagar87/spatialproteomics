@@ -6,7 +6,12 @@ from anndata import AnnData
 from skimage.measure import regionprops_table
 
 from ..constants import Layers
-from ..pp.utils import _apply, _compute_quantification, _threshold
+from ..pp.utils import (
+    _apply,
+    _compute_quantification,
+    _threshold,
+    _transform_expression_matrix,
+)
 from ..tl.utils import _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
@@ -168,13 +173,35 @@ def threshold(
     intensity: Union[int, list] = None,
     channels: Optional[Union[str, list]] = None,
     shift: bool = True,
+    **kwargs,
 ):
     # this gets the image as an xarray object
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
     processed_image = _threshold(
-        image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c"
+        image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c", **kwargs
     )
     channels = sdata.images[image_key].coords["c"].values
     sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
+
+
+def transform_expression_matrix(
+    sdata: spatialdata.SpatialData,
+    method: str = "arcsinh",
+    table_key="table",
+    cofactor: float = 5.0,
+    min_percentile: float = 1.0,
+    max_percentile: float = 99.0,
+    **kwargs,
+):
+    adata = _process_adata(sdata, table_key)
+    transformed_matrix = _transform_expression_matrix(
+        adata.X,
+        method=method,
+        cofactor=cofactor,
+        min_percentile=min_percentile,
+        max_percentile=max_percentile,
+        **kwargs,
+    )
+    adata.X = transformed_matrix
