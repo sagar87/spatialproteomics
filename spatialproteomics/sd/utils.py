@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from spatialdata import SpatialData
 
@@ -17,7 +17,10 @@ def _get_channels(channel):
 
 
 def _process_image(
-    sdata: SpatialData, channel: Optional[str], image_key: str = "image", key_added: str = Layers.SEGMENTATION
+    sdata: SpatialData,
+    channels: Optional[List] = None,
+    image_key: str = Layers.IMAGE,
+    key_added: str = Layers.SEGMENTATION,
 ):
     assert (
         image_key in sdata.images
@@ -30,9 +33,42 @@ def _process_image(
     image = sdata.images[image_key]
 
     # extract only the relevant channels
-    image = image.sel(c=channel)
+    if channels is not None:
+        image = image.sel(c=channels)
     # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
     # image = image['scale0']['image'].values
 
     # returning a numpy array
     return image.values
+
+
+def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEGMENTATION):
+    assert (
+        segmentation_key in sdata.labels
+    ), f"Segmentation key {segmentation_key} not found in spatial data object. Available keys: {list(sdata.labels.keys())}"
+
+    # TODO: CHECK THE ANNDATA OBJECT HERE
+    # assert (
+    #    key_added not in sdata.labels.keys()
+    # ), f"Key {key_added} already exists in spatial data object. Please choose another key."
+
+    # access the segmentation mask
+    segmentation = sdata.labels[segmentation_key]
+
+    # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
+    # image = image['scale0']['image'].values
+
+    # returning a numpy array
+    return segmentation.values
+
+
+def _process_adata(sdata: SpatialData, tables_key: str = Layers.SEGMENTATION):
+    assert (
+        tables_key in sdata.tables
+    ), f"Tables key {tables_key} not found in spatial data object. Available keys: {list(sdata.tables.keys())}. To add observations, please aggregate the intensities first."
+
+    # access the segmentation mask
+    tables = sdata.tables[tables_key]
+
+    # returning the adata object
+    return tables

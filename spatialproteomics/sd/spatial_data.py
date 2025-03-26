@@ -1,16 +1,20 @@
-from typing import Optional
+from typing import Optional, Union
 
+import pandas as pd
 import spatialdata
+from skimage.measure import regionprops_table
 
 from ..constants import Layers
 from ..tl.utils import _cellpose, _mesmer, _stardist
-from .utils import _get_channels, _process_image
+from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
+
+# === SEGMENTATION ===
 
 
 def cellpose(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = "image",
+    image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
     **kwargs,
 ):
@@ -37,7 +41,7 @@ def cellpose(
 def stardist(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = "image",
+    image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
     **kwargs,
 ):
@@ -64,7 +68,7 @@ def stardist(
 def mesmer(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = "image",
+    image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
     **kwargs,
 ):
@@ -84,3 +88,35 @@ def mesmer(
     sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
         segmentation_masks[0].squeeze(), transformations=None, dims=("y", "x")
     )
+
+
+# === AGGREGATION AND PREPROCESSING ===
+def add_observations(
+    sdata: spatialdata.SpatialData,
+    properties: Union[str, list, tuple] = ("label", "centroid"),
+    segmentation_key=Layers.SEGMENTATION,
+    table_key="table",
+    **kwargs,
+):
+    segmentation = _process_segmentation(sdata, segmentation_key)
+    adata = _process_adata(sdata, table_key)
+    existing_features = adata.obs.columns
+
+    if type(properties) is str:
+        properties = [properties]
+
+    if "label" not in properties:
+        properties = ["label", *properties]
+
+    table = regionprops_table(segmentation, properties=properties)
+
+    # remove existing features
+    table = pd.DataFrame({k: v for k, v in table.items() if k not in existing_features})
+
+    # setting the label to be the index and removing it from the table
+    table.index = table["label"]
+    table = table.drop(columns="label")
+
+    # add data into adata.obs
+    # TODO: this needs to be more flexible
+    adata.obs = adata.obs.merge(table, left_on="id", right_index=True, how="left")
