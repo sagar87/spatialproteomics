@@ -32,7 +32,7 @@ from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor, is_positive, percentage_positive
-from .sd import add_observations, cellpose, mesmer, stardist
+from .sd import add_observations, add_quantification, cellpose, mesmer, stardist
 from .tl import ToolAccessor
 
 __all__ = [
@@ -56,6 +56,7 @@ __all__ = [
     "stardist",
     "mesmer",
     "add_observations",
+    "add_quantification",
     "Apricot",
     "Beige",
     "Black",

@@ -11,6 +11,7 @@ from skimage.segmentation import expand_labels
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
 from .utils import (
+    _compute_quantification,
     _convert_to_8bit,
     _get_disconnected_cell,
     _merge_segmentation,
@@ -671,35 +672,9 @@ class PreprocessingAccessor:
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         segmentation = self._obj[Layers.SEGMENTATION].values
+        image = self._obj[layer_key].values
 
-        image = np.rollaxis(self._obj[layer_key].values, 0, 3)
-
-        # Check if the input is a string (referring to a default skimage property)
-        if isinstance(func, str):
-            # Use regionprops to get the available property names
-            try:
-                props = regionprops_table(segmentation, intensity_image=image, properties=["label", func])
-            except AttributeError:
-                raise AttributeError(
-                    f"Invalid regionprop: {func}. Please provide a valid property or a custom function. Check skimage.measure.regionprops_table for available properties."
-                )
-
-            cell_idx = props.pop("label")
-            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
-                if k.startswith(func):
-                    measurements.append(props[k])
-        # If the input is a callable (function)
-        elif callable(func):
-            props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
-            cell_idx = props.pop("label")
-
-            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
-                if k.startswith(func.__name__):
-                    measurements.append(props[k])
-        else:
-            raise ValueError(
-                "The func parameter should be either a string for default skimage properties or a callable function."
-            )
+        measurements, cell_idx = _compute_quantification(image, segmentation, func)
 
         da = xr.DataArray(
             np.stack(measurements, -1),

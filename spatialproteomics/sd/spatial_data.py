@@ -1,10 +1,12 @@
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 import spatialdata
+from anndata import AnnData
 from skimage.measure import regionprops_table
 
 from ..constants import Layers
+from ..pp.utils import _compute_quantification
 from ..tl.utils import _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
@@ -91,6 +93,29 @@ def mesmer(
 
 
 # === AGGREGATION AND PREPROCESSING ===
+def add_quantification(
+    sdata: spatialdata.SpatialData,
+    func: Union[str, Callable] = "intensity_mean",
+    key_added: str = Layers.INTENSITY,
+    image_key: str = Layers.IMAGE,
+    segmentation_key=Layers.SEGMENTATION,
+):
+    # sanity checks for image and segmentation
+    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
+    segmentation = _process_segmentation(sdata, segmentation_key)
+
+    # computing the quantification
+    measurements, cell_idx = _compute_quantification(image, segmentation, func)
+
+    # putting the result into the anndata object
+    adata = AnnData(measurements.T)
+    adata.obs["id"] = cell_idx
+    adata.obs["region"] = segmentation_key
+
+    # putting the anndata object into the spatialdata object
+    sdata.tables[key_added] = adata
+
+
 def add_observations(
     sdata: spatialdata.SpatialData,
     properties: Union[str, list, tuple] = ("label", "centroid"),

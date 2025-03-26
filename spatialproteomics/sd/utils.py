@@ -25,9 +25,10 @@ def _process_image(
     assert (
         image_key in sdata.images
     ), f"Image key {image_key} not found in spatial data object. Available keys: {list(sdata.images.keys())}"
-    assert (
-        key_added not in sdata.labels.keys()
-    ), f"Key {key_added} already exists in spatial data object. Please choose another key."
+    if key_added is not None:
+        assert (
+            key_added not in sdata.labels.keys()
+        ), f"Key {key_added} already exists in spatial data object. Please choose another key."
 
     # access the image data
     image = sdata.images[image_key]
