@@ -488,3 +488,18 @@ def _compute_quantification(image, segmentation, func):
         )
 
     return np.array(measurements), np.array(cell_idx)
+
+
+def _apply(image, func, **kwargs):
+    # Apply the function independently across all channels
+    # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
+    processed_layers = []
+    for channel in range(image.shape[0]):
+        channel_data = image[channel]
+        processed_channel_data = func(channel_data, **kwargs)
+        processed_layers.append(processed_channel_data)
+
+    # Stack the processed layers back into a single numpy array
+    processed_layer = np.stack(processed_layers, 0)
+
+    return processed_layer

@@ -11,6 +11,7 @@ from skimage.segmentation import expand_labels
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
 from .utils import (
+    _apply,
     _compute_quantification,
     _convert_to_8bit,
     _get_disconnected_cell,
@@ -1004,16 +1005,7 @@ class PreprocessingAccessor:
         obj = self._obj.copy()
         layer = obj[key].copy()
 
-        # Apply the function independently across all channels
-        # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
-        processed_layers = []
-        for channel in layer.coords[Dims.CHANNELS].values:
-            channel_data = layer.sel({Dims.CHANNELS: channel}).values
-            processed_channel_data = func(channel_data, **kwargs)
-            processed_layers.append(processed_channel_data)
-
-        # Stack the processed layers back into a single numpy array
-        processed_layer = np.stack(processed_layers, 0)
+        processed_layer = _apply(layer, func, **kwargs)
 
         # adding the modified layer to the object
         obj[key_added] = xr.DataArray(

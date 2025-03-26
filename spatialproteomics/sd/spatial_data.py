@@ -6,7 +6,7 @@ from anndata import AnnData
 from skimage.measure import regionprops_table
 
 from ..constants import Layers
-from ..pp.utils import _compute_quantification
+from ..pp.utils import _apply, _compute_quantification
 from ..tl.utils import _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
@@ -145,3 +145,17 @@ def add_observations(
     # add data into adata.obs
     # TODO: this needs to be more flexible
     adata.obs = adata.obs.merge(table, left_on="id", right_index=True, how="left")
+
+
+def apply(
+    sdata: spatialdata.SpatialData,
+    func: Callable,
+    image_key=Layers.IMAGE,
+    **kwargs,
+):
+    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
+    processed_image = _apply(image, func, **kwargs)
+    channels = sdata.images[image_key].coords["c"].values
+    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+        processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
+    )
