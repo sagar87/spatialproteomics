@@ -20,6 +20,7 @@ from .utils import (
     _relabel_cells,
     _remove_outlying_cells,
     _remove_unlabeled_cells,
+    _threshold,
 )
 
 
@@ -863,9 +864,6 @@ class PreprocessingAccessor:
         ValueError
             If both quantile and intensity are None or if both quantile and intensity are provided.
         """
-        if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
-            raise ValueError("Please provide a quantile or absolute intensity cut off.")
-
         if Layers.PLOT in self._obj:
             logger.warning(
                 "Please only call plotting methods like pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
@@ -874,95 +872,8 @@ class PreprocessingAccessor:
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
 
-        if isinstance(quantile, (float, int)):
-            quantile = np.array([quantile])
-        if isinstance(quantile, list):
-            quantile = np.array(quantile)
-
-        if isinstance(intensity, (float, int)):
-            intensity = np.array([intensity])
-        if isinstance(intensity, list):
-            intensity = np.array(intensity)
-
-        # if a channels argument is provided, the thresholds for all other channels are set to 0 (i. e. no thresholding)
-        if channels is not None:
-            if isinstance(channels, str):
-                channels = [channels]
-
-            all_channels = image_layer.coords[Dims.CHANNELS].values.tolist()
-            assert all(
-                [channel in all_channels for channel in channels]
-            ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
-
-            if quantile is not None:
-                assert len(channels) == len(
-                    quantile
-                ), "The number of channels must match the number of quantile values."
-                quantile_dict = dict(zip(channels, quantile))
-                quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
-            if intensity is not None:
-                assert len(channels) == len(
-                    intensity
-                ), "The number of channels must match the number of intensity values."
-                intensity_dict = dict(zip(channels, intensity))
-                intensity = np.array([intensity_dict.get(channel, 0) for channel in all_channels])
-
-        if quantile is not None:
-            assert (
-                len(quantile) == 1 or len(quantile) == image_layer.coords[Dims.CHANNELS].size
-            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
-            assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
-
-            if shift:
-                # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
-                # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
-                lower = np.quantile(
-                    image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1
-                ).astype(image_layer.dtype)
-                filtered = np.clip(
-                    image_layer, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
-                ).astype(image_layer.dtype) - np.expand_dims(
-                    np.diag(lower) if lower.ndim > 1 else lower, (1, 2)
-                ).astype(
-                    image_layer.dtype
-                )
-            else:
-                # Calculate the quantile-based intensity threshold for each channel.
-                flattened_values = image_layer.values.reshape(
-                    image_layer.values.shape[0], -1
-                )  # Flatten height and width for each channel.
-                lower = np.array(
-                    [np.quantile(flattened_values[i], q) for i, q in enumerate(quantile)]
-                )  # Compute quantile per channel.
-
-                # Reshape lower to match the broadcasting requirements.
-                lower = lower[:, np.newaxis, np.newaxis]  # Reshape to add height and width dimensions.
-
-                # Use np.where to apply the quantile threshold without shifting.
-                filtered = np.where(image_layer.values >= lower, image_layer.values, 0)
-
-        if intensity is not None:
-            assert (
-                len(intensity) == 1 or len(intensity) == image_layer.coords[Dims.CHANNELS].size
-            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
-            assert np.all(intensity >= 0), "Intensity values must be positive."
-            assert np.all(
-                intensity <= np.max(image_layer.values)
-            ), "Intensity values must be smaller than the maximum intensity."
-
-            if shift:
-                # calculate intensity
-                filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
-            else:
-                # Reshape intensity to broadcast correctly across all dimensions.
-                if len(intensity) == 1:
-                    intensity = intensity[0]  # This will make it a scalar for simple broadcasting.
-                else:
-                    intensity = intensity[:, np.newaxis, np.newaxis]  # Add two new axes for broadcasting.
-                # Apply thresholding: set all values below the intensity threshold to 0.
-                filtered = np.where(image_layer.values >= intensity, image_layer.values, 0)
+        # performing the thresholding
+        filtered = _threshold(image_layer)
 
         if key_added is None:
             # drop_vars returns a copy of the data array and should not perform any in-place operations

@@ -21,6 +21,7 @@ def _process_image(
     channels: Optional[List] = None,
     image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
+    return_values: bool = True,
 ):
     assert (
         image_key in sdata.images
@@ -39,8 +40,11 @@ def _process_image(
     # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
     # image = image['scale0']['image'].values
 
-    # returning a numpy array
-    return image.values
+    if return_values:
+        # returning a numpy array
+        return image.values
+    # returning an xarray object
+    return image
 
 
 def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEGMENTATION):

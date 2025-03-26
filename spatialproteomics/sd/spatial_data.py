@@ -6,7 +6,7 @@ from anndata import AnnData
 from skimage.measure import regionprops_table
 
 from ..constants import Layers
-from ..pp.utils import _apply, _compute_quantification
+from ..pp.utils import _apply, _compute_quantification, _threshold
 from ..tl.utils import _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
@@ -155,6 +155,25 @@ def apply(
 ):
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
     processed_image = _apply(image, func, **kwargs)
+    channels = sdata.images[image_key].coords["c"].values
+    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+        processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
+    )
+
+
+def threshold(
+    sdata: spatialdata.SpatialData,
+    image_key: str = Layers.IMAGE,
+    quantile: Union[float, list] = None,
+    intensity: Union[int, list] = None,
+    channels: Optional[Union[str, list]] = None,
+    shift: bool = True,
+):
+    # this gets the image as an xarray object
+    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
+    processed_image = _threshold(
+        image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c"
+    )
     channels = sdata.images[image_key].coords["c"].values
     sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")

@@ -5,6 +5,7 @@ from .spatial_data import (
     cellpose,
     mesmer,
     stardist,
+    threshold,
 )
 
-__all__ = ["cellpose", "stardist", "mesmer", "add_observations", "add_quantification", "apply"]
+__all__ = ["cellpose", "stardist", "mesmer", "add_observations", "add_quantification", "apply", "threshold"]
