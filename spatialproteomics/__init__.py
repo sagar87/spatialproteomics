@@ -39,9 +39,11 @@ from .sd import (
     astir,
     cellpose,
     mesmer,
+    predict_cell_subtypes,
     predict_cell_types_argmax,
     stardist,
     threshold,
+    threshold_labels,
     transform_expression_matrix,
 )
 from .tl import ToolAccessor
@@ -73,6 +75,8 @@ __all__ = [
     "transform_expression_matrix",
     "astir",
     "predict_cell_types_argmax",
+    "threshold_labels",
+    "predict_cell_subtypes",
     "Apricot",
     "Beige",
     "Black",
