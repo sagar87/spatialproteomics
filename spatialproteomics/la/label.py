@@ -12,6 +12,7 @@ from ..la.utils import (
     _format_labels,
     _get_markers_from_subtype_dict,
     _predict_cell_subtypes,
+    _predict_cell_types_argmax,
 )
 
 
@@ -640,11 +641,10 @@ class LabelAccessor:
 
         # only looking at the markers specified in the marker dict
         obj = self._obj.copy()
-        # getting the argmax for each cell
-        argmax_classification = np.argmax(obj.pp[markers][key].values, axis=1)
 
-        # translating the argmax classification into cell types
-        celltypes_argmax = np.array(celltypes)[argmax_classification]
+        celltypes_argmax = _predict_cell_types_argmax(
+            pd.DataFrame(obj.pp[markers][key].values, columns=markers), markers=markers, celltypes=celltypes
+        )
 
         # putting everything into a dataframe
         celltype_prediction_df = pd.DataFrame(

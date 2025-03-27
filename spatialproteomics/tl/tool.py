@@ -7,6 +7,7 @@ import xarray as xr
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props
 from .utils import (
+    _astir,
     _cellpose,
     _convert_masks_to_data_array,
     _get_channels,
@@ -255,9 +256,6 @@ class ToolAccessor:
         DataArray
             A DataArray with the assigned cell types.
         """
-        import astir
-        import torch
-
         # check if there is an expression matrix
         if key not in self._obj:
             raise ValueError(
@@ -280,24 +278,19 @@ class ToolAccessor:
         expression_df = self._obj.pp.get_layer_as_df(key)
 
         # running astir
-        model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)
-        model.fit_type(
+        assigned_cell_types = _astir(
+            expression_df=expression_df,
+            marker_dict=marker_dict,
+            threshold=threshold,
+            seed=seed,
             learning_rate=learning_rate,
             batch_size=batch_size,
             n_init=n_init,
             n_init_epochs=n_init_epochs,
             max_epochs=max_epochs,
-            **kwargs,
+            cell_id_col=cell_id_col,
+            cell_type_col=cell_type_col,
         )
-
-        # getting the predictions
-        assigned_cell_types = model.get_celltypes(threshold=threshold)
-        # assign the index to its own column
-        assigned_cell_types = assigned_cell_types.reset_index()
-        # renaming the columns
-        assigned_cell_types.columns = [cell_id_col, cell_type_col]
-        # setting the cell dtype to int
-        assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
         # adding the labels to the xarray object
         return self._obj.la.add_labels_from_dataframe(

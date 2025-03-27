@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import pandas as pd
 from skimage.segmentation import relabel_sequential
@@ -152,3 +154,17 @@ def _predict_cell_subtypes(df, subtype_dict):
     # selecting only the new cell type annotations
     df = df[[x for x in df.columns if "labels_" in x]]
     return df
+
+
+def _predict_cell_types_argmax(
+    expression_df: pd.DataFrame,
+    markers: List,
+    celltypes: List,
+):
+    # getting the argmax for each cell
+    argmax_classification = np.argmax(expression_df[markers], axis=1)
+
+    # translating the argmax classification into cell types
+    celltypes_argmax = np.array(celltypes)[argmax_classification]
+
+    return celltypes_argmax

@@ -6,13 +6,14 @@ from anndata import AnnData
 from skimage.measure import regionprops_table
 
 from ..constants import Layers
+from ..la.utils import _predict_cell_types_argmax
 from ..pp.utils import (
     _apply,
     _compute_quantification,
     _threshold,
     _transform_expression_matrix,
 )
-from ..tl.utils import _cellpose, _mesmer, _stardist
+from ..tl.utils import _astir, _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
 # === SEGMENTATION ===
@@ -106,16 +107,18 @@ def add_quantification(
     segmentation_key=Layers.SEGMENTATION,
 ):
     # sanity checks for image and segmentation
-    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
+    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
     segmentation = _process_segmentation(sdata, segmentation_key)
 
     # computing the quantification
-    measurements, cell_idx = _compute_quantification(image, segmentation, func)
+    measurements, cell_idx = _compute_quantification(image.values, segmentation, func)
 
     # putting the result into the anndata object
     adata = AnnData(measurements.T)
     adata.obs["id"] = cell_idx
     adata.obs["region"] = segmentation_key
+    adata.var_names = image.coords["c"].values
+    adata.obs_names = cell_idx
 
     # putting the anndata object into the spatialdata object
     sdata.tables[key_added] = adata
@@ -205,3 +208,50 @@ def transform_expression_matrix(
         **kwargs,
     )
     adata.X = transformed_matrix
+
+
+# === CELL TYPE PREDICTION ===
+def astir(
+    sdata: spatialdata.SpatialData,
+    marker_dict: dict,
+    table_key="table",
+    threshold: float = 0,
+    seed: int = 42,
+    learning_rate: float = 0.001,
+    batch_size: float = 64,
+    n_init: int = 5,
+    n_init_epochs: int = 5,
+    max_epochs: int = 500,
+    cell_id_col: str = "cell_id",
+    cell_type_col: str = "cell_type",
+    **kwargs,
+):
+    adata = _process_adata(sdata, table_key)
+    # converting the adata object into a pandas dataframe
+    expression_df = pd.DataFrame(adata.X, index=adata.obs_names, columns=adata.var_names)
+
+    assigned_cell_types = _astir(
+        expression_df=expression_df,
+        marker_dict=marker_dict,
+        threshold=threshold,
+        seed=seed,
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+        n_init=n_init,
+        n_init_epochs=n_init_epochs,
+        max_epochs=max_epochs,
+        cell_id_col=cell_id_col,
+        cell_type_col=cell_type_col,
+    )
+
+    # merging the resulting dataframe to the adata object
+    df = pd.DataFrame(adata.obs)
+    df = df.merge(assigned_cell_types, left_on="id", right_on=cell_id_col, how="left")
+    adata.obs = df.drop(columns=cell_id_col)
+
+
+def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict):
+    adata = _process_adata(sdata)
+    expression_df = pd.DataFrame(adata.X, index=adata.obs_names, columns=adata.var_names)
+    celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
+    adata.obs["celltype"] = celltypes

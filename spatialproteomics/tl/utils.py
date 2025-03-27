@@ -1,6 +1,7 @@
 from typing import Callable
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 from ..base_logger import logger
@@ -183,3 +184,42 @@ def _mesmer(img: np.ndarray, postprocess_func: Callable = lambda x: x, **kwargs)
     all_masks = postprocess_func(all_masks)
 
     return np.array(all_masks)
+
+
+def _astir(
+    expression_df: pd.DataFrame,
+    marker_dict: dict,
+    threshold: float = 0,
+    seed: int = 42,
+    learning_rate: float = 0.001,
+    batch_size: float = 64,
+    n_init: int = 5,
+    n_init_epochs: int = 5,
+    max_epochs: int = 500,
+    cell_id_col: str = "cell_id",
+    cell_type_col: str = "cell_type",
+    **kwargs,
+):
+    import astir
+    import torch
+
+    model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)
+    model.fit_type(
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+        n_init=n_init,
+        n_init_epochs=n_init_epochs,
+        max_epochs=max_epochs,
+        **kwargs,
+    )
+
+    # getting the predictions
+    assigned_cell_types = model.get_celltypes(threshold=threshold)
+    # assign the index to its own column
+    assigned_cell_types = assigned_cell_types.reset_index()
+    # renaming the columns
+    assigned_cell_types.columns = [cell_id_col, cell_type_col]
+    # setting the cell dtype to int
+    assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
+
+    return assigned_cell_types

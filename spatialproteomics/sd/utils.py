@@ -67,7 +67,7 @@ def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEG
     return segmentation.values
 
 
-def _process_adata(sdata: SpatialData, tables_key: str = Layers.SEGMENTATION):
+def _process_adata(sdata: SpatialData, tables_key: str = "table"):
     assert (
         tables_key in sdata.tables
     ), f"Tables key {tables_key} not found in spatial data object. Available keys: {list(sdata.tables.keys())}. To add observations, please aggregate the intensities first."
