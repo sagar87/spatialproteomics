@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import xarray as xr
 from spatialdata import SpatialData
 
 from ..constants import Layers
@@ -22,6 +23,7 @@ def _process_image(
     image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
     return_values: bool = True,
+    data_key: Optional[str] = None,
 ):
     assert (
         image_key in sdata.images
@@ -34,11 +36,29 @@ def _process_image(
     # access the image data
     image = sdata.images[image_key]
 
+    # handling weird spatialdata structures
+    if isinstance(image, xr.DataTree):
+        assert (
+            data_key is not None
+        ), f"It looks like your image is stored as a DataTree. Please provide a data_key to access the image data. Available keys are: {list(image.keys())}."
+        assert (
+            data_key.split("/")[0] in image.keys()
+        ), f"Data key {data_key} not found in the image data. Available keys: {list(image.keys())}"
+
+        image = image[data_key]  # Get the dataset node
+
+        assert isinstance(
+            image, xr.DataArray
+        ), f"The image data should be a DataArray. Please provide a valid data key. Available keys are: {[data_key + '/' + x for x in list(image.keys())]}."
+
     # extract only the relevant channels
     if channels is not None:
-        image = image.sel(c=channels)
-    # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
-    # image = image['scale0']['image'].values
+        try:
+            image = image.sel(c=channels)
+        except KeyError:
+            raise KeyError(
+                f"Channels {channels} not found in the image data. Available channels: {list(image.c.values)}"
+            )
 
     if return_values:
         # returning a numpy array

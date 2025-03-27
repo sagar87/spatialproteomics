@@ -4,6 +4,7 @@ import pandas as pd
 import spatialdata
 from anndata import AnnData
 from skimage.measure import regionprops_table
+from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
 from ..constants import Layers
@@ -29,15 +30,19 @@ def cellpose(
     channel: Optional[str],
     image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
+    data_key: Optional[str] = None,
     **kwargs,
 ):
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels, image_key, key_added)
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
 
     # run cellpose
     segmentation_masks, _ = _cellpose(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
 
     # add the segmentation masks to the spatial data object
     if segmentation_masks.shape[0] > 1:
@@ -45,10 +50,14 @@ def cellpose(
             sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
                 segmentation_masks[i], transformations=None, dims=("y", "x")
             )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
     else:
         sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
             segmentation_masks[0], transformations=None, dims=("y", "x")
         )
+        set_transformation(sdata.labels[key_added], transformation)
+
+    sdata.labels
 
 
 def stardist(
@@ -66,16 +75,21 @@ def stardist(
     # run stardist
     segmentation_masks = _stardist(image, **kwargs)
 
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
     # add the segmentation masks to the spatial data object
     if segmentation_masks.shape[0] > 1:
         for i, channel in enumerate(channels):
             sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
                 segmentation_masks[i], transformations=None, dims=("y", "x")
             )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
     else:
         sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
             segmentation_masks[0], transformations=None, dims=("y", "x")
         )
+        set_transformation(sdata.labels[key_added], transformation)
 
 
 def mesmer(
@@ -97,10 +111,14 @@ def mesmer(
     # run mesmer
     segmentation_masks = _mesmer(image, **kwargs)
 
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
     # add the segmentation masks to the spatial data object
     sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
         segmentation_masks[0].squeeze(), transformations=None, dims=("y", "x")
     )
+    set_transformation(sdata.labels[key_added], transformation)
 
 
 # === AGGREGATION AND PREPROCESSING ===
