@@ -7,7 +7,7 @@ from skimage.measure import regionprops_table
 from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
-from ..constants import Layers
+from ..constants import SDLayers
 from ..la.utils import (
     _get_markers_from_subtype_dict,
     _predict_cell_subtypes,
@@ -28,11 +28,26 @@ from .utils import _get_channels, _process_adata, _process_image, _process_segme
 def cellpose(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = Layers.IMAGE,
-    key_added: str = Layers.SEGMENTATION,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
     **kwargs,
 ):
+    """
+    This function runs the cellpose segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the cellpose algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
+    """
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
@@ -63,10 +78,24 @@ def cellpose(
 def stardist(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = Layers.IMAGE,
-    key_added: str = Layers.SEGMENTATION,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
     **kwargs,
 ):
+    """
+    This function runs the stardist segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the stardist algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
+    """
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
@@ -95,10 +124,24 @@ def stardist(
 def mesmer(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
-    image_key: str = Layers.IMAGE,
-    key_added: str = Layers.SEGMENTATION,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
     **kwargs,
 ):
+    """
+    This function runs the mesmer segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the mesmer algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The first channel is assumed to be nuclear and the second one membraneous.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
+    """
     channels = _get_channels(channel)
 
     assert (
@@ -125,11 +168,26 @@ def mesmer(
 def add_quantification(
     sdata: spatialdata.SpatialData,
     func: Union[str, Callable] = "intensity_mean",
-    key_added: str = "table",
-    image_key: str = Layers.IMAGE,
-    segmentation_key=Layers.SEGMENTATION,
+    key_added: str = SDLayers.TABLE,
+    image_key: str = SDLayers.IMAGE,
+    segmentation_key: str = SDLayers.SEGMENTATION,
     layer_key: Optional[str] = None,
 ):
+    """
+    This function computes the quantification of the image data based on the provided segmentation masks.
+    It extracts the image data and segmentation masks from the spatialdata object, applies the quantification function,
+    and adds the quantification results to the spatialdata object.
+    The quantification results are stored in an AnnData object, which is added to the tables attribute of the spatialdata object.
+    The quantification function can be specified as a string or a callable function.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data and segmentation masks.
+        func (Union[str, Callable], optional): The quantification function to be applied. Defaults to "intensity_mean". Can be a string or a callable function.
+        key_added (str, optional): The key under which the quantification results will be stored in the tables attribute of the spatialdata object. Defaults to table.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
+        layer_key (Optional[str], optional): The key for the quantification results in the AnnData object. If None, a new layer will be created. Defaults to None.
+    """
     # sanity checks for image and segmentation
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
     segmentation = _process_segmentation(sdata, segmentation_key)
@@ -163,10 +221,24 @@ def add_quantification(
 def add_observations(
     sdata: spatialdata.SpatialData,
     properties: Union[str, list, tuple] = ("label", "centroid"),
-    segmentation_key=Layers.SEGMENTATION,
-    table_key="table",
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
     **kwargs,
 ):
+    """
+    This function computes the observations for each region in the segmentation masks.
+    It extracts the segmentation masks from the spatialdata object, computes the region properties,
+    and adds the observations to the AnnData object stored in the tables attribute of the spatialdata object.
+    The observations are computed using the regionprops_table function from skimage.measure.
+    The properties to be computed can be specified as a string or a list/tuple of strings.
+    The default properties are "label" and "centroid", but other properties can be added as well.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the segmentation masks.
+        properties (Union[str, list, tuple], optional): The properties to be computed for each region. Defaults to ("label", "centroid").
+        segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
+        table_key (str, optional): The key under which the AnnData object is stored in the tables attribute of the spatialdata object. Defaults to table.
+    """
     segmentation = _process_segmentation(sdata, segmentation_key)
     adata = _process_adata(sdata, table_key=table_key)
     existing_features = adata.obs.columns
@@ -187,16 +259,28 @@ def add_observations(
     table = table.drop(columns="label")
 
     # add data into adata.obs
-    # TODO: this needs to be more flexible
     adata.obs = adata.obs.merge(table, left_on="id", right_index=True, how="left")
 
 
 def apply(
     sdata: spatialdata.SpatialData,
     func: Callable,
-    image_key=Layers.IMAGE,
+    image_key: str = SDLayers.IMAGE,
     **kwargs,
 ):
+    """
+    This function applies a given function to the image data in the spatialdata object.
+    It extracts the image data from the spatialdata object, applies the function,
+    and adds the processed image back to the spatialdata object.
+    The processed image is stored in the images attribute of the spatialdata object.
+    The function can be any callable function that takes an image as input and returns a processed image.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        func (Callable): The function to be applied to the image data. It should take an image as input and return a processed image.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        **kwargs: Additional keyword arguments to be passed to the function.
+    """
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
     processed_image = _apply(image, func, **kwargs)
     channels = sdata.images[image_key].coords["c"].values
@@ -207,13 +291,29 @@ def apply(
 
 def threshold(
     sdata: spatialdata.SpatialData,
-    image_key: str = Layers.IMAGE,
+    image_key: str = SDLayers.IMAGE,
     quantile: Union[float, list] = None,
     intensity: Union[int, list] = None,
     channels: Optional[Union[str, list]] = None,
     shift: bool = True,
     **kwargs,
 ):
+    """
+    This function applies a threshold to the image data in the spatialdata object.
+    It extracts the image data from the spatialdata object, applies the thresholding function,
+    and adds the processed image back to the spatialdata object.
+    The processed image is stored in the images attribute of the spatialdata object.
+    The thresholding function can be specified using the quantile or intensity parameters.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        quantile (Union[float, list], optional): The quantile value(s) to be used for thresholding. If None, the intensity parameter will be used. Defaults to None.
+        intensity (Union[int, list], optional): The intensity value(s) to be used for thresholding. If None, the quantile parameter will be used. Defaults to None.
+        channels (Optional[Union[str, list]], optional): The channel(s) to be used for thresholding. If None, all channels will be used. Defaults to None.
+        shift (bool, optional): Whether to shift the intensities towards 0 after thresholding. Defaults to True.
+        **kwargs: Additional keyword arguments to be passed to the thresholding function.
+    """
     # this gets the image as an xarray object
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
     processed_image = _threshold(
@@ -228,12 +328,27 @@ def threshold(
 def transform_expression_matrix(
     sdata: spatialdata.SpatialData,
     method: str = "arcsinh",
-    table_key="table",
+    table_key=SDLayers.TABLE,
     cofactor: float = 5.0,
     min_percentile: float = 1.0,
     max_percentile: float = 99.0,
     **kwargs,
 ):
+    """
+    This function applies a transformation to the expression matrix in the spatialdata object.
+    It extracts the expression matrix from the spatialdata object, applies the transformation function,
+    and adds the transformed expression matrix back to the spatialdata object.
+    The transformed expression matrix is stored in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        method (str, optional): The transformation method to be applied. Defaults to "arcsinh".
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        cofactor (float, optional): The cofactor to be used for the transformation. Defaults to 5.0.
+        min_percentile (float, optional): The minimum percentile to be used for the transformation. Defaults to 1.0.
+        max_percentile (float, optional): The maximum percentile to be used for the transformation. Defaults to 99.0.
+        **kwargs: Additional keyword arguments to be passed to the transformation function.
+    """
     adata = _process_adata(sdata, table_key=table_key)
     transformed_matrix = _transform_expression_matrix(
         adata.X,
@@ -249,10 +364,20 @@ def transform_expression_matrix(
 def threshold_labels(
     sdata: spatialdata.SpatialData,
     threshold_dict: dict,
-    key_added: str = "binarization",
-    table_key: str = "table",
+    key_added: str = SDLayers.BINARIZATION,
+    table_key: str = SDLayers.TABLE,
     layer_key: str = "perc_pos",
 ):
+    """
+    Binarise based on a threshold. If a label is specified, the binarization is only applied to this cell type.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        threshold_dict (dict): A dictionary containing the threshold values for each channel.
+        key_added (str, optional): The key under which the processed expression matrix will be stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        layer_key (str, optional): The key under which the expression matrix is stored in the layers attribute of the spatialdata object. Defaults to "perc_pos".
+    """
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df(layer=layer_key)
 
@@ -268,7 +393,7 @@ def threshold_labels(
 def astir(
     sdata: spatialdata.SpatialData,
     marker_dict: dict,
-    table_key="table",
+    table_key=SDLayers.TABLE,
     threshold: float = 0,
     seed: int = 42,
     learning_rate: float = 0.001,
@@ -280,6 +405,27 @@ def astir(
     cell_type_col: str = "cell_type",
     **kwargs,
 ):
+    """
+    This function applies the ASTIR algorithm to predict cell types based on the expression matrix.
+    It extracts the expression matrix from the spatialdata object, applies the ASTIR algorithm,
+    and adds the predicted cell types to the spatialdata object.
+    The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        marker_dict (dict): A dictionary containing the marker genes for each cell type.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        threshold (float, optional): The threshold value to be used for the ASTIR algorithm. Defaults to 0.
+        seed (int, optional): The random seed to be used for the ASTIR algorithm. Defaults to 42.
+        learning_rate (float, optional): The learning rate to be used for the ASTIR algorithm. Defaults to 0.001.
+        batch_size (float, optional): The batch size to be used for the ASTIR algorithm. Defaults to 64.
+        n_init (int, optional): The number of initializations to be used for the ASTIR algorithm. Defaults to 5.
+        n_init_epochs (int, optional): The number of initial epochs to be used for the ASTIR algorithm. Defaults to 5.
+        max_epochs (int, optional): The maximum number of epochs to be used for the ASTIR algorithm. Defaults to 500.
+        cell_id_col (str, optional): The name of the column containing the cell IDs in the expression matrix. Defaults to "cell_id".
+        cell_type_col (str, optional): The name of the column containing the cell types in the expression matrix. Defaults to "cell_type".
+        **kwargs: Additional keyword arguments to be passed to the ASTIR algorithm.
+    """
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df()
 
@@ -295,6 +441,7 @@ def astir(
         max_epochs=max_epochs,
         cell_id_col=cell_id_col,
         cell_type_col=cell_type_col,
+        **kwargs,
     )
 
     # merging the resulting dataframe to the adata object
@@ -303,7 +450,19 @@ def astir(
     adata.obs = df.drop(columns=cell_id_col)
 
 
-def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict, table_key: str = "table"):
+def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict, table_key: str = SDLayers.TABLE):
+    """
+    This function predicts cell types based on the expression matrix using the argmax method.
+    It extracts the expression matrix from the spatialdata object, applies the argmax method,
+    and adds the predicted cell types to the spatialdata object.
+    The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+    The argmax method assigns the cell type with the highest expression value to each cell.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        marker_dict (dict): A dictionary containing the marker genes for each cell type.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+    """
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df()
     celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
@@ -313,9 +472,21 @@ def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict,
 def predict_cell_subtypes(
     sdata: spatialdata.SpatialData,
     subtype_dict: Union[dict, str],
-    table_key: str = "table",
-    layer_key: str = "binarization",
+    table_key: str = SDLayers.TABLE,
+    layer_key: str = SDLayers.BINARIZATION,
 ):
+    """
+    This function predicts cell subtypes based on the expression matrix using a subtype dictionary.
+    It extracts the expression matrix from the spatialdata object, applies the subtype prediction method,
+    and adds the predicted cell subtypes to the spatialdata object.
+    The predicted cell subtypes are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        subtype_dict (Union[dict, str]): A dictionary mapping cell subtypes to the binarized markers used for prediction. Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        layer_key (str, optional): The key under which the binarized expression matrix is stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+    """
     adata = _process_adata(sdata, table_key=table_key)
     celltypes = adata.obs["celltype"].copy()
     assert (
