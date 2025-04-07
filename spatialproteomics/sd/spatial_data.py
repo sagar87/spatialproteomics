@@ -1,3 +1,4 @@
+import copy as cp
 from typing import Callable, Optional, Union
 
 import pandas as pd
@@ -30,6 +31,7 @@ def cellpose(
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -45,8 +47,12 @@ def cellpose(
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
@@ -71,6 +77,9 @@ def cellpose(
         )
         set_transformation(sdata.labels[key_added], transformation)
 
+    if copy:
+        return sdata
+
 
 def stardist(
     sdata: spatialdata.SpatialData,
@@ -78,6 +87,7 @@ def stardist(
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -93,8 +103,12 @@ def stardist(
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
@@ -119,6 +133,9 @@ def stardist(
         )
         set_transformation(sdata.labels[key_added], transformation)
 
+    if copy:
+        return sdata
+
 
 def mesmer(
     sdata: spatialdata.SpatialData,
@@ -126,6 +143,7 @@ def mesmer(
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -141,8 +159,12 @@ def mesmer(
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     channels = _get_channels(channel)
 
     assert (
@@ -164,6 +186,9 @@ def mesmer(
     )
     set_transformation(sdata.labels[key_added], transformation)
 
+    if copy:
+        return sdata
+
 
 # === AGGREGATION AND PREPROCESSING ===
 def add_quantification(
@@ -174,6 +199,7 @@ def add_quantification(
     segmentation_key: str = SDLayers.SEGMENTATION,
     layer_key: Optional[str] = None,
     data_key: Optional[str] = None,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -191,7 +217,11 @@ def add_quantification(
         segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
         layer_key (Optional[str], optional): The key for the quantification results in the AnnData object. If None, a new layer will be created. Defaults to None.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     # sanity checks for image and segmentation
     image = _process_image(
         sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
@@ -223,12 +253,16 @@ def add_quantification(
         # putting the anndata object into the spatialdata object
         sdata.tables[key_added] = adata
 
+    if copy:
+        return sdata
+
 
 def add_observations(
     sdata: spatialdata.SpatialData,
     properties: Union[str, list, tuple] = ("label", "centroid"),
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -244,7 +278,11 @@ def add_observations(
         properties (Union[str, list, tuple], optional): The properties to be computed for each region. Defaults to ("label", "centroid").
         segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
         table_key (str, optional): The key under which the AnnData object is stored in the tables attribute of the spatialdata object. Defaults to table.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     segmentation = _process_segmentation(sdata, segmentation_key)
     adata = _process_adata(sdata, table_key=table_key)
     existing_features = adata.obs.columns
@@ -267,12 +305,16 @@ def add_observations(
     # add data into adata.obs
     adata.obs = adata.obs.merge(table, left_on="id", right_index=True, how="left")
 
+    if copy:
+        return sdata
+
 
 def apply(
     sdata: spatialdata.SpatialData,
     func: Callable,
     image_key: str = SDLayers.IMAGE,
     data_key: Optional[str] = None,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -287,8 +329,12 @@ def apply(
         func (Callable): The function to be applied to the image data. It should take an image as input and return a processed image.
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the function.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     image = _process_image(
         sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
     )
@@ -298,6 +344,9 @@ def apply(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
 
+    if copy:
+        return sdata
+
 
 def threshold(
     sdata: spatialdata.SpatialData,
@@ -306,6 +355,7 @@ def threshold(
     intensity: Union[int, list] = None,
     channels: Optional[Union[str, list]] = None,
     shift: bool = True,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -322,8 +372,12 @@ def threshold(
         intensity (Union[int, list], optional): The intensity value(s) to be used for thresholding. If None, the quantile parameter will be used. Defaults to None.
         channels (Optional[Union[str, list]], optional): The channel(s) to be used for thresholding. If None, all channels will be used. Defaults to None.
         shift (bool, optional): Whether to shift the intensities towards 0 after thresholding. Defaults to True.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the thresholding function.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     # this gets the image as an xarray object
     image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
     processed_image = _threshold(
@@ -334,6 +388,9 @@ def threshold(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
 
+    if copy:
+        return sdata
+
 
 def transform_expression_matrix(
     sdata: spatialdata.SpatialData,
@@ -342,6 +399,7 @@ def transform_expression_matrix(
     cofactor: float = 5.0,
     min_percentile: float = 1.0,
     max_percentile: float = 99.0,
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -357,8 +415,12 @@ def transform_expression_matrix(
         cofactor (float, optional): The cofactor to be used for the transformation. Defaults to 5.0.
         min_percentile (float, optional): The minimum percentile to be used for the transformation. Defaults to 1.0.
         max_percentile (float, optional): The maximum percentile to be used for the transformation. Defaults to 99.0.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the transformation function.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     adata = _process_adata(sdata, table_key=table_key)
     transformed_matrix = _transform_expression_matrix(
         adata.X,
@@ -370,6 +432,9 @@ def transform_expression_matrix(
     )
     adata.X = transformed_matrix
 
+    if copy:
+        return sdata
+
 
 def threshold_labels(
     sdata: spatialdata.SpatialData,
@@ -377,6 +442,7 @@ def threshold_labels(
     key_added: str = SDLayers.BINARIZATION,
     table_key: str = SDLayers.TABLE,
     layer_key: str = "perc_pos",
+    copy: bool = False,
 ):
     """
     Binarise based on a threshold. If a label is specified, the binarization is only applied to this cell type.
@@ -387,7 +453,11 @@ def threshold_labels(
         key_added (str, optional): The key under which the processed expression matrix will be stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
         layer_key (str, optional): The key under which the expression matrix is stored in the layers attribute of the spatialdata object. Defaults to "perc_pos".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df(layer=layer_key)
 
@@ -397,6 +467,9 @@ def threshold_labels(
     )
 
     adata.obsm[key_added] = binarized_df
+
+    if copy:
+        return sdata
 
 
 # === CELL TYPE PREDICTION ===
@@ -413,6 +486,7 @@ def astir(
     max_epochs: int = 500,
     cell_id_col: str = "cell_id",
     cell_type_col: str = "cell_type",
+    copy: bool = False,
     **kwargs,
 ):
     """
@@ -434,8 +508,12 @@ def astir(
         max_epochs (int, optional): The maximum number of epochs to be used for the ASTIR algorithm. Defaults to 500.
         cell_id_col (str, optional): The name of the column containing the cell IDs in the expression matrix. Defaults to "cell_id".
         cell_type_col (str, optional): The name of the column containing the cell types in the expression matrix. Defaults to "cell_type".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the ASTIR algorithm.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df()
 
@@ -459,8 +537,16 @@ def astir(
     df = df.merge(assigned_cell_types, left_on="id", right_on=cell_id_col, how="left")
     adata.obs = df.drop(columns=cell_id_col)
 
+    if copy:
+        return sdata
 
-def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict, table_key: str = SDLayers.TABLE):
+
+def predict_cell_types_argmax(
+    sdata: spatialdata.SpatialData,
+    marker_dict: dict,
+    table_key: str = SDLayers.TABLE,
+    copy: bool = False,
+):
     """
     This function predicts cell types based on the expression matrix using the argmax method.
     It extracts the expression matrix from the spatialdata object, applies the argmax method,
@@ -472,11 +558,18 @@ def predict_cell_types_argmax(sdata: spatialdata.SpatialData, marker_dict: dict,
         sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
         marker_dict (dict): A dictionary containing the marker genes for each cell type.
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df()
     celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
     adata.obs["celltype"] = celltypes
+
+    if copy:
+        return sdata
 
 
 def predict_cell_subtypes(
@@ -484,6 +577,7 @@ def predict_cell_subtypes(
     subtype_dict: Union[dict, str],
     table_key: str = SDLayers.TABLE,
     layer_key: str = SDLayers.BINARIZATION,
+    copy: bool = False,
 ):
     """
     This function predicts cell subtypes based on the expression matrix using a subtype dictionary.
@@ -496,7 +590,11 @@ def predict_cell_subtypes(
         subtype_dict (Union[dict, str]): A dictionary mapping cell subtypes to the binarized markers used for prediction. Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
         layer_key (str, optional): The key under which the binarized expression matrix is stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
     adata = _process_adata(sdata, table_key=table_key)
     celltypes = adata.obs["celltype"].copy()
     assert (
@@ -529,3 +627,6 @@ def predict_cell_subtypes(
     )
     # overwriting the celltype column
     adata.obs["celltype"] = subtype_df.iloc[:, -1].values
+
+    if copy:
+        return sdata
