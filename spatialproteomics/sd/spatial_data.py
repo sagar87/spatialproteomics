@@ -22,9 +22,8 @@ from ..pp.utils import (
 from ..tl.utils import _astir, _cellpose, _mesmer, _stardist
 from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
 
+
 # === SEGMENTATION ===
-
-
 def cellpose(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
@@ -72,14 +71,13 @@ def cellpose(
         )
         set_transformation(sdata.labels[key_added], transformation)
 
-    sdata.labels
-
 
 def stardist(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -94,12 +92,13 @@ def stardist(
         channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
     """
     channels = _get_channels(channel)
 
     # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels, image_key, key_added)
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
 
     # run stardist
     segmentation_masks = _stardist(image, **kwargs)
@@ -126,6 +125,7 @@ def mesmer(
     channel: Optional[str],
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -140,6 +140,7 @@ def mesmer(
         channel (Optional[str]): The channel(s) to be used for segmentation.
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
     """
     channels = _get_channels(channel)
@@ -149,7 +150,7 @@ def mesmer(
     ), "Mesmer only supports two channel segmentation. Please ensure that the first channel is nuclear and the second one is membraneous."
 
     # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels, image_key, key_added)
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
 
     # run mesmer
     segmentation_masks = _mesmer(image, **kwargs)
@@ -172,6 +173,8 @@ def add_quantification(
     image_key: str = SDLayers.IMAGE,
     segmentation_key: str = SDLayers.SEGMENTATION,
     layer_key: Optional[str] = None,
+    data_key: Optional[str] = None,
+    **kwargs,
 ):
     """
     This function computes the quantification of the image data based on the provided segmentation masks.
@@ -187,9 +190,12 @@ def add_quantification(
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
         layer_key (Optional[str], optional): The key for the quantification results in the AnnData object. If None, a new layer will be created. Defaults to None.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
     """
     # sanity checks for image and segmentation
-    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
+    image = _process_image(
+        sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
+    )
     segmentation = _process_segmentation(sdata, segmentation_key)
 
     # computing the quantification
@@ -266,6 +272,7 @@ def apply(
     sdata: spatialdata.SpatialData,
     func: Callable,
     image_key: str = SDLayers.IMAGE,
+    data_key: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -279,11 +286,14 @@ def apply(
         sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
         func (Callable): The function to be applied to the image data. It should take an image as input and return a processed image.
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         **kwargs: Additional keyword arguments to be passed to the function.
     """
-    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None)
-    processed_image = _apply(image, func, **kwargs)
-    channels = sdata.images[image_key].coords["c"].values
+    image = _process_image(
+        sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
+    )
+    processed_image = _apply(image.values, func, **kwargs)
+    channels = image.coords["c"].values
     sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
