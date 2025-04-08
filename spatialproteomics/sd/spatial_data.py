@@ -19,7 +19,6 @@ from ..pp.utils import (
     _threshold,
     _transform_expression_matrix,
 )
-from ..tl.utils import _astir
 from .utils import _process_adata, _process_image, _process_segmentation
 
 # === SEGMENTATION ===
@@ -308,72 +307,6 @@ def threshold_labels(
 
 
 # === CELL TYPE PREDICTION ===
-def astir(
-    sdata: spatialdata.SpatialData,
-    marker_dict: dict,
-    table_key=SDLayers.TABLE,
-    threshold: float = 0,
-    seed: int = 42,
-    learning_rate: float = 0.001,
-    batch_size: float = 64,
-    n_init: int = 5,
-    n_init_epochs: int = 5,
-    max_epochs: int = 500,
-    cell_id_col: str = "cell_id",
-    cell_type_col: str = "cell_type",
-    copy: bool = False,
-    **kwargs,
-):
-    """
-    This function applies the ASTIR algorithm to predict cell types based on the expression matrix.
-    It extracts the expression matrix from the spatialdata object, applies the ASTIR algorithm,
-    and adds the predicted cell types to the spatialdata object.
-    The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
-
-    Args:
-        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
-        marker_dict (dict): A dictionary containing the marker genes for each cell type.
-        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
-        threshold (float, optional): The threshold value to be used for the ASTIR algorithm. Defaults to 0.
-        seed (int, optional): The random seed to be used for the ASTIR algorithm. Defaults to 42.
-        learning_rate (float, optional): The learning rate to be used for the ASTIR algorithm. Defaults to 0.001.
-        batch_size (float, optional): The batch size to be used for the ASTIR algorithm. Defaults to 64.
-        n_init (int, optional): The number of initializations to be used for the ASTIR algorithm. Defaults to 5.
-        n_init_epochs (int, optional): The number of initial epochs to be used for the ASTIR algorithm. Defaults to 5.
-        max_epochs (int, optional): The maximum number of epochs to be used for the ASTIR algorithm. Defaults to 500.
-        cell_id_col (str, optional): The name of the column containing the cell IDs in the expression matrix. Defaults to "cell_id".
-        cell_type_col (str, optional): The name of the column containing the cell types in the expression matrix. Defaults to "cell_type".
-        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
-        **kwargs: Additional keyword arguments to be passed to the ASTIR algorithm.
-    """
-    if copy:
-        sdata = cp.deepcopy(sdata)
-
-    adata = _process_adata(sdata, table_key=table_key)
-    expression_df = adata.to_df()
-
-    assigned_cell_types = _astir(
-        expression_df=expression_df,
-        marker_dict=marker_dict,
-        threshold=threshold,
-        seed=seed,
-        learning_rate=learning_rate,
-        batch_size=batch_size,
-        n_init=n_init,
-        n_init_epochs=n_init_epochs,
-        max_epochs=max_epochs,
-        cell_id_col=cell_id_col,
-        cell_type_col=cell_type_col,
-        **kwargs,
-    )
-
-    # merging the resulting dataframe to the adata object
-    df = pd.DataFrame(adata.obs)
-    df = df.merge(assigned_cell_types, left_on="id", right_on=cell_id_col, how="left")
-    adata.obs = df.drop(columns=cell_id_col)
-
-    if copy:
-        return sdata
 
 
 def predict_cell_types_argmax(

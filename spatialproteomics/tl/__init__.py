@@ -1,8 +1,9 @@
-from .tool import ToolAccessor, cellpose, mesmer, stardist
+from .tool import ToolAccessor, astir, cellpose, mesmer, stardist
 
 __all__ = [
     "ToolAccessor",
     "cellpose",
     "mesmer",
     "stardist",
+    "astir",
 ]

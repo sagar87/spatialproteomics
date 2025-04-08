@@ -38,14 +38,13 @@ from .sd import (
     add_observations,
     add_quantification,
     apply,
-    astir,
     predict_cell_subtypes,
     predict_cell_types_argmax,
     threshold,
     threshold_labels,
     transform_expression_matrix,
 )
-from .tl import ToolAccessor, cellpose, mesmer, stardist
+from .tl import ToolAccessor, astir, cellpose, mesmer, stardist
 
 __all__ = [
     "load_image_data",
