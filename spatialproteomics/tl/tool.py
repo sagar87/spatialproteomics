@@ -78,6 +78,115 @@ def cellpose(
         return sdata
 
 
+def stardist(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str],
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the stardist segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the stardist algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run stardist
+    segmentation_masks = _stardist(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
+        set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
+def mesmer(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str],
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the mesmer segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the mesmer algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The first channel is assumed to be nuclear and the second one membraneous.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    assert (
+        len(channels) == 2
+    ), "Mesmer only supports two channel segmentation. Please ensure that the first channel is nuclear and the second one is membraneous."
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run mesmer
+    segmentation_masks = _mesmer(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+        segmentation_masks[0].squeeze(), transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
 # === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("tl")
 class ToolAccessor:

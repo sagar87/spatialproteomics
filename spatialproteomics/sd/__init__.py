@@ -3,18 +3,14 @@ from .spatial_data import (
     add_quantification,
     apply,
     astir,
-    mesmer,
     predict_cell_subtypes,
     predict_cell_types_argmax,
-    stardist,
     threshold,
     threshold_labels,
     transform_expression_matrix,
 )
 
 __all__ = [
-    "stardist",
-    "mesmer",
     "add_observations",
     "add_quantification",
     "apply",
