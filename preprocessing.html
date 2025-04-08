@@ -519,6 +519,51 @@
    </li>
   </ul>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.add_observations">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     add_observations()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.add_quantification">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     add_quantification()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.apply">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     apply()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.threshold">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     threshold()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.transform_expression_matrix">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     transform_expression_matrix()
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 
         </nav>
@@ -1150,6 +1195,121 @@ If you instead want to set all values below the threshold to 0 while retaining t
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.add_observations">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">add_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('label',</span> <span class="pre">'centroid')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.add_observations" title="Link to this definition">¶</a></dt>
+<dd><p>This function computes the observations for each region in the segmentation masks.
+It extracts the segmentation masks from the spatialdata object, computes the region properties,
+and adds the observations to the AnnData object stored in the tables attribute of the spatialdata object.
+The observations are computed using the regionprops_table function from skimage.measure.
+The properties to be computed can be specified as a string or a list/tuple of strings.
+The default properties are “label” and “centroid”, but other properties can be added as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the segmentation masks.</p></li>
+<li><p><strong>properties</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>, </em><em>optional</em>) – The properties to be computed for each region. Defaults to (“label”, “centroid”).</p></li>
+<li><p><strong>segmentation_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the segmentation masks in the spatialdata object. Defaults to segmentation.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the AnnData object is stored in the tables attribute of the spatialdata object. Defaults to table.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.add_quantification">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">add_quantification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intensity_mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.add_quantification" title="Link to this definition">¶</a></dt>
+<dd><p>This function computes the quantification of the image data based on the provided segmentation masks.
+It extracts the image data and segmentation masks from the spatialdata object, applies the quantification function,
+and adds the quantification results to the spatialdata object.
+The quantification results are stored in an AnnData object, which is added to the tables attribute of the spatialdata object.
+The quantification function can be specified as a string or a callable function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the image data and segmentation masks.</p></li>
+<li><p><strong>func</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>]</em><em>, </em><em>optional</em>) – The quantification function to be applied. Defaults to “intensity_mean”. Can be a string or a callable function.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the quantification results will be stored in the tables attribute of the spatialdata object. Defaults to table.</p></li>
+<li><p><strong>image_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. Defaults to image.</p></li>
+<li><p><strong>segmentation_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the segmentation masks in the spatialdata object. Defaults to segmentation.</p></li>
+<li><p><strong>layer_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The key for the quantification results in the AnnData object. If None, a new layer will be created. Defaults to None.</p></li>
+<li><p><strong>data_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.apply">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.apply" title="Link to this definition">¶</a></dt>
+<dd><p>This function applies a given function to the image data in the spatialdata object.
+It extracts the image data from the spatialdata object, applies the function,
+and adds the processed image back to the spatialdata object.
+The processed image is stored in the images attribute of the spatialdata object.
+The function can be any callable function that takes an image as input and returns a processed image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the image data.</p></li>
+<li><p><strong>func</strong> (<em>Callable</em>) – The function to be applied to the image data. It should take an image as input and return a processed image.</p></li>
+<li><p><strong>image_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. Defaults to image.</p></li>
+<li><p><strong>data_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.threshold">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.threshold" title="Link to this definition">¶</a></dt>
+<dd><p>This function applies a threshold to the image data in the spatialdata object.
+It extracts the image data from the spatialdata object, applies the thresholding function,
+and adds the processed image back to the spatialdata object.
+The processed image is stored in the images attribute of the spatialdata object.
+The thresholding function can be specified using the quantile or intensity parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the image data.</p></li>
+<li><p><strong>image_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. Defaults to image.</p></li>
+<li><p><strong>quantile</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>list</em><em>]</em><em>, </em><em>optional</em>) – The quantile value(s) to be used for thresholding. If None, the intensity parameter will be used. Defaults to None.</p></li>
+<li><p><strong>intensity</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>list</em><em>]</em><em>, </em><em>optional</em>) – The intensity value(s) to be used for thresholding. If None, the quantile parameter will be used. Defaults to None.</p></li>
+<li><p><strong>channels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The channel(s) to be used for thresholding. If None, all channels will be used. Defaults to None.</p></li>
+<li><p><strong>shift</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to shift the intensities towards 0 after thresholding. Defaults to True.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the thresholding function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.transform_expression_matrix">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">transform_expression_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'arcsinh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cofactor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">99.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.transform_expression_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>This function applies a transformation to the expression matrix in the spatialdata object.
+It extracts the expression matrix from the spatialdata object, applies the transformation function,
+and adds the transformed expression matrix back to the spatialdata object.
+The transformed expression matrix is stored in the tables attribute of the spatialdata object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the expression matrix.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The transformation method to be applied. Defaults to “arcsinh”.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to “table”.</p></li>
+<li><p><strong>cofactor</strong> (<em>float</em><em>, </em><em>optional</em>) – The cofactor to be used for the transformation. Defaults to 5.0.</p></li>
+<li><p><strong>min_percentile</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum percentile to be used for the transformation. Defaults to 1.0.</p></li>
+<li><p><strong>max_percentile</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum percentile to be used for the transformation. Defaults to 99.0.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the transformation function.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
