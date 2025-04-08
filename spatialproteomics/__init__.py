@@ -31,19 +31,19 @@ from .image_container import ImageContainer
 from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
-from .pp import PreprocessingAccessor, is_positive, percentage_positive
-
-# TODO remove this during the refactor
-from .sd import (
+from .pp import (
+    PreprocessingAccessor,
     add_observations,
     add_quantification,
     apply,
-    predict_cell_subtypes,
-    predict_cell_types_argmax,
+    is_positive,
+    percentage_positive,
     threshold,
-    threshold_labels,
     transform_expression_matrix,
 )
+
+# TODO remove this during the refactor
+from .sd import predict_cell_subtypes, predict_cell_types_argmax, threshold_labels
 from .tl import ToolAccessor, astir, cellpose, mesmer, stardist
 
 __all__ = [
