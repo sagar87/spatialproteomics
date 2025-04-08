@@ -330,6 +330,15 @@
    </li>
   </ul>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.tl.tool.cellpose">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     cellpose()
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 
         </nav>
@@ -520,6 +529,29 @@ with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane)
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.tl.tool.cellpose">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.tl.tool.</span></span><span class="sig-name descname"><span class="pre">cellpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.tl.tool.cellpose" title="Link to this definition">¶</a></dt>
+<dd><p>This function runs the cellpose segmentation algorithm on the provided image data.
+It extracts the image data from the spatialdata object, applies the cellpose algorithm,
+and adds the segmentation masks to the spatialdata object.
+The segmentation masks are stored in the labels attribute of the spatialdata object.
+The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the image data.</p></li>
+<li><p><strong>channel</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – The channel(s) to be used for segmentation. If None, all channels will be used.</p></li>
+<li><p><strong>image_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. Defaults to image.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.</p></li>
+<li><p><strong>data_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the cellpose algorithm.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
