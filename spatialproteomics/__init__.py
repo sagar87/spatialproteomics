@@ -32,12 +32,13 @@ from .la import LabelAccessor
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import PreprocessingAccessor, is_positive, percentage_positive
+
+# TODO remove this during the refactor
 from .sd import (
     add_observations,
     add_quantification,
     apply,
     astir,
-    cellpose,
     mesmer,
     predict_cell_subtypes,
     predict_cell_types_argmax,
@@ -46,7 +47,7 @@ from .sd import (
     threshold_labels,
     transform_expression_matrix,
 )
-from .tl import ToolAccessor
+from .tl import ToolAccessor, cellpose
 
 __all__ = [
     "load_image_data",

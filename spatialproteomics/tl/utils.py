@@ -3,6 +3,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 import xarray as xr
+from spatialdata.transformations import Affine
 
 from ..base_logger import logger
 from ..constants import Dims, Layers
@@ -223,3 +224,30 @@ def _astir(
     assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
     return assigned_cell_types
+
+
+def _compute_transformation(x_coords, y_coords):
+    # Compute resolution
+    x_res = np.mean(np.diff(x_coords))
+    y_res = np.mean(np.diff(y_coords))
+
+    # Check if spacing is consistent
+    if not (np.allclose(np.diff(x_coords), x_res) and np.allclose(np.diff(y_coords), y_res)):
+        raise ValueError("Coordinate increments in 'x' and 'y' must be consistent.")
+
+    # Origin
+    x_start = x_coords[0]
+    y_start = y_coords[0]
+
+    # Create affine transformation with scale + translation
+    translation = Affine(
+        [
+            [x_res, 0, x_start],  # x' = x * x_res + x_start
+            [0, y_res, y_start],  # y' = y * y_res + y_start
+            [0, 0, 1],
+        ],
+        input_axes=("x", "y"),
+        output_axes=("x", "y"),
+    )
+
+    return translation

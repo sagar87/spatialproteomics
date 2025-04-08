@@ -1,14 +1,19 @@
+import copy as cp
 from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
+import spatialdata
 import xarray as xr
+from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props
+from ..constants import Dims, Features, Layers, Props, SDLayers
+from ..sd.utils import _get_channels_spatialdata, _process_image
 from .utils import (
     _astir,
     _cellpose,
+    _compute_transformation,
     _convert_masks_to_data_array,
     _get_channels,
     _mesmer,
@@ -16,6 +21,64 @@ from .utils import (
 )
 
 
+# === SPATIALDATA ACCESSOR ===
+def cellpose(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str],
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the cellpose segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the cellpose algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run cellpose
+    segmentation_masks, _ = _cellpose(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
+        set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
+# === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("tl")
 class ToolAccessor:
     """The tool accessor enables the application of external tools such as StarDist or Astir."""
@@ -83,8 +146,7 @@ class ToolAccessor:
         channels = _get_channels(self._obj, key_added, channel)
 
         all_masks, diams = _cellpose(
-            self._obj._image.values,
-            channel=channels,
+            self._obj.pp[channels]._image.values,
             diameter=diameter,
             channel_settings=channel_settings,
             num_iterations=num_iterations,
@@ -337,10 +399,9 @@ class ToolAccessor:
         """
         import anndata
 
-        # checking that the expression matrix key is present in the object
-        assert (
-            expression_matrix_key in self._obj
-        ), f"Expression matrix key {expression_matrix_key} not found in the object. Set the expression matrix key with the expression_matrix_key argument."
+        # if there is no expression matrix, we return an empty anndata object
+        if expression_matrix_key not in self._obj:
+            return anndata.AnnData()
 
         expression_matrix = self._obj[expression_matrix_key].values
         adata = anndata.AnnData(expression_matrix)
@@ -391,35 +452,60 @@ class ToolAccessor:
         """
         import spatialdata
 
+        store_segmentation = False
+        store_adata = False
+
         markers = self._obj.coords[Dims.CHANNELS].values
-        cells = self._obj.coords[Dims.CELLS].values
         image = spatialdata.models.Image2DModel.parse(
             self._obj[image_key].values, transformations=None, dims=("c", "x", "y"), c_coords=markers
         )
-        segmentation = spatialdata.models.Labels2DModel.parse(
-            self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
-        )
+        if Dims.CELLS in self._obj.coords:
+            cells = self._obj.coords[Dims.CELLS].values
+            segmentation = spatialdata.models.Labels2DModel.parse(
+                self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
+            )
+            store_segmentation = True
 
         adata = self._obj.tl.convert_to_anndata(**kwargs)
 
-        # the anndata object within the spatialdata object requires some additional slots, which are created here
-        adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
+        if adata.X is not None:
+            # the anndata object within the spatialdata object requires some additional slots, which are created here
+            adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
 
-        obs_df = pd.DataFrame(
-            {
-                "id": cells,
-                "region": pd.Series(["segmentation"] * len(cells)).astype(
-                    pd.api.types.CategoricalDtype(categories=["segmentation"])
-                ),
-            }
-        )
-        adata.obs = obs_df
+            obs_df = pd.DataFrame(
+                {
+                    "id": cells,
+                    "region": pd.Series(["segmentation"] * len(cells)).astype(
+                        pd.api.types.CategoricalDtype(categories=["segmentation"])
+                    ),
+                }
+            )
+            adata.obs = obs_df
 
-        # transforming the index to string
-        adata.obs.index = [str(x) for x in adata.obs.index]
+            # transforming the index to string
+            adata.obs.index = [str(x) for x in adata.obs.index]
+            store_adata = True
 
-        spatial_data_object = spatialdata.SpatialData(
-            images={"image": image}, labels={"segmentation": segmentation}, table=adata
-        )
+        # Your known crop origin in the global coordinate space
+        transformation = _compute_transformation(self._obj.coords["x"].values, self._obj.coords["y"].values)
+
+        # storing only the info that is present in the object (image/segmentation/anndata)
+        # we can only have an anndata if we also have a segmentation mask
+        if store_segmentation:
+            if store_adata:
+                spatial_data_object = spatialdata.SpatialData(
+                    images={"image": image}, labels={"segmentation": segmentation}, table=adata
+                )
+            else:
+                spatial_data_object = spatialdata.SpatialData(
+                    images={"image": image}, labels={"segmentation": segmentation}
+                )
+            set_transformation(
+                spatial_data_object.images["segmentation"], transformation, to_coordinate_system="global"
+            )
+        else:
+            spatial_data_object = spatialdata.SpatialData(images={"image": image})
+
+        set_transformation(spatial_data_object.images["image"], transformation, to_coordinate_system="global")
 
         return spatial_data_object

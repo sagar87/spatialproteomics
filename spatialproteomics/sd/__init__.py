@@ -3,7 +3,6 @@ from .spatial_data import (
     add_quantification,
     apply,
     astir,
-    cellpose,
     mesmer,
     predict_cell_subtypes,
     predict_cell_types_argmax,
@@ -14,7 +13,6 @@ from .spatial_data import (
 )
 
 __all__ = [
-    "cellpose",
     "stardist",
     "mesmer",
     "add_observations",

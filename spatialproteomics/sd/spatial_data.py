@@ -20,67 +20,16 @@ from ..pp.utils import (
     _threshold,
     _transform_expression_matrix,
 )
-from ..tl.utils import _astir, _cellpose, _mesmer, _stardist
-from .utils import _get_channels, _process_adata, _process_image, _process_segmentation
+from ..tl.utils import _astir, _mesmer, _stardist
+from .utils import (
+    _get_channels_spatialdata,
+    _process_adata,
+    _process_image,
+    _process_segmentation,
+)
 
 
 # === SEGMENTATION ===
-def cellpose(
-    sdata: spatialdata.SpatialData,
-    channel: Optional[str],
-    image_key: str = SDLayers.IMAGE,
-    key_added: str = SDLayers.SEGMENTATION,
-    data_key: Optional[str] = None,
-    copy: bool = False,
-    **kwargs,
-):
-    """
-    This function runs the cellpose segmentation algorithm on the provided image data.
-    It extracts the image data from the spatialdata object, applies the cellpose algorithm,
-    and adds the segmentation masks to the spatialdata object.
-    The segmentation masks are stored in the labels attribute of the spatialdata object.
-    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
-
-    Args:
-        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
-        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
-        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
-        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
-        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
-        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
-        **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
-    """
-    if copy:
-        sdata = cp.deepcopy(sdata)
-
-    channels = _get_channels(channel)
-
-    # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
-
-    # run cellpose
-    segmentation_masks, _ = _cellpose(image, **kwargs)
-
-    # get transformations
-    transformation = get_transformation(sdata[image_key])
-
-    # add the segmentation masks to the spatial data object
-    if segmentation_masks.shape[0] > 1:
-        for i, channel in enumerate(channels):
-            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
-                segmentation_masks[i], transformations=None, dims=("y", "x")
-            )
-            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
-    else:
-        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
-            segmentation_masks[0], transformations=None, dims=("y", "x")
-        )
-        set_transformation(sdata.labels[key_added], transformation)
-
-    if copy:
-        return sdata
-
-
 def stardist(
     sdata: spatialdata.SpatialData,
     channel: Optional[str],
@@ -109,7 +58,7 @@ def stardist(
     if copy:
         sdata = cp.deepcopy(sdata)
 
-    channels = _get_channels(channel)
+    channels = _get_channels_spatialdata(channel)
 
     # assert that the format is correct and extract the image
     image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
@@ -165,7 +114,7 @@ def mesmer(
     if copy:
         sdata = cp.deepcopy(sdata)
 
-    channels = _get_channels(channel)
+    channels = _get_channels_spatialdata(channel)
 
     assert (
         len(channels) == 2
