@@ -28,7 +28,12 @@ from .constants import (
 )
 from .container import load_image_data, read_from_spatialdata
 from .image_container import ImageContainer
-from .la import LabelAccessor
+from .la import (
+    LabelAccessor,
+    predict_cell_subtypes,
+    predict_cell_types_argmax,
+    threshold_labels,
+)
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
 from .pp import (
@@ -41,9 +46,6 @@ from .pp import (
     threshold,
     transform_expression_matrix,
 )
-
-# TODO remove this during the refactor
-from .sd import predict_cell_subtypes, predict_cell_types_argmax, threshold_labels
 from .tl import ToolAccessor, astir, cellpose, mesmer, stardist
 
 __all__ = [
