@@ -530,13 +530,14 @@ def _threshold(
         intensity = np.array(intensity)
 
     # if a channels argument is provided, the thresholds for all other channels are set to 0 (i. e. no thresholding)
+    all_channels = image.coords[channel_coord].values.tolist()
+
     if channels is not None:
         if isinstance(channels, str):
             channels = [channels]
 
-        all_channels = image.coords[channel_coord].values.tolist()
         assert all(
-            [channel in all_channels for channel in channels]
+            channel in all_channels for channel in channels
         ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
 
         if quantile is not None:
@@ -547,18 +548,31 @@ def _threshold(
             assert len(channels) == len(intensity), "The number of channels must match the number of intensity values."
             intensity_dict = dict(zip(channels, intensity))
             intensity = np.array([intensity_dict.get(channel, 0) for channel in all_channels])
+    else:
+        # If no channels provided, assume the threshold applies to all channels
+        if quantile is not None:
+            assert len(quantile) == 1 or len(quantile) == len(
+                all_channels
+            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
+            quantile = np.full(len(all_channels), quantile.item() if quantile.size == 1 else quantile)
+        if intensity is not None:
+            assert len(intensity) == 1 or len(intensity) == len(
+                all_channels
+            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
+            assert np.all(intensity >= 0), "Intensity values must be positive."
+            assert np.all(
+                intensity <= np.max(image.values)
+            ), "Intensity values must be smaller than the maximum intensity."
+            intensity = np.full(len(all_channels), intensity.item() if intensity.size == 1 else intensity)
 
     if quantile is not None:
-        assert (
-            len(quantile) == 1 or len(quantile) == image.coords[channel_coord].size
-        ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
         assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
 
         if shift:
             # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
             # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
             lower = np.quantile(image.values.reshape(image.values.shape[0], -1), quantile, axis=1).astype(image.dtype)
+
             filtered = np.clip(
                 image, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
             ).astype(image.dtype) - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)).astype(
@@ -580,13 +594,6 @@ def _threshold(
             filtered = np.where(image.values >= lower, image.values, 0)
 
     if intensity is not None:
-        assert (
-            len(intensity) == 1 or len(intensity) == image.coords[channel_coord].size
-        ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
-        assert np.all(intensity >= 0), "Intensity values must be positive."
-        assert np.all(intensity <= np.max(image.values)), "Intensity values must be smaller than the maximum intensity."
-
         if shift:
             # calculate intensity
             filtered = (image - intensity.reshape(-1, 1, 1)).clip(min=0)
