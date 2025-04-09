@@ -43,7 +43,16 @@ def threshold_labels(
         sdata = cp.deepcopy(sdata)
 
     adata = _process_adata(sdata, table_key=table_key)
+    assert (
+        layer_key in adata.layers
+    ), f"Layer {layer_key} not found in adata object. Available layers: {list(adata.layers.keys())}."
     expression_df = adata.to_df(layer=layer_key)
+    # checking that all channels are present in the expression matrix
+    for channel in threshold_dict.keys():
+        if channel not in expression_df.columns:
+            raise KeyError(
+                f"Channel {channel} not found in the expression matrix. Available channels: {list(expression_df.columns)}"
+            )
 
     binarized_df = pd.DataFrame(
         {channel: (expression_df[channel] >= threshold).astype(int) for channel, threshold in threshold_dict.items()},

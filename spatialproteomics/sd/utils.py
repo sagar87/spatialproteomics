@@ -6,6 +6,7 @@ from spatialdata import SpatialData
 from ..constants import Layers
 
 
+# this file contains utility functions for working with spatialdata objects
 def _get_channels_spatialdata(channel):
     if channel is not None:
         if isinstance(channel, list):

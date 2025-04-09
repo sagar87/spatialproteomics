@@ -46,7 +46,6 @@ def load_files(data_dir):
 
 @pytest.fixture(scope="session", name="dataset")
 def load_dataset(data_dic):
-
     dataset = load_image_data(
         data_dic["input"][0],
         "Hoechst",

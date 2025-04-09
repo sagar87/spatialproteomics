@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
 
+import spatialproteomics as sp
 
+
+# === SPATIALPROTEOMICS BACKEND ===
 def test_layer_does_not_exist(dataset_labeled):
     # add _intensity_layer but not _percentage_positive
     data = dataset_labeled.pp.add_quantification()
@@ -16,7 +19,7 @@ def test_channel_does_not_exist(dataset_labeled):
         data.la._threshold_label(channel=channel, threshold=10.0, layer_key="_intensity")
 
 
-def test_threholding(dataset_labeled):
+def test_thresholding(dataset_labeled):
     data = dataset_labeled.pp.add_quantification()
     channel = "CD4"
     threshold = 6.0
@@ -29,7 +32,7 @@ def test_threholding(dataset_labeled):
     assert np.all(manual == computed)
 
 
-def test_threholding_on_label(dataset_labeled):
+def test_thresholding_on_label(dataset_labeled):
     data = dataset_labeled.pp.add_quantification()
     channel = "CD4"
     threshold = 6.0
@@ -44,3 +47,26 @@ def test_threholding_on_label(dataset_labeled):
     manual = label_pos * label_mask
     computed = binarized_label._obs.sel(features=f"{channel}_{label}_binarized").values
     assert np.all(manual == computed)
+
+
+# === SPATIALDATA BACKEND ===
+def test_threshold_labels_spatialdata(dataset_labeled):
+    threshold_dict = {"CD4": 0.5, "CD8": 0.6}
+    data = dataset_labeled.pp.add_quantification().tl.convert_to_spatialdata()
+    sp.pp.add_quantification(data, func=sp.percentage_positive, layer_key="perc_pos")
+    sp.la.threshold_labels(data, threshold_dict=threshold_dict)
+
+
+def test_layer_does_not_exist_spatialdata(dataset_labeled):
+    threshold_dict = {"CD4": 0.5, "CD8": 0.6}
+    data = dataset_labeled.pp.add_quantification().tl.convert_to_spatialdata()
+    with pytest.raises(AssertionError, match="Layer perc_pos not found in adata object."):
+        sp.la.threshold_labels(data, threshold_dict=threshold_dict)
+
+
+def test_channel_does_not_exist_spatialdata(dataset_labeled):
+    threshold_dict = {"CD4": 0.5, "Dummy": 0.6}
+    data = dataset_labeled.pp.add_quantification().tl.convert_to_spatialdata()
+    sp.pp.add_quantification(data, func=sp.percentage_positive, layer_key="perc_pos")
+    with pytest.raises(KeyError, match="Channel Dummy not found in the expression matrix"):
+        sp.la.threshold_labels(data, threshold_dict=threshold_dict)
