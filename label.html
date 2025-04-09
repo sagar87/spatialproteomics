@@ -393,6 +393,33 @@
    </li>
   </ul>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.la.label.predict_cell_subtypes">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     predict_cell_subtypes()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.la.label.predict_cell_types_argmax">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     predict_cell_types_argmax()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.la.label.threshold_labels">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     threshold_labels()
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 
         </nav>
@@ -731,6 +758,64 @@ If a label is specified, the binarization is only applied to this cell type.</p>
 </ul>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.la.label.predict_cell_subtypes">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.la.label.</span></span><span class="sig-name descname"><span class="pre">predict_cell_subtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtype_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'binarization'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.la.label.predict_cell_subtypes" title="Link to this definition">¶</a></dt>
+<dd><p>This function predicts cell subtypes based on the expression matrix using a subtype dictionary.
+It extracts the expression matrix from the spatialdata object, applies the subtype prediction method,
+and adds the predicted cell subtypes to the spatialdata object.
+The predicted cell subtypes are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the expression matrix.</p></li>
+<li><p><strong>subtype_dict</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>str</em><em>]</em>) – A dictionary mapping cell subtypes to the binarized markers used for prediction. Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to “table”.</p></li>
+<li><p><strong>layer_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the binarized expression matrix is stored in the obsm attribute of the spatialdata object. Defaults to “binarization”.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.la.label.predict_cell_types_argmax">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.la.label.</span></span><span class="sig-name descname"><span class="pre">predict_cell_types_argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.la.label.predict_cell_types_argmax" title="Link to this definition">¶</a></dt>
+<dd><p>This function predicts cell types based on the expression matrix using the argmax method.
+It extracts the expression matrix from the spatialdata object, applies the argmax method,
+and adds the predicted cell types to the spatialdata object.
+The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+The argmax method assigns the cell type with the highest expression value to each cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the expression matrix.</p></li>
+<li><p><strong>marker_dict</strong> (<em>dict</em>) – A dictionary containing the marker genes for each cell type.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to “table”.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.la.label.threshold_labels">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.la.label.</span></span><span class="sig-name descname"><span class="pre">threshold_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'binarization'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'perc_pos'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.la.label.threshold_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Binarise based on a threshold. If a label is specified, the binarization is only applied to this cell type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the expression matrix.</p></li>
+<li><p><strong>threshold_dict</strong> (<em>dict</em>) – A dictionary containing the threshold values for each channel.</p></li>
+<li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the processed expression matrix will be stored in the obsm attribute of the spatialdata object. Defaults to “binarization”.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to “table”.</p></li>
+<li><p><strong>layer_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the expression matrix is stored in the layers attribute of the spatialdata object. Defaults to “perc_pos”.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
