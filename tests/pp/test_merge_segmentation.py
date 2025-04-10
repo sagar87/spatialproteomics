@@ -5,6 +5,7 @@ import xarray as xr
 from spatialproteomics.constants import Dims, Layers
 
 
+# TODO: this file also has not yet been edited to reflect the changes in the test suite
 def create_segmentation_to_merge(dataset_full, key="_segmentation_to_merge"):
     merge_array = np.zeros(dataset_full[Layers.SEGMENTATION].shape)
     merge_array = np.stack((merge_array, merge_array))

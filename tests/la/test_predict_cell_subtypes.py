@@ -18,7 +18,8 @@ def get_labels_and_binarization(ds):
     return df
 
 
-def test_predict_cell_subtypes(dataset_labeled):
+def test_predict_cell_subtypes(ds_labels):
+    # TODO: WE SHOULD NOT DO THE THRESHOLDING IN HERE, SHOULD HAVE THE THRESHOLDED IMAGE IN THE SEGMENTED DATASET ALREADY
     # before we can do subsetting, we need to binarize some markers
     binarization_dict = {"CD4": 0.5, "CD8": 0.6, "FOXP3": 0.5, "BCL6": 0.7}
     ds = (

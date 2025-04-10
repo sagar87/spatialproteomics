@@ -662,7 +662,9 @@ class LabelAccessor:
         # checking that a label layer is already present
         assert Layers.LA_PROPERTIES in self._obj, "No label layer found in the data object."
         # checking if the old label exists
-        assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
+        assert (
+            label in self._obj.la
+        ), f"Cell type {label} not found. Existing cell types: {self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)[Props.NAME].values.tolist()}."
         # checking if the new label already exists
         assert name not in self._obj[Layers.LA_PROPERTIES].sel(
             {Dims.LA_PROPS: Props.NAME}

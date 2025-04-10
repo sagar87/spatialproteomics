@@ -5,6 +5,7 @@ import xarray as xr
 from spatialproteomics.constants import Dims, Layers
 
 
+# TODO: all of these need to be adjusted to the new test structure
 def test_add_segmentation(data_dic, dataset_segmentation):
     segmented = dataset_segmentation.pp.add_segmentation(data_dic["segmentation"])
 

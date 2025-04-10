@@ -3,15 +3,15 @@ import numpy as np
 from spatialproteomics.constants import Dims, Layers
 
 
-def test_grow_cells(dataset):
+def test_grow_cells(ds_image):
     # checking that the number of cells is the same in the segmentation and the coordinates
-    num_cells_segmentation = np.unique(dataset[Layers.SEGMENTATION].values).shape[0] - 1
-    num_cells_coords = dataset.sizes[Dims.CELLS]
-    original_obs = dataset[Layers.OBS].copy()
+    num_cells_segmentation = np.unique(ds_image[Layers.SEGMENTATION].values).shape[0] - 1
+    num_cells_coords = ds_image.sizes[Dims.CELLS]
+    original_obs = ds_image[Layers.OBS].copy()
     assert num_cells_segmentation == num_cells_coords
 
     # if we grow by 0, the values in obs should be the same as before
-    grown = dataset.pp.grow_cells(iterations=0)
+    grown = ds_image.pp.grow_cells(iterations=0)
     # ensuring that the cell segmentation still has the same number of cells, both in the segmentation mask and the coordinates
     num_cells_segmentation_grown = np.unique(grown[Layers.SEGMENTATION].values).shape[0] - 1
     num_cells_coords_grown = grown.sizes[Dims.CELLS]
@@ -21,7 +21,7 @@ def test_grow_cells(dataset):
 
     # trying different growths
     for growth in [1, 2, 3, 4, 5, 10, 25, 50, 100]:
-        grown = dataset.pp.grow_cells(growth)
+        grown = ds_image.pp.grow_cells(growth)
 
         # ensuring that the cell segmentation still has the same number of cells, both in the segmentation mask and the coordinates
         num_cells_segmentation_grown = np.unique(grown[Layers.SEGMENTATION].values).shape[0]

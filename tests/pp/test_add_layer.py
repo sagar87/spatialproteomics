@@ -4,29 +4,29 @@ import pytest
 from spatialproteomics.constants import Dims, Layers
 
 
-def test_add_layer_2d(dataset):
+def test_add_layer_2d(ds_image):
     # x and y shape of the dataset
-    x, y = dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
+    x, y = ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
     # creating a dummy mask
     labels = np.ones((x, y))
 
-    ds = dataset.pp.add_layer(labels, key_added=Layers.MASK)
+    ds = ds_image.pp.add_layer(labels, key_added=Layers.MASK)
     assert Layers.MASK in ds
 
 
-def test_add_layer_3d(dataset):
+def test_add_layer_3d(ds_image):
     # x and y shape of the dataset
-    channels, x, y = dataset.sizes[Dims.CHANNELS], dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
+    channels, x, y = ds_image.sizes[Dims.CHANNELS], ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
 
     # creating a dummy mask
     labels = np.ones((channels, x, y))
-    ds = dataset.pp.add_layer(labels, key_added=Layers.MASK)
+    ds = ds_image.pp.add_layer(labels, key_added=Layers.MASK)
     assert Layers.MASK in ds
 
 
-def test_add_layer_wrong_dims(dataset):
+def test_add_layer_wrong_dims(ds_image):
     # x and y shape of the dataset
-    x, y = dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
+    x, y = ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
 
     # creating a dummy mask
     labels = np.ones((x, y, 3, 3))
@@ -36,10 +36,10 @@ def test_add_layer_wrong_dims(dataset):
         AssertionError,
         match="The array to add mask must 2 or 3-dimensional.",
     ):
-        dataset.pp.add_layer(labels, key_added=Layers.MASK)
+        ds_image.pp.add_layer(labels, key_added=Layers.MASK)
 
 
-def test_add_layer_wrong_shape(dataset):
+def test_add_layer_wrong_shape(ds_image):
     # creating a dummy mask
     labels = np.ones((3000, 2000))
 
@@ -47,12 +47,12 @@ def test_add_layer_wrong_shape(dataset):
         AssertionError,
         match="The shape of array does not match that of the image.",
     ):
-        dataset.pp.add_layer(labels, key_added=Layers.MASK)
+        ds_image.pp.add_layer(labels, key_added=Layers.MASK)
 
 
-def test_add_layer_key_exists(dataset):
+def test_add_layer_key_exists(ds_image):
     # x and y shape of the dataset
-    x, y = dataset.sizes[Dims.X], dataset.sizes[Dims.Y]
+    x, y = ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
 
     # creating a dummy mask
     labels = np.ones((x, y))
@@ -62,4 +62,4 @@ def test_add_layer_key_exists(dataset):
         AssertionError,
         match=f"Layer {Layers.MASK} already exists.",
     ):
-        dataset.pp.add_layer(labels, key_added=Layers.MASK).pp.add_layer(labels, key_added=Layers.MASK)
+        ds_image.pp.add_layer(labels, key_added=Layers.MASK).pp.add_layer(labels, key_added=Layers.MASK)

@@ -6,6 +6,7 @@ import spatialproteomics as sp
 
 # === SPATIALPROTEOMICS BACKEND ===
 def test_layer_does_not_exist(dataset_labeled):
+    # TODO: just drop percentage_positive here and read in the dataset that has the quantifications and cts already
     # add _intensity_layer but not _percentage_positive
     data = dataset_labeled.pp.add_quantification()
     with pytest.raises(KeyError, match="Please add it first using pp.add_quantification()."):

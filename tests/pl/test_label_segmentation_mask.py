@@ -3,6 +3,7 @@ import numpy as np
 from spatialproteomics.pl.utils import _label_segmentation_mask
 
 
+# TODO: this method needs a full rewrite
 def test_label_segmentation_mask(test_segmentation):
     seg_mask = test_segmentation
     relabel_dict = {1: [1, 2, 3], 2: [5, 7], 3: [8, 9]}
