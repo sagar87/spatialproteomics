@@ -1,2 +1,2 @@
-def test_convert_to_anndata(dataset_binarized):
-    dataset_binarized.tl.convert_to_anndata()
+def test_convert_to_anndata(ds_neighborhoods):
+    ds_neighborhoods.tl.convert_to_anndata()

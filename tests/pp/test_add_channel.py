@@ -5,7 +5,7 @@ from spatialproteomics.constants import Layers
 
 
 def test_add_channel_existing_channel(ds_image):
-    new_channel_array = dataset[Layers.IMAGE].values[0]
+    new_channel_array = ds_image[Layers.IMAGE].values[0]
 
     # trying to add a channel that already exists
     with pytest.raises(AssertionError, match="Can't add a channel that already exists."):

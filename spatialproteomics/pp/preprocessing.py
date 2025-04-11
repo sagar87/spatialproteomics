@@ -665,7 +665,7 @@ class PreprocessingAccessor:
             )
 
         obj = self._obj.copy()
-        return xr.merge([obj, da]).pp.add_observations()
+        return xr.merge([obj, da])
 
     def add_layer_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.LA_LAYERS) -> xr.Dataset:
         """
@@ -791,6 +791,23 @@ class PreprocessingAccessor:
                 )
 
         return xr.merge([obj, da])
+
+    def drop_observations(
+        self,
+        properties: Union[str, list, tuple],
+        key: str = Dims.FEATURES,
+    ) -> xr.Dataset:
+        assert (
+            key in self._obj.coords
+        ), f"Coordinate {key} not found in the object. Available coordinates: {self._obj.coords.keys()}. Please adjust the key parameter accordingly."
+        if type(properties) is str:
+            properties = [properties]
+        for prop in properties:
+            assert (
+                prop in self._obj.coords[key]
+            ), f"Property {prop} not found in the object. Available properties: {self._obj.coords[key].values}. Please adjust the properties parameter accordingly."
+
+        return self._obj.sel({Dims.FEATURES: ~self._obj.coords[Dims.FEATURES].isin(properties)})
 
     def add_feature(self, feature_name: str, feature_values: Union[list, np.ndarray]):
         """
@@ -1591,7 +1608,8 @@ class PreprocessingAccessor:
             # converting cts to strings in the obs df
             if layer == Layers.OBS and Features.LABELS in df.columns:
                 label_dict = self._obj.la._label_to_dict(Props.NAME)
-                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+                # the conversion to int is necessary because when storing to zarr, all obs variables are converted to floats
+                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[int(x)])
             # converting cts to strings in the neighborhood df
             if layer == Layers.NEIGHBORHOODS:
                 label_dict = self._obj.la._label_to_dict(Props.NAME)

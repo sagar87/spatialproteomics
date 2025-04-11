@@ -581,9 +581,23 @@ class LabelAccessor:
         cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
         cells = self._obj.coords[Dims.CELLS][cells_bool].values
 
-        self._obj[Layers.OBS].loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+        # Make a copy of the object to avoid modifying self._obj
+        obj = self._obj.copy()
 
-        return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
+        # Create a modified version of the OBS layer
+        new_obs = obj[Layers.OBS].copy()
+        new_obs.loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+
+        # Replace the OBS layer in the copied object
+        obj = obj.assign({Layers.OBS: new_obs})
+
+        # Exclude the specified cell type from the label dimension (robust to string input)
+        if isinstance(cell_type, str):
+            obj = obj.sel({Dims.LABELS: obj.coords[Dims.LABELS] != cell_type})
+        else:
+            obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS] if i not in cell_type]})
+
+        return obj
 
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
         """

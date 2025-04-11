@@ -7,12 +7,12 @@ from spatialproteomics.constants import Layers
 def test_threshold_single_channel(ds_image):
     # === with shift ===
     d1 = ds_image.pp["CD8"].pp.threshold(intensity=10)
-    assert d1[Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - 10
+    assert d1[Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - 10
     assert d1[Layers.IMAGE].values.min() == 0
 
     d1 = ds_image.pp["CD8"].pp.threshold(quantile=0.9)
     quantile_value = np.quantile(ds_image.pp["CD8"][Layers.IMAGE].values, 0.9)
-    assert d1[Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - quantile_value
+    assert d1[Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - quantile_value
     assert d1[Layers.IMAGE].values.min() == 0
 
     # === without shift ===
@@ -32,17 +32,17 @@ def test_threshold_multiple_channels(ds_image):
     d2 = ds_image.pp[["CD8", "CD4"]].pp.threshold(quantile=0.9)
     quantile_value = np.quantile(ds_image.pp["CD8"][Layers.IMAGE].values, 0.9)
 
-    assert d1[Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - 10
+    assert d1[Layers.IMAGE].values.max() == ds_image.pp[["CD8", "CD4"]][Layers.IMAGE].values.max() - 10
     assert d1[Layers.IMAGE].values.min() == 0
-    assert d2[Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - quantile_value
+    assert d2.pp["CD8"][Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - quantile_value
     assert d2[Layers.IMAGE].values.min() == 0
 
     d1 = ds_image.pp[["CD8", "CD4"]].pp.threshold(intensity=[10, 20])
     d2 = ds_image.pp[["CD8", "CD4"]].pp.threshold(quantile=[0.9, 0.95])
 
-    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - 10
+    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - 10
     assert d1.pp["CD8"][Layers.IMAGE].values.min() == 0
-    assert d2.pp["CD8"][Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - quantile_value
+    assert d2.pp["CD8"][Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - quantile_value
     assert d2.pp["CD8"][Layers.IMAGE].values.min() == 0
 
     # === without shift ===
@@ -145,12 +145,12 @@ def test_threshold_on_selected_channels(ds_image):
 
     d1 = ds_image.pp.threshold(intensity=10, channels="CD8")
     assert ds_image[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
-    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - 10
+    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - 10
     assert d1[Layers.IMAGE].values.min() == 0
 
     d1 = ds_image.pp.threshold(quantile=0.9, channels="CD8")
     assert ds_image[Layers.IMAGE].shape[0] == d1[Layers.IMAGE].shape[0]
-    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image[Layers.IMAGE].values.max() - quantile_value
+    assert d1.pp["CD8"][Layers.IMAGE].values.max() == ds_image.pp["CD8"][Layers.IMAGE].values.max() - quantile_value
     assert d1[Layers.IMAGE].values.min() == 0
 
     with pytest.raises(

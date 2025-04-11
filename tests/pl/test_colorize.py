@@ -29,4 +29,4 @@ def test_colorize_too_few_colors(ds_image):
 
 def test_colorize_corrupted_colors(ds_image):
     with pytest.raises(ValueError, match="Invalid RGBA argument"):
-        ds_image.pl.colorize(colors=["not_a_color"])
+        ds_image.pl.colorize(colors=["red", "green", "blue", "not_a_color", "yellow"])

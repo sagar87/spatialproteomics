@@ -4,7 +4,7 @@ from spatialproteomics.constants import Layers
 
 
 def test_cellpose_with_layer_key_segmentation(ds_image):
-    dataset = ds_image.pp[["Hoechst", "CD4", "CD8"]].pp[250:300, 250:300].pp.drop_layers([Layers.SEGMENTATION])
+    dataset = ds_image.pp[["DAPI", "CD4", "CD8"]]
     with pytest.raises(
         KeyError,
         match=f'The key "{Layers.SEGMENTATION}" is reserved',
@@ -12,12 +12,12 @@ def test_cellpose_with_layer_key_segmentation(ds_image):
         dataset.tl.cellpose(key_added=Layers.SEGMENTATION, gpu=False)
 
 
-def test_cellpose_segmentation_already_exists(ds_image):
+def test_cellpose_segmentation_already_exists(ds_segmentation):
     with pytest.raises(
         KeyError,
         match=f'The key "{Layers.SEGMENTATION}" already exists.',
     ):
-        ds_image.tl.cellpose(key_added=Layers.SEGMENTATION)
+        ds_segmentation.tl.cellpose(key_added=Layers.SEGMENTATION)
 
 
 def test_cellpose_joint_segmentation_multichannel(ds_image):

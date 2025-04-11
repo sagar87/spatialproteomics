@@ -564,7 +564,7 @@ class NeighborhoodAccessor:
 
         # Check that all new names are unique and do not already exist
         existing_names = set(self._obj[Layers.NH_PROPERTIES].sel({Dims.NH_PROPS: Props.NAME}).values)
-        duplicate_names = [n for n in names if n in existing_names]
+        duplicate_names = [n for n in names if n in existing_names and n not in neighborhoods]
         assert not duplicate_names, f"Neighborhood name(s) {duplicate_names} already exist in the data object."
 
         # Retrieve the original neighborhood properties

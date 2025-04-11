@@ -2,15 +2,19 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import spatialproteomics as sp
 from spatialproteomics.constants import Layers
 
 basic_subtype_dict = {
-    "Cell type 1": {"subtypes": [{"name": "Treg", "markers": ["FOXP3+"]}]},
-    "Cell type 2": {"subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox", "markers": ["CD8+"]}]},
+    "T": {
+        "subtypes": [
+            {"name": "T_h", "markers": ["CD4+"]},
+            {"name": "T_tox", "markers": ["CD8+"]},
+        ]
+    },
 }
 
 
+# helper functions
 def get_labels_and_binarization(ds):
     df1 = ds.pp.get_layer_as_df()
     df2 = ds.pp.get_layer_as_df("_la_layers")
@@ -18,36 +22,42 @@ def get_labels_and_binarization(ds):
     return df
 
 
+def get_ds_without_subtype_predictions(ds):
+    # removing the subtype annotations
+    cts = ds.pp.get_layer_as_df("_la_layers").reset_index()
+    return ds.pp.drop_layers(["_la_properties", "_la_layers"]).la.add_labels_from_dataframe(
+        cts, label_col="labels_0", cell_col="index"
+    )
+
+
+# tests
 def test_predict_cell_subtypes(ds_labels):
-    # TODO: WE SHOULD NOT DO THE THRESHOLDING IN HERE, SHOULD HAVE THE THRESHOLDED IMAGE IN THE SEGMENTED DATASET ALREADY
-    # before we can do subsetting, we need to binarize some markers
-    binarization_dict = {"CD4": 0.5, "CD8": 0.6, "FOXP3": 0.5, "BCL6": 0.7}
-    ds = (
-        dataset_labeled.pp[["CD4", "CD8", "FOXP3", "BCL6"]]
-        .pp.threshold(quantile=[0.9, 0.9, 0.9, 0.9])
-        .pp.add_quantification(func=sp.percentage_positive, key_added="_percentage_positive")
-        .la.threshold_labels(binarization_dict, layer_key="_percentage_positive")
-    )
-    ds = ds.la.predict_cell_subtypes(basic_subtype_dict)
-    assert "labels_1" in ds.pp.get_layer_as_df(Layers.LA_LAYERS).columns
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
+    # testing the prediction of cell subtypes
+    ds_subtypes = ds.la.predict_cell_subtypes(basic_subtype_dict)
+    assert "labels_1" in ds_subtypes.pp.get_layer_as_df(Layers.LA_LAYERS).columns
     assert (
-        ds.pp.get_layer_as_df(Layers.LA_PROPERTIES).shape[0]
-        > dataset_labeled.pp.get_layer_as_df(Layers.LA_PROPERTIES).shape[0]
+        ds_subtypes.pp.get_layer_as_df(Layers.LA_PROPERTIES).shape[0]
+        > ds.pp.get_layer_as_df(Layers.LA_PROPERTIES).shape[0]
     )
 
 
-def test_predict_cell_subtypes_no_labels(dataset):
+def test_predict_cell_subtypes_no_labels(ds_segmentation):
     with pytest.raises(
         AssertionError,
         match="No cell type labels found in the object",
     ):
-        dataset.la.predict_cell_subtypes(basic_subtype_dict)
+        ds_segmentation.la.predict_cell_subtypes(basic_subtype_dict)
 
 
 # === functional tests for different edge cases ===
-def test_multilevel(dataset_binarized):
+def test_multilevel(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
         "T": {
             "subtypes": [
                 {
@@ -56,66 +66,68 @@ def test_multilevel(dataset_binarized):
                 },
                 {
                     "name": "T_tox",
-                    "markers": ["CD8+"],
+                    "markers": ["CD4-"],
                     "subtypes": [
-                        {"name": "T_tox_mem", "markers": ["CD45RO+"]},
-                        {"name": "T_tox_naive", "markers": ["CD45RA+"]},
+                        {"name": "T_tox_CD8_pos", "markers": ["CD8+"]},
+                        {"name": "T_tox_CD8_neg", "markers": ["CD8-"]},
                     ],
                 },
             ]
         },
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
-    df = get_labels_and_binarization(ds)[
-        ["CD4_binarized", "CD8_binarized", "CD45RA_binarized", "CD45RO_binarized", "labels_0", "labels_1", "labels_2"]
-    ]
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
+    df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1", "labels_2"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
     # check if the subtypes are correctly assigned
-    assert df.shape[0] == 14
-    assert np.all(df[df["labels_2"] == "T_tox_naive"]["CD8_binarized"] == 1)
-    assert np.all(df[df["labels_2"] == "T_tox_naive"]["CD45RA_binarized"] == 1)
+    assert df.shape[0] == 4
+    assert np.all(df[df["labels_2"] == "T_tox_CD8_pos"]["CD8_binarized"] == 1)
+    assert np.all(df[df["labels_2"] == "T_tox_CD8_neg"]["CD8_binarized"] == 0)
 
 
-def test_multiple_markers(dataset_binarized):
+def test_multiple_markers(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
-        "T": {
-            "subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox_naive", "markers": ["CD8+", "CD45RA+"]}]
-        },
+        "T": {"subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox_naive", "markers": ["CD8+", "CD4-"]}]},
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
-    df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "CD45RA_binarized", "labels_0", "labels_1"]]
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
+    df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
     # check if the subtypes are correctly assigned
-    assert df.shape[0] == 8
+    assert df.shape[0] == 4
     assert np.all(df[df["labels_1"] == "T_tox_naive"]["CD8_binarized"] == 1)
-    assert np.all(df[df["labels_1"] == "T_tox_naive"]["CD45RA_binarized"] == 1)
+    assert np.all(df[df["labels_1"] == "T_tox_naive"]["CD4_binarized"] == 0)
 
 
-def test_alternative_markers(dataset_binarized):
+def test_alternative_markers(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
-        "T": {"subtypes": [{"name": "T_tox", "markers": ["CD45RO+"]}, {"name": "T_tox", "markers": ["CD45RA+"]}]},
+        "T": {"subtypes": [{"name": "T_tox", "markers": ["CD4+"]}, {"name": "T_tox", "markers": ["CD8+"]}]},
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
-    df = get_labels_and_binarization(ds)[["CD45RA_binarized", "CD45RO_binarized", "labels_0", "labels_1"]]
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
+    df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
 
     # check if the subtypes are correctly assigned
     assert df.shape[0] == 4
-    assert df[df["labels_1"] == "T_tox"]["CD45RA_binarized"].shape[0] == 3
+    assert df[df["labels_1"] == "T_tox"]["CD8_binarized"].shape[0] == 3
 
 
-def test_marker_negativity(dataset_binarized):
+def test_marker_negativity(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
         "T": {"subtypes": [{"name": "T_h", "markers": ["CD4+"]}, {"name": "T_tox", "markers": ["CD4-"]}]},
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
     df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
     # check if the subtypes are correctly assigned
@@ -123,9 +135,11 @@ def test_marker_negativity(dataset_binarized):
     assert np.all(df[df["labels_1"] == "T_tox"]["CD4_binarized"] == 0)
 
 
-def test_negativity_and_positivity(dataset_binarized):
+def test_negativity_and_positivity(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
         "T": {
             "subtypes": [
                 {"name": "T_h", "markers": ["CD4+", "CD8-"]},
@@ -133,7 +147,7 @@ def test_negativity_and_positivity(dataset_binarized):
         },
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
     df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
     # check if the subtypes are correctly assigned
@@ -142,18 +156,18 @@ def test_negativity_and_positivity(dataset_binarized):
     assert np.all(df[df["labels_1"] == "T_h"]["CD8_binarized"] == 0)
 
 
-def test_invalid_markers(dataset_binarized):
+def test_invalid_markers(ds_labels):
+    # removing the subtype annotations
+    ds = get_ds_without_subtype_predictions(ds_labels)
+
     subtype_dict = {
-        "B": {"subtypes": [{"name": "B_prol", "markers": ["ki-67+"]}]},
         "T": {
             "subtypes": [
-                {"name": "T_h", "markers": ["CD4+"], "subtypes": [{"name": "T_reg", "markers": ["Foxp3+"]}]},
+                {"name": "T_h", "markers": ["CD4+"]},
                 {
                     "name": "T_tox",
                     "markers": ["CD8+"],
                     "subtypes": [
-                        {"name": "T_tox_mem", "markers": ["CD45RO+"]},
-                        {"name": "T_tox_naive", "markers": ["CD45RA+"]},
                         {"name": "T_bla", "markers": ["Blub+"]},
                     ],
                 },
@@ -161,17 +175,13 @@ def test_invalid_markers(dataset_binarized):
         },
     }
 
-    ds = dataset_binarized.la.predict_cell_subtypes(subtype_dict)
-    df = get_labels_and_binarization(ds)[
-        ["CD4_binarized", "CD8_binarized", "CD45RA_binarized", "CD45RO_binarized", "labels_0", "labels_1", "labels_2"]
-    ]
+    ds = ds.la.predict_cell_subtypes(subtype_dict)
+    df = get_labels_and_binarization(ds)[["CD4_binarized", "CD8_binarized", "labels_0", "labels_1", "labels_2"]]
     df = df[df["labels_0"] == "T"].drop_duplicates()
     # check if the subtypes are correctly assigned
-    assert df.shape[0] == 14
+    assert df.shape[0] == 4
     assert "T" in df["labels_2"].values
     assert "T_tox" in df["labels_2"].values
-    assert "T_tox_mem" in df["labels_2"].values
-    assert "T_tox_naive" in df["labels_2"].values
     assert "T_h" in df["labels_2"].values
     # these should not be in there, because those markers were not binarized
     assert "T_reg" not in df["labels_2"].values

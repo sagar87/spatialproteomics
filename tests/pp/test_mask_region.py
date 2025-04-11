@@ -56,8 +56,8 @@ def test_mask_region_non_binary_mask(ds_image):
     x, y = ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
     # creating a dummy mask
     labels = np.ones((x, y))
-    labels[0:200, 0:200] = 0
-    labels[200:400, 200:400] = 2
+    labels[0:50, 0:50] = 0
+    labels[50:100, 50:100] = 2
 
     with pytest.raises(
         AssertionError,
