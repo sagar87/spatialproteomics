@@ -150,6 +150,7 @@ def add_observations(
 def apply(
     sdata: spatialdata.SpatialData,
     func: Callable,
+    key_added: str = SDLayers.IMAGE,
     image_key: str = SDLayers.IMAGE,
     data_key: Optional[str] = None,
     copy: bool = False,
@@ -178,7 +179,7 @@ def apply(
     )
     processed_image = _apply(image.values, func, **kwargs)
     channels = image.coords["c"].values
-    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+    sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
 
@@ -233,7 +234,7 @@ def threshold(
 def transform_expression_matrix(
     sdata: spatialdata.SpatialData,
     method: str = "arcsinh",
-    table_key=SDLayers.TABLE,
+    table_key: str = SDLayers.TABLE,
     cofactor: float = 5.0,
     min_percentile: float = 1.0,
     max_percentile: float = 99.0,
