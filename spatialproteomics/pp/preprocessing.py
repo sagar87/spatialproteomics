@@ -781,9 +781,9 @@ class PreprocessingAccessor:
             # if it does not match, we need to update the cell dimension, i. e. remove all old _obs
             if len(label) != len(obj.coords[Dims.CELLS]):
                 logger.warning(
-                    "Found _obs with different number of cells in the image container. Removing all old _obs for continuity."
+                    "Found _obs with different number of cells in the image container. Removing all old _obs for consistency."
                 )
-                obj = obj.drop_layers(Layers.OBSERVATIONS)
+                obj = obj.pp.drop_layers(Layers.OBS)
             else:
                 da = xr.concat(
                     [obj[Layers.OBS].copy(), da],
@@ -799,7 +799,7 @@ class PreprocessingAccessor:
     ) -> xr.Dataset:
         assert (
             key in self._obj.coords
-        ), f"Coordinate {key} not found in the object. Available coordinates: {self._obj.coords.keys()}. Please adjust the key parameter accordingly."
+        ), f"Coordinate {key} not found in the object. Available coordinates: {list(self._obj.coords)}. Please adjust the key parameter accordingly."
         if type(properties) is str:
             properties = [properties]
         for prop in properties:
