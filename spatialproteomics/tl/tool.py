@@ -24,7 +24,7 @@ from .utils import (
 # === SPATIALDATA ACCESSOR ===
 def cellpose(
     sdata: spatialdata.SpatialData,
-    channel: Optional[str],
+    channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
@@ -80,7 +80,7 @@ def cellpose(
 
 def stardist(
     sdata: spatialdata.SpatialData,
-    channel: Optional[str],
+    channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
@@ -136,7 +136,7 @@ def stardist(
 
 def mesmer(
     sdata: spatialdata.SpatialData,
-    channel: Optional[str],
+    channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
     data_key: Optional[str] = None,
