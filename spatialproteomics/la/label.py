@@ -9,7 +9,16 @@ import yaml
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Labels, Layers, Props, SDLayers
+from ..constants import (
+    COLORS,
+    Dims,
+    Features,
+    Labels,
+    Layers,
+    Props,
+    SDFeatures,
+    SDLayers,
+)
 from ..la.utils import (
     _format_labels,
     _get_markers_from_subtype_dict,
@@ -69,6 +78,7 @@ def predict_cell_types_argmax(
     sdata: spatialdata.SpatialData,
     marker_dict: dict,
     table_key: str = SDLayers.TABLE,
+    label_key: str = SDFeatures.LABELS,
     copy: bool = False,
 ):
     """
@@ -82,6 +92,7 @@ def predict_cell_types_argmax(
         sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
         marker_dict (dict): A dictionary containing the marker genes for each cell type.
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        label_key (str, optional): The key under which the cell type labels are stored in the obs attribute of the spatialdata object. Defaults to "celltype".
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
     if copy:
@@ -89,8 +100,11 @@ def predict_cell_types_argmax(
 
     adata = _process_adata(sdata, table_key=table_key)
     expression_df = adata.to_df()
+    assert (
+        len(set(marker_dict.keys()) - set(expression_df.columns)) == 0
+    ), f"The following markers were not found in quantification layer: {set(marker_dict.keys()) - set(expression_df.columns)}."
     celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
-    adata.obs["celltype"] = celltypes
+    adata.obs[label_key] = celltypes
 
     if copy:
         return sdata
@@ -101,6 +115,7 @@ def predict_cell_subtypes(
     subtype_dict: Union[dict, str],
     table_key: str = SDLayers.TABLE,
     layer_key: str = SDLayers.BINARIZATION,
+    label_key: str = SDFeatures.LABELS,
     copy: bool = False,
 ):
     """
@@ -114,13 +129,17 @@ def predict_cell_subtypes(
         subtype_dict (Union[dict, str]): A dictionary mapping cell subtypes to the binarized markers used for prediction. Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
         layer_key (str, optional): The key under which the binarized expression matrix is stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+        label_key (str, optional): The key under which the cell type labels are stored in the obs attribute of the spatialdata object. Defaults to "celltype".
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
     if copy:
         sdata = cp.deepcopy(sdata)
 
     adata = _process_adata(sdata, table_key=table_key)
-    celltypes = adata.obs["celltype"].copy()
+    assert (
+        label_key in adata.obs.columns
+    ), f"Label_key {label_key} not found in adata object. Available keys: {list(adata.obs.columns)}."
+    celltypes = adata.obs[label_key].copy()
     assert (
         layer_key in adata.obsm
     ), f"Layer {layer_key} not found in adata object. Available layers: {list(adata.obsm.keys())}. Please run threshold_labels first."

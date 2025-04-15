@@ -18,8 +18,6 @@ def test_add_obs_append_table(ds_labels_spatialdata):
     assert SDLayers.TABLE in ds.tables.keys()
     adata = ds.tables[SDLayers.TABLE]
     assert adata.obs is not None
-    assert "centroid-0" not in adata.obs.columns
-    assert "centroid-1" not in adata.obs.columns
     assert "area" in adata.obs.columns
 
     sp.pp.add_observations(ds, "eccentricity")
@@ -27,7 +25,5 @@ def test_add_obs_append_table(ds_labels_spatialdata):
     assert SDLayers.TABLE in ds.tables.keys()
     adata = ds.tables[SDLayers.TABLE]
     assert adata.obs is not None
-    assert "centroid-0" not in adata.obs.columns
-    assert "centroid-1" not in adata.obs.columns
     assert "area" in adata.obs.columns
     assert "eccentricity" in adata.obs.columns

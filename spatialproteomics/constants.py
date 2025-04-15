@@ -90,6 +90,10 @@ class SDLayers(object):
     BINARIZATION = "binarization"
 
 
+class SDFeatures(object):
+    LABELS = "celltype"
+
+
 COLORS = [
     "#FFFF00",
     "#1CE6FF",

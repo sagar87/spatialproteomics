@@ -649,15 +649,21 @@ class ToolAccessor:
             # the anndata object within the spatialdata object requires some additional slots, which are created here
             adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
 
-            obs_df = pd.DataFrame(
-                {
-                    "id": cells,
-                    "region": pd.Series(["segmentation"] * len(cells)).astype(
-                        pd.api.types.CategoricalDtype(categories=["segmentation"])
-                    ),
-                }
-            )
-            adata.obs = obs_df
+            if adata.obs is not None:
+                adata.obs["id"] = cells
+                adata.obs["region"] = pd.Series(["segmentation"] * adata.n_obs, index=adata.obs.index).astype(
+                    pd.api.types.CategoricalDtype(categories=["segmentation"])
+                )
+            else:
+                obs_df = pd.DataFrame(
+                    {
+                        "id": cells,
+                        "region": pd.Series(["segmentation"] * len(cells)).astype(
+                            pd.api.types.CategoricalDtype(categories=["segmentation"])
+                        ),
+                    }
+                )
+                adata.obs = obs_df
             adata.obs_names = cells
 
             # transforming the index to string
