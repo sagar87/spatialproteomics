@@ -647,24 +647,30 @@ class ToolAccessor:
 
         if adata.X is not None:
             # the anndata object within the spatialdata object requires some additional slots, which are created here
-            adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
+            adata.uns["spatialdata_attrs"] = {
+                "region": SDLayers.SEGMENTATION,
+                "region_key": "region",
+                "instance_key": "id",
+            }
 
             if adata.obs is not None:
                 adata.obs["id"] = cells
-                adata.obs["region"] = pd.Series(["segmentation"] * adata.n_obs, index=adata.obs.index).astype(
-                    pd.api.types.CategoricalDtype(categories=["segmentation"])
+                adata.obs["region"] = pd.Series([SDLayers.SEGMENTATION] * adata.n_obs, index=adata.obs.index).astype(
+                    pd.api.types.CategoricalDtype(categories=[SDLayers.SEGMENTATION])
                 )
             else:
                 obs_df = pd.DataFrame(
                     {
                         "id": cells,
-                        "region": pd.Series(["segmentation"] * len(cells)).astype(
-                            pd.api.types.CategoricalDtype(categories=["segmentation"])
+                        "region": pd.Series([SDLayers.SEGMENTATION] * len(cells)).astype(
+                            pd.api.types.CategoricalDtype(categories=[SDLayers.SEGMENTATION])
                         ),
                     }
                 )
                 adata.obs = obs_df
-            adata.obs_names = cells
+            # anndata insists that the obs_names are strings, and will throw a warning if they are not
+            # to be consistent with their examples, we add the "Cell_" prefix here
+            adata.obs_names = [f"Cell_{x}" for x in cells]
 
             # transforming the index to string
             adata.obs.index = [str(x) for x in adata.obs.index]
@@ -678,19 +684,21 @@ class ToolAccessor:
         if store_segmentation:
             if store_adata:
                 spatial_data_object = spatialdata.SpatialData(
-                    images={"image": image}, labels={"segmentation": segmentation}, table=adata
+                    images={SDLayers.IMAGE: image},
+                    labels={SDLayers.SEGMENTATION: segmentation},
+                    tables={SDLayers.TABLE: adata},
                 )
             else:
                 spatial_data_object = spatialdata.SpatialData(
-                    images={"image": image}, labels={"segmentation": segmentation}
+                    images={SDLayers.IMAGE: image}, labels={SDLayers.SEGMENTATION: segmentation}
                 )
 
             set_transformation(
-                spatial_data_object.labels["segmentation"], transformation, to_coordinate_system="global"
+                spatial_data_object.labels[SDLayers.SEGMENTATION], transformation, to_coordinate_system="global"
             )
         else:
-            spatial_data_object = spatialdata.SpatialData(images={"image": image})
+            spatial_data_object = spatialdata.SpatialData(images={SDLayers.IMAGE: image})
 
-        set_transformation(spatial_data_object.images["image"], transformation, to_coordinate_system="global")
+        set_transformation(spatial_data_object.images[SDLayers.IMAGE], transformation, to_coordinate_system="global")
 
         return spatial_data_object

@@ -85,8 +85,8 @@ def add_quantification(
         adata.obs["id"] = cell_idx
         adata.obs["region"] = segmentation_key
         adata.var_names = image.coords["c"].values
-        adata.obs_names = cell_idx
-        adata.obs.index = adata.obs.index.astype(str)
+        # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
+        adata.obs_names = [f"Cell_{x}" for x in cell_idx]
 
         # putting the anndata object into the spatialdata object
         sdata.tables[key_added] = adata
@@ -192,6 +192,7 @@ def threshold(
     image_key: str = SDLayers.IMAGE,
     quantile: Union[float, list] = None,
     intensity: Union[int, list] = None,
+    key_added: str = SDLayers.IMAGE,
     channels: Optional[Union[str, list]] = None,
     shift: bool = True,
     copy: bool = False,
@@ -209,6 +210,7 @@ def threshold(
         image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
         quantile (Union[float, list], optional): The quantile value(s) to be used for thresholding. If None, the intensity parameter will be used. Defaults to None.
         intensity (Union[int, list], optional): The intensity value(s) to be used for thresholding. If None, the quantile parameter will be used. Defaults to None.
+        key_added (str, optional): The key under which the processed image will be stored in the images attribute of the spatialdata object. Defaults to image.
         channels (Optional[Union[str, list]], optional): The channel(s) to be used for thresholding. If None, all channels will be used. Defaults to None.
         shift (bool, optional): Whether to shift the intensities towards 0 after thresholding. Defaults to True.
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
@@ -223,7 +225,7 @@ def threshold(
         image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c", **kwargs
     )
     channels = sdata.images[image_key].coords["c"].values
-    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+    sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
 

@@ -143,7 +143,8 @@ def predict_cell_subtypes(
     assert (
         layer_key in adata.obsm
     ), f"Layer {layer_key} not found in adata object. Available layers: {list(adata.obsm.keys())}. Please run threshold_labels first."
-    binarization_df = adata.obsm[layer_key]
+    # we need to do a copy here, because otherwise this returns a slice of a dataframe, which can have unintended consequences
+    binarization_df = adata.obsm[layer_key].copy()
 
     # these markers have a sign at the end, which indicates positivity or negativity
     markers_with_sign = _get_markers_from_subtype_dict(subtype_dict)
@@ -162,11 +163,10 @@ def predict_cell_subtypes(
     # adding the celltypes into the binarization df
     binarization_df["_labels"] = celltypes
     subtype_df = _predict_cell_subtypes(binarization_df, subtype_dict)
-    subtype_df.index = subtype_df.index.astype(int)
 
     # adding the subtypes to the adata object
     sdata.tables[table_key].obs = sdata.tables[table_key].obs.merge(
-        subtype_df, left_on="id", right_index=True, how="left"
+        subtype_df, right_index=True, left_index=True, how="left"
     )
     # overwriting the celltype column
     adata.obs["celltype"] = subtype_df.iloc[:, -1].values

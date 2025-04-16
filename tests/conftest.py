@@ -26,7 +26,7 @@ def load_files(data_dir):
     # we actually load the datasets directly into memory instead of just opening the zarr lazily
     # this should speed up testing a bit
     files_loaded = {
-        str(f).split("/")[-1].split(".")[0]: xr.load_dataset(os.path.join(str(data_dir), f))
+        str(f).split("/")[-1].split(".")[0]: xr.load_dataset(os.path.join(str(data_dir), f), engine="zarr")
         for f in files
         if f.endswith("zarr")
     }

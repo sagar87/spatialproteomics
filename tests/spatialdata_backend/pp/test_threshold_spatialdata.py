@@ -7,32 +7,58 @@ from spatialproteomics.constants import SDLayers
 
 def test_threshold_all_channels(ds_image_spatialdata):
     # === with shift ===
-    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=10, copy=True)
-    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, copy=True)
+    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=10, key_added="image_thresholded", copy=True)
+    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, key_added="image_thresholded", copy=True)
 
-    assert d1[SDLayers.IMAGE].values.max() == ds_image_spatialdata[SDLayers.IMAGE].values.max() - 10
-    assert d1[SDLayers.IMAGE].values.min() == 0
-    assert d2[SDLayers.IMAGE].values.min() == 0
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert "image" in d2.images.keys()
+    assert "image_thresholded" in d2.images.keys()
+    assert d1["image_thresholded"].values.max() == ds_image_spatialdata[SDLayers.IMAGE].values.max() - 10
+    assert d1["image_thresholded"].values.min() == 0
+    assert d2["image_thresholded"].values.min() == 0
 
-    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=[10, 20, 10, 20, 10], copy=True)
-    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=[0.9, 0.95, 0.9, 0.95, 0.9], copy=True)
+    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=[10, 20, 10, 20, 10], key_added="image_thresholded", copy=True)
+    d2 = sp.pp.threshold(
+        ds_image_spatialdata, quantile=[0.9, 0.95, 0.9, 0.95, 0.9], key_added="image_thresholded", copy=True
+    )
 
-    assert d1[SDLayers.IMAGE].values.max() == ds_image_spatialdata[SDLayers.IMAGE].values.max() - 10
-    assert d1[SDLayers.IMAGE].values.min() == 0
-    assert d2[SDLayers.IMAGE].values.min() == 0
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert "image" in d2.images.keys()
+    assert "image_thresholded" in d2.images.keys()
+    assert d1["image_thresholded"].values.max() == ds_image_spatialdata[SDLayers.IMAGE].values.max() - 10
+    assert d1["image_thresholded"].values.min() == 0
+    assert d2["image_thresholded"].values.min() == 0
 
     # === without shift ===
-    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=10, shift=False, copy=True)
-    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, shift=False, copy=True)
+    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=10, shift=False, key_added="image_thresholded", copy=True)
+    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, shift=False, key_added="image_thresholded", copy=True)
 
     # check that there are no pixels with values between 0 and 10 in the resulting image
-    assert d1[SDLayers.IMAGE].values[d1[SDLayers.IMAGE].values > 0].min() >= 10
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert "image" in d2.images.keys()
+    assert "image_thresholded" in d2.images.keys()
+    assert d1["image_thresholded"].values[d1["image_thresholded"].values > 0].min() >= 10
 
-    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=[10, 20, 10, 20, 10], shift=False, copy=True)
-    d2 = sp.pp.threshold(ds_image_spatialdata, quantile=[0.9, 0.95, 0.9, 0.95, 0.9], shift=False, copy=True)
+    d1 = sp.pp.threshold(
+        ds_image_spatialdata, intensity=[10, 20, 10, 20, 10], shift=False, key_added="image_thresholded", copy=True
+    )
+    d2 = sp.pp.threshold(
+        ds_image_spatialdata,
+        quantile=[0.9, 0.95, 0.9, 0.95, 0.9],
+        shift=False,
+        key_added="image_thresholded",
+        copy=True,
+    )
 
     # check that there are no pixels with values between 0 and 10 in the resulting image
-    assert d1[SDLayers.IMAGE].values[d1[SDLayers.IMAGE].values > 0].min() >= 10
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert "image" in d2.images.keys()
+    assert "image_thresholded" in d2.images.keys()
+    assert d1["image_thresholded"].values[d1["image_thresholded"].values > 0].min() >= 10
 
 
 def test_threshold_too_high_intensity(ds_image_spatialdata):
@@ -96,15 +122,19 @@ def test_threshold_on_selected_channels(ds_image_spatialdata):
     # === with shift ===
     quantile_value = np.quantile(cd8_img, 0.9)
 
-    d1 = sp.threshold(ds_image_spatialdata, intensity=10, channels="CD8", copy=True)
-    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1[SDLayers.IMAGE].shape[0]
-    assert d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values.max() == cd8_img.max() - 10
-    assert d1[SDLayers.IMAGE].values.min() == 0
+    d1 = sp.threshold(ds_image_spatialdata, intensity=10, channels="CD8", key_added="image_thresholded", copy=True)
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1["image_thresholded"].shape[0]
+    assert d1.images["image_thresholded"].sel({"c": "CD8"}).values.max() == cd8_img.max() - 10
+    assert d1["image_thresholded"].values.min() == 0
 
-    d1 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, channels="CD8", copy=True)
-    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1[SDLayers.IMAGE].shape[0]
-    assert d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values.max() == cd8_img.max() - quantile_value
-    assert d1[SDLayers.IMAGE].values.min() == 0
+    d1 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, channels="CD8", key_added="image_thresholded", copy=True)
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1["image_thresholded"].shape[0]
+    assert d1.images["image_thresholded"].sel({"c": "CD8"}).values.max() == cd8_img.max() - quantile_value
+    assert d1["image_thresholded"].values.min() == 0
 
     with pytest.raises(
         AssertionError,
@@ -119,17 +149,31 @@ def test_threshold_on_selected_channels(ds_image_spatialdata):
         d1 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, channels=["CD8", "CD4"], copy=True)
 
     # === without shift ===
-    d1 = sp.pp.threshold(ds_image_spatialdata, intensity=10, channels="CD8", shift=False, copy=True)
-    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1[SDLayers.IMAGE].shape[0]
+    d1 = sp.pp.threshold(
+        ds_image_spatialdata, intensity=10, channels="CD8", shift=False, key_added="image_thresholded", copy=True
+    )
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1["image_thresholded"].shape[0]
     assert (
-        d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values[d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values > 0].min()
+        d1.images["image_thresholded"]
+        .sel({"c": "CD8"})
+        .values[d1.images["image_thresholded"].sel({"c": "CD8"}).values > 0]
+        .min()
         >= 10
     )
 
-    d1 = sp.pp.threshold(ds_image_spatialdata, quantile=0.9, channels="CD8", shift=False, copy=True)
-    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1[SDLayers.IMAGE].shape[0]
+    d1 = sp.pp.threshold(
+        ds_image_spatialdata, quantile=0.9, channels="CD8", shift=False, key_added="image_thresholded", copy=True
+    )
+    assert "image" in d1.images.keys()
+    assert "image_thresholded" in d1.images.keys()
+    assert ds_image_spatialdata[SDLayers.IMAGE].shape[0] == d1["image_thresholded"].shape[0]
     assert (
-        d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values[d1.images[SDLayers.IMAGE].sel({"c": "CD8"}).values > 0].min()
+        d1.images["image_thresholded"]
+        .sel({"c": "CD8"})
+        .values[d1.images["image_thresholded"].sel({"c": "CD8"}).values > 0]
+        .min()
         >= quantile_value
     )
 
