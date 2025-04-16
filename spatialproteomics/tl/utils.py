@@ -6,16 +6,13 @@ import xarray as xr
 from spatialdata.transformations import Affine
 
 from ..base_logger import logger
-from ..constants import Dims, Layers
+from ..constants import Dims
 from ..pp.utils import _normalize
 
 
 def _get_channels(obj, key_added, channel):
     if key_added in obj:
         raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-    if key_added == Layers.SEGMENTATION:
-        raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
 
     if channel is not None:
         if isinstance(channel, list):

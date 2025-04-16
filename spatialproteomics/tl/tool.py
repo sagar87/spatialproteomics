@@ -266,7 +266,7 @@ class ToolAccessor:
     def cellpose(
         self,
         channel: Optional[str] = None,
-        key_added: Optional[str] = "_cellpose_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         diameter: float = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
@@ -336,6 +336,12 @@ class ToolAccessor:
             **kwargs,
         )
 
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            if return_diameters:
+                return self._obj.pp.add_segmentation(all_masks), diams
+            return self._obj.pp.add_segmentation(all_masks)
+
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         if return_diameters:
@@ -397,6 +403,10 @@ class ToolAccessor:
             **kwargs,
         )
 
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            return self._obj.pp.add_segmentation(all_masks)
+
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
@@ -437,6 +447,10 @@ class ToolAccessor:
         ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
         all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
+
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            return self._obj.pp.add_segmentation(all_masks)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
