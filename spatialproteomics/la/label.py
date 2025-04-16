@@ -1,20 +1,181 @@
+import copy as cp
 from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
+import spatialdata
 import xarray as xr
 import yaml
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Labels, Layers, Props
+from ..constants import (
+    COLORS,
+    Dims,
+    Features,
+    Labels,
+    Layers,
+    Props,
+    SDFeatures,
+    SDLayers,
+)
 from ..la.utils import (
     _format_labels,
     _get_markers_from_subtype_dict,
     _predict_cell_subtypes,
+    _predict_cell_types_argmax,
 )
+from ..sd.utils import _process_adata
 
 
+# === SPATIALDATA ACCESSOR ===
+def threshold_labels(
+    sdata: spatialdata.SpatialData,
+    threshold_dict: dict,
+    key_added: str = SDLayers.BINARIZATION,
+    table_key: str = SDLayers.TABLE,
+    layer_key: str = "perc_pos",
+    copy: bool = False,
+):
+    """
+    Binarise based on a threshold. If a label is specified, the binarization is only applied to this cell type.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        threshold_dict (dict): A dictionary containing the threshold values for each channel.
+        key_added (str, optional): The key under which the processed expression matrix will be stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        layer_key (str, optional): The key under which the expression matrix is stored in the layers attribute of the spatialdata object. Defaults to "perc_pos".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    adata = _process_adata(sdata, table_key=table_key)
+    assert (
+        layer_key in adata.layers
+    ), f"Layer {layer_key} not found in adata object. Available layers: {list(adata.layers.keys())}."
+    expression_df = adata.to_df(layer=layer_key)
+    # checking that all channels are present in the expression matrix
+    for channel in threshold_dict.keys():
+        if channel not in expression_df.columns:
+            raise KeyError(
+                f"Channel {channel} not found in the expression matrix. Available channels: {list(expression_df.columns)}"
+            )
+
+    binarized_df = pd.DataFrame(
+        {channel: (expression_df[channel] >= threshold).astype(int) for channel, threshold in threshold_dict.items()},
+        index=expression_df.index,
+    )
+
+    adata.obsm[key_added] = binarized_df
+
+    if copy:
+        return sdata
+
+
+def predict_cell_types_argmax(
+    sdata: spatialdata.SpatialData,
+    marker_dict: dict,
+    table_key: str = SDLayers.TABLE,
+    label_key: str = SDFeatures.LABELS,
+    copy: bool = False,
+):
+    """
+    This function predicts cell types based on the expression matrix using the argmax method.
+    It extracts the expression matrix from the spatialdata object, applies the argmax method,
+    and adds the predicted cell types to the spatialdata object.
+    The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+    The argmax method assigns the cell type with the highest expression value to each cell.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        marker_dict (dict): A dictionary containing the marker genes for each cell type.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        label_key (str, optional): The key under which the cell type labels are stored in the obs attribute of the spatialdata object. Defaults to "celltype".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    adata = _process_adata(sdata, table_key=table_key)
+    expression_df = adata.to_df()
+    assert (
+        len(set(marker_dict.keys()) - set(expression_df.columns)) == 0
+    ), f"The following markers were not found in quantification layer: {set(marker_dict.keys()) - set(expression_df.columns)}."
+    celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
+    adata.obs[label_key] = celltypes
+
+    if copy:
+        return sdata
+
+
+def predict_cell_subtypes(
+    sdata: spatialdata.SpatialData,
+    subtype_dict: Union[dict, str],
+    table_key: str = SDLayers.TABLE,
+    layer_key: str = SDLayers.BINARIZATION,
+    label_key: str = SDFeatures.LABELS,
+    copy: bool = False,
+):
+    """
+    This function predicts cell subtypes based on the expression matrix using a subtype dictionary.
+    It extracts the expression matrix from the spatialdata object, applies the subtype prediction method,
+    and adds the predicted cell subtypes to the spatialdata object.
+    The predicted cell subtypes are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        subtype_dict (Union[dict, str]): A dictionary mapping cell subtypes to the binarized markers used for prediction. Instead of a dictionary, a path to a yaml file containing the subtype dictionary can be provided.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        layer_key (str, optional): The key under which the binarized expression matrix is stored in the obsm attribute of the spatialdata object. Defaults to "binarization".
+        label_key (str, optional): The key under which the cell type labels are stored in the obs attribute of the spatialdata object. Defaults to "celltype".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    adata = _process_adata(sdata, table_key=table_key)
+    assert (
+        label_key in adata.obs.columns
+    ), f"Label_key {label_key} not found in adata object. Available keys: {list(adata.obs.columns)}."
+    celltypes = adata.obs[label_key].copy()
+    assert (
+        layer_key in adata.obsm
+    ), f"Layer {layer_key} not found in adata object. Available layers: {list(adata.obsm.keys())}. Please run threshold_labels first."
+    # we need to do a copy here, because otherwise this returns a slice of a dataframe, which can have unintended consequences
+    binarization_df = adata.obsm[layer_key].copy()
+
+    # these markers have a sign at the end, which indicates positivity or negativity
+    markers_with_sign = _get_markers_from_subtype_dict(subtype_dict)
+    # here, we only store the markers without the sign
+    markers_for_subtype_prediction = [x[:-1] for x in markers_with_sign]
+
+    # checking if all markers are binarized (this check needs to be removed if we want to still perform classification as far as we can)
+    binarized_markers = binarization_df.columns
+    if not all([marker in binarized_markers for marker in markers_for_subtype_prediction]):
+        logger.warning(
+            f"Did not find binarizations for the following markers: {[marker for marker in markers_for_subtype_prediction if marker not in binarized_markers]}."
+        )
+
+    # this method relies on the columns to have the suffix _binarized
+    binarization_df.columns = [f"{marker}_binarized" for marker in binarization_df.columns]
+    # adding the celltypes into the binarization df
+    binarization_df["_labels"] = celltypes
+    subtype_df = _predict_cell_subtypes(binarization_df, subtype_dict)
+
+    # adding the subtypes to the adata object
+    sdata.tables[table_key].obs = sdata.tables[table_key].obs.merge(
+        subtype_df, right_index=True, left_index=True, how="left"
+    )
+    # overwriting the celltype column
+    adata.obs["celltype"] = subtype_df.iloc[:, -1].values
+
+    if copy:
+        return sdata
+
+
+# === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("la")
 class LabelAccessor:
     """Adds functions for cell phenotyping."""
@@ -439,9 +600,23 @@ class LabelAccessor:
         cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
         cells = self._obj.coords[Dims.CELLS][cells_bool].values
 
-        self._obj[Layers.OBS].loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+        # Make a copy of the object to avoid modifying self._obj
+        obj = self._obj.copy()
 
-        return self._obj.sel({Dims.LABELS: [i for i in self._obj.coords[Dims.LABELS] if i not in cell_type]})
+        # Create a modified version of the OBS layer
+        new_obs = obj[Layers.OBS].copy()
+        new_obs.loc[{Dims.FEATURES: Features.LABELS, Dims.CELLS: cells}] = 0
+
+        # Replace the OBS layer in the copied object
+        obj = obj.assign({Layers.OBS: new_obs})
+
+        # Exclude the specified cell type from the label dimension (robust to string input)
+        if isinstance(cell_type, str):
+            obj = obj.sel({Dims.LABELS: obj.coords[Dims.LABELS] != cell_type})
+        else:
+            obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS] if i not in cell_type]})
+
+        return obj
 
     def add_label_property(self, array: Union[np.ndarray, list], prop: str):
         """
@@ -520,7 +695,9 @@ class LabelAccessor:
         # checking that a label layer is already present
         assert Layers.LA_PROPERTIES in self._obj, "No label layer found in the data object."
         # checking if the old label exists
-        assert label in self._obj.la, f"Cell type {label} not found. Existing cell types: {self._obj.la}"
+        assert (
+            label in self._obj.la
+        ), f"Cell type {label} not found. Existing cell types: {self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)[Props.NAME].values.tolist()}."
         # checking if the new label already exists
         assert name not in self._obj[Layers.LA_PROPERTIES].sel(
             {Dims.LA_PROPS: Props.NAME}
@@ -640,11 +817,10 @@ class LabelAccessor:
 
         # only looking at the markers specified in the marker dict
         obj = self._obj.copy()
-        # getting the argmax for each cell
-        argmax_classification = np.argmax(obj.pp[markers][key].values, axis=1)
 
-        # translating the argmax classification into cell types
-        celltypes_argmax = np.array(celltypes)[argmax_classification]
+        celltypes_argmax = _predict_cell_types_argmax(
+            pd.DataFrame(obj.pp[markers][key].values, columns=markers), markers=markers, celltypes=celltypes
+        )
 
         # putting everything into a dataframe
         celltype_prediction_df = pd.DataFrame(

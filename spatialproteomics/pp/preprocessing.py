@@ -1,16 +1,21 @@
+import copy as cp
 from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 import skimage
+import spatialdata
 import xarray as xr
-from scipy.stats import norm, zscore
+from anndata import AnnData
 from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props
+from ..constants import Dims, Features, Layers, Props, SDLayers
+from ..sd.utils import _process_adata, _process_image, _process_segmentation
 from .utils import (
+    _apply,
+    _compute_quantification,
     _convert_to_8bit,
     _get_disconnected_cell,
     _merge_segmentation,
@@ -18,9 +23,261 @@ from .utils import (
     _relabel_cells,
     _remove_outlying_cells,
     _remove_unlabeled_cells,
+    _threshold,
+    _transform_expression_matrix,
 )
 
 
+# === SPATIALDATA PREPROCESSING ===
+def add_quantification(
+    sdata: spatialdata.SpatialData,
+    func: Union[str, Callable] = "intensity_mean",
+    key_added: str = SDLayers.TABLE,
+    image_key: str = SDLayers.IMAGE,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    layer_key: Optional[str] = None,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function computes the quantification of the image data based on the provided segmentation masks.
+    It extracts the image data and segmentation masks from the spatialdata object, applies the quantification function,
+    and adds the quantification results to the spatialdata object.
+    The quantification results are stored in an AnnData object, which is added to the tables attribute of the spatialdata object.
+    The quantification function can be specified as a string or a callable function.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data and segmentation masks.
+        func (Union[str, Callable], optional): The quantification function to be applied. Defaults to "intensity_mean". Can be a string or a callable function.
+        key_added (str, optional): The key under which the quantification results will be stored in the tables attribute of the spatialdata object. Defaults to table.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
+        layer_key (Optional[str], optional): The key for the quantification results in the AnnData object. If None, a new layer will be created. Defaults to None.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    # sanity checks for image and segmentation
+    image = _process_image(
+        sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
+    )
+    segmentation = _process_segmentation(sdata, segmentation_key)
+
+    # computing the quantification
+    measurements, cell_idx = _compute_quantification(image.values, segmentation, func)
+
+    # checking if there already is an anndata object in the spatialdata object
+    if key_added in sdata.tables:
+        # if an anndata object (and hence a quantification) already exists, we add the new quantification to a new layer
+        assert (
+            layer_key is not None
+        ), "An expression matrix already exists in your spatialdata object. Please provide a layer_key to add the new quantification to."
+        assert (
+            layer_key not in sdata.tables[key_added].layers
+        ), f"Layer {layer_key} already exists in spatial data object. Please choose another key."
+        sdata.tables[key_added].layers[layer_key] = measurements.T
+    else:
+        # if there is no anndata object yet, we create one
+        adata = AnnData(measurements.T)
+        adata.obs["id"] = cell_idx
+        adata.obs["region"] = segmentation_key
+        adata.var_names = image.coords["c"].values
+        # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
+        adata.obs_names = [f"Cell_{x}" for x in cell_idx]
+
+        # putting the anndata object into the spatialdata object
+        sdata.tables[key_added] = adata
+
+    if copy:
+        return sdata
+
+
+def add_observations(
+    sdata: spatialdata.SpatialData,
+    properties: Union[str, list, tuple] = ("label", "centroid"),
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function computes the observations for each region in the segmentation masks.
+    It extracts the segmentation masks from the spatialdata object, computes the region properties,
+    and adds the observations to the AnnData object stored in the tables attribute of the spatialdata object.
+    The observations are computed using the regionprops_table function from skimage.measure.
+    The properties to be computed can be specified as a string or a list/tuple of strings.
+    The default properties are "label" and "centroid", but other properties can be added as well.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the segmentation masks.
+        properties (Union[str, list, tuple], optional): The properties to be computed for each region. Defaults to ("label", "centroid").
+        segmentation_key (str, optional): The key for the segmentation masks in the spatialdata object. Defaults to segmentation.
+        table_key (str, optional): The key under which the AnnData object is stored in the tables attribute of the spatialdata object. Defaults to table.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    segmentation = _process_segmentation(sdata, segmentation_key)
+    adata = _process_adata(sdata, table_key=table_key)
+    existing_features = adata.obs.columns
+
+    if type(properties) is str:
+        properties = [properties]
+
+    if "label" not in properties:
+        properties = ["label", *properties]
+
+    table = regionprops_table(segmentation, properties=properties)
+
+    # remove existing features
+    table = pd.DataFrame({k: v for k, v in table.items() if k not in existing_features})
+
+    # setting the label to be the index and removing it from the table
+    table.index = table["label"]
+    table = table.drop(columns="label")
+
+    # add data into adata.obs
+    adata.obs = adata.obs.merge(table, left_on="id", right_index=True, how="left")
+
+    if copy:
+        return sdata
+
+
+def apply(
+    sdata: spatialdata.SpatialData,
+    func: Callable,
+    key_added: str = SDLayers.IMAGE,
+    image_key: str = SDLayers.IMAGE,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function applies a given function to the image data in the spatialdata object.
+    It extracts the image data from the spatialdata object, applies the function,
+    and adds the processed image back to the spatialdata object.
+    The processed image is stored in the images attribute of the spatialdata object.
+    The function can be any callable function that takes an image as input and returns a processed image.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        func (Callable): The function to be applied to the image data. It should take an image as input and return a processed image.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the function.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    image = _process_image(
+        sdata, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
+    )
+    processed_image = _apply(image.values, func, **kwargs)
+    channels = image.coords["c"].values
+    sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
+        processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
+    )
+
+    if copy:
+        return sdata
+
+
+def threshold(
+    sdata: spatialdata.SpatialData,
+    image_key: str = SDLayers.IMAGE,
+    quantile: Union[float, list] = None,
+    intensity: Union[int, list] = None,
+    key_added: str = SDLayers.IMAGE,
+    channels: Optional[Union[str, list]] = None,
+    shift: bool = True,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function applies a threshold to the image data in the spatialdata object.
+    It extracts the image data from the spatialdata object, applies the thresholding function,
+    and adds the processed image back to the spatialdata object.
+    The processed image is stored in the images attribute of the spatialdata object.
+    The thresholding function can be specified using the quantile or intensity parameters.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        quantile (Union[float, list], optional): The quantile value(s) to be used for thresholding. If None, the intensity parameter will be used. Defaults to None.
+        intensity (Union[int, list], optional): The intensity value(s) to be used for thresholding. If None, the quantile parameter will be used. Defaults to None.
+        key_added (str, optional): The key under which the processed image will be stored in the images attribute of the spatialdata object. Defaults to image.
+        channels (Optional[Union[str, list]], optional): The channel(s) to be used for thresholding. If None, all channels will be used. Defaults to None.
+        shift (bool, optional): Whether to shift the intensities towards 0 after thresholding. Defaults to True.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the thresholding function.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    # this gets the image as an xarray object
+    image = _process_image(sdata, image_key=image_key, channels=None, key_added=None, return_values=False)
+    processed_image = _threshold(
+        image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c", **kwargs
+    )
+    channels = sdata.images[image_key].coords["c"].values
+    sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
+        processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
+    )
+
+    if copy:
+        return sdata
+
+
+def transform_expression_matrix(
+    sdata: spatialdata.SpatialData,
+    method: str = "arcsinh",
+    table_key: str = SDLayers.TABLE,
+    cofactor: float = 5.0,
+    min_percentile: float = 1.0,
+    max_percentile: float = 99.0,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function applies a transformation to the expression matrix in the spatialdata object.
+    It extracts the expression matrix from the spatialdata object, applies the transformation function,
+    and adds the transformed expression matrix back to the spatialdata object.
+    The transformed expression matrix is stored in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        method (str, optional): The transformation method to be applied. Defaults to "arcsinh".
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        cofactor (float, optional): The cofactor to be used for the transformation. Defaults to 5.0.
+        min_percentile (float, optional): The minimum percentile to be used for the transformation. Defaults to 1.0.
+        max_percentile (float, optional): The maximum percentile to be used for the transformation. Defaults to 99.0.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the transformation function.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    adata = _process_adata(sdata, table_key=table_key)
+    transformed_matrix = _transform_expression_matrix(
+        adata.X,
+        method=method,
+        cofactor=cofactor,
+        min_percentile=min_percentile,
+        max_percentile=max_percentile,
+        **kwargs,
+    )
+    adata.X = transformed_matrix
+
+    if copy:
+        return sdata
+
+
+# === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("pp")
 class PreprocessingAccessor:
     """The image accessor enables fast indexing and preprocessing of the spatialproteomics object."""
@@ -411,7 +668,7 @@ class PreprocessingAccessor:
             )
 
         obj = self._obj.copy()
-        return xr.merge([obj, da]).pp.add_observations()
+        return xr.merge([obj, da])
 
     def add_layer_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.LA_LAYERS) -> xr.Dataset:
         """
@@ -527,9 +784,9 @@ class PreprocessingAccessor:
             # if it does not match, we need to update the cell dimension, i. e. remove all old _obs
             if len(label) != len(obj.coords[Dims.CELLS]):
                 logger.warning(
-                    "Found _obs with different number of cells in the image container. Removing all old _obs for continuity."
+                    "Found _obs with different number of cells in the image container. Removing all old _obs for consistency."
                 )
-                obj = obj.drop_layers(Layers.OBSERVATIONS)
+                obj = obj.pp.drop_layers(Layers.OBS)
             else:
                 da = xr.concat(
                     [obj[Layers.OBS].copy(), da],
@@ -537,6 +794,23 @@ class PreprocessingAccessor:
                 )
 
         return xr.merge([obj, da])
+
+    def drop_observations(
+        self,
+        properties: Union[str, list, tuple],
+        key: str = Dims.FEATURES,
+    ) -> xr.Dataset:
+        assert (
+            key in self._obj.coords
+        ), f"Coordinate {key} not found in the object. Available coordinates: {list(self._obj.coords)}. Please adjust the key parameter accordingly."
+        if type(properties) is str:
+            properties = [properties]
+        for prop in properties:
+            assert (
+                prop in self._obj.coords[key]
+            ), f"Property {prop} not found in the object. Available properties: {self._obj.coords[key].values}. Please adjust the properties parameter accordingly."
+
+        return self._obj.sel({Dims.FEATURES: ~self._obj.coords[Dims.FEATURES].isin(properties)})
 
     def add_feature(self, feature_name: str, feature_values: Union[list, np.ndarray]):
         """
@@ -671,35 +945,9 @@ class PreprocessingAccessor:
         all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
 
         segmentation = self._obj[Layers.SEGMENTATION].values
+        image = self._obj[layer_key].values
 
-        image = np.rollaxis(self._obj[layer_key].values, 0, 3)
-
-        # Check if the input is a string (referring to a default skimage property)
-        if isinstance(func, str):
-            # Use regionprops to get the available property names
-            try:
-                props = regionprops_table(segmentation, intensity_image=image, properties=["label", func])
-            except AttributeError:
-                raise AttributeError(
-                    f"Invalid regionprop: {func}. Please provide a valid property or a custom function. Check skimage.measure.regionprops_table for available properties."
-                )
-
-            cell_idx = props.pop("label")
-            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
-                if k.startswith(func):
-                    measurements.append(props[k])
-        # If the input is a callable (function)
-        elif callable(func):
-            props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
-            cell_idx = props.pop("label")
-
-            for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
-                if k.startswith(func.__name__):
-                    measurements.append(props[k])
-        else:
-            raise ValueError(
-                "The func parameter should be either a string for default skimage properties or a callable function."
-            )
+        measurements, cell_idx = _compute_quantification(image, segmentation, func)
 
         da = xr.DataArray(
             np.stack(measurements, -1),
@@ -858,6 +1106,7 @@ class PreprocessingAccessor:
         key_added: Optional[str] = None,
         channels: Optional[Union[str, list]] = None,
         shift: bool = True,
+        **kwargs,
     ):
         """
         Apply thresholding to the image layer of the object.
@@ -887,9 +1136,6 @@ class PreprocessingAccessor:
         ValueError
             If both quantile and intensity are None or if both quantile and intensity are provided.
         """
-        if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
-            raise ValueError("Please provide a quantile or absolute intensity cut off.")
-
         if Layers.PLOT in self._obj:
             logger.warning(
                 "Please only call plotting methods like pl.colorize() after any preprocessing. Otherwise, the image will not be displayed correctly."
@@ -898,95 +1144,10 @@ class PreprocessingAccessor:
         # Pull out the image from its corresponding field (by default "_image")
         image_layer = self._obj[Layers.IMAGE]
 
-        if isinstance(quantile, (float, int)):
-            quantile = np.array([quantile])
-        if isinstance(quantile, list):
-            quantile = np.array(quantile)
-
-        if isinstance(intensity, (float, int)):
-            intensity = np.array([intensity])
-        if isinstance(intensity, list):
-            intensity = np.array(intensity)
-
-        # if a channels argument is provided, the thresholds for all other channels are set to 0 (i. e. no thresholding)
-        if channels is not None:
-            if isinstance(channels, str):
-                channels = [channels]
-
-            all_channels = image_layer.coords[Dims.CHANNELS].values.tolist()
-            assert all(
-                [channel in all_channels for channel in channels]
-            ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
-
-            if quantile is not None:
-                assert len(channels) == len(
-                    quantile
-                ), "The number of channels must match the number of quantile values."
-                quantile_dict = dict(zip(channels, quantile))
-                quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
-            if intensity is not None:
-                assert len(channels) == len(
-                    intensity
-                ), "The number of channels must match the number of intensity values."
-                intensity_dict = dict(zip(channels, intensity))
-                intensity = np.array([intensity_dict.get(channel, 0) for channel in all_channels])
-
-        if quantile is not None:
-            assert (
-                len(quantile) == 1 or len(quantile) == image_layer.coords[Dims.CHANNELS].size
-            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
-            assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
-
-            if shift:
-                # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
-                # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
-                lower = np.quantile(
-                    image_layer.values.reshape(image_layer.values.shape[0], -1), quantile, axis=1
-                ).astype(image_layer.dtype)
-                filtered = np.clip(
-                    image_layer, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
-                ).astype(image_layer.dtype) - np.expand_dims(
-                    np.diag(lower) if lower.ndim > 1 else lower, (1, 2)
-                ).astype(
-                    image_layer.dtype
-                )
-            else:
-                # Calculate the quantile-based intensity threshold for each channel.
-                flattened_values = image_layer.values.reshape(
-                    image_layer.values.shape[0], -1
-                )  # Flatten height and width for each channel.
-                lower = np.array(
-                    [np.quantile(flattened_values[i], q) for i, q in enumerate(quantile)]
-                )  # Compute quantile per channel.
-
-                # Reshape lower to match the broadcasting requirements.
-                lower = lower[:, np.newaxis, np.newaxis]  # Reshape to add height and width dimensions.
-
-                # Use np.where to apply the quantile threshold without shifting.
-                filtered = np.where(image_layer.values >= lower, image_layer.values, 0)
-
-        if intensity is not None:
-            assert (
-                len(intensity) == 1 or len(intensity) == image_layer.coords[Dims.CHANNELS].size
-            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-
-            assert np.all(intensity >= 0), "Intensity values must be positive."
-            assert np.all(
-                intensity <= np.max(image_layer.values)
-            ), "Intensity values must be smaller than the maximum intensity."
-
-            if shift:
-                # calculate intensity
-                filtered = (image_layer - intensity.reshape(-1, 1, 1)).clip(min=0)
-            else:
-                # Reshape intensity to broadcast correctly across all dimensions.
-                if len(intensity) == 1:
-                    intensity = intensity[0]  # This will make it a scalar for simple broadcasting.
-                else:
-                    intensity = intensity[:, np.newaxis, np.newaxis]  # Add two new axes for broadcasting.
-                # Apply thresholding: set all values below the intensity threshold to 0.
-                filtered = np.where(image_layer.values >= intensity, image_layer.values, 0)
+        # performing the thresholding
+        filtered = _threshold(
+            image_layer, quantile=quantile, intensity=intensity, channels=channels, shift=shift, **kwargs
+        )
 
         if key_added is None:
             # drop_vars returns a copy of the data array and should not perform any in-place operations
@@ -1029,16 +1190,7 @@ class PreprocessingAccessor:
         obj = self._obj.copy()
         layer = obj[key].copy()
 
-        # Apply the function independently across all channels
-        # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
-        processed_layers = []
-        for channel in layer.coords[Dims.CHANNELS].values:
-            channel_data = layer.sel({Dims.CHANNELS: channel}).values
-            processed_channel_data = func(channel_data, **kwargs)
-            processed_layers.append(processed_channel_data)
-
-        # Stack the processed layers back into a single numpy array
-        processed_layer = np.stack(processed_layers, 0)
+        processed_layer = _apply(layer, func, **kwargs)
 
         # adding the modified layer to the object
         obj[key_added] = xr.DataArray(
@@ -1459,7 +1611,8 @@ class PreprocessingAccessor:
             # converting cts to strings in the obs df
             if layer == Layers.OBS and Features.LABELS in df.columns:
                 label_dict = self._obj.la._label_to_dict(Props.NAME)
-                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[x])
+                # the conversion to int is necessary because when storing to zarr, all obs variables are converted to floats
+                df[Features.LABELS] = df[Features.LABELS].apply(lambda x: label_dict[int(x)])
             # converting cts to strings in the neighborhood df
             if layer == Layers.NEIGHBORHOODS:
                 label_dict = self._obj.la._label_to_dict(Props.NAME)
@@ -1493,6 +1646,7 @@ class PreprocessingAccessor:
         cofactor: float = 5.0,
         min_percentile: float = 1.0,
         max_percentile: float = 99.0,
+        **kwargs,
     ):
         """
         Transforms the expression matrix based on the specified mode.
@@ -1518,31 +1672,14 @@ class PreprocessingAccessor:
         # getting the expression matrix from the object
         expression_matrix = self._obj[key].values
 
-        # applying the appropriate transform
-        if method == "arcsinh":
-            transformed_matrix = np.arcsinh(expression_matrix / cofactor)
-        elif method == "zscore":
-            # z-scoring along each channel
-            transformed_matrix = zscore(expression_matrix, axis=0)
-        elif method == "minmax":
-            # applying min max scaling, so that the lowest value is 0 and the highest is 1
-            transformed_matrix = (expression_matrix - np.min(expression_matrix, axis=0)) / (
-                np.max(expression_matrix, axis=0) - np.min(expression_matrix, axis=0)
-            )
-        elif method == "double_zscore":
-            # z-scoring along each channel
-            transformed_matrix = zscore(expression_matrix, axis=0)
-            # z-scoring along each cell
-            transformed_matrix = zscore(transformed_matrix, axis=1)
-            # turning the z-scores into probabilities using the cumulative density function
-            transformed_matrix = norm.cdf(transformed_matrix)
-            # taking the negative log of the inverse probability to amplify positive values
-            transformed_matrix = -np.log(1 - transformed_matrix)
-        elif method == "clip":
-            min_value, max_value = np.percentile(expression_matrix, [min_percentile, max_percentile])
-            transformed_matrix = np.clip(expression_matrix, min_value, max_value)
-        else:
-            raise ValueError(f"Unknown transformation method: {method}")
+        transformed_matrix = _transform_expression_matrix(
+            expression_matrix,
+            method=method,
+            cofactor=cofactor,
+            min_percentile=min_percentile,
+            max_percentile=max_percentile,
+            **kwargs,
+        )
 
         # creating a new data array with the transformed matrix
         da = xr.DataArray(

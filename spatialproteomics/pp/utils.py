@@ -1,13 +1,15 @@
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
 import scipy.ndimage
-from skimage.measure import label, regionprops
+from scipy.stats import norm, zscore
+from skimage.measure import label, regionprops, regionprops_table
 from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
+from ..constants import Dims
 
 
 def merge(images: List[np.ndarray], proj: str = "sum", alpha: float = 0.5):
@@ -454,3 +456,190 @@ def _remove_outlying_cells(segmentation, dilation_size, threshold):
 
     # Return the indices of the retained cells
     return sorted(retained_cells)
+
+
+def _compute_quantification(image, segmentation, func):
+    image = np.rollaxis(image, 0, 3)
+    measurements = []
+
+    # Check if the input is a string (referring to a default skimage property)
+    if isinstance(func, str):
+        # Use regionprops to get the available property names
+        try:
+            props = regionprops_table(segmentation, intensity_image=image, properties=["label", func])
+        except AttributeError:
+            raise AttributeError(
+                f"Invalid regionprop: {func}. Please provide a valid property or a custom function. Check skimage.measure.regionprops_table for available properties."
+            )
+
+        cell_idx = props.pop("label")
+        for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+            if k.startswith(func):
+                measurements.append(props[k])
+    # If the input is a callable (function)
+    elif callable(func):
+        props = regionprops_table(segmentation, intensity_image=image, extra_properties=(func,))
+        cell_idx = props.pop("label")
+
+        for k in sorted(props.keys(), key=lambda x: int(x.split("-")[-1])):
+            if k.startswith(func.__name__):
+                measurements.append(props[k])
+    else:
+        raise ValueError(
+            "The func parameter should be either a string for default skimage properties or a callable function."
+        )
+
+    return np.array(measurements), np.array(cell_idx)
+
+
+def _apply(image, func, **kwargs):
+    # Apply the function independently across all channels
+    # initially, I tried to vectorize this using xr.apply_ufunc(), but the results were spurious, esp. when applying a median filter
+    processed_layers = []
+    for channel in range(image.shape[0]):
+        channel_data = image[channel]
+        processed_channel_data = func(channel_data, **kwargs)
+        processed_layers.append(processed_channel_data)
+
+    # Stack the processed layers back into a single numpy array
+    processed_layer = np.stack(processed_layers, 0)
+
+    return processed_layer
+
+
+def _threshold(
+    image,
+    quantile: Union[float, list] = None,
+    intensity: Union[int, list] = None,
+    channels: Optional[Union[str, list]] = None,
+    shift: bool = True,
+    channel_coord: str = Dims.CHANNELS,
+):
+    # note that image is an xarray object here, which has named channels
+    if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
+        raise ValueError("Please provide a quantile or absolute intensity cut off.")
+
+    if isinstance(quantile, (float, int)):
+        quantile = np.array([quantile])
+    if isinstance(quantile, list):
+        quantile = np.array(quantile)
+
+    if isinstance(intensity, (float, int)):
+        intensity = np.array([intensity])
+    if isinstance(intensity, list):
+        intensity = np.array(intensity)
+
+    # if a channels argument is provided, the thresholds for all other channels are set to 0 (i. e. no thresholding)
+    all_channels = image.coords[channel_coord].values.tolist()
+
+    if channels is not None:
+        if isinstance(channels, str):
+            channels = [channels]
+
+        assert all(
+            channel in all_channels for channel in channels
+        ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
+
+        if quantile is not None:
+            assert len(channels) == len(quantile), "The number of channels must match the number of quantile values."
+            quantile_dict = dict(zip(channels, quantile))
+            quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
+        if intensity is not None:
+            assert len(channels) == len(intensity), "The number of channels must match the number of intensity values."
+            intensity_dict = dict(zip(channels, intensity))
+            intensity = np.array([intensity_dict.get(channel, 0) for channel in all_channels])
+    else:
+        # If no channels provided, assume the threshold applies to all channels
+        if quantile is not None:
+            assert len(quantile) == 1 or len(quantile) == len(
+                all_channels
+            ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
+            quantile = np.full(len(all_channels), quantile.item() if quantile.size == 1 else quantile)
+        if intensity is not None:
+            assert len(intensity) == 1 or len(intensity) == len(
+                all_channels
+            ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
+            assert np.all(intensity >= 0), "Intensity values must be positive."
+            assert np.all(
+                intensity <= np.max(image.values)
+            ), "Intensity values must be smaller than the maximum intensity."
+            intensity = np.full(len(all_channels), intensity.item() if intensity.size == 1 else intensity)
+
+    if quantile is not None:
+        assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
+
+        if shift:
+            # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
+            # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
+            lower = np.quantile(image.values.reshape(image.values.shape[0], -1), quantile, axis=1).astype(image.dtype)
+
+            filtered = np.clip(
+                image, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
+            ).astype(image.dtype) - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)).astype(
+                image.dtype
+            )
+        else:
+            # Calculate the quantile-based intensity threshold for each channel.
+            flattened_values = image.values.reshape(
+                image.values.shape[0], -1
+            )  # Flatten height and width for each channel.
+            lower = np.array(
+                [np.quantile(flattened_values[i], q) for i, q in enumerate(quantile)]
+            )  # Compute quantile per channel.
+
+            # Reshape lower to match the broadcasting requirements.
+            lower = lower[:, np.newaxis, np.newaxis]  # Reshape to add height and width dimensions.
+
+            # Use np.where to apply the quantile threshold without shifting.
+            filtered = np.where(image.values >= lower, image.values, 0)
+
+    if intensity is not None:
+        if shift:
+            # calculate intensity
+            filtered = (image - intensity.reshape(-1, 1, 1)).clip(min=0)
+        else:
+            # Reshape intensity to broadcast correctly across all dimensions.
+            if len(intensity) == 1:
+                intensity = intensity[0]  # This will make it a scalar for simple broadcasting.
+            else:
+                intensity = intensity[:, np.newaxis, np.newaxis]  # Add two new axes for broadcasting.
+            # Apply thresholding: set all values below the intensity threshold to 0.
+            filtered = np.where(image.values >= intensity, image.values, 0)
+
+    return filtered
+
+
+def _transform_expression_matrix(
+    expression_matrix,
+    method: str = "arcsinh",
+    cofactor: float = 5.0,
+    min_percentile: float = 1.0,
+    max_percentile: float = 99.0,
+):
+    # applying the appropriate transform
+    if method == "arcsinh":
+        transformed_matrix = np.arcsinh(expression_matrix / cofactor)
+    elif method == "zscore":
+        # z-scoring along each channel
+        transformed_matrix = zscore(expression_matrix, axis=0)
+    elif method == "minmax":
+        # applying min max scaling, so that the lowest value is 0 and the highest is 1
+        transformed_matrix = (expression_matrix - np.min(expression_matrix, axis=0)) / (
+            np.max(expression_matrix, axis=0) - np.min(expression_matrix, axis=0)
+        )
+    elif method == "double_zscore":
+        # z-scoring along each channel
+        transformed_matrix = zscore(expression_matrix, axis=0)
+        # z-scoring along each cell
+        transformed_matrix = zscore(transformed_matrix, axis=1)
+        # turning the z-scores into probabilities using the cumulative density function
+        transformed_matrix = norm.cdf(transformed_matrix)
+        # taking the negative log of the inverse probability to amplify positive values
+        transformed_matrix = -np.log(1 - transformed_matrix)
+    elif method == "clip":
+        min_value, max_value = np.percentile(expression_matrix, [min_percentile, max_percentile])
+        transformed_matrix = np.clip(expression_matrix, min_value, max_value)
+    else:
+        raise ValueError(f"Unknown transformation method: {method}")
+
+    return transformed_matrix

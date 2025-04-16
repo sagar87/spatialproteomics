@@ -2,12 +2,12 @@ import os
 import tempfile
 
 
-def test_to_zarr(dataset):
+def test_to_zarr_image(ds_image):
     # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            dataset.drop_encoding().to_zarr(output_path)
+            ds_image.drop_encoding().to_zarr(output_path)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -16,12 +16,12 @@ def test_to_zarr(dataset):
             pass
 
 
-def test_to_zarr_labeled(dataset_labeled):
+def test_to_zarr_segmentation(ds_segmentation):
     # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            dataset_labeled.drop_encoding().to_zarr(output_path)
+            ds_segmentation.drop_encoding().to_zarr(output_path)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -30,12 +30,12 @@ def test_to_zarr_labeled(dataset_labeled):
             pass
 
 
-def test_to_zarr_neighborhoods(dataset_neighborhoods):
+def test_to_zarr_labels(ds_labels):
     # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            dataset_neighborhoods.drop_encoding().to_zarr(output_path)
+            ds_labels.drop_encoding().to_zarr(output_path)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -44,40 +44,12 @@ def test_to_zarr_neighborhoods(dataset_neighborhoods):
             pass
 
 
-def test_to_zarr_neighborhoods_numeric(dataset_neighborhoods_numeric):
+def test_to_zarr_neighborhoods(ds_neighborhoods):
     # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            dataset_neighborhoods_numeric.drop_encoding().to_zarr(output_path)
-            assert os.path.exists(output_path) and os.path.isdir(
-                output_path
-            ), f"Directory {output_path} was not created."
-        finally:
-            # cleanup is handled by tempfile automatically
-            pass
-
-
-def test_to_zarr_segmentation(dataset_segmentation):
-    # Create a temporary directory for the test
-    with tempfile.TemporaryDirectory() as temp_dir:
-        output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
-        try:
-            dataset_segmentation.drop_encoding().to_zarr(output_path)
-            assert os.path.exists(output_path) and os.path.isdir(
-                output_path
-            ), f"Directory {output_path} was not created."
-        finally:
-            # cleanup is handled by tempfile automatically
-            pass
-
-
-def test_to_zarr_binarized(dataset_binarized):
-    # Create a temporary directory for the test
-    with tempfile.TemporaryDirectory() as temp_dir:
-        output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
-        try:
-            dataset_binarized.drop_encoding().to_zarr(output_path)
+            ds_neighborhoods.drop_encoding().to_zarr(output_path)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."

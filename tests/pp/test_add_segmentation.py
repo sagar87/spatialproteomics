@@ -5,53 +5,56 @@ import xarray as xr
 from spatialproteomics.constants import Dims, Layers
 
 
-def test_add_segmentation(data_dic, dataset_segmentation):
-    segmented = dataset_segmentation.pp.add_segmentation(data_dic["segmentation"])
+def test_add_segmentation(ds_image, ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values
+    segmented = ds_image.pp.add_segmentation(segmentation)
 
     assert Layers.SEGMENTATION in segmented
-    assert Layers.SEGMENTATION not in dataset_segmentation
+    assert Layers.SEGMENTATION not in ds_image
     assert Dims.CELLS in segmented.coords
-    assert Dims.CELLS not in dataset_segmentation.coords
+    assert Dims.CELLS not in ds_image.coords
     assert Layers.OBS in segmented
 
 
-def test_add_segmentation_from_layer(data_dic, dataset_segmentation):
+def test_add_segmentation_from_layer(ds_image, ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values
     da = xr.DataArray(
-        data_dic["segmentation"],
-        coords=[range(500), range(500)],
+        segmentation,
+        coords=[ds_image.coords[Dims.X].values, ds_image.coords[Dims.Y].values],
         dims=[Dims.X, Dims.Y],
         name="_segmentation_preliminary",
     ).astype(int)
 
-    ds = xr.merge([dataset_segmentation, da])
+    ds = xr.merge([ds_image, da])
     segmented = ds.pp.add_segmentation("_segmentation_preliminary")
 
     assert "_segmentation_preliminary" in segmented
     assert Layers.SEGMENTATION in segmented
-    assert Layers.SEGMENTATION not in dataset_segmentation
+    assert Layers.SEGMENTATION not in ds_image
     assert Dims.CELLS in segmented.coords
-    assert Dims.CELLS not in dataset_segmentation.coords
+    assert Dims.CELLS not in ds_image.coords
     assert Layers.OBS in segmented
 
 
-def test_add_segmentation_wrong_dims(data_dic, dataset_segmentation):
+def test_add_segmentation_wrong_dims(ds_image, ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values
     with pytest.raises(AssertionError, match="The shape of segmentation mask"):
-        dataset_segmentation.pp.add_segmentation(data_dic["segmentation"][:300, :300])
+        ds_image.pp.add_segmentation(segmentation[:50, :50])
 
 
-def test_add_segmentation_negative_values(data_dic, dataset_segmentation):
-    corrupted_segmentation = data_dic["segmentation"]
-    corrupted_segmentation[10, 10] = -1
+def test_add_segmentation_negative_values(ds_image, ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values.copy()
+    segmentation[10, 10] = -1
     with pytest.raises(AssertionError, match="A segmentation mask may not contain negative numbers."):
-        dataset_segmentation.pp.add_segmentation(corrupted_segmentation)
+        ds_image.pp.add_segmentation(segmentation)
 
 
-def test_add_segmentation_reindex(data_dic, dataset_segmentation):
-    noncontinuous_segmentation = data_dic["segmentation"]
-    noncontinuous_segmentation[10, 10] = np.max(noncontinuous_segmentation) + 2
-    num_cells = len(np.unique(noncontinuous_segmentation)) - 1  # -1 because of the background
+def test_add_segmentation_reindex(ds_image, ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values.copy()
+    segmentation[10, 10] = np.max(segmentation) + 2
+    num_cells = len(np.unique(segmentation)) - 1  # -1 because of the background
 
-    segmented = dataset_segmentation.pp.add_segmentation(noncontinuous_segmentation, reindex=True)
+    segmented = ds_image.pp.add_segmentation(segmentation, reindex=True)
     cell_labels = sorted(np.unique(segmented["_segmentation"].values))[1:]  # removing the background
 
     assert cell_labels == list(range(1, num_cells + 1))

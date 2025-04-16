@@ -1,15 +1,261 @@
+import copy as cp
 from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
+import spatialdata
 import xarray as xr
+from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props
-from ..pp.utils import _normalize
-from .utils import _convert_masks_to_data_array, _get_channels
+from ..constants import Dims, Features, Layers, Props, SDLayers
+from ..sd.utils import _get_channels_spatialdata, _process_adata, _process_image
+from .utils import (
+    _astir,
+    _cellpose,
+    _compute_transformation,
+    _convert_masks_to_data_array,
+    _get_channels,
+    _mesmer,
+    _stardist,
+)
 
 
+# === SPATIALDATA ACCESSOR ===
+def cellpose(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str] = None,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the cellpose segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the cellpose algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run cellpose
+    segmentation_masks, _ = _cellpose(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
+        set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
+def stardist(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str] = None,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the stardist segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the stardist algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The function also handles multiple channels by iterating over the channels and applying the segmentation algorithm to each channel separately.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run stardist
+    segmentation_masks = _stardist(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    if segmentation_masks.shape[0] > 1:
+        for i, channel in enumerate(channels):
+            sdata.labels[f"{key_added}_{channel}"] = spatialdata.models.Labels2DModel.parse(
+                segmentation_masks[i], transformations=None, dims=("y", "x")
+            )
+            set_transformation(sdata.labels[f"{key_added}_{channel}"], transformation)
+    else:
+        sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+            segmentation_masks[0], transformations=None, dims=("y", "x")
+        )
+        set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
+def mesmer(
+    sdata: spatialdata.SpatialData,
+    channel: Optional[str] = None,
+    image_key: str = SDLayers.IMAGE,
+    key_added: str = SDLayers.SEGMENTATION,
+    data_key: Optional[str] = None,
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function runs the mesmer segmentation algorithm on the provided image data.
+    It extracts the image data from the spatialdata object, applies the mesmer algorithm,
+    and adds the segmentation masks to the spatialdata object.
+    The segmentation masks are stored in the labels attribute of the spatialdata object.
+    The first channel is assumed to be nuclear and the second one membraneous.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for segmentation.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
+        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+
+    assert (
+        len(channels) == 2
+    ), "Mesmer only supports two channel segmentation. Please ensure that the first channel is nuclear and the second one is membraneous."
+
+    # assert that the format is correct and extract the image
+    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+
+    # run mesmer
+    segmentation_masks = _mesmer(image, **kwargs)
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # add the segmentation masks to the spatial data object
+    sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
+        segmentation_masks[0].squeeze(), transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[key_added], transformation)
+
+    if copy:
+        return sdata
+
+
+def astir(
+    sdata: spatialdata.SpatialData,
+    marker_dict: dict,
+    table_key=SDLayers.TABLE,
+    threshold: float = 0,
+    seed: int = 42,
+    learning_rate: float = 0.001,
+    batch_size: float = 64,
+    n_init: int = 5,
+    n_init_epochs: int = 5,
+    max_epochs: int = 500,
+    cell_id_col: str = "cell_id",
+    cell_type_col: str = "cell_type",
+    copy: bool = False,
+    **kwargs,
+):
+    """
+    This function applies the ASTIR algorithm to predict cell types based on the expression matrix.
+    It extracts the expression matrix from the spatialdata object, applies the ASTIR algorithm,
+    and adds the predicted cell types to the spatialdata object.
+    The predicted cell types are stored in the obs attribute of the AnnData object in the tables attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
+        marker_dict (dict): A dictionary containing the marker genes for each cell type.
+        table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
+        threshold (float, optional): The threshold value to be used for the ASTIR algorithm. Defaults to 0.
+        seed (int, optional): The random seed to be used for the ASTIR algorithm. Defaults to 42.
+        learning_rate (float, optional): The learning rate to be used for the ASTIR algorithm. Defaults to 0.001.
+        batch_size (float, optional): The batch size to be used for the ASTIR algorithm. Defaults to 64.
+        n_init (int, optional): The number of initializations to be used for the ASTIR algorithm. Defaults to 5.
+        n_init_epochs (int, optional): The number of initial epochs to be used for the ASTIR algorithm. Defaults to 5.
+        max_epochs (int, optional): The maximum number of epochs to be used for the ASTIR algorithm. Defaults to 500.
+        cell_id_col (str, optional): The name of the column containing the cell IDs in the expression matrix. Defaults to "cell_id".
+        cell_type_col (str, optional): The name of the column containing the cell types in the expression matrix. Defaults to "cell_type".
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+        **kwargs: Additional keyword arguments to be passed to the ASTIR algorithm.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    adata = _process_adata(sdata, table_key=table_key)
+    expression_df = adata.to_df()
+
+    assigned_cell_types = _astir(
+        expression_df=expression_df,
+        marker_dict=marker_dict,
+        threshold=threshold,
+        seed=seed,
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+        n_init=n_init,
+        n_init_epochs=n_init_epochs,
+        max_epochs=max_epochs,
+        cell_id_col=cell_id_col,
+        cell_type_col=cell_type_col,
+        **kwargs,
+    )
+
+    # merging the resulting dataframe to the adata object
+    df = pd.DataFrame(adata.obs)
+    df = df.merge(assigned_cell_types, left_on="id", right_on=cell_id_col, how="left")
+    adata.obs = df.drop(columns=cell_id_col)
+
+    if copy:
+        return sdata
+
+
+# === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("tl")
 class ToolAccessor:
     """The tool accessor enables the application of external tools such as StarDist or Astir."""
@@ -31,6 +277,7 @@ class ToolAccessor:
         model_type: str = "cyto3",
         postprocess_func: Callable = lambda x: x,
         return_diameters: bool = False,
+        **kwargs,
     ):
         """
         Segment cells using Cellpose. Adds a layer to the spatialproteomics object
@@ -75,50 +322,19 @@ class ToolAccessor:
         """
         channels = _get_channels(self._obj, key_added, channel)
 
-        # checking that if segmentation should be performed jointly, there are exactly two channels
-        if channel_settings != [0, 0]:
-            assert (
-                len(channels) == 2
-            ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {len(channels)} channels in the object."
-
-        from cellpose import models
-
-        model = models.Cellpose(gpu=gpu, model_type=model_type)
-
-        all_masks = []
-        # if the channels are [0, 0], independent segmentation is performed on all channels
-        if channel_settings == [0, 0]:
-            if len(channels) > 1:
-                logger.warn(
-                    "Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately."
-                )
-            for ch in channels:
-                masks_pred, _, _, diams = model.eval(
-                    self._obj.pp[ch]._image.values.squeeze(),
-                    diameter=diameter,
-                    channels=channel_settings,
-                    niter=num_iterations,
-                    cellprob_threshold=cellprob_threshold,
-                    flow_threshold=flow_threshold,
-                    batch_size=batch_size,
-                )
-
-                masks_pred = postprocess_func(masks_pred)
-                all_masks.append(masks_pred)
-        else:
-            # if the channels are anything else, joint segmentation is attempted
-            masks_pred, _, _, diams = model.eval(
-                self._obj._image.values.squeeze(),
-                diameter=diameter,
-                channels=channel_settings,
-                niter=num_iterations,
-                cellprob_threshold=cellprob_threshold,
-                flow_threshold=flow_threshold,
-                batch_size=batch_size,
-            )
-
-            masks_pred = postprocess_func(masks_pred)
-            all_masks.append(masks_pred)
+        all_masks, diams = _cellpose(
+            self._obj.pp[channels]._image.values,
+            diameter=diameter,
+            channel_settings=channel_settings,
+            num_iterations=num_iterations,
+            cellprob_threshold=cellprob_threshold,
+            flow_threshold=flow_threshold,
+            batch_size=batch_size,
+            gpu=gpu,
+            model_type=model_type,
+            postprocess_func=postprocess_func,
+            **kwargs,
+        )
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
@@ -171,24 +387,15 @@ class ToolAccessor:
         """
         channels = _get_channels(self._obj, key_added, channel)
 
-        from stardist.models import StarDist2D
-
-        model = StarDist2D.from_pretrained("2D_versatile_fluo")
-
-        all_masks = []
-        for ch in channels:
-            img = self._obj.pp[ch]._image.values
-            if normalize:
-                img = _normalize(img)
-
-            # Predict the label image (different methods for large or small images, see the StarDist documentation for more details)
-            if predict_big:
-                labels, _ = model.predict_instances_big(img.squeeze(), scale=scale, **kwargs)
-            else:
-                labels, _ = model.predict_instances(img.squeeze(), scale=scale, n_tiles=(n_tiles, n_tiles), **kwargs)
-
-            labels = postprocess_func(labels)
-            all_masks.append(labels)
+        all_masks = _stardist(
+            self._obj.pp[channels]._image.values,
+            scale=scale,
+            n_tiles=n_tiles,
+            normalize=n_tiles,
+            predict_big=predict_big,
+            postprocess_func=postprocess_func,
+            **kwargs,
+        )
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
@@ -229,16 +436,7 @@ class ToolAccessor:
             len(channels) == 2
         ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
-        from deepcell.applications import Mesmer
-
-        app = Mesmer()
-        # at this point, the shape of image is (channels (2), x, y)
-        image = self._obj.pp[channels][Layers.IMAGE].values
-        # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
-        image = np.expand_dims(np.transpose(image, (1, 2, 0)), 0)
-
-        all_masks = app.predict(image, **kwargs)
-        all_masks = postprocess_func(all_masks)
+        all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
@@ -297,9 +495,6 @@ class ToolAccessor:
         DataArray
             A DataArray with the assigned cell types.
         """
-        import astir
-        import torch
-
         # check if there is an expression matrix
         if key not in self._obj:
             raise ValueError(
@@ -322,24 +517,19 @@ class ToolAccessor:
         expression_df = self._obj.pp.get_layer_as_df(key)
 
         # running astir
-        model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)
-        model.fit_type(
+        assigned_cell_types = _astir(
+            expression_df=expression_df,
+            marker_dict=marker_dict,
+            threshold=threshold,
+            seed=seed,
             learning_rate=learning_rate,
             batch_size=batch_size,
             n_init=n_init,
             n_init_epochs=n_init_epochs,
             max_epochs=max_epochs,
-            **kwargs,
+            cell_id_col=cell_id_col,
+            cell_type_col=cell_type_col,
         )
-
-        # getting the predictions
-        assigned_cell_types = model.get_celltypes(threshold=threshold)
-        # assign the index to its own column
-        assigned_cell_types = assigned_cell_types.reset_index()
-        # renaming the columns
-        assigned_cell_types.columns = [cell_id_col, cell_type_col]
-        # setting the cell dtype to int
-        assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
         # adding the labels to the xarray object
         return self._obj.la.add_labels_from_dataframe(
@@ -386,10 +576,9 @@ class ToolAccessor:
         """
         import anndata
 
-        # checking that the expression matrix key is present in the object
-        assert (
-            expression_matrix_key in self._obj
-        ), f"Expression matrix key {expression_matrix_key} not found in the object. Set the expression matrix key with the expression_matrix_key argument."
+        # if there is no expression matrix, we return an empty anndata object
+        if expression_matrix_key not in self._obj:
+            return anndata.AnnData()
 
         expression_matrix = self._obj[expression_matrix_key].values
         adata = anndata.AnnData(expression_matrix)
@@ -440,35 +629,76 @@ class ToolAccessor:
         """
         import spatialdata
 
+        store_segmentation = False
+        store_adata = False
+
         markers = self._obj.coords[Dims.CHANNELS].values
-        cells = self._obj.coords[Dims.CELLS].values
         image = spatialdata.models.Image2DModel.parse(
             self._obj[image_key].values, transformations=None, dims=("c", "x", "y"), c_coords=markers
         )
-        segmentation = spatialdata.models.Labels2DModel.parse(
-            self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
-        )
+        if Dims.CELLS in self._obj.coords:
+            cells = self._obj.coords[Dims.CELLS].values
+            segmentation = spatialdata.models.Labels2DModel.parse(
+                self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
+            )
+            store_segmentation = True
 
         adata = self._obj.tl.convert_to_anndata(**kwargs)
 
-        # the anndata object within the spatialdata object requires some additional slots, which are created here
-        adata.uns["spatialdata_attrs"] = {"region": "segmentation", "region_key": "region", "instance_key": "id"}
-
-        obs_df = pd.DataFrame(
-            {
-                "id": cells,
-                "region": pd.Series(["segmentation"] * len(cells)).astype(
-                    pd.api.types.CategoricalDtype(categories=["segmentation"])
-                ),
+        if adata.X is not None:
+            # the anndata object within the spatialdata object requires some additional slots, which are created here
+            adata.uns["spatialdata_attrs"] = {
+                "region": SDLayers.SEGMENTATION,
+                "region_key": "region",
+                "instance_key": "id",
             }
-        )
-        adata.obs = obs_df
 
-        # transforming the index to string
-        adata.obs.index = [str(x) for x in adata.obs.index]
+            if adata.obs is not None:
+                adata.obs["id"] = cells
+                adata.obs["region"] = pd.Series([SDLayers.SEGMENTATION] * adata.n_obs, index=adata.obs.index).astype(
+                    pd.api.types.CategoricalDtype(categories=[SDLayers.SEGMENTATION])
+                )
+            else:
+                obs_df = pd.DataFrame(
+                    {
+                        "id": cells,
+                        "region": pd.Series([SDLayers.SEGMENTATION] * len(cells)).astype(
+                            pd.api.types.CategoricalDtype(categories=[SDLayers.SEGMENTATION])
+                        ),
+                    }
+                )
+                adata.obs = obs_df
+            # anndata insists that the obs_names are strings, and will throw a warning if they are not
+            # to be consistent with their examples, we add the "Cell_" prefix here
+            adata.obs_names = [f"Cell_{x}" for x in cells]
 
-        spatial_data_object = spatialdata.SpatialData(
-            images={"image": image}, labels={"segmentation": segmentation}, table=adata
-        )
+            # transforming the index to string
+            adata.obs.index = [str(x) for x in adata.obs.index]
+            store_adata = True
+
+        # Your known crop origin in the global coordinate space
+        transformation = _compute_transformation(self._obj.coords["x"].values, self._obj.coords["y"].values)
+
+        # storing only the info that is present in the object (image/segmentation/anndata)
+        # we can only have an anndata if we also have a segmentation mask
+        if store_segmentation:
+            if store_adata:
+                spatial_data_object = spatialdata.SpatialData(
+                    images={SDLayers.IMAGE: image},
+                    labels={SDLayers.SEGMENTATION: segmentation},
+                    tables={SDLayers.TABLE: adata},
+                )
+            else:
+                spatial_data_object = spatialdata.SpatialData(
+                    images={SDLayers.IMAGE: image}, labels={SDLayers.SEGMENTATION: segmentation}
+                )
+
+            set_transformation(
+                spatial_data_object.labels[SDLayers.SEGMENTATION], transformation, to_coordinate_system="global"
+            )
+        else:
+            spatial_data_object = spatialdata.SpatialData(images={SDLayers.IMAGE: image})
+
+        set_transformation(spatial_data_object.images[SDLayers.IMAGE], transformation, to_coordinate_system="global")
 
         return spatial_data_object

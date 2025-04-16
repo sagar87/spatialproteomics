@@ -82,6 +82,18 @@ class Labels(object):
     UNLABELED = "Unlabeled"
 
 
+class SDLayers(object):
+    # The following are the layers that are used in the spatialdata backend
+    IMAGE = "image"
+    SEGMENTATION = "segmentation"
+    TABLE = "table"
+    BINARIZATION = "binarization"
+
+
+class SDFeatures(object):
+    LABELS = "celltype"
+
+
 COLORS = [
     "#FFFF00",
     "#1CE6FF",

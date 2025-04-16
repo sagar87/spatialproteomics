@@ -28,11 +28,25 @@ from .constants import (
 )
 from .container import load_image_data, read_from_spatialdata
 from .image_container import ImageContainer
-from .la import LabelAccessor
+from .la import (
+    LabelAccessor,
+    predict_cell_subtypes,
+    predict_cell_types_argmax,
+    threshold_labels,
+)
 from .nh import NeighborhoodAccessor
 from .pl import PlotAccessor
-from .pp import PreprocessingAccessor, is_positive, percentage_positive
-from .tl import ToolAccessor
+from .pp import (
+    PreprocessingAccessor,
+    add_observations,
+    add_quantification,
+    apply,
+    is_positive,
+    percentage_positive,
+    threshold,
+    transform_expression_matrix,
+)
+from .tl import ToolAccessor, astir, cellpose, mesmer, stardist
 
 __all__ = [
     "load_image_data",
@@ -51,6 +65,18 @@ __all__ = [
     "merge_segmentation",
     "percentage_positive",
     "is_positive",
+    "cellpose",
+    "stardist",
+    "mesmer",
+    "add_observations",
+    "add_quantification",
+    "apply",
+    "threshold",
+    "transform_expression_matrix",
+    "astir",
+    "predict_cell_types_argmax",
+    "threshold_labels",
+    "predict_cell_subtypes",
     "Apricot",
     "Beige",
     "Black",

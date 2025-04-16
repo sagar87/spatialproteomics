@@ -3,9 +3,9 @@ import pytest
 from spatialproteomics.constants import Layers
 
 
-def test_drop_layers(dataset_labeled):
+def test_drop_layers(ds_labels):
     # dropping one layer
-    reduced = dataset_labeled.pp.drop_layers(Layers.LA_PROPERTIES)
+    reduced = ds_labels.pp.drop_layers(Layers.LA_PROPERTIES)
 
     # ensuring that the layer was dropped
     assert Layers.LA_PROPERTIES not in reduced
@@ -13,7 +13,7 @@ def test_drop_layers(dataset_labeled):
     assert "props" not in reduced.dims
 
     # dropping multiple layers
-    reduced = dataset_labeled.pp.drop_layers([Layers.LA_PROPERTIES, Layers.SEGMENTATION])
+    reduced = ds_labels.pp.drop_layers([Layers.LA_PROPERTIES, Layers.SEGMENTATION])
     # ensuring that the props dimension was dropped
     assert "props" not in reduced.dims
     # ensuring that x and y were not dropped, since they are still needed for the image
@@ -21,26 +21,26 @@ def test_drop_layers(dataset_labeled):
     assert "y" in reduced.dims
 
 
-def test_drop_layers_nonexistent_layer(dataset_labeled):
+def test_drop_layers_nonexistent_layer(ds_labels):
     with pytest.raises(
         AssertionError, match="Some layers that you are trying to remove are not in the image container."
     ):
-        dataset_labeled.pp.drop_layers("nonexistent_layer")
+        ds_labels.pp.drop_layers("nonexistent_layer")
 
 
-def test_drop_layers_drop_and_keep(dataset_labeled):
+def test_drop_layers_drop_and_keep(ds_labels):
     with pytest.raises(AssertionError, match="Please provide either layers or keep."):
-        dataset_labeled.pp.drop_layers(layers=Layers.LA_PROPERTIES, keep=Layers.LA_PROPERTIES)
+        ds_labels.pp.drop_layers(layers=Layers.LA_PROPERTIES, keep=Layers.LA_PROPERTIES)
 
 
-def test_drop_layers_no_input(dataset_labeled):
+def test_drop_layers_no_input(ds_labels):
     with pytest.raises(AssertionError, match="Please provide either layers or keep."):
-        dataset_labeled.pp.drop_layers()
+        ds_labels.pp.drop_layers()
 
 
-def test_drop_layers_keep(dataset_labeled):
+def test_drop_layers_keep(ds_labels):
     # keeping one layer
-    reduced = dataset_labeled.pp.drop_layers(keep=Layers.LA_PROPERTIES)
+    reduced = ds_labels.pp.drop_layers(keep=Layers.LA_PROPERTIES)
 
     # ensuring that the layer was not dropped
     assert Layers.LA_PROPERTIES in reduced
@@ -50,7 +50,7 @@ def test_drop_layers_keep(dataset_labeled):
     assert Layers.OBS not in reduced
 
     # keeping multiple layers
-    reduced = dataset_labeled.pp.drop_layers(keep=[Layers.LA_PROPERTIES, Layers.IMAGE])
+    reduced = ds_labels.pp.drop_layers(keep=[Layers.LA_PROPERTIES, Layers.IMAGE])
     # ensuring that the layers were not dropped
     assert Layers.LA_PROPERTIES in reduced
     assert Layers.IMAGE in reduced
@@ -59,15 +59,15 @@ def test_drop_layers_keep(dataset_labeled):
     assert Layers.OBS not in reduced
 
 
-def test_drop_layers_segmentation(dataset_labeled):
+def test_drop_layers_segmentation(ds_labels):
     # when dropping the segmentation, obs also should be dropped automatically
-    reduced = dataset_labeled.pp.drop_layers(Layers.SEGMENTATION)
+    reduced = ds_labels.pp.drop_layers(Layers.SEGMENTATION)
     assert Layers.SEGMENTATION not in reduced
     assert Layers.OBS not in reduced
 
 
-def test_drop_layers_obs(dataset_labeled):
+def test_drop_layers_obs(ds_labels):
     # when dropping obs, the segmentation also should be dropped automatically
-    reduced = dataset_labeled.pp.drop_layers(Layers.OBS)
+    reduced = ds_labels.pp.drop_layers(Layers.OBS)
     assert Layers.OBS not in reduced
     assert Layers.SEGMENTATION not in reduced

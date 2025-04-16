@@ -4,9 +4,9 @@ import pytest
 from spatialproteomics.constants import Dims, Features, Labels, Layers
 
 
-def test_add_labels_from_dataframe_correct_annotation(dataset):
+def test_add_labels_from_dataframe_correct_annotation(ds_segmentation):
     # creating a dummy data frame
-    cells = dataset.coords[Dims.CELLS].values
+    cells = ds_segmentation.coords[Dims.CELLS].values
     num_cells = len(cells)
     df = pd.DataFrame(
         {
@@ -16,7 +16,7 @@ def test_add_labels_from_dataframe_correct_annotation(dataset):
     )
 
     # adding the labels
-    labeled = dataset.la.add_labels_from_dataframe(df)
+    labeled = ds_segmentation.la.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -24,9 +24,9 @@ def test_add_labels_from_dataframe_correct_annotation(dataset):
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
 
 
-def test_add_labels_from_dataframe_unassigned_cells(dataset):
+def test_add_labels_from_dataframe_unassigned_cells(ds_segmentation):
     # creating a dummy data frame
-    cells = dataset.coords[Dims.CELLS].values
+    cells = ds_segmentation.coords[Dims.CELLS].values
     num_cells = len(cells)
     df = pd.DataFrame(
         {
@@ -36,7 +36,7 @@ def test_add_labels_from_dataframe_unassigned_cells(dataset):
     )
 
     # adding the labels
-    labeled = dataset.la.add_labels_from_dataframe(df)
+    labeled = ds_segmentation.la.add_labels_from_dataframe(df)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -45,9 +45,9 @@ def test_add_labels_from_dataframe_unassigned_cells(dataset):
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
 
 
-def test_add_labels_from_dataframe_invalid_cells(dataset):
+def test_add_labels_from_dataframe_invalid_cells(ds_segmentation):
     # creating a dummy data frame
-    cells = dataset.coords[Dims.CELLS].values
+    cells = ds_segmentation.coords[Dims.CELLS].values
     num_cells = len(cells)
     df = pd.DataFrame(
         {
@@ -60,17 +60,17 @@ def test_add_labels_from_dataframe_invalid_cells(dataset):
         AssertionError,
         match="Could not find any overlap between the cells in the data frame",
     ):
-        dataset.la.add_labels_from_dataframe(df)
+        ds_segmentation.la.add_labels_from_dataframe(df)
 
 
-def test_add_labels(dataset):
+def test_add_labels(ds_segmentation):
     # creating a dummy dict
-    cells = dataset.coords[Dims.CELLS].values
+    cells = ds_segmentation.coords[Dims.CELLS].values
     num_cells = len(cells)
     label_dict = dict(zip(cells, ["CT1"] * num_cells))
 
     # adding the labels
-    labeled = dataset.la.add_labels(label_dict)
+    labeled = ds_segmentation.la.add_labels(label_dict)
 
     # checking that the labels were added
     assert Dims.LABELS in labeled.coords
@@ -78,9 +78,9 @@ def test_add_labels(dataset):
     assert 1 in labeled[Layers.OBS].sel(features=Features.LABELS).values
 
 
-def test_add_labels_existing_labels(dataset_labeled):
+def test_add_labels_existing_labels(ds_labels):
     # creating a dummy dict
-    cells = dataset_labeled.coords[Dims.CELLS].values
+    cells = ds_labels.coords[Dims.CELLS].values
     num_cells = len(cells)
     label_dict = dict(zip(cells, ["CT1"] * num_cells))
 
@@ -88,4 +88,4 @@ def test_add_labels_existing_labels(dataset_labeled):
         AssertionError,
         match="Already found label properties in the object.",
     ):
-        dataset_labeled.la.add_labels(label_dict)
+        ds_labels.la.add_labels(label_dict)
