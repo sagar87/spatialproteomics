@@ -73,16 +73,8 @@ def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEG
         segmentation_key in sdata.labels
     ), f"Segmentation key {segmentation_key} not found in spatial data object. Available keys: {list(sdata.labels.keys())}"
 
-    # TODO: CHECK THE ANNDATA OBJECT HERE
-    # assert (
-    #    key_added not in sdata.labels.keys()
-    # ), f"Key {key_added} already exists in spatial data object. Please choose another key."
-
     # access the segmentation mask
     segmentation = sdata.labels[segmentation_key]
-
-    # TODO: this is too custom at the moment, needs to also be able to handle the cases from the spatialdata docs
-    # image = image['scale0']['image'].values
 
     # returning a numpy array
     return segmentation.values
