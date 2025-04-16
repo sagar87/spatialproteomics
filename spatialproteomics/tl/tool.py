@@ -336,6 +336,12 @@ class ToolAccessor:
             **kwargs,
         )
 
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
+
         # if no segmentation exists yet, and no key_added was specified, we make this one the default
         if key_added == Layers.SEGMENTATION:
             if return_diameters:
@@ -352,7 +358,7 @@ class ToolAccessor:
     def stardist(
         self,
         channel: Optional[str] = None,
-        key_added: Optional[str] = "_stardist_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         scale: float = 3,
         n_tiles: int = 12,
         normalize: bool = True,
@@ -403,6 +409,12 @@ class ToolAccessor:
             **kwargs,
         )
 
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
+
         # if no segmentation exists yet, and no key_added was specified, we make this one the default
         if key_added == Layers.SEGMENTATION:
             return self._obj.pp.add_segmentation(all_masks)
@@ -413,7 +425,7 @@ class ToolAccessor:
 
     def mesmer(
         self,
-        key_added: Optional[str] = "_mesmer_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         channel: Optional[List] = None,
         postprocess_func: Callable = lambda x: x,
         **kwargs,
@@ -447,6 +459,12 @@ class ToolAccessor:
         ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
         all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
+
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
 
         # if no segmentation exists yet, and no key_added was specified, we make this one the default
         if key_added == Layers.SEGMENTATION:

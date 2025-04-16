@@ -552,6 +552,10 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended xarray.
         """
+        assert (
+            Layers.SEGMENTATION not in self._obj
+        ), f'The key "{Layers.SEGMENTATION}" already exists in the object. If you want to make a new segmentation the default, drop the old one first using pp.drop_layers("{Layers.SEGMENTATION}").'
+
         # flag indicating if the segmentation mask is provided as a layer key or as a numpy array
         from_layer = None
         if isinstance(segmentation, str):

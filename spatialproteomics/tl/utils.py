@@ -26,10 +26,9 @@ def _get_channels(obj, key_added, channel):
 
 
 def _convert_masks_to_data_array(obj, all_masks, key_added):
-    # if there is one channel, we can squeeze the mask tensor
-    if all_masks.shape[0] == 1:
+    if len(all_masks.shape) == 2:
         da = xr.DataArray(
-            all_masks[0].squeeze(),
+            all_masks,
             coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
             dims=[Dims.Y, Dims.X],
             name=key_added,
@@ -37,7 +36,7 @@ def _convert_masks_to_data_array(obj, all_masks, key_added):
     # if we segment on all of the channels, we need to add the channel dimension
     else:
         da = xr.DataArray(
-            np.stack(all_masks, 0),
+            all_masks,
             coords=[
                 obj.coords[Dims.CHANNELS],
                 obj.coords[Dims.Y],
