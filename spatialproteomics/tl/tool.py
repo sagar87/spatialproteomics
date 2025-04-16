@@ -371,6 +371,10 @@ class ToolAccessor:
 
         Parameters
         ----------
+        channel : str, optional
+            Channel to use for segmentation. If None, all channels are used.
+        key_added : str, optional
+            Key to write the segmentation results to.
         scale : float, optional
             Scaling factor for the StarDist model (default is 3).
         n_tiles : int, optional
