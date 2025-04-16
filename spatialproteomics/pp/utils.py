@@ -89,7 +89,7 @@ def _relabel_cells(segmentation: np.ndarray) -> Tuple[np.ndarray, dict]:
     value_map = {value: i for i, value in enumerate(unique_values)}
 
     # map the original array to the new values using the mapping
-    segmentation_relabeled = np.vectorize(lambda x: value_map[x])(segmentation)
+    segmentation_relabeled = np.vectorize(lambda x: value_map[x], otypes=[segmentation.dtype.char])(segmentation)
 
     return segmentation_relabeled, value_map
 
