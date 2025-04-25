@@ -105,6 +105,7 @@ def predict_cell_types_argmax(
     ), f"The following markers were not found in quantification layer: {set(marker_dict.keys()) - set(expression_df.columns)}."
     celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
     adata.obs[label_key] = celltypes
+    adata.obs[label_key] = adata.obs[label_key].astype("category")
 
     if copy:
         return sdata
@@ -170,6 +171,7 @@ def predict_cell_subtypes(
     )
     # overwriting the celltype column
     adata.obs["celltype"] = subtype_df.iloc[:, -1].values
+    adata.obs["celltype"] = adata.obs["celltype"].astype("category")
 
     if copy:
         return sdata
