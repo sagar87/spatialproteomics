@@ -2759,7 +2759,7 @@ T:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s1">&#39;_la_layers&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_la_layers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2907,7 +2907,11 @@ T:
 <span class="c1"># showing the fine-grained labels, which are the defaults</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="c1"># going back a level (so that T_tox cells are not split into memory and naive)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s1">&#39;labels_1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_1&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
