@@ -410,22 +410,23 @@ def grow_cells(
     )
     set_transformation(sdata.labels[segmentation_key], transformation)
 
-    # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
-    # if anything other than the default obs were present, a warning is shown, as they will be removed
-    adata = _process_adata(sdata, table_key=table_key)
-    existing_features = list(adata.obs.columns)
+    if len(sdata.tables.keys()) != 0:
+        # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+        adata = _process_adata(sdata, table_key=table_key)
+        existing_features = list(adata.obs.columns)
 
-    # getting all of the obs features
-    if existing_features != [SDFeatures.ID, SDFeatures.REGION] and not suppress_warning:
-        logger.warning(
-            "Mask growing requires recalculation of the observations. All features will be removed and should be recalculated with pp.add_observations()."
-        )
+        # getting all of the obs features
+        if existing_features != [SDFeatures.ID, SDFeatures.REGION] and not suppress_warning:
+            logger.warning(
+                "Mask growing requires recalculation of the observations. All features will be removed and should be recalculated with pp.add_observations()."
+            )
 
-    # removing the old obs
-    cell_idx = adata.obs[SDFeatures.ID].values.copy()
-    adata.obs = pd.DataFrame(index=adata.obs_names)
-    adata.obs[SDFeatures.ID] = cell_idx
-    adata.obs[SDFeatures.REGION] = segmentation_key
+        # removing the old obs
+        cell_idx = adata.obs[SDFeatures.ID].values.copy()
+        adata.obs = pd.DataFrame(index=adata.obs_names)
+        adata.obs[SDFeatures.ID] = cell_idx
+        adata.obs[SDFeatures.REGION] = segmentation_key
 
     if copy:
         return sdata
