@@ -92,6 +92,8 @@ class SDLayers(object):
 
 class SDFeatures(object):
     LABELS = "celltype"
+    ID = "id"
+    REGION = "region"
 
 
 COLORS = [

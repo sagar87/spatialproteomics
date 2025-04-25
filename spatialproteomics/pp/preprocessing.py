@@ -9,9 +9,10 @@ import xarray as xr
 from anndata import AnnData
 from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
+from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props, SDLayers
+from ..constants import Dims, Features, Layers, Props, SDFeatures, SDLayers
 from ..sd.utils import _process_adata, _process_image, _process_segmentation
 from .utils import (
     _apply,
@@ -82,8 +83,8 @@ def add_quantification(
     else:
         # if there is no anndata object yet, we create one
         adata = AnnData(measurements.T)
-        adata.obs["id"] = cell_idx
-        adata.obs["region"] = segmentation_key
+        adata.obs[SDFeatures.ID] = cell_idx
+        adata.obs[SDFeatures.REGION] = segmentation_key
         adata.var_names = image.coords["c"].values
         # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
         adata.obs_names = [f"Cell_{x}" for x in cell_idx]
@@ -179,9 +180,14 @@ def apply(
     )
     processed_image = _apply(image.values, func, **kwargs)
     channels = image.coords["c"].values
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+    # add the image to the spatial data object
     sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
+    set_transformation(sdata.images[key_added], transformation)
 
     if copy:
         return sdata
@@ -225,9 +231,15 @@ def threshold(
         image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c", **kwargs
     )
     channels = sdata.images[image_key].coords["c"].values
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+
+    # add the image to the spatial data object
     sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
+    set_transformation(sdata.images[key_added], transformation)
 
     if copy:
         return sdata
@@ -272,6 +284,67 @@ def transform_expression_matrix(
         **kwargs,
     )
     adata.X = transformed_matrix
+
+    if copy:
+        return sdata
+
+
+def filter_by_obs(
+    sdata: spatialdata.SpatialData,
+    col: str,
+    func: Callable,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    copy: bool = False,
+):
+    """
+    Filter the object by observations based on a given feature and filtering function.
+
+    Parameters:
+        sdata (spatialdata.SpatialData): The spatialdata object to filter.
+        col (str): The name of the feature to filter by.
+        func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
+        segmentation_key (str): The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.
+        table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
+        copy (bool): If True, a copy of the object is returned. Default is False.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    segmentation = _process_segmentation(sdata, segmentation_key)
+    adata = _process_adata(sdata, table_key=table_key)
+    existing_features = adata.obs.columns
+
+    # checking if the feature exists in obs
+    assert col in existing_features, f"Feature {col} not found in obs. You can add it with pp.add_observations()."
+
+    # select the right column from the observations
+    cells = adata.obs[col].values.copy()
+    cells_bool = func(cells)
+    cells_sel = adata.obs.loc[cells_bool, SDFeatures.ID].values
+
+    # setting all cells that are not in cells to 0
+    segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
+    # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+    segmentation, relabel_dict = _relabel_cells(segmentation)
+
+    # removing the cells which are not in cells_sel
+    adata = adata[adata.obs[SDFeatures.ID].isin(cells_sel), :].copy()
+    # updating the cell coords of the object
+    adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
+    adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
+
+    # overwriting the segmentation mask in the object
+    # get transformations
+    transformation = get_transformation(sdata[segmentation_key])
+    # add the segmentation masks to the spatial data object
+    sdata.labels[segmentation_key] = spatialdata.models.Labels2DModel.parse(
+        segmentation, transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[segmentation_key], transformation)
+
+    # overwriting the anndata object in the object
+    sdata.tables[table_key] = adata
 
     if copy:
         return sdata
