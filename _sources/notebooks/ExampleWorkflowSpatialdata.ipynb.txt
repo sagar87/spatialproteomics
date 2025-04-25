@@ -134,8 +134,8 @@
     "image = sd.models.Image2DModel.parse(\n",
     "    image, transformations=None, dims=(\"c\", \"x\", \"y\"), c_coords=[\"DAPI\", \"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"]\n",
     ")\n",
-    "ds = sd.SpatialData(images={\"image\": image})\n",
-    "ds"
+    "sdata = sd.SpatialData(images={\"image\": image})\n",
+    "sdata"
    ]
   },
   {
@@ -192,7 +192,7 @@
    ],
    "source": [
     "# here, we use the spatialdata-plot library for visualization\n",
-    "ds.pl.render_images(palette=colors).pl.show()"
+    "sdata.pl.render_images(palette=colors).pl.show()"
    ]
   },
   {
@@ -221,7 +221,7 @@
     }
    ],
    "source": [
-    "ds.pl.render_images(channel=\"DAPI\").pl.show()"
+    "sdata.pl.render_images(channel=\"DAPI\").pl.show()"
    ]
   },
   {
@@ -250,7 +250,7 @@
     }
    ],
    "source": [
-    "ds.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"], palette=colors[:-1]).pl.show()"
+    "sdata.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"], palette=colors[:-1]).pl.show()"
    ]
   },
   {
@@ -291,8 +291,8 @@
     "\n",
     "# thresholding and smoothing the data\n",
     "# note that by default, this performs in-place operations, you can avoid this by setting copy=True in any of the methods\n",
-    "sp.pp.threshold(ds, quantile=percentiles)\n",
-    "sp.pp.apply(ds, medfilt2d, kernel_size=3)"
+    "sp.pp.threshold(sdata, quantile=percentiles)\n",
+    "sp.pp.apply(sdata, medfilt2d, kernel_size=3)"
    ]
   },
   {
@@ -324,8 +324,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=(10, 5))\n",
-    "ds.pl.render_images(channel=\"DAPI\").pl.show(ax=ax[0])\n",
-    "ds.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"], palette=colors[:-1]).pl.show(ax=ax[1])"
+    "sdata.pl.render_images(channel=\"DAPI\").pl.show(ax=ax[0])\n",
+    "sdata.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"], palette=colors[:-1]).pl.show(ax=ax[1])"
    ]
   },
   {
@@ -356,25 +356,13 @@
       ">>>> model diam_mean =  30.000 (ROIs rescaled to this size during training)\n",
       "channels set to [0, 0]\n",
       "~~~ ESTIMATING CELL DIAMETER(S) ~~~\n",
-      "estimated cell diameter(s) in 11.88 sec\n",
+      "estimated cell diameter(s) in 12.67 sec\n",
       ">>> diameter(s) = \n",
       "[ 10.22 ]\n",
       "~~~ FINDING MASKS ~~~\n",
-      ">>>> TOTAL TIME 28.22 sec\n"
+      ">>>> TOTAL TIME 31.20 sec\n"
      ]
-    }
-   ],
-   "source": [
-    "sp.tl.cellpose(ds, channel=\"DAPI\")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 11,
-   "metadata": {
-    "tags": []
-   },
-   "outputs": [
+    },
     {
      "data": {
       "text/plain": [
@@ -388,13 +376,14 @@
        "        image (Images), segmentation (Labels)"
       ]
      },
-     "execution_count": 11,
+     "execution_count": 10,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "ds"
+    "sp.tl.cellpose(sdata, channel=\"DAPI\")\n",
+    "sdata"
    ]
   },
   {
@@ -423,14 +412,14 @@
     }
    ],
    "source": [
-    "ds_zoomed = ds.query.bounding_box(\n",
+    "sdata_zoomed = sdata.query.bounding_box(\n",
     "    axes=[\"x\", \"y\"],\n",
     "    min_coordinate=[300, 400],\n",
     "    max_coordinate=[400, 500],\n",
     "    target_coordinate_system=\"global\",\n",
     ")\n",
     "\n",
-    "ds_zoomed.pl.render_images(channel=[\"DAPI\"]).pl.render_labels().pl.show()"
+    "sdata_zoomed.pl.render_images(channel=[\"DAPI\"]).pl.render_labels().pl.show()"
    ]
   },
   {
@@ -471,9 +460,9 @@
     }
    ],
    "source": [
-    "sp.pp.add_quantification(ds, func=\"intensity_mean\")\n",
-    "sp.pp.transform_expression_matrix(ds, method=\"arcsinh\")\n",
-    "ds"
+    "sp.pp.add_quantification(sdata, func=\"intensity_mean\")\n",
+    "sp.pp.transform_expression_matrix(sdata, method=\"arcsinh\")\n",
+    "sdata"
    ]
   },
   {
@@ -504,7 +493,7 @@
     }
    ],
    "source": [
-    "ds.tables[\"table\"]"
+    "sdata.tables[\"table\"]"
    ]
   },
   {
@@ -515,7 +504,7 @@
    },
    "outputs": [],
    "source": [
-    "sp.pp.add_observations(ds, \"area\")"
+    "sp.pp.add_observations(sdata, \"area\")"
    ]
   },
   {
@@ -602,7 +591,7 @@
    ],
    "source": [
     "# checking the obs slot in our anndata object\n",
-    "ds.tables[\"table\"].obs.head()"
+    "sdata.tables[\"table\"].obs.head()"
    ]
   },
   {
@@ -625,7 +614,7 @@
    ],
    "source": [
     "# filtering out cells with less than 20 or more than 150 pixels\n",
-    "sp.pp.filter_by_obs(ds, \"area\", func=lambda x: (x > 20) & (x < 150))"
+    "sp.pp.filter_by_obs(sdata, \"area\", func=lambda x: (x > 20) & (x < 150))"
    ]
   },
   {
@@ -654,8 +643,10 @@
     }
    ],
    "source": [
-    "print(len(np.unique(ds.labels[\"segmentation\"].values)) - 1)  # -1 because the background (0) is also counted otherwise\n",
-    "print(ds.tables[\"table\"])"
+    "print(\n",
+    "    len(np.unique(sdata.labels[\"segmentation\"].values)) - 1\n",
+    ")  # -1 because the background (0) is also counted otherwise\n",
+    "print(sdata.tables[\"table\"])"
    ]
   },
   {
@@ -682,7 +673,7 @@
     }
    ],
    "source": [
-    "ds.tables[\"table\"].obs[\"area\"].values.mean()"
+    "sdata.tables[\"table\"].obs[\"area\"].values.mean()"
    ]
   },
   {
@@ -702,9 +693,9 @@
    ],
    "source": [
     "# expanding the masks\n",
-    "sp.pp.grow_cells(ds, iterations=2)\n",
+    "sp.pp.grow_cells(sdata, iterations=2)\n",
     "# adding the area back into the object\n",
-    "sp.pp.add_observations(ds, \"area\")"
+    "sp.pp.add_observations(sdata, \"area\")"
    ]
   },
   {
@@ -726,7 +717,7 @@
     }
    ],
    "source": [
-    "ds.tables[\"table\"].obs[\"area\"].values.mean()"
+    "sdata.tables[\"table\"].obs[\"area\"].values.mean()"
    ]
   },
   {
@@ -756,7 +747,7 @@
    ],
    "source": [
     "# plotting the resulting segmentation masks\n",
-    "ds_zoomed = ds.query.bounding_box(\n",
+    "sdata_zoomed = sdata.query.bounding_box(\n",
     "    axes=[\"x\", \"y\"],\n",
     "    min_coordinate=[300, 400],\n",
     "    max_coordinate=[400, 500],\n",
@@ -764,8 +755,8 @@
     ")\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=(10, 5))\n",
-    "ds_zoomed.pl.render_images(channel=[\"DAPI\"]).pl.render_labels().pl.show(ax=ax[0])\n",
-    "ds_zoomed.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"]).pl.render_labels().pl.show(ax=ax[1])"
+    "sdata_zoomed.pl.render_images(channel=[\"DAPI\"]).pl.render_labels().pl.show(ax=ax[0])\n",
+    "sdata_zoomed.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"]).pl.render_labels().pl.show(ax=ax[1])"
    ]
   },
   {
@@ -786,7 +777,7 @@
    "source": [
     "# this dictionary maps from cell types to markers\n",
     "marker_dict = {\"CD4\": \"T_h\", \"CD8\": \"T_tox\", \"FOXP3\": \"T_reg\", \"BCL6\": \"T_fh\"}\n",
-    "sp.la.predict_cell_types_argmax(ds, marker_dict)"
+    "sp.la.predict_cell_types_argmax(sdata, marker_dict)"
    ]
   },
   {
@@ -879,7 +870,7 @@
    ],
    "source": [
     "# checking what the \"obs\" in the anndata object look like\n",
-    "ds.tables[\"table\"].obs.head()"
+    "sdata.tables[\"table\"].obs.head()"
    ]
   },
   {
@@ -899,7 +890,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 27,
+   "execution_count": 25,
    "metadata": {
     "tags": []
    },
@@ -926,8 +917,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=(10, 5))\n",
-    "ds.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"]).pl.show(ax=ax[0])\n",
-    "ds.pl.render_labels(color=\"celltype\").pl.show(ax=ax[1])"
+    "sdata.pl.render_images(channel=[\"CD4\", \"CD8\", \"FOXP3\", \"BCL6\"]).pl.show(ax=ax[0])\n",
+    "sdata.pl.render_labels(color=\"celltype\").pl.show(ax=ax[1])"
    ]
   },
   {

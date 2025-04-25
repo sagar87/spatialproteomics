@@ -633,8 +633,8 @@ spatialdata-plot</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Image2DModel</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
     <span class="n">image</span><span class="p">,</span> <span class="n">transformations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="n">c_coords</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">]</span>
 <span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">SpatialData</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="n">image</span><span class="p">})</span>
-<span class="n">ds</span>
+<span class="n">sdata</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">SpatialData</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="n">image</span><span class="p">})</span>
+<span class="n">sdata</span>
 </pre></div>
 </div>
 </div>
@@ -679,7 +679,7 @@ with coordinate systems:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># here, we use the spatialdata-plot library for visualization</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -703,7 +703,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -719,7 +719,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -740,8 +740,8 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 
 <span class="c1"># thresholding and smoothing the data</span>
 <span class="c1"># note that by default, this performs in-place operations, you can avoid this by setting copy=True in any of the methods</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">quantile</span><span class="o">=</span><span class="n">percentiles</span><span class="p">)</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">medfilt2d</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">quantile</span><span class="o">=</span><span class="n">percentiles</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">medfilt2d</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -771,8 +771,8 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -791,11 +791,12 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span>
+<span class="n">sdata</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
@@ -808,23 +809,15 @@ Neither TORCH CUDA nor MPS version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 11.88 sec
+estimated cell diameter(s) in 12.67 sec
 &gt;&gt;&gt; diameter(s) =
 [ 10.22 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 28.22 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 31.20 sec
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span>
-</pre></div>
-</div>
-</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -844,14 +837,14 @@ with coordinate systems:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_zoomed</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata_zoomed</span> <span class="o">=</span> <span class="n">sdata</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
     <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
     <span class="n">min_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span>
     <span class="n">max_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
     <span class="n">target_coordinate_system</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">sdata_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -859,7 +852,7 @@ with coordinate systems:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_22_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_22_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_21_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_21_0.png" />
 </div>
 </div>
 </section>
@@ -871,9 +864,9 @@ with coordinate systems:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;intensity_mean&quot;</span><span class="p">)</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;arcsinh&quot;</span><span class="p">)</span>
-<span class="n">ds</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;intensity_mean&quot;</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;arcsinh&quot;</span><span class="p">)</span>
+<span class="n">sdata</span>
 </pre></div>
 </div>
 </div>
@@ -900,7 +893,7 @@ with coordinate systems:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -919,7 +912,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -928,7 +921,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># checking the obs slot in our anndata object</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1000,7 +993,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># filtering out cells with less than 20 or more than 150 pixels</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_obs</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">150</span><span class="p">))</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_obs</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">150</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1020,8 +1013,10 @@ AnnData object with n_obs × n_vars = 1335 × 5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;segmentation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># -1 because the background (0) is also counted otherwise</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sdata</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;segmentation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">)</span>  <span class="c1"># -1 because the background (0) is also counted otherwise</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1041,7 +1036,7 @@ AnnData object with n_obs × n_vars = 1329 × 5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1059,9 +1054,9 @@ AnnData object with n_obs × n_vars = 1329 × 5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># expanding the masks</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># adding the area back into the object</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1077,7 +1072,7 @@ Mask growing requires recalculation of the observations. All features will be re
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1096,7 +1091,7 @@ Mask growing requires recalculation of the observations. All features will be re
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the resulting segmentation masks</span>
-<span class="n">ds_zoomed</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
+<span class="n">sdata_zoomed</span> <span class="o">=</span> <span class="n">sdata</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
     <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
     <span class="n">min_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span>
     <span class="n">max_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
@@ -1104,8 +1099,8 @@ Mask growing requires recalculation of the observations. All features will be re
 <span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">sdata_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sdata_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1113,7 +1108,7 @@ Mask growing requires recalculation of the observations. All features will be re
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_37_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_37_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_36_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_36_0.png" />
 </div>
 </div>
 </section>
@@ -1126,7 +1121,7 @@ Mask growing requires recalculation of the observations. All features will be re
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this dictionary maps from cell types to markers</span>
 <span class="n">marker_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CD4&quot;</span><span class="p">:</span> <span class="s2">&quot;T_h&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">:</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">:</span> <span class="s2">&quot;T_reg&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">:</span> <span class="s2">&quot;T_fh&quot;</span><span class="p">}</span>
-<span class="n">sp</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">marker_dict</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">marker_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1135,7 +1130,7 @@ Mask growing requires recalculation of the observations. All features will be re
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># checking what the &quot;obs&quot; in the anndata object look like</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1214,12 +1209,12 @@ Mask growing requires recalculation of the observations. All features will be re
 <h2>6. Plotting<a class="headerlink" href="#6.-Plotting" title="Link to this heading">¶</a></h2>
 <p>Finally, let’s do some plotting of the predicted cell types.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;celltype&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sdata</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;celltype&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1237,7 +1232,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_43_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_43_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_42_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_42_1.png" />
 </div>
 </div>
 <p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! If you have any additional questions, check out the other notebooks for details.</p>
