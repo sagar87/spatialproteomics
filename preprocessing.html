@@ -547,6 +547,24 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.filter_by_obs">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     filter_by_obs()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.grow_cells">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     grow_cells()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.threshold">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -969,13 +987,12 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells">
-<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_disconnected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ignore'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.grow_cells" title="Link to this definition">¶</a></dt>
 <dd><p>Grows the segmentation masks by expanding the labels in the object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>iterations</strong> (<em>int</em>) – The number of iterations to grow the segmentation masks. Default is 2.</p></li>
-<li><p><strong>handle_disconnected</strong> (<em>str</em>) – The mode to handle disconnected segmentation masks. Options are “ignore”, “remove”, or “fill”. Default is “ignore”.</p></li>
 <li><p><strong>suppress_warning</strong> (<em>bool</em>) – Whether to suppress the warning about recalculating the observations. Used internally, default is False.</p></li>
 </ul>
 </dd>
@@ -1046,7 +1063,6 @@ You can either just merge a multi-dimensional array, or merge to an existing 1D 
 <li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em><em>)</em>) – Optional. The labels corresponding to each segmentation mask in the array.
 If provided, the number of labels must match the number of arrays.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em><em>)</em>) – Optional. The threshold value for merging cells. Default is 1.0.</p></li>
-<li><p><strong>handle_disconnected</strong> (<em>str</em>) – Optional. The method to handle disconnected cells. Default is “relabel”.</p></li>
 <li><p><strong>key_base_segmentation</strong> (<em>str</em>) – Optional. The key of the base segmentation mask in the xarray object to merge to.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em>)</p></li>
 <li><p><strong>&quot;_segmentation&quot;.</strong> (<em>Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is</em>)</p></li>
@@ -1261,6 +1277,50 @@ The function can be any callable function that takes an image as input and retur
 <li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create a copy of the spatialdata object. Defaults to False.</p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the function.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.filter_by_obs">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">filter_by_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.filter_by_obs" title="Link to this definition">¶</a></dt>
+<dd><p>Filter the object by observations based on a given feature and filtering function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object to filter.</p></li>
+<li><p><strong>col</strong> (<em>str</em>) – The name of the feature to filter by.</p></li>
+<li><p><strong>func</strong> (<em>Callable</em>) – A filtering function that takes in the values of the feature and returns a boolean array.</p></li>
+<li><p><strong>segmentation_key</strong> (<em>str</em>) – The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.</p></li>
+<li><p><strong>table_key</strong> (<em>str</em>) – The key of the table in the object. Default is SDLayers.TABLE.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em>) – If True, a copy of the object is returned. Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.grow_cells">
+<span class="sig-prename descclassname"><span class="pre">spatialproteomics.pp.preprocessing.</span></span><span class="sig-name descname"><span class="pre">grow_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpatialData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'table'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.grow_cells" title="Link to this definition">¶</a></dt>
+<dd><p>Grows the segmentation masks by expanding the labels in the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdata</strong> (<em>spatialdata.SpatialData</em>) – The spatialdata object containing the segmentation masks.</p></li>
+<li><p><strong>iterations</strong> (<em>int</em>) – The number of iterations to grow the segmentation masks. Default is 2.</p></li>
+<li><p><strong>segmentation_key</strong> (<em>str</em>) – The key of the segmentation mask in the object. Default is segmentation.</p></li>
+<li><p><strong>suppress_warning</strong> (<em>bool</em>) – Whether to suppress the warning about recalculating the observations. Used internally, default is False.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em>) – If True, a copy of the object is returned. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the object does not contain a segmentation mask.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The object with the grown segmentation masks and updated observations.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.Dataset</p>
 </dd>
 </dl>
 </dd></dl>
