@@ -89,6 +89,15 @@ def add_quantification(
         # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
         adata.obs_names = [f"Cell_{x}" for x in cell_idx]
 
+        # adding uns
+        adata.uns = {
+            "spatialdata_attrs": {
+                "region": SDLayers.SEGMENTATION,
+                "region_key": SDFeatures.REGION,
+                "instance_key": SDFeatures.ID,
+            }
+        }
+
         # putting the anndata object into the spatialdata object
         sdata.tables[key_added] = adata
 
@@ -345,6 +354,78 @@ def filter_by_obs(
 
     # overwriting the anndata object in the object
     sdata.tables[table_key] = adata
+
+    if copy:
+        return sdata
+
+
+def grow_cells(
+    sdata: spatialdata.SpatialData,
+    iterations: int = 2,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    suppress_warning: bool = False,
+    copy: bool = False,
+) -> xr.Dataset:
+    """
+    Grows the segmentation masks by expanding the labels in the object.
+
+    Parameters
+    ----------
+    sdata : spatialdata.SpatialData
+        The spatialdata object containing the segmentation masks.
+    iterations : int
+        The number of iterations to grow the segmentation masks. Default is 2.
+    segmentation_key : str
+        The key of the segmentation mask in the object. Default is segmentation.
+    suppress_warning :bool
+        Whether to suppress the warning about recalculating the observations. Used internally, default is False.
+    copy : bool
+        If True, a copy of the object is returned. Default is False.
+
+    Raises
+    ------
+    ValueError
+        If the object does not contain a segmentation mask.
+
+    Returns
+    -------
+    xr.Dataset
+        The object with the grown segmentation masks and updated observations.
+    """
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    segmentation = _process_segmentation(sdata, segmentation_key)
+
+    # growing segmentation masks
+    masks_grown = expand_labels(segmentation, iterations)
+
+    # overwriting the segmentation mask in the object
+    # get transformations
+    transformation = get_transformation(sdata[segmentation_key])
+    # add the segmentation masks to the spatial data object
+    sdata.labels[segmentation_key] = spatialdata.models.Labels2DModel.parse(
+        masks_grown, transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[segmentation_key], transformation)
+
+    # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+    # if anything other than the default obs were present, a warning is shown, as they will be removed
+    adata = _process_adata(sdata, table_key=table_key)
+    existing_features = list(adata.obs.columns)
+
+    # getting all of the obs features
+    if existing_features != [SDFeatures.ID, SDFeatures.REGION] and not suppress_warning:
+        logger.warning(
+            "Mask growing requires recalculation of the observations. All features will be removed and should be recalculated with pp.add_observations()."
+        )
+
+    # removing the old obs
+    cell_idx = adata.obs[SDFeatures.ID].values.copy()
+    adata.obs = pd.DataFrame(index=adata.obs_names)
+    adata.obs[SDFeatures.ID] = cell_idx
+    adata.obs[SDFeatures.REGION] = segmentation_key
 
     if copy:
         return sdata
@@ -647,8 +728,6 @@ class PreprocessingAccessor:
             y_dim == self._obj.sizes[Dims.Y]
         ), "The shape of segmentation mask does not match that of the image."
 
-        # checking if there are any disconnected cells in the input
-        # handle_disconnected_cells(segmentation, mode=handle_disconnected)
         segmentation = segmentation.copy()
 
         if reindex:
@@ -1496,9 +1575,7 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(
-        self, iterations: int = 2, handle_disconnected: str = "ignore", suppress_warning: bool = False
-    ) -> xr.Dataset:
+    def grow_cells(self, iterations: int = 2, suppress_warning: bool = False) -> xr.Dataset:
         """
         Grows the segmentation masks by expanding the labels in the object.
 
@@ -1506,8 +1583,6 @@ class PreprocessingAccessor:
         ----------
         iterations : int
             The number of iterations to grow the segmentation masks. Default is 2.
-        handle_disconnected : str
-            The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
         suppress_warning :bool
             Whether to suppress the warning about recalculating the observations. Used internally, default is False.
 
@@ -1530,9 +1605,6 @@ class PreprocessingAccessor:
 
         # growing segmentation masks
         masks_grown = expand_labels(segmentation, iterations)
-
-        # checking if there are any disconnected segmentation masks
-        # handle_disconnected_cells(masks_grown, mode=handle_disconnected)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
@@ -1585,8 +1657,6 @@ class PreprocessingAccessor:
             If provided, the number of labels must match the number of arrays.
         threshold : float)
             Optional. The threshold value for merging cells. Default is 1.0.
-        handle_disconnected : str
-            Optional. The method to handle disconnected cells. Default is "relabel".
         key_base_segmentation : str
             Optional. The key of the base segmentation mask in the xarray object to merge to.
         key_added : str
