@@ -1296,7 +1296,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "There are two issues with the current masks. One is that sometimes very small cells get segmented, which are likely artifacts. We can hence filter cells that are too small or too big. In addition, we will grow the masks by two pixels in each direction to try to capture cytosole and membrane."
+    "There are two issues with the current masks. One is that sometimes very small cells get segmented, which are likely artifacts. We can hence filter cells that are too small or too big. In addition, we will grow the masks by two pixels in each direction to try to capture cytoplasm and membrane."
    ]
   },
   {

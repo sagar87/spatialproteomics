@@ -565,13 +565,17 @@ div.rendered_html tbody tr:hover {
 <section id="Example-Workflow-with-spatialproteomics-and-spatialdata">
 <h1>Example Workflow with spatialproteomics and spatialdata<a class="headerlink" href="#Example-Workflow-with-spatialproteomics-and-spatialdata" title="Link to this heading">¶</a></h1>
 <p>Welcome to spatialproteomics, the toolbox to analyze highly multiplexed fluorescence image data!</p>
-<p>During processing, you will generate different data structures, which all share some common dimensions. For example, the multiplexed imaging data (channels, x, y) share spatial dimensions with their corresponding segmentation masks (x, y). Similarly, the instance labels in a segmentation mask can be viewed as a dimension that aligns with the expression matrix (cells, channels) quantifying protein expression for each cell. Therefore, a desirable data structure for multiplexed imaging data should
-keep such shared dimensions consistent, ensuring that changes to one component automatically update the others to maintain consistency. For example, when subsetting a region of an image, the segmentation mask should be subset accordingly, and the expression matrix should only retain cells within this region.</p>
-<p>To enable all of this, the core functionality in <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> is based on <code class="docutils literal notranslate"><span class="pre">xarray</span></code>. However, the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format has recently emerged as a popular alternative, promising standardized storage solution and hence better interoperability with other tools in the field.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> integrates with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> in two ways.</p>
-<p>If you want to use the full functionality of <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>, it is recommended that you use the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> backend first (which is used in all tutorials but this one), and then export to <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> using <code class="docutils literal notranslate"><span class="pre">tl.convert_to_spatialdata()</span></code>.</p>
-<p>Alternatively, <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> also offers the possibility to work with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> objects directly. The syntax for this closely resembles the one commonly used in <code class="docutils literal notranslate"><span class="pre">squidpy</span></code> and other tools which are part of the <code class="docutils literal notranslate"><span class="pre">scverse</span></code> ecosystem.</p>
-<p>In this notebook, we will go through an example workflow by looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatialdata object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>cellpose</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results</p>
+<p>During the processing of such data, you will generate different data structures, which all share some common dimensions. For example, the multiplexed imaging data (channels, x, y) share spatial dimensions with their corresponding segmentation masks (x, y). Similarly, the instance labels in a segmentation mask can be viewed as a dimension that aligns with the expression matrix (cells, channels) quantifying protein expression for each cell. Therefore, a desirable data structure for multiplexed
+imaging data should keep such shared dimensions consistent, ensuring that changes to one component automatically update the others to maintain consistency. For example, when subsetting a region of an image, the segmentation mask should be subset accordingly, and the expression matrix should only retain cells within this region.</p>
+<p>To enable all of this, the core functionality in <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> is based on <code class="docutils literal notranslate"><span class="pre">xarray</span></code>. The image below illustrates these concepts.</p>
+<div style="text-align: center;"><p><img alt="The spatialproteomics data structure enables synchronized subsetting across shared dimensions." src="../_images/supplementary_figure_1.png" /></p>
+</div><p>Recently, the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format has emerged as a popular alternative, promising standardized storage solution and hence better interoperability with other tools in the field. <code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> integrates with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> in two ways:</p>
+<ol class="arabic simple">
+<li><p>If you want to use the full functionality of <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>, it is recommended that you use the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> backend first (which is used in all tutorials but this one), and then export to <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> using <code class="docutils literal notranslate"><span class="pre">tl.convert_to_spatialdata()</span></code>.</p></li>
+<li><p>Alternatively, <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> also offers the possibility to work with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> objects directly. The syntax for this closely resembles the one commonly used in <code class="docutils literal notranslate"><span class="pre">squidpy</span></code> and other tools which are part of the <code class="docutils literal notranslate"><span class="pre">scverse</span></code> ecosystem.</p></li>
+</ol>
+<p>In this notebook, we will go through an example workflow that is fully based on this <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code>-based backend. We will be looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatialdata object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>cellpose</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results with
+spatialdata-plot</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -660,26 +664,9 @@ with coordinate systems:
 <section id="2.-Image-Processing">
 <h2>2. Image Processing<a class="headerlink" href="#2.-Image-Processing" title="Link to this heading">¶</a></h2>
 <p>Highly multiplexed fluorescence imaging techniques frequently suffer from poor signal-to-noise ratio. To alleviate this problem, you can threshold out low intensity pixels, thereby boosting the contrast of the image. While there are automated methods to determine the thresholds for such operations, it is difficult to come up with one that works in all cases. Here, we therefore set the thresholds based on manual inspection. For more details, check the notebook on <code class="docutils literal notranslate"><span class="pre">Image</span> <span class="pre">Processing</span></code>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-62289
-</pre></div></div>
-</div>
 <p>Let’s start by looking at the data set in the current form.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting the same colors as in the other notebook for consistency</span>
@@ -688,7 +675,7 @@ with coordinate systems:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># here, we use the spatialdata-plot library for visualization</span>
@@ -708,12 +695,12 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_10_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_10_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_9_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_9_1.png" />
 </div>
 </div>
 <p>This is a bit much to look at. First, we want to check only the DAPI channel, to get a feel for the signal-to-noise ratio.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -724,12 +711,12 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_12_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_12_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_11_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_11_0.png" />
 </div>
 </div>
 <p>This looks promising. What about the other channels?</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -740,12 +727,12 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_14_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_14_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_13_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_13_0.png" />
 </div>
 </div>
 <p>Looking good, but we can make the signal a bit clearer by performing some image processing. In the following codeblock, we first threshold the channels by some percentile (so every value below that percentile gets set to 0). We then apply a 2D median filter with a kernel size of 3 to apply some smoothing.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># the percentiles by which the channels will be thresholded</span>
@@ -777,9 +764,10 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
   self._check_key(key, self.keys(), self._shared_keys)
 </pre></div></div>
 </div>
-<p>Let’s plot the new object.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> warned us that the key <code class="docutils literal notranslate"><span class="pre">image</span></code> already exists and will be overwritten in memory. This is because by default, the operations on the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> object are performed in-place to conserve memory. If you do not wish to perform operations in-place, you can simply set <code class="docutils literal notranslate"><span class="pre">copy=True</span></code> in any of the methods. This will keep the original object unaltered, and return a new, modified object instead.</p>
+<p>Now that we got that out of the way, let’s plot the new object.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -792,7 +780,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_18_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_18_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_17_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_17_0.png" />
 </div>
 </div>
 </section>
@@ -800,7 +788,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 <h2>3. Cell Segmentation<a class="headerlink" href="#3.-Cell-Segmentation" title="Link to this heading">¶</a></h2>
 <p>Great, this is our preprocessing done. Next, we can perform cell segmentation. Since we only have a universal nuclear marker at hand (and no universal membrane marker), we will segment the nuclei and then simply extend the segmentation masks by two pixels in every direction. We are going to use <em>cellpose</em> for this purpose, which is implemented in the tool (tl) module. Note that this requires you to install cellpose first, for example by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cellpose</span></code> in your terminal.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DAPI&quot;</span><span class="p">)</span>
@@ -820,15 +808,15 @@ Neither TORCH CUDA nor MPS version not installed/working.
 &gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
 channels set to [0, 0]
 ~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 11.75 sec
+estimated cell diameter(s) in 11.88 sec
 &gt;&gt;&gt; diameter(s) =
 [ 10.22 ]
 ~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 26.80 sec
+&gt;&gt;&gt;&gt; TOTAL TIME 28.22 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span>
@@ -836,7 +824,7 @@ estimated cell diameter(s) in 11.75 sec
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -851,10 +839,9 @@ with coordinate systems:
         image (Images), segmentation (Labels)
 </pre></div></div>
 </div>
-<p>Looking at the object, you will realize that a new layer called <code class="docutils literal notranslate"><span class="pre">segmentation</span></code> has appeared. We can plot this over the original image with <code class="docutils literal notranslate"><span class="pre">spatialdata-plot</span></code>.</p>
-<p>We can plot this segmentation over the DAPI channel to see what exactly <em>cellpose</em> did. We can zoom in a little bit to get a clearer picture.</p>
+<p>Looking at the object, you will realize that a new layer called <code class="docutils literal notranslate"><span class="pre">segmentation</span></code> has appeared. We can plot this over the original image with <code class="docutils literal notranslate"><span class="pre">spatialdata-plot</span></code>. Let’s also zoom in a little bit to get a clearer picture.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_zoomed</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
@@ -872,16 +859,16 @@ with coordinate systems:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_24_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_24_0.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_22_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_22_0.png" />
 </div>
 </div>
 </section>
 <section id="4.-Quantifying-Protein-Expression-per-Cell">
 <h2>4. Quantifying Protein Expression per Cell<a class="headerlink" href="#4.-Quantifying-Protein-Expression-per-Cell" title="Link to this heading">¶</a></h2>
-<p>There are two issues with the current masks. One is that sometimes very small cells get segmented, which are likely artifacts. We can hence filter cells that are too small or too big. In addition, we will grow the masks by two pixels in each direction to try to capture cytosole and membrane.</p>
+<p>There are a couple of issues which can arise from segmentation. One is that sometimes very small cells get segmented, which are likely artifacts. We can hence filter cells that are too small or too big. In addition, we will grow the masks by two pixels in each direction to try to capture cytoplasm and membrane.</p>
 <p>With the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend, it is important that we first quantify the protein expression in each cell. There are multiple ways to do this, but taking the median intensity and then applying an arcsinh-transform has been proven to work pretty well.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;intensity_mean&quot;</span><span class="p">)</span>
@@ -891,7 +878,7 @@ with coordinate systems:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -908,9 +895,9 @@ with coordinate systems:
         image (Images), segmentation (Labels)
 </pre></div></div>
 </div>
-<p>As you can see, this introduced a new layer called <code class="docutils literal notranslate"><span class="pre">table</span></code>. This is an <code class="docutils literal notranslate"><span class="pre">anndata</span></code> object that contains the quantification of each protein for each cell. We can now use this to predict cell types.</p>
+<p>As you can see, this introduced a new layer called <code class="docutils literal notranslate"><span class="pre">table</span></code>. This is an <code class="docutils literal notranslate"><span class="pre">anndata</span></code> object that contains the quantification of each protein for each cell.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
@@ -918,7 +905,7 @@ with coordinate systems:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -929,7 +916,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
@@ -937,7 +924,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># checking the obs slot in our anndata object</span>
@@ -946,7 +933,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1009,49 +996,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_31_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_31_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp</span>
-<span class="c1"># plotting the resulting segmentation masks</span>
-<span class="n">ds_zoomed</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
-    <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
-    <span class="n">min_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span>
-    <span class="n">max_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
-    <span class="n">target_coordinate_system</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_32_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_32_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># filtering out cells with less than 20 or more than 150 pixels</span>
@@ -1072,7 +1017,7 @@ AnnData object with n_obs × n_vars = 1335 × 5
 </div>
 <p>After the filtering, you can see that there are less cells both in the segmentation mask as well as in the anndata object.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;segmentation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># -1 because the background (0) is also counted otherwise</span>
@@ -1091,8 +1036,9 @@ AnnData object with n_obs × n_vars = 1329 × 5
     uns: &#39;spatialdata_attrs&#39;
 </pre></div></div>
 </div>
+<p>Let’s also note down the average cell area before and after growing the masks.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -1100,7 +1046,7 @@ AnnData object with n_obs × n_vars = 1329 × 5
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1109,11 +1055,10 @@ AnnData object with n_obs × n_vars = 1329 × 5
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># TODO: this still needs to be implemented</span>
-<span class="c1"># expanding the masks</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># expanding the masks</span>
 <span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># adding the area back into the object</span>
 <span class="n">sp</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">)</span>
@@ -1129,41 +1074,7 @@ Mask growing requires recalculation of the observations. All features will be re
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp</span>
-<span class="c1"># plotting the resulting segmentation masks</span>
-<span class="n">ds_zoomed</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">(</span>
-    <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
-    <span class="n">min_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span>
-    <span class="n">max_coordinate</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
-    <span class="n">target_coordinate_system</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ds_zoomed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..1.1140638216070742].
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_38_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_38_1.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -1171,7 +1082,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1179,135 +1090,9 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 101.38525206922498
 </pre></div></div>
 </div>
+<p>The average area has indeed increased. Let’s also check what the new segmentation masks look like on top of DAPI or our other markers.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-AnnData object with n_obs × n_vars = 1329 × 5
-    obs: &#39;id&#39;, &#39;region&#39;, &#39;area&#39;
-    uns: &#39;spatialdata_attrs&#39;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">obs</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id</th>
-      <th>region</th>
-      <th>area</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Cell_1</th>
-      <td>1</td>
-      <td>segmentation</td>
-      <td>101.0</td>
-    </tr>
-    <tr>
-      <th>Cell_2</th>
-      <td>2</td>
-      <td>segmentation</td>
-      <td>48.0</td>
-    </tr>
-    <tr>
-      <th>Cell_3</th>
-      <td>3</td>
-      <td>segmentation</td>
-      <td>99.0</td>
-    </tr>
-    <tr>
-      <th>Cell_4</th>
-      <td>4</td>
-      <td>segmentation</td>
-      <td>108.0</td>
-    </tr>
-    <tr>
-      <th>Cell_5</th>
-      <td>5</td>
-      <td>segmentation</td>
-      <td>42.0</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>Cell_1325</th>
-      <td>1325</td>
-      <td>segmentation</td>
-      <td>63.0</td>
-    </tr>
-    <tr>
-      <th>Cell_1326</th>
-      <td>1326</td>
-      <td>segmentation</td>
-      <td>66.0</td>
-    </tr>
-    <tr>
-      <th>Cell_1327</th>
-      <td>1327</td>
-      <td>segmentation</td>
-      <td>54.0</td>
-    </tr>
-    <tr>
-      <th>Cell_1328</th>
-      <td>1328</td>
-      <td>segmentation</td>
-      <td>76.0</td>
-    </tr>
-    <tr>
-      <th>Cell_1329</th>
-      <td>1329</td>
-      <td>segmentation</td>
-      <td>44.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>1329 rows × 3 columns</p>
-</div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the resulting segmentation masks</span>
@@ -1324,27 +1109,19 @@ AnnData object with n_obs × n_vars = 1329 × 5
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..1.1140638216070742].
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_42_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_42_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_37_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_37_0.png" />
 </div>
 </div>
 </section>
 <section id="5.-Cell-Type-Prediction">
 <h2>5. Cell Type Prediction<a class="headerlink" href="#5.-Cell-Type-Prediction" title="Link to this heading">¶</a></h2>
-<p>There are several ways to predict cell types. Since we thresholded our data beforehand, we can simply take the argmax of the cell type specific channels to get an idea of the cell types we are looking at. Methods related to cell type prediction are all implemented in the label (la) module.</p>
+<p>Finally, we can move on to cell type prediction. There are several ways to predict cell types. Since we thresholded our data beforehand, we can simply take the argmax of the cell type specific channels to get an idea of the cell types we are looking at. Methods related to cell type prediction are all implemented in the label (la) module.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this dictionary maps from cell types to markers</span>
@@ -1354,7 +1131,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># checking what the &quot;obs&quot; in the anndata object look like</span>
@@ -1363,7 +1140,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1431,151 +1208,36 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </table>
 </div></div>
 </div>
+<p>As you can see, this added a column called <code class="docutils literal notranslate"><span class="pre">celltype</span></code> to our <code class="docutils literal notranslate"><span class="pre">anndata.obs</span></code>.</p>
 </section>
 <section id="6.-Plotting">
 <h2>6. Plotting<a class="headerlink" href="#6.-Plotting" title="Link to this heading">¶</a></h2>
 <p>Finally, let’s do some plotting of the predicted cell types.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># TODO: this does not work as it should right now</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;celltype&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_images</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">,</span> <span class="s2">&quot;FOXP3&quot;</span><span class="p">,</span> <span class="s2">&quot;BCL6&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;celltype&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/pandas/core/indexes/base.py:3805</span>, in <span class="ansi-cyan-fg">Index.get_loc</span><span class="ansi-blue-fg">(self, key)</span>
-<span class="ansi-green-intense-fg ansi-bold">   3804</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">-&gt; 3805</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_engine</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_loc</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">casted_key</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   3806</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> err:
-
-File <span class="ansi-green-fg">index.pyx:167</span>, in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
-
-File <span class="ansi-green-fg">index.pyx:196</span>, in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
-
-File <span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi:2606</span>, in <span class="ansi-cyan-fg">pandas._libs.hashtable.Int64HashTable.get_item</span><span class="ansi-blue-fg">()</span>
-
-File <span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi:2630</span>, in <span class="ansi-cyan-fg">pandas._libs.hashtable.Int64HashTable.get_item</span><span class="ansi-blue-fg">()</span>
-
-<span class="ansi-red-fg">KeyError</span>: 0
-
-The above exception was the direct cause of the following exception:
-
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[31], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># TODO: this does not work as it should right now</span>
-<span class="ansi-green-fg">----&gt; 2</span> <span class="ansi-yellow-bg">ds</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">render_labels</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">color</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">celltype</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">pl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">show</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/spatialdata_plot/pl/basic.py:985</span>, in <span class="ansi-cyan-fg">PlotAccessor.show</span><span class="ansi-blue-fg">(self, coordinate_systems, legend_fontsize, legend_fontweight, legend_loc, legend_fontoutline, na_in_legend, colorbar, wspace, hspace, ncols, frameon, figsize, dpi, fig, title, share_extent, pad_extent, ax, return_ax, save)</span>
-<span class="ansi-green-intense-fg ansi-bold">    973</span>                 _maybe_set_colors(
-<span class="ansi-green-intense-fg ansi-bold">    974</span>                     source<span style="color: rgb(98,98,98)">=</span>sdata[table],
-<span class="ansi-green-intense-fg ansi-bold">    975</span>                     target<span style="color: rgb(98,98,98)">=</span>sdata[table],
-<span class="ansi-green-intense-fg ansi-bold">    976</span>                     key<span style="color: rgb(98,98,98)">=</span>params_copy<span style="color: rgb(98,98,98)">.</span>color,
-<span class="ansi-green-intense-fg ansi-bold">    977</span>                     palette<span style="color: rgb(98,98,98)">=</span>params_copy<span style="color: rgb(98,98,98)">.</span>palette,
-<span class="ansi-green-intense-fg ansi-bold">    978</span>                 )
-<span class="ansi-green-intense-fg ansi-bold">    980</span>         rasterize <span style="color: rgb(98,98,98)">=</span> (params_copy<span style="color: rgb(98,98,98)">.</span>scale <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>) <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> (
-<span class="ansi-green-intense-fg ansi-bold">    981</span>             <span style="color: rgb(0,135,0)">isinstance</span>(params_copy<span style="color: rgb(98,98,98)">.</span>scale, <span style="color: rgb(0,135,0)">str</span>)
-<span class="ansi-green-intense-fg ansi-bold">    982</span>             <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> params_copy<span style="color: rgb(98,98,98)">.</span>scale <span style="color: rgb(98,98,98)">!=</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">full</span><span style="color: rgb(175,0,0)">&#34;</span>
-<span class="ansi-green-intense-fg ansi-bold">    983</span>             <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> (dpi <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> figsize <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>)
-<span class="ansi-green-intense-fg ansi-bold">    984</span>         )
-<span class="ansi-green-fg">--&gt; 985</span>         <span class="ansi-yellow-bg">_render_labels</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">    986</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">sdata</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">sdata</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    987</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">render_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">params_copy</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    988</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">coordinate_system</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">cs</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    989</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">ax</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">ax</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    990</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">fig_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">fig_params</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    991</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">scalebar_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">scalebar_params</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    992</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">legend_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">legend_params</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    993</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">rasterize</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">rasterize</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    994</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    996</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> title <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-intense-fg ansi-bold">    997</span>     t <span style="color: rgb(98,98,98)">=</span> cs
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/spatialdata_plot/pl/render.py:984</span>, in <span class="ansi-cyan-fg">_render_labels</span><span class="ansi-blue-fg">(sdata, render_params, coordinate_system, ax, fig_params, scalebar_params, legend_params, rasterize)</span>
-<span class="ansi-green-intense-fg ansi-bold">    977</span> <span style="color: rgb(95,135,135)"># default case: no contour, just fill</span>
-<span class="ansi-green-intense-fg ansi-bold">    978</span> <span style="color: rgb(95,135,135)"># since contour_px is passed to skimage.morphology.erosion to create the contour,</span>
-<span class="ansi-green-intense-fg ansi-bold">    979</span> <span style="color: rgb(95,135,135)"># any border thickness is only within the label, not outside. Therefore, the case</span>
-<span class="ansi-green-intense-fg ansi-bold">    980</span> <span style="color: rgb(95,135,135)"># of fill_alpha == outline_alpha is equivalent to fill-only</span>
-<span class="ansi-green-intense-fg ansi-bold">    981</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> (render_params<span style="color: rgb(98,98,98)">.</span>fill_alpha <span style="color: rgb(98,98,98)">&gt;</span> <span style="color: rgb(98,98,98)">0.0</span> <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> render_params<span style="color: rgb(98,98,98)">.</span>outline_alpha <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(98,98,98)">0.0</span>) <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> (
-<span class="ansi-green-intense-fg ansi-bold">    982</span>     render_params<span style="color: rgb(98,98,98)">.</span>fill_alpha <span style="color: rgb(98,98,98)">==</span> render_params<span style="color: rgb(98,98,98)">.</span>outline_alpha
-<span class="ansi-green-intense-fg ansi-bold">    983</span> ):
-<span class="ansi-green-fg">--&gt; 984</span>     cax <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">_draw_labels</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">seg_erosionpx</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">seg_boundaries</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">alpha</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">render_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">fill_alpha</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    985</span>     alpha_to_decorate_ax <span style="color: rgb(98,98,98)">=</span> render_params<span style="color: rgb(98,98,98)">.</span>fill_alpha
-<span class="ansi-green-intense-fg ansi-bold">    987</span> <span style="color: rgb(95,135,135)"># outline-only case</span>
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/spatialdata_plot/pl/render.py:952</span>, in <span class="ansi-cyan-fg">_render_labels.&lt;locals&gt;._draw_labels</span><span class="ansi-blue-fg">(seg_erosionpx, seg_boundaries, alpha)</span>
-<span class="ansi-green-intense-fg ansi-bold">    951</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">_draw_labels</span>(seg_erosionpx: <span style="color: rgb(0,135,0)">int</span> <span style="color: rgb(98,98,98)">|</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, seg_boundaries: <span style="color: rgb(0,135,0)">bool</span>, alpha: <span style="color: rgb(0,135,0)">float</span>) <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">&gt;</span> matplotlib<span style="color: rgb(98,98,98)">.</span>image<span style="color: rgb(98,98,98)">.</span>AxesImage:
-<span class="ansi-green-fg">--&gt; 952</span>     labels <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">_map_color_seg</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">    953</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">seg</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">label</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">values</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    954</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">cell_id</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">instance_id</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    955</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">color_vector</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">color_vector</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    956</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">color_source_vector</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">color_source_vector</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    957</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">cmap_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">render_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">cmap_params</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    958</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">seg_erosionpx</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">seg_erosionpx</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    959</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">seg_boundaries</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">seg_boundaries</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    960</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">na_color</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">render_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">cmap_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">na_color</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    961</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">na_color_modified_by_user</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">render_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">cmap_params</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">na_color_modified_by_user</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    962</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    964</span>     _cax <span style="color: rgb(98,98,98)">=</span> ax<span style="color: rgb(98,98,98)">.</span>imshow(
-<span class="ansi-green-intense-fg ansi-bold">    965</span>         labels,
-<span class="ansi-green-intense-fg ansi-bold">    966</span>         rasterized<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">    971</span>         zorder<span style="color: rgb(98,98,98)">=</span>render_params<span style="color: rgb(98,98,98)">.</span>zorder,
-<span class="ansi-green-intense-fg ansi-bold">    972</span>     )
-<span class="ansi-green-intense-fg ansi-bold">    973</span>     _cax<span style="color: rgb(98,98,98)">.</span>set_transform(trans_data)
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/spatialdata_plot/pl/utils.py:819</span>, in <span class="ansi-cyan-fg">_map_color_seg</span><span class="ansi-blue-fg">(seg, cell_id, color_vector, color_source_vector, cmap_params, na_color, na_color_modified_by_user, seg_erosionpx, seg_boundaries)</span>
-<span class="ansi-green-intense-fg ansi-bold">    816</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
-<span class="ansi-green-intense-fg ansi-bold">    817</span>     <span style="color: rgb(95,135,135)"># Case D: User didn&#39;t specify a column to color by, but modified the na_color</span>
-<span class="ansi-green-intense-fg ansi-bold">    818</span>     val_im <span style="color: rgb(98,98,98)">=</span> map_array(seg<span style="color: rgb(98,98,98)">.</span>copy(), cell_id, cell_id)
-<span class="ansi-green-fg">--&gt; 819</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">#</span><span style="color: rgb(175,0,0)">&#34;</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">str</span>(<span class="ansi-yellow-bg">color_vector</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">0</span><span class="ansi-yellow-bg">]</span>):
-<span class="ansi-green-intense-fg ansi-bold">    820</span>         <span style="color: rgb(95,135,135)"># we have hex colors</span>
-<span class="ansi-green-intense-fg ansi-bold">    821</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">all</span>(_is_color_like(c) <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> c <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> color_vector), <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Not all values are color-like.</span><span style="color: rgb(175,0,0)">&#34;</span>
-<span class="ansi-green-intense-fg ansi-bold">    822</span>         cols <span style="color: rgb(98,98,98)">=</span> colors<span style="color: rgb(98,98,98)">.</span>to_rgba_array(color_vector)
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/pandas/core/series.py:1121</span>, in <span class="ansi-cyan-fg">Series.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1118</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_values[key]
-<span class="ansi-green-intense-fg ansi-bold">   1120</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> key_is_scalar:
-<span class="ansi-green-fg">-&gt; 1121</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_get_value</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1123</span> <span style="color: rgb(95,135,135)"># Convert generator to list before going through hashable part</span>
-<span class="ansi-green-intense-fg ansi-bold">   1124</span> <span style="color: rgb(95,135,135)"># (We will iterate through the generator there to check for slices)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1125</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> is_iterator(key):
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/pandas/core/series.py:1237</span>, in <span class="ansi-cyan-fg">Series._get_value</span><span class="ansi-blue-fg">(self, label, takeable)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1234</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_values[label]
-<span class="ansi-green-intense-fg ansi-bold">   1236</span> <span style="color: rgb(95,135,135)"># Similar to Index.get_value, but we do not fall back to positional</span>
-<span class="ansi-green-fg">-&gt; 1237</span> loc <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get_loc</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">label</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1239</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> is_integer(loc):
-<span class="ansi-green-intense-fg ansi-bold">   1240</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_values[loc]
-
-File <span class="ansi-green-fg">~/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/pandas/core/indexes/base.py:3812</span>, in <span class="ansi-cyan-fg">Index.get_loc</span><span class="ansi-blue-fg">(self, key)</span>
-<span class="ansi-green-intense-fg ansi-bold">   3807</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(casted_key, <span style="color: rgb(0,135,0)">slice</span>) <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> (
-<span class="ansi-green-intense-fg ansi-bold">   3808</span>         <span style="color: rgb(0,135,0)">isinstance</span>(casted_key, abc<span style="color: rgb(98,98,98)">.</span>Iterable)
-<span class="ansi-green-intense-fg ansi-bold">   3809</span>         <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> <span style="color: rgb(0,135,0)">any</span>(<span style="color: rgb(0,135,0)">isinstance</span>(x, <span style="color: rgb(0,135,0)">slice</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> x <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> casted_key)
-<span class="ansi-green-intense-fg ansi-bold">   3810</span>     ):
-<span class="ansi-green-intense-fg ansi-bold">   3811</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> InvalidIndexError(key)
-<span class="ansi-green-fg">-&gt; 3812</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(key) <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">err</span>
-<span class="ansi-green-intense-fg ansi-bold">   3813</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>:
-<span class="ansi-green-intense-fg ansi-bold">   3814</span>     <span style="color: rgb(95,135,135)"># If we have a listlike key, _check_indexing_error will raise</span>
-<span class="ansi-green-intense-fg ansi-bold">   3815</span>     <span style="color: rgb(95,135,135)">#  InvalidIndexError. Otherwise we fall through and re-raise</span>
-<span class="ansi-green-intense-fg ansi-bold">   3816</span>     <span style="color: rgb(95,135,135)">#  the TypeError.</span>
-<span class="ansi-green-intense-fg ansi-bold">   3817</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_check_indexing_error(key)
-
-<span class="ansi-red-fg">KeyError</span>: 0
+Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..1.0553018069973088].
+/home/meyerben/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/spatialdata_plot/pl/utils.py:771: FutureWarning: The default value of &#39;ignore&#39; for the `na_action` parameter in pandas.Categorical.map is deprecated and will be changed to &#39;None&#39; in a future version. Please set na_action to the desired value to avoid seeing this warning
+  color_vector = color_source_vector.map(color_mapping)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_47_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_47_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_43_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_43_1.png" />
 </div>
 </div>
 <p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! If you have any additional questions, check out the other notebooks for details.</p>
