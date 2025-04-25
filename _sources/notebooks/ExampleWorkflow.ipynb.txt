@@ -11,7 +11,11 @@
     "3. Performing cell segmentation using _cellpose_\n",
     "4. Quantifying protein expression per cell\n",
     "5. Predicting cell types with a simple argmax technique\n",
-    "6. Plotting the results"
+    "6. Plotting the results\n",
+    "\n",
+    "<div style=\"text-align: center;\">\n",
+    "    <img src=\"../_static/img/figure_1.png\" alt=\"Spatialproteomics orchestrates analysis workflows for highly multiplexed fluorescence images.\" style=\"width:50%;\"/>\n",
+    "</div>"
    ]
   },
   {
