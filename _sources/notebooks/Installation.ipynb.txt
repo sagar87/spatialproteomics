@@ -8,15 +8,30 @@
     "\n",
     "Install `spatialproteomics` with `pip install spatialproteomics`.\n",
     "\n",
-    "Note that we do not enforce the installation of external modules, so if you want to use tools such as `cellpose` or `astir`, you need to install them manually."
+    "## Extras\n",
+    "Some of the functionalities depend on external tools (e. g. `stardist`, `cellpose`,  `spatialdata`). Since having lots of external tools also leads to lots of dependencies, installing all of them into one environment is prone to cause dependency conflicts. \n",
+    "\n",
+    "Depending on your needs, you can choose which tools you want to install together with the `spatialproteomics` core like this:\n",
+    "```\n",
+    "pip install spatialproteomics[stardist]\n",
+    "pip install spatialproteomics[cellpose]\n",
+    "pip install spatialproteomics[spatialdata]\n",
+    "pip install spatialproteomics[all]\n",
+    "```\n",
+    "\n",
+    "The latter one will install all external packages automatically (apart from `deepcell`, the package behind `mesmer`, which strictly requires `python==3.10`. To reduce potential conflicts with other packages, this package needs to be installed by the user manually)."
    ]
   }
  ],
  "metadata": {
+  "kernelspec": {
+   "display_name": "",
+   "name": ""
+  },
   "language_info": {
    "name": "python"
   }
  },
  "nbformat": 4,
- "nbformat_minor": 2
+ "nbformat_minor": 4
 }

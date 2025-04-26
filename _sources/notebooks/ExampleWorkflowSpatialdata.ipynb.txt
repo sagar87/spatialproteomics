@@ -18,7 +18,7 @@
     "\n",
     "Recently, the `spatialdata` format has emerged as a popular alternative, promising standardized storage solution and hence better interoperability with other tools in the field. `Spatialproteomics` integrates with `spatialdata` in two ways:\n",
     "\n",
-    "1. If you want to use the full functionality of `spatialproteomics`, it is recommended that you use the `xarray` backend first (which is used in all tutorials but this one), and then export to `spatialdata` using `tl.convert_to_spatialdata()`. \n",
+    "1. If you want to use the full functionality of `spatialproteomics`, it is recommended that you use the `xarray` backend first (which is used in all tutorials but this one), and then export to `spatialdata` using `tl.convert_to_spatialdata()`. Refer to the FAQ for more information on this.\n",
     "2. Alternatively, `spatialproteomics` also offers the possibility to work with `spatialdata` objects directly. The syntax for this closely resembles the one commonly used in `squidpy` and other tools which are part of the `scverse` ecosystem.\n",
     "\n",
     "In this notebook, we will go through an example workflow that is fully based on this `spatialdata`-based backend. We will be looking at the following steps:\n",
@@ -27,7 +27,9 @@
     "3. Performing cell segmentation using _cellpose_\n",
     "4. Quantifying protein expression per cell\n",
     "5. Predicting cell types with a simple argmax technique\n",
-    "6. Plotting the results with spatialdata-plot"
+    "6. Plotting the results with spatialdata-plot\n",
+    "\n",
+    "**Important:** In order to run `spatialproteomics` with the `spatialdata` backend, it is important that `spatialdata` is installed. You can either do this manually, or install `spatialproteomics` with the additional backend by using `pip install spatialproteomics[spatialdata]`."
    ]
   },
   {

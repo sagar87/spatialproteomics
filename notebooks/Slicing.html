@@ -572,7 +572,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.core.options.set_options at 0x7f75c7593e80&gt;
+&lt;xarray.core.options.set_options at 0x7f823c14ea10&gt;
 </pre></div></div>
 </div>
 <p>One of the key features of <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> is the ability to slice our image data quickly and intuitively. We start by loading our <em>spatialproteomics</em> object.</p>
@@ -612,9 +612,9 @@ Coordinates:
   * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image          (channels, y, x) uint8 1 1 2 0 0 0 0 1 1 ... 1 1 0 0 0 0 1 0
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
-    _obs            (cells, features) float64 7.0 613.3 ... 2.249e+03 2.237e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(1, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(6280, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>We can also select multiple channels by simply passing a list to the <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor. As we will see later, this makes visualising image overlays easy.</p>
@@ -643,9 +643,9 @@ Coordinates:
   * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image          (channels, y, x) uint8 1 1 2 0 0 0 0 1 1 ... 1 1 2 1 1 1 2 1
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
-    _obs            (cells, features) float64 7.0 613.3 ... 2.249e+03 2.237e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(2, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(6280, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">.pp</span></code> accessor also understands <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates. When <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates are sliced, we get ridd of all cells that do not belong to the respective image slice.</p>
@@ -674,9 +674,9 @@ Coordinates:
   * x               (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
   * y               (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
 Data variables:
-    _image          (channels, y, x) uint8 5 4 5 4 5 4 5 4 4 ... 2 2 2 1 2 2 2 2
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
-    _obs            (cells, features) float64
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 101, 101), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(0, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Note that we can also pass <code class="docutils literal notranslate"><span class="pre">channels</span></code> and <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> coordinates at the same time.</p>
@@ -705,9 +705,9 @@ Coordinates:
   * x               (x) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
   * y               (y) int64 50 51 52 53 54 55 56 ... 145 146 147 148 149 150
 Data variables:
-    _image          (channels, y, x) uint8 0 0 0 0 0 0 1 1 0 ... 2 1 1 1 1 1 4 1
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C1&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
-    _obs            (cells, features) float64
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(2, 101, 101), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(0, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>
@@ -739,9 +739,9 @@ Coordinates:
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * cells           (cells) int64 3 11 49 71 80 ... 12504 12516 12554 12558
 Data variables:
-    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C2&#x27; &#x27;Lymphatic (PDPN)&#x27;
-    _obs            (cells, features) float64 4.0 774.5 ... 2.266e+03 2.232e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(1, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(1073, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <div class="nbinput docutils container">
@@ -769,9 +769,9 @@ Coordinates:
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * cells           (cells) int64 1 4 8 10 12 ... 12444 12469 12473 12505 12522
 Data variables:
-    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C0&#x27; &#x27;T (CD3)&#x27;
-    _obs            (cells, features) float64 7.0 613.3 ... 2.346e+03 1.865e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(1, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(5891, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Again it is possible to pass multiple cell labels.</p>
@@ -800,9 +800,9 @@ Coordinates:
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * cells           (cells) int64 2 3 5 6 9 11 ... 12539 12554 12555 12557 12558
 Data variables:
-    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _la_properties  (labels, la_props) &lt;U20 &#x27;C2&#x27; ... &#x27;Stroma (CD90)&#x27;
-    _obs            (cells, features) float64 5.0 769.1 ... 2.266e+03 2.232e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(3, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(3571, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 <p>Finally, we can select all cells except a cell type using <code class="docutils literal notranslate"><span class="pre">la.deselect</span></code>.</p>
@@ -831,9 +831,9 @@ Coordinates:
   * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
   * cells           (cells) int64 1 2 3 4 5 6 ... 10484 10485 10486 10487 10488
 Data variables:
-    _image          (channels, y, x) uint8 4 4 4 4 5 4 4 3 4 ... 2 2 2 2 2 2 2 2
-    _la_properties  (labels, la_props) &lt;U20 &#x27;#FFFF00&#x27; ... &#x27;Vascular (CD31+CD34)&#x27;
-    _obs            (cells, features) float64 7.0 613.3 ... 2.266e+03 2.232e+03
+    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(7, 2), meta=np.ndarray&gt;
+    _obs            (cells, features) float64 dask.array&lt;chunksize=(6280, 3), meta=np.ndarray&gt;
     _segmentation   (y, x) int64 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>
@@ -841,7 +841,7 @@ Data variables:
 <h2>Slicing Neighborhoods<a class="headerlink" href="#Slicing-Neighborhoods" title="Link to this heading">¶</a></h2>
 <p>We can also select by neighborhoods with the <code class="docutils literal notranslate"><span class="pre">nh</span></code> accessor. The syntax is identical to the one in the label subsetting.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/sample_1_with_neighborhoods.zarr&quot;</span><span class="p">)</span>
@@ -850,7 +850,7 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -870,15 +870,15 @@ Coordinates:
   * x                      (x) int64 0 1 2 3 4 5 ... 1995 1996 1997 1998 1999
   * y                      (y) int64 0 1 2 3 4 5 ... 1995 1996 1997 1998 1999
 Data variables:
-    _celltype_predictions  (cells, celltype_levels) &lt;U11 &#x27;T&#x27; &#x27;T&#x27; ... &#x27;T_tox&#x27;
-    _image                 (channels, y, x) uint8 1 1 1 0 1 1 0 ... 3 1 2 3 2 3
-    _la_properties         (labels, la_props) &lt;U11 &#x27;#e6194B&#x27; &#x27;B&#x27; ... &#x27;T&#x27;
-    _nh_properties         (neighborhoods, nh_props) &lt;U14 &#x27;lightgreen&#x27; ... &#x27;N...
-    _obs                   (cells, features) float64 1.0 1.0 0.0 ... 904.5 0.0
-    _segmentation          (y, x) int64 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0</pre></div>
+    _celltype_predictions  (cells, celltype_levels) &lt;U11 dask.array&lt;chunksize=(3451, 2), meta=np.ndarray&gt;
+    _image                 (channels, y, x) uint8 dask.array&lt;chunksize=(7, 500, 500), meta=np.ndarray&gt;
+    _la_properties         (labels, la_props) &lt;U11 dask.array&lt;chunksize=(9, 2), meta=np.ndarray&gt;
+    _nh_properties         (neighborhoods, nh_props) &lt;U14 dask.array&lt;chunksize=(4, 2), meta=np.ndarray&gt;
+    _obs                   (cells, features) float64 dask.array&lt;chunksize=(3451, 9), meta=np.ndarray&gt;
+    _segmentation          (y, x) int64 dask.array&lt;chunksize=(250, 500), meta=np.ndarray&gt;</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># subsetting only neighborhood 0</span>
@@ -887,7 +887,7 @@ Data variables:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -907,11 +907,11 @@ Coordinates:
   * y                      (y) int64 0 1 2 3 4 5 ... 1995 1996 1997 1998 1999
   * cells                  (cells) int64 1571 1858 1895 1912 ... 6204 6247 6293
 Data variables:
-    _celltype_predictions  (cells, celltype_levels) &lt;U11 &#x27;Dendritic&#x27; ... &#x27;T&#x27;
-    _image                 (channels, y, x) uint8 1 1 1 0 1 1 0 ... 3 1 2 3 2 3
-    _la_properties         (labels, la_props) &lt;U11 &#x27;#e6194B&#x27; &#x27;B&#x27; ... &#x27;T&#x27;
-    _nh_properties         (neighborhoods, nh_props) &lt;U14 &#x27;lightgreen&#x27; &#x27;Neigh...
-    _obs                   (cells, features) float64 0.0 1.0 0.0 ... 395.1 0.0
+    _celltype_predictions  (cells, celltype_levels) &lt;U11 dask.array&lt;chunksize=(709, 2), meta=np.ndarray&gt;
+    _image                 (channels, y, x) uint8 dask.array&lt;chunksize=(7, 500, 500), meta=np.ndarray&gt;
+    _la_properties         (labels, la_props) &lt;U11 dask.array&lt;chunksize=(9, 2), meta=np.ndarray&gt;
+    _nh_properties         (neighborhoods, nh_props) &lt;U14 dask.array&lt;chunksize=(1, 2), meta=np.ndarray&gt;
+    _obs                   (cells, features) float64 dask.array&lt;chunksize=(709, 9), meta=np.ndarray&gt;
     _segmentation          (y, x) int64 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0</pre></div>
 </div>
 </section>

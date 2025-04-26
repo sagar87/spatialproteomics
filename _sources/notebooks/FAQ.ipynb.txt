@@ -15,7 +15,7 @@
    "id": "2f8155a8-5e86-4c83-97a2-4425dcf0f621",
    "metadata": {},
    "source": [
-    "## Notes on Memory Usage\n",
+    "## How can I optimize my memory usage?\n",
     "\n",
     "Running out of memory is a common problem when dealing with large images. Here are a couple of things you could consider to make your workflow more memory efficient.\n",
     "\n",
@@ -33,16 +33,22 @@
     "for ds in [...]:\n",
     "    ds = ds.pp.your_workflow()\n",
     "    gc.collect()  # manually calling the garbage collector after each iteration\n",
-    "```"
+    "```\n",
+    "\n",
+    "## When do I apply method directly on the object, and when do use sp.method()?\n",
+    "\n",
+    "Spatialproteomics has two distinct backends: a `xarray` backend and a `spatialdata` backend. These follow slightly different philosophies.\n",
+    "\n",
+    "The `xarray` backend is based on a functional programming design. This means that you can use it to call methods directly on your object, allowing you to pipe data from one step to the next. For example, this could look like `my_data.pp.segment().la.predict_cell_types().pl.show()`. Internally, `spatialproteomics` takes care of synchronizing shared dimensions across your data.\n",
+    "\n",
+    "The `spatialdata` backend is for when you want to use `spatialdata` objects from the start. In this case, the syntax is slightly different, but more similar to syntax you might be used to from scverse packages (such as scanpy or squidpy). Here, your code would look like this:\n",
+    "```\n",
+    "import spatialproteomics as sp\n",
+    "sp.pp.segment(my_data)\n",
+    "sp.pp.predict_cell_types(my_data)\n",
+    "```\n",
+    "These operations modify your object in-place, unless you set `copy=True` in the method signature."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "bf1424c0-6d11-4ad0-98cf-324e7395cc0f",
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
