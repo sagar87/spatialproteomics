@@ -39,7 +39,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Subselecting Data" href="Slicing.html" />
+    <link rel="next" title="Example Workflow with spatialproteomics and spatialdata" href="ExampleWorkflowSpatialdata.html" />
     <link rel="prev" title="Installation" href="Installation.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -145,6 +145,11 @@
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Example Workflow with spatialproteomics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ExampleWorkflowSpatialdata.html">
+   Example Workflow with spatialproteomics and spatialdata
   </a>
  </li>
  <li class="toctree-l1">
@@ -566,9 +571,17 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Example-Workflow-with-spatialproteomics">
 <h1>Example Workflow with spatialproteomics<a class="headerlink" href="#Example-Workflow-with-spatialproteomics" title="Link to this heading">¶</a></h1>
-<p>Welcome to spatialproteomics! In this notebook, we will go through an example workflow by looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatialproteomics object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>cellpose</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results</p>
-<div style="text-align: center;"><p><img alt="Spatialproteomics orchestrates analysis workflows for highly multiplexed fluorescence images." src="../_images/figure_1.png" /></p>
-</div><div class="nbinput nblast docutils container">
+<p>Welcome to spatialproteomics! In this notebook, we will go through an example workflow by looking at the following steps:</p>
+<ol class="arabic simple">
+<li><p>Reading in a highly multiplexed image and creating a spatialproteomics object</p></li>
+<li><p>Performing basic image processing steps to boost the signal-to-noise ratio</p></li>
+<li><p>Performing cell segmentation using <em>cellpose</em></p></li>
+<li><p>Quantifying protein expression per cell</p></li>
+<li><p>Predicting cell types with a simple argmax technique</p></li>
+<li><p>Plotting the results</p></li>
+</ol>
+<p align="center" width="100%"><p><img alt="Spatialproteomics orchestrates analysis workflows for highly multiplexed fluorescence images." src="../_images/figure_1.png" /></p>
+</p><div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -2709,7 +2722,7 @@ Data variables:
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="Installation.html" title="previous page">Installation</a>
-    <a class='right-next' id="next-link" href="Slicing.html" title="next page">Subselecting Data</a>
+    <a class='right-next' id="next-link" href="ExampleWorkflowSpatialdata.html" title="next page">Example Workflow with spatialproteomics and spatialdata</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

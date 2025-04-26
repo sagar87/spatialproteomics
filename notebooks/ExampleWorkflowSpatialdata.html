@@ -39,6 +39,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Subselecting Data" href="Slicing.html" />
+    <link rel="prev" title="Example Workflow with spatialproteomics" href="ExampleWorkflow.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
   </head>
@@ -134,7 +136,7 @@
   Tutorials:
  </span>
 </p>
-<ul class="nav sidenav_l1">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="Installation.html">
    Installation
@@ -143,6 +145,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="ExampleWorkflow.html">
    Example Workflow with spatialproteomics
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Example Workflow with spatialproteomics and spatialdata
   </a>
  </li>
  <li class="toctree-l1">
@@ -568,14 +575,21 @@ div.rendered_html tbody tr:hover {
 <p>During the processing of such data, you will generate different data structures, which all share some common dimensions. For example, the multiplexed imaging data (channels, x, y) share spatial dimensions with their corresponding segmentation masks (x, y). Similarly, the instance labels in a segmentation mask can be viewed as a dimension that aligns with the expression matrix (cells, channels) quantifying protein expression for each cell. Therefore, a desirable data structure for multiplexed
 imaging data should keep such shared dimensions consistent, ensuring that changes to one component automatically update the others to maintain consistency. For example, when subsetting a region of an image, the segmentation mask should be subset accordingly, and the expression matrix should only retain cells within this region.</p>
 <p>To enable all of this, the core functionality in <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> is based on <code class="docutils literal notranslate"><span class="pre">xarray</span></code>. The image below illustrates these concepts.</p>
-<div style="text-align: center;"><p><img alt="The spatialproteomics data structure enables synchronized subsetting across shared dimensions." src="../_images/supplementary_figure_1.png" /></p>
-</div><p>Recently, the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format has emerged as a popular alternative, promising standardized storage solution and hence better interoperability with other tools in the field. <code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> integrates with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> in two ways:</p>
+<p align="center" width="100%"><p><img alt="The spatialproteomics data structure enables synchronized subsetting across shared dimensions." src="../_images/supplementary_figure_1.png" /></p>
+</p><p>Recently, the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> format has emerged as a popular alternative, promising standardized storage solution and hence better interoperability with other tools in the field. <code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> integrates with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> in two ways:</p>
 <ol class="arabic simple">
 <li><p>If you want to use the full functionality of <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>, it is recommended that you use the <code class="docutils literal notranslate"><span class="pre">xarray</span></code> backend first (which is used in all tutorials but this one), and then export to <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> using <code class="docutils literal notranslate"><span class="pre">tl.convert_to_spatialdata()</span></code>. Refer to the FAQ for more information on this.</p></li>
 <li><p>Alternatively, <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> also offers the possibility to work with <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> objects directly. The syntax for this closely resembles the one commonly used in <code class="docutils literal notranslate"><span class="pre">squidpy</span></code> and other tools which are part of the <code class="docutils literal notranslate"><span class="pre">scverse</span></code> ecosystem.</p></li>
 </ol>
-<p>In this notebook, we will go through an example workflow that is fully based on this <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code>-based backend. We will be looking at the following steps: 1. Reading in a highly multiplexed image and creating a spatialdata object 2. Performing basic image processing steps to boost the signal-to-noise ratio 3. Performing cell segmentation using <em>cellpose</em> 4. Quantifying protein expression per cell 5. Predicting cell types with a simple argmax technique 6. Plotting the results with
-spatialdata-plot</p>
+<p>In this notebook, we will go through an example workflow that is fully based on this <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code>-based backend. We will be looking at the following steps:</p>
+<ol class="arabic simple">
+<li><p>Reading in a highly multiplexed image and creating a spatialdata object</p></li>
+<li><p>Performing basic image processing steps to boost the signal-to-noise ratio</p></li>
+<li><p>Performing cell segmentation using <em>cellpose</em></p></li>
+<li><p>Quantifying protein expression per cell</p></li>
+<li><p>Predicting cell types with a simple argmax technique</p></li>
+<li><p>Plotting the results with spatialdata-plot</p></li>
+</ol>
 <p><strong>Important:</strong> In order to run <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend, it is important that <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> is installed. You can either do this manually, or install <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the additional backend by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">spatialproteomics[spatialdata]</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -1249,6 +1263,8 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
     
     <div class='prev-next-bottom'>
         
+    <a class='left-prev' id="prev-link" href="ExampleWorkflow.html" title="previous page">Example Workflow with spatialproteomics</a>
+    <a class='right-next' id="next-link" href="Slicing.html" title="next page">Subselecting Data</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
