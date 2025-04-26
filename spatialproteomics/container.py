@@ -4,12 +4,15 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from .base_logger import logger
 from .constants import Dims, Layers
 
 
 def load_image_data(
     image: np.ndarray,
     channel_coords: Union[str, List[str]],
+    x_coords: Union[None, np.ndarray] = None,
+    y_coords: Union[None, np.ndarray] = None,
     segmentation: Union[None, np.ndarray] = None,
     labels: Union[None, pd.DataFrame] = None,
     neighborhood: Union[None, pd.DataFrame] = None,
@@ -60,9 +63,14 @@ def load_image_data(
             neighborhood.shape[0] == labels.shape[0]
         ), f"Number of neighborhoods must match number of labels. Got {neighborhood.shape[0]} neighborhoods, but {labels.shape[0]} labels."
 
+    if x_coords is None:
+        x_coords = np.arange(x_dim)
+    if y_coords is None:
+        y_coords = np.arange(y_dim)
+
     im = xr.DataArray(
         image,
-        coords=[channel_coords, range(y_dim), range(x_dim)],
+        coords=[channel_coords, y_coords, x_coords],
         dims=[Dims.CHANNELS, Dims.Y, Dims.X],
         name=Layers.IMAGE,
     )
@@ -84,7 +92,9 @@ def load_image_data(
     return dataset
 
 
-def read_from_spatialdata(spatial_data_object, image_key: str = "image", segmentation_key: str = "segmentation"):
+def read_from_spatialdata(
+    spatial_data_object, image_key: str = "image", segmentation_key: str = "segmentation", table_key: str = "table"
+):
     """
     Read data from a spatialdata object into the spatialproteomics object.
 
@@ -97,6 +107,7 @@ def read_from_spatialdata(spatial_data_object, image_key: str = "image", segment
         spatialproteomics_object (xr.Dataset): The spatialproteomics object.
     """
     import spatialdata
+    from spatialdata.transformations import Affine, Translation, get_transformation
 
     if isinstance(spatial_data_object, str):
         spatial_data_object = spatialdata.read_zarr(spatial_data_object)
@@ -109,17 +120,49 @@ def read_from_spatialdata(spatial_data_object, image_key: str = "image", segment
     # coordinates
     markers = image.coords["c"].values
 
+    # we have to ensure that we get the right coordinates for x and y as well
+    # get transform
+    transform = get_transformation(spatial_data_object[image_key])
+
+    # default coords
+    y_coords = np.arange(image.shape[1])
+    x_coords = np.arange(image.shape[2])
+
+    # apply transform if exists
+    if isinstance(transform, Translation):
+        shift_y, shift_x = transform.translation
+        y_coords = y_coords + shift_y
+        x_coords = x_coords + shift_x
+
+    elif isinstance(transform, Affine):
+        matrix = transform.matrix
+
+        a, b, c = matrix[0, :]
+        d, e, f = matrix[1, :]
+
+        if not np.isclose(b, 0) or not np.isclose(d, 0):
+            logger.warning(
+                "Affine transformation has shear components, which are not supported in spatialproteomics. Resetting coordinates to start from 0."
+            )
+        else:
+            x_coords = a * x_coords + c
+            y_coords = e * y_coords + f
+    else:
+        logger.warning(f"Unsupported transform {transform}, resetting coordinates for the spatialproteomics object.")
+
     # create the spatialproteomics object
-    obj = load_image_data(image, channel_coords=markers)
+    obj = load_image_data(image, channel_coords=markers, x_coords=x_coords, y_coords=y_coords)
 
     # segmentation
     if segmentation_key in spatial_data_object.labels:
         segmentation = spatial_data_object.labels[segmentation_key]
-        obj = obj.pp.add_segmentation(segmentation)
+        # if there are obs in the spatialdata object, we just use those and do not recompute them
+        add_obs_from_sdata = len(spatial_data_object.tables.keys()) > 0
+        obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata)
 
         # obs (from anndata)
-        if spatial_data_object.table is not None:
-            obs = spatial_data_object.table.obs
+        if add_obs_from_sdata:
+            obs = spatial_data_object.tables[table_key].obs
             obj = obj.pp.add_obs_from_dataframe(obs)
 
     return obj

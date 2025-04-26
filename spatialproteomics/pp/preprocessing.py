@@ -696,6 +696,7 @@ class PreprocessingAccessor:
         segmentation: Union[str, np.ndarray] = None,
         reindex: bool = True,
         keep_labels: bool = True,
+        add_obs: bool = True,
     ) -> xr.Dataset:
         """
         Adds a segmentation mask field to the xarray dataset. This will be stored in the '_segmentation' layer.
@@ -712,6 +713,8 @@ class PreprocessingAccessor:
         keep_labels : bool
             When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
             If you want to keep those annotations, set this to True. Default is True.
+        add_obs : bool
+            If True, centroids are added to the xarray. Default is True.
 
         Returns
         --------
@@ -767,7 +770,10 @@ class PreprocessingAccessor:
                     labels = {reindex_dict[k]: v for k, v in labels.items()}
                 obj = obj.la.add_labels(labels)
 
-        return xr.merge([obj, da]).pp.add_observations()
+        obj = xr.merge([obj, da])
+        if add_obs:
+            return obj.pp.add_observations()
+        return obj
 
     def add_layer(
         self,

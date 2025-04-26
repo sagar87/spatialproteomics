@@ -2,7 +2,7 @@ import pytest
 import xarray as xr
 
 from spatialproteomics.constants import Layers
-from spatialproteomics.container import load_image_data
+from spatialproteomics.container import load_image_data, read_from_spatialdata
 
 
 def test_load_data_proper_five_channel_input(data_dic):
@@ -30,7 +30,7 @@ def test_load_data_proper_input_one_channel_input(data_dic):
     dataset = load_image_data(
         data_dic["image"][0],
         "DAPI",
-        data_dic["segmentation"],
+        segmentation=data_dic["segmentation"],
     )
 
     assert type(dataset) is xr.Dataset
@@ -52,5 +52,9 @@ def test_load_data_wrong_inputs_segmentation_mask_dim_error(data_dic):
         load_image_data(
             data_dic["image"],
             ["DAPI", "PAX5", "CD3", "CD4", "CD8"],
-            data_dic["segmentation"][:50, :50],
+            segmentation=data_dic["segmentation"][:50, :50],
         )
+
+
+def test_read_from_spatialdata(ds_neighborhoods_spatialdata):
+    sdata = read_from_spatialdata(ds_neighborhoods_spatialdata)
