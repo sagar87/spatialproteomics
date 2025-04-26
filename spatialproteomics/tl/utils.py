@@ -3,7 +3,6 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 import xarray as xr
-from spatialdata.transformations import Affine
 
 from ..base_logger import logger
 from ..constants import Dims
@@ -223,6 +222,8 @@ def _astir(
 
 
 def _compute_transformation(x_coords, y_coords):
+    from spatialdata.transformations import Affine
+
     # Compute resolution
     x_res = np.mean(np.diff(x_coords))
     y_res = np.mean(np.diff(y_coords))

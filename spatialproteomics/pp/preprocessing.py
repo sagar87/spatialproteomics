@@ -4,12 +4,9 @@ from typing import Callable, List, Optional, Union
 import numpy as np
 import pandas as pd
 import skimage
-import spatialdata
 import xarray as xr
-from anndata import AnnData
 from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
-from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props, SDFeatures, SDLayers
@@ -31,7 +28,7 @@ from .utils import (
 
 # === SPATIALDATA PREPROCESSING ===
 def add_quantification(
-    sdata: spatialdata.SpatialData,
+    sdata,
     func: Union[str, Callable] = "intensity_mean",
     key_added: str = SDLayers.TABLE,
     image_key: str = SDLayers.IMAGE,
@@ -58,6 +55,8 @@ def add_quantification(
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    from anndata import AnnData
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -106,7 +105,7 @@ def add_quantification(
 
 
 def add_observations(
-    sdata: spatialdata.SpatialData,
+    sdata,
     properties: Union[str, list, tuple] = ("label", "centroid"),
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
@@ -158,7 +157,7 @@ def add_observations(
 
 
 def apply(
-    sdata: spatialdata.SpatialData,
+    sdata,
     func: Callable,
     key_added: str = SDLayers.IMAGE,
     image_key: str = SDLayers.IMAGE,
@@ -181,6 +180,9 @@ def apply(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the function.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -203,7 +205,7 @@ def apply(
 
 
 def threshold(
-    sdata: spatialdata.SpatialData,
+    sdata,
     image_key: str = SDLayers.IMAGE,
     quantile: Union[float, list] = None,
     intensity: Union[int, list] = None,
@@ -231,6 +233,9 @@ def threshold(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the thresholding function.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -255,7 +260,7 @@ def threshold(
 
 
 def transform_expression_matrix(
-    sdata: spatialdata.SpatialData,
+    sdata,
     method: str = "arcsinh",
     table_key: str = SDLayers.TABLE,
     cofactor: float = 5.0,
@@ -299,7 +304,7 @@ def transform_expression_matrix(
 
 
 def filter_by_obs(
-    sdata: spatialdata.SpatialData,
+    sdata,
     col: str,
     func: Callable,
     segmentation_key: str = SDLayers.SEGMENTATION,
@@ -317,6 +322,9 @@ def filter_by_obs(
         table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
         copy (bool): If True, a copy of the object is returned. Default is False.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -360,7 +368,7 @@ def filter_by_obs(
 
 
 def grow_cells(
-    sdata: spatialdata.SpatialData,
+    sdata,
     iterations: int = 2,
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
@@ -393,6 +401,9 @@ def grow_cells(
     xr.Dataset
         The object with the grown segmentation masks and updated observations.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 

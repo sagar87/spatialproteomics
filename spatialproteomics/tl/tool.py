@@ -3,9 +3,7 @@ from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
-import spatialdata
 import xarray as xr
-from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props, SDLayers
@@ -23,7 +21,7 @@ from .utils import (
 
 # === SPATIALDATA ACCESSOR ===
 def cellpose(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -47,6 +45,9 @@ def cellpose(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -79,7 +80,7 @@ def cellpose(
 
 
 def stardist(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -103,6 +104,9 @@ def stardist(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -135,7 +139,7 @@ def stardist(
 
 
 def mesmer(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -159,6 +163,9 @@ def mesmer(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -188,7 +195,7 @@ def mesmer(
 
 
 def astir(
-    sdata: spatialdata.SpatialData,
+    sdata,
     marker_dict: dict,
     table_key=SDLayers.TABLE,
     threshold: float = 0,
@@ -664,6 +671,7 @@ class ToolAccessor:
             spatial_data_object (spatialdata.SpatialData): The converted spatialdata object.
         """
         import spatialdata
+        from spatialdata.transformations import set_transformation
 
         store_segmentation = False
         store_adata = False
