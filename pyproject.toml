@@ -20,7 +20,7 @@ zarr = "<3.0.0"
 numpy = ">2.0.0"
 opencv-python = "^4.11.0"
 pyyaml = "^6.0"
-spatialdata = {version = "^0.3.0", optional = true}
+spatialdata = {version = "^0.4.0", optional = true}
 Sphinx = {version = "^7.0.0", optional = true}
 sphinxcontrib-napoleon = {version = "0.7", optional = true}
 nbsphinx = {version = "0.8.9", optional = true}
@@ -29,9 +29,9 @@ sphinx-multiversion = {version = "^0.2.4", optional = true}
 IPython = {version = "^8.0.0", optional = true}
 cellpose = {version = "^3.1", optional = true}
 stardist = {version = "^0.9.1", optional = true}
+pytest = {version = "^7.1.2", optional = true}
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 black = {version = "^22.6.0", extras = ["jupyter"]}
 isort = "^5.10.1"
@@ -45,6 +45,7 @@ spatialdata = ["spatialdata"]
 cellpose = ["cellpose"]
 stardist = ["stardist"]
 anndata = ["anndata"]
+dev = ["pytest"]
 all = ["spatialdata", "cellpose", "stardist"]
 
 [build-system]
