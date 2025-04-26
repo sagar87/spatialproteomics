@@ -1639,7 +1639,7 @@ class PreprocessingAccessor:
         self,
         layer_key: str,
         key_added: str = "_merged_segmentation",
-        labels: Optional[Union[str, List[str]]] = None,
+        labels: Optional[List[str]] = None,
         threshold: float = 0.8,
     ):
         """
@@ -1649,19 +1649,14 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        array : np.ndarray
-            The array containing the segmentation masks to be merged. It can be 2D or 3D.
-        from_key : str
-            The key of the segmentation mask in the xarray object to be merged.
-        labels : Optional[Union[str, List[str]]])
-            Optional. The labels corresponding to each segmentation mask in the array.
-            If provided, the number of labels must match the number of arrays.
-        threshold : float)
-            Optional. The threshold value for merging cells. Default is 1.0.
-        key_base_segmentation : str
-            Optional. The key of the base segmentation mask in the xarray object to merge to.
+        layer_key : Union[str, List[str]]
+            The key(s) of the segmentation mask(s) to merge. Can be a single key (must be 3D) or a list of keys (each 2D).
         key_added : str
-        Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is "_segmentation".
+            The name of the new segmentation mask to be added to the xarray object. Default is "_merged_segmentation".
+        labels : Optional[List[str]]
+            Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
+        threshold : float
+            Optional. Threshold for merging cells. Default is 0.8.
 
         Returns
         -------
@@ -1670,10 +1665,8 @@ class PreprocessingAccessor:
 
         Raises
         ------
-            AssertionError: If no segmentation mask is found in the xarray object.
-            AssertionError: If the input array is not 2D or 3D.
-            AssertionError: If the input array is not of type int.
-            AssertionError: If the shape of the input array does not match the shape of the segmentation mask.
+            AssertionError
+                If specified keys are not found or other input inconsistencies exist.
 
         Notes
         -----
@@ -1682,38 +1675,97 @@ class PreprocessingAccessor:
             - The merging process starts with merging the biggest cells first, then the smaller ones.
             - Disconnected cells in the input are handled based on the specified method.
         """
+        # Make sure layer_key is a list internally
+        if isinstance(layer_key, str):
+            layer_keys = [layer_key]
+        else:
+            layer_keys = layer_key
 
-        # checking if the keys exist
-        assert layer_key in self._obj, f"The key {layer_key} does not exist in the object."
-        assert key_added not in self._obj, f"The key {key_added} already exists in the object."
+        # Check: All layer keys must exist in the object
+        for lk in layer_keys:
+            assert lk in self._obj, f"The key '{lk}' does not exist in the object."
+
+        # Check: The key_added must not already exist
+        assert key_added not in self._obj, f"The key '{key_added}' already exists in the object."
 
         # merge big cells first, then small cells
         channels = self._obj.coords[Dims.CHANNELS].values.tolist()
-        segmentation = self._obj.pp[channels[0]][layer_key].values
 
-        # iterating through the array to merge the segmentation masks
-        for i in range(1, len(channels)):
+        # checking that the number of labels matches the number of channels
+        if labels is not None:
+            if len(layer_keys) == 1:
+                assert len(labels) == len(
+                    channels
+                ), f"The number of labels ({len(labels)}) must match the number of channels ({len(channels)})."
+            else:
+                assert len(labels) == len(
+                    layer_keys
+                ), f"The number of labels ({len(labels)}) must match the number of layer keys ({len(layer_keys)})."
+
+        # Special check if only a single key is provided
+        if len(layer_keys) == 1:
+            first_array = self._obj[layer_keys[0]].values
+            if first_array.ndim != 3:
+                raise ValueError(
+                    f"The segmentation mask '{layer_keys[0]}' must be 3D (channels, y, x). "
+                    "If you have 2D arrays, provide multiple keys instead."
+                )
+            segmentation = first_array[0]  # Start with first channel
+        else:
+            # Check that all arrays are 2D
+            for lk in layer_keys:
+                arr = self._obj[lk].values
+                if arr.ndim != 2:
+                    raise ValueError(
+                        f"Segmentation mask '{lk}' must be 2D. " "All masks must be 2D when using a list of keys."
+                    )
+
+            segmentation = self._obj[layer_keys[0]].values
+
+        # Initialize an empty mapping
+        mapping = {}
+
+        if len(layer_keys) == 1:
+            # single 3D stack → one merge per extra channel
+            first_array = self._obj[layer_keys[0]].values
+            merge_range = range(1, first_array.shape[0])
+        else:
+            # multiple 2D masks → one merge per extra key
+            merge_range = range(1, len(layer_keys))
+
+        # Iterate over each “next” layer to merge in
+        for i in merge_range:
+            current_layer_key = layer_keys[i] if i < len(layer_keys) else layer_keys[-1]
+            if len(layer_keys) == 1:
+                # single 3D stack → pull channel i
+                next_segmentation = first_array[i]
+            else:
+                # multiple 2D masks → pull mask i
+                next_segmentation = self._obj[current_layer_key].values
+
             if labels is not None:
+                print(labels)
+                print(i)
                 label_1, label_2 = labels[i - 1], labels[i]
             else:
                 label_1, label_2 = channels[i - 1], channels[i]
 
+            # Perform merging
             segmentation, final_mapping = _merge_segmentation(
                 segmentation.squeeze(),
-                self._obj.pp[channels[i]][layer_key].values.squeeze(),
+                next_segmentation.squeeze(),
                 label1=label_1,
                 label2=label_2,
                 threshold=threshold,
             )
 
+            # Update label mapping
             if i == 1:
-                # in the first iteration, we simply take the mapping we get from _merge_segmentation
                 mapping = final_mapping
             else:
-                # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
                 mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
 
-        # if a segmentation mask already exists in the object, we merge to it
+        # Copy the object
         obj = self._obj.copy()
 
         # assigning the new segmentation to the object
