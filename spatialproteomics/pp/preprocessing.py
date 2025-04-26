@@ -1744,8 +1744,6 @@ class PreprocessingAccessor:
                 next_segmentation = self._obj[current_layer_key].values
 
             if labels is not None:
-                print(labels)
-                print(i)
                 label_1, label_2 = labels[i - 1], labels[i]
             else:
                 label_1, label_2 = channels[i - 1], channels[i]
