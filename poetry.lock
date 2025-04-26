@@ -5627,4 +5627,4 @@ stardist = ["stardist"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "e028a92ce1b887298aa35c217820c2045b04cf98d10d5d1df6de47fcddfd1ef1"
+content-hash = "bc2c0ac1a86227c73b7a1941105deb31e00cd45d491d8a405c35c7fe18d1238c"
