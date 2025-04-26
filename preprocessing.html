@@ -1051,21 +1051,17 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.merge_segmentation">
-<span class="sig-name descname"><span class="pre">merge_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_merged_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.merge_segmentation" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">merge_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_merged_segmentation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.merge_segmentation" title="Link to this definition">¶</a></dt>
 <dd><p>Merge segmentation masks.
 This can be done in two ways: either by merging a multi-dimensional array from the object directly, or by adding a numpy array.
 You can either just merge a multi-dimensional array, or merge to an existing 1D mask (e. g. a precomputed DAPI segmentation).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>np.ndarray</em>) – The array containing the segmentation masks to be merged. It can be 2D or 3D.</p></li>
-<li><p><strong>from_key</strong> (<em>str</em>) – The key of the segmentation mask in the xarray object to be merged.</p></li>
-<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em><em>)</em>) – Optional. The labels corresponding to each segmentation mask in the array.
-If provided, the number of labels must match the number of arrays.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em><em>)</em>) – Optional. The threshold value for merging cells. Default is 1.0.</p></li>
-<li><p><strong>key_base_segmentation</strong> (<em>str</em>) – Optional. The key of the base segmentation mask in the xarray object to merge to.</p></li>
-<li><p><strong>key_added</strong> (<em>str</em>)</p></li>
-<li><p><strong>&quot;_segmentation&quot;.</strong> (<em>Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is</em>)</p></li>
+<li><p><strong>layer_key</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – The key(s) of the segmentation mask(s) to merge. Can be a single key (must be 3D) or a list of keys (each 2D).</p></li>
+<li><p><strong>key_added</strong> (<em>str</em>) – The name of the new segmentation mask to be added to the xarray object. Default is “_merged_segmentation”.</p></li>
+<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Optional. Threshold for merging cells. Default is 0.8.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1075,12 +1071,7 @@ If provided, the number of labels must match the number of arrays.</p></li>
 <dd class="field-odd"><p>xr.Dataset</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>AssertionError</strong> – If no segmentation mask is found in the xarray object.:</p></li>
-<li><p><strong>AssertionError</strong> – If the input array is not 2D or 3D.:</p></li>
-<li><p><strong>AssertionError</strong> – If the input array is not of type int.:</p></li>
-<li><p><strong>AssertionError</strong> – If the shape of the input array does not match the shape of the segmentation mask.:</p></li>
-</ul>
+<dd class="field-even"><p><strong>AssertionError</strong> – If specified keys are not found or other input inconsistencies exist.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
