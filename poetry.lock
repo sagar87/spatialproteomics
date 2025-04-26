@@ -4628,13 +4628,13 @@ xarray-dataclasses = "*"
 
 [[package]]
 name = "spatialdata"
-version = "0.3.0"
+version = "0.4.0"
 description = "Spatial data format."
 optional = true
 python-versions = "<3.13,>=3.10"
 files = [
-    {file = "spatialdata-0.3.0-py3-none-any.whl", hash = "sha256:e060c4c93f1829771ee7a4b51c12722f658f607a2e446f981aaca54bd11a251e"},
-    {file = "spatialdata-0.3.0.tar.gz", hash = "sha256:9215dd5171ac9ac0eed01a265f43092c8bdb760f0b1e994795fa274c5c638611"},
+    {file = "spatialdata-0.4.0-py3-none-any.whl", hash = "sha256:f0a3f76efda57a221a775686a4d376093bfea560492697f40820eb3ec6d6ea89"},
+    {file = "spatialdata-0.4.0.tar.gz", hash = "sha256:6c7d1abf366fd5e61e9c9b489d04ad644a9609489588fa3436e59f4c96b67846"},
 ]
 
 [package.dependencies]
@@ -4646,7 +4646,7 @@ fsspec = "*"
 geopandas = ">=0.14"
 multiscale-spatial-image = ">=2.0.2"
 networkx = "*"
-numba = "*"
+numba = ">=0.55.0"
 numpy = "*"
 ome-zarr = ">=0.8.4"
 pandas = "*"
@@ -4660,6 +4660,7 @@ shapely = ">=2.0.1"
 spatial-image = ">=1.1.0"
 typing-extensions = ">=4.8.0"
 xarray = ">=2024.10.0"
+xarray-dataclasses = ">=1.8.0"
 xarray-schema = "*"
 xarray-spatial = ">=0.3.5"
 zarr = "<3"
@@ -5618,6 +5619,7 @@ type = ["pytest-mypy"]
 all = ["cellpose", "spatialdata", "stardist"]
 anndata = []
 cellpose = ["cellpose"]
+dev = ["pytest"]
 docs = ["IPython", "Sphinx", "nbsphinx", "sphinx-book-theme", "sphinx-multiversion", "sphinxcontrib-napoleon"]
 spatialdata = ["spatialdata"]
 stardist = ["stardist"]
@@ -5625,4 +5627,4 @@ stardist = ["stardist"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "91849e20c30c7b6121679066f6475446e4e41894d06c691c36f9c3c98d1d09a7"
+content-hash = "e028a92ce1b887298aa35c217820c2045b04cf98d10d5d1df6de47fcddfd1ef1"
