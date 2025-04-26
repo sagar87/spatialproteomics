@@ -16,6 +16,12 @@ def test_add_segmentation(ds_image, ds_segmentation):
     assert Layers.OBS in segmented
 
 
+def test_add_segmentation_already_exists(ds_segmentation):
+    segmentation = ds_segmentation[Layers.SEGMENTATION].values
+    with pytest.raises(AssertionError, match=f'The key "{Layers.SEGMENTATION}" already exists in the object'):
+        ds_segmentation.pp.add_segmentation(segmentation)
+
+
 def test_add_segmentation_from_layer(ds_image, ds_segmentation):
     segmentation = ds_segmentation[Layers.SEGMENTATION].values
     da = xr.DataArray(

@@ -3,19 +3,15 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 import xarray as xr
-from spatialdata.transformations import Affine
 
 from ..base_logger import logger
-from ..constants import Dims, Layers
+from ..constants import Dims
 from ..pp.utils import _normalize
 
 
 def _get_channels(obj, key_added, channel):
     if key_added in obj:
         raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
-
-    if key_added == Layers.SEGMENTATION:
-        raise KeyError(f'The key "{Layers.SEGMENTATION}" is reserved, use pp.add_segmentation if necessary.')
 
     if channel is not None:
         if isinstance(channel, list):
@@ -29,10 +25,9 @@ def _get_channels(obj, key_added, channel):
 
 
 def _convert_masks_to_data_array(obj, all_masks, key_added):
-    # if there is one channel, we can squeeze the mask tensor
-    if all_masks.shape[0] == 1:
+    if len(all_masks.shape) == 2:
         da = xr.DataArray(
-            all_masks[0].squeeze(),
+            all_masks,
             coords=[obj.coords[Dims.Y], obj.coords[Dims.X]],
             dims=[Dims.Y, Dims.X],
             name=key_added,
@@ -40,7 +35,7 @@ def _convert_masks_to_data_array(obj, all_masks, key_added):
     # if we segment on all of the channels, we need to add the channel dimension
     else:
         da = xr.DataArray(
-            np.stack(all_masks, 0),
+            all_masks,
             coords=[
                 obj.coords[Dims.CHANNELS],
                 obj.coords[Dims.Y],
@@ -227,6 +222,8 @@ def _astir(
 
 
 def _compute_transformation(x_coords, y_coords):
+    from spatialdata.transformations import Affine
+
     # Compute resolution
     x_res = np.mean(np.diff(x_coords))
     y_res = np.mean(np.diff(y_coords))

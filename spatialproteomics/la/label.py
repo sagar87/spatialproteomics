@@ -3,7 +3,6 @@ from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import spatialdata
 import xarray as xr
 import yaml
 from skimage.segmentation import relabel_sequential
@@ -30,7 +29,7 @@ from ..sd.utils import _process_adata
 
 # === SPATIALDATA ACCESSOR ===
 def threshold_labels(
-    sdata: spatialdata.SpatialData,
+    sdata,
     threshold_dict: dict,
     key_added: str = SDLayers.BINARIZATION,
     table_key: str = SDLayers.TABLE,
@@ -75,7 +74,7 @@ def threshold_labels(
 
 
 def predict_cell_types_argmax(
-    sdata: spatialdata.SpatialData,
+    sdata,
     marker_dict: dict,
     table_key: str = SDLayers.TABLE,
     label_key: str = SDFeatures.LABELS,
@@ -105,13 +104,14 @@ def predict_cell_types_argmax(
     ), f"The following markers were not found in quantification layer: {set(marker_dict.keys()) - set(expression_df.columns)}."
     celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
     adata.obs[label_key] = celltypes
+    adata.obs[label_key] = adata.obs[label_key].astype("category")
 
     if copy:
         return sdata
 
 
 def predict_cell_subtypes(
-    sdata: spatialdata.SpatialData,
+    sdata,
     subtype_dict: Union[dict, str],
     table_key: str = SDLayers.TABLE,
     layer_key: str = SDLayers.BINARIZATION,
@@ -170,6 +170,7 @@ def predict_cell_subtypes(
     )
     # overwriting the celltype column
     adata.obs["celltype"] = subtype_df.iloc[:, -1].values
+    adata.obs["celltype"] = adata.obs["celltype"].astype("category")
 
     if copy:
         return sdata

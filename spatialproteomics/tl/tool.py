@@ -3,9 +3,7 @@ from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
-import spatialdata
 import xarray as xr
-from spatialdata.transformations import get_transformation, set_transformation
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props, SDLayers
@@ -23,7 +21,7 @@ from .utils import (
 
 # === SPATIALDATA ACCESSOR ===
 def cellpose(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -47,6 +45,9 @@ def cellpose(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the cellpose algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -79,7 +80,7 @@ def cellpose(
 
 
 def stardist(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -103,6 +104,9 @@ def stardist(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -135,7 +139,7 @@ def stardist(
 
 
 def mesmer(
-    sdata: spatialdata.SpatialData,
+    sdata,
     channel: Optional[str] = None,
     image_key: str = SDLayers.IMAGE,
     key_added: str = SDLayers.SEGMENTATION,
@@ -159,6 +163,9 @@ def mesmer(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -188,7 +195,7 @@ def mesmer(
 
 
 def astir(
-    sdata: spatialdata.SpatialData,
+    sdata,
     marker_dict: dict,
     table_key=SDLayers.TABLE,
     threshold: float = 0,
@@ -266,7 +273,7 @@ class ToolAccessor:
     def cellpose(
         self,
         channel: Optional[str] = None,
-        key_added: Optional[str] = "_cellpose_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         diameter: float = 0,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
@@ -336,6 +343,18 @@ class ToolAccessor:
             **kwargs,
         )
 
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
+
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            if return_diameters:
+                return self._obj.pp.add_segmentation(all_masks), diams
+            return self._obj.pp.add_segmentation(all_masks)
+
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         if return_diameters:
@@ -346,7 +365,7 @@ class ToolAccessor:
     def stardist(
         self,
         channel: Optional[str] = None,
-        key_added: Optional[str] = "_stardist_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         scale: float = 3,
         n_tiles: int = 12,
         normalize: bool = True,
@@ -359,6 +378,10 @@ class ToolAccessor:
 
         Parameters
         ----------
+        channel : str, optional
+            Channel to use for segmentation. If None, all channels are used.
+        key_added : str, optional
+            Key to write the segmentation results to.
         scale : float, optional
             Scaling factor for the StarDist model (default is 3).
         n_tiles : int, optional
@@ -397,13 +420,23 @@ class ToolAccessor:
             **kwargs,
         )
 
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
+
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            return self._obj.pp.add_segmentation(all_masks)
+
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         return xr.merge([self._obj, da])
 
     def mesmer(
         self,
-        key_added: Optional[str] = "_mesmer_segmentation",
+        key_added: str = Layers.SEGMENTATION,
         channel: Optional[List] = None,
         postprocess_func: Callable = lambda x: x,
         **kwargs,
@@ -437,6 +470,16 @@ class ToolAccessor:
         ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
 
         all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
+
+        if all_masks.shape[0] == 1:
+            all_masks = all_masks[0].squeeze()
+        # if we segment on all of the channels, we need to add the channel dimension
+        else:
+            all_masks = np.stack(all_masks, 0)
+
+        # if no segmentation exists yet, and no key_added was specified, we make this one the default
+        if key_added == Layers.SEGMENTATION:
+            return self._obj.pp.add_segmentation(all_masks)
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
@@ -628,6 +671,7 @@ class ToolAccessor:
             spatial_data_object (spatialdata.SpatialData): The converted spatialdata object.
         """
         import spatialdata
+        from spatialdata.transformations import set_transformation
 
         store_segmentation = False
         store_adata = False

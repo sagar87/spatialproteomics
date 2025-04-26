@@ -3,15 +3,6 @@ import pytest
 from spatialproteomics.constants import Layers
 
 
-def test_cellpose_with_layer_key_segmentation(ds_image):
-    dataset = ds_image.pp[["DAPI", "CD4", "CD8"]]
-    with pytest.raises(
-        KeyError,
-        match=f'The key "{Layers.SEGMENTATION}" is reserved',
-    ):
-        dataset.tl.cellpose(key_added=Layers.SEGMENTATION, gpu=False)
-
-
 def test_cellpose_segmentation_already_exists(ds_segmentation):
     with pytest.raises(
         KeyError,

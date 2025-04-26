@@ -4,6 +4,8 @@ from .preprocessing import (
     add_observations,
     add_quantification,
     apply,
+    filter_by_obs,
+    grow_cells,
     threshold,
     transform_expression_matrix,
 )
@@ -17,4 +19,6 @@ __all__ = [
     "apply",
     "threshold",
     "transform_expression_matrix",
+    "filter_by_obs",
+    "grow_cells",
 ]

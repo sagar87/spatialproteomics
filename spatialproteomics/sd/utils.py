@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import xarray as xr
-from spatialdata import SpatialData
 
 from ..constants import Layers
 
@@ -19,7 +18,7 @@ def _get_channels_spatialdata(channel):
 
 
 def _process_image(
-    sdata: SpatialData,
+    sdata,
     channels: Optional[List] = None,
     image_key: str = Layers.IMAGE,
     key_added: str = Layers.SEGMENTATION,
@@ -68,7 +67,7 @@ def _process_image(
     return image
 
 
-def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEGMENTATION):
+def _process_segmentation(sdata, segmentation_key: str = Layers.SEGMENTATION):
     assert (
         segmentation_key in sdata.labels
     ), f"Segmentation key {segmentation_key} not found in spatial data object. Available keys: {list(sdata.labels.keys())}"
@@ -80,7 +79,7 @@ def _process_segmentation(sdata: SpatialData, segmentation_key: str = Layers.SEG
     return segmentation.values
 
 
-def _process_adata(sdata: SpatialData, table_key: str = "table"):
+def _process_adata(sdata, table_key: str = "table"):
     assert (
         table_key in sdata.tables
     ), f"Tables key {table_key} not found in spatial data object. Available keys: {list(sdata.tables.keys())}. To add observations, please aggregate the intensities first."

@@ -4,14 +4,12 @@ from typing import Callable, List, Optional, Union
 import numpy as np
 import pandas as pd
 import skimage
-import spatialdata
 import xarray as xr
-from anndata import AnnData
 from skimage.measure import regionprops_table
 from skimage.segmentation import expand_labels
 
 from ..base_logger import logger
-from ..constants import Dims, Features, Layers, Props, SDLayers
+from ..constants import Dims, Features, Layers, Props, SDFeatures, SDLayers
 from ..sd.utils import _process_adata, _process_image, _process_segmentation
 from .utils import (
     _apply,
@@ -30,7 +28,7 @@ from .utils import (
 
 # === SPATIALDATA PREPROCESSING ===
 def add_quantification(
-    sdata: spatialdata.SpatialData,
+    sdata,
     func: Union[str, Callable] = "intensity_mean",
     key_added: str = SDLayers.TABLE,
     image_key: str = SDLayers.IMAGE,
@@ -57,6 +55,8 @@ def add_quantification(
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     """
+    from anndata import AnnData
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -82,11 +82,20 @@ def add_quantification(
     else:
         # if there is no anndata object yet, we create one
         adata = AnnData(measurements.T)
-        adata.obs["id"] = cell_idx
-        adata.obs["region"] = segmentation_key
+        adata.obs[SDFeatures.ID] = cell_idx
+        adata.obs[SDFeatures.REGION] = segmentation_key
         adata.var_names = image.coords["c"].values
         # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
         adata.obs_names = [f"Cell_{x}" for x in cell_idx]
+
+        # adding uns
+        adata.uns = {
+            "spatialdata_attrs": {
+                "region": SDLayers.SEGMENTATION,
+                "region_key": SDFeatures.REGION,
+                "instance_key": SDFeatures.ID,
+            }
+        }
 
         # putting the anndata object into the spatialdata object
         sdata.tables[key_added] = adata
@@ -96,7 +105,7 @@ def add_quantification(
 
 
 def add_observations(
-    sdata: spatialdata.SpatialData,
+    sdata,
     properties: Union[str, list, tuple] = ("label", "centroid"),
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
@@ -148,7 +157,7 @@ def add_observations(
 
 
 def apply(
-    sdata: spatialdata.SpatialData,
+    sdata,
     func: Callable,
     key_added: str = SDLayers.IMAGE,
     image_key: str = SDLayers.IMAGE,
@@ -171,6 +180,9 @@ def apply(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the function.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -179,16 +191,21 @@ def apply(
     )
     processed_image = _apply(image.values, func, **kwargs)
     channels = image.coords["c"].values
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+    # add the image to the spatial data object
     sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
+    set_transformation(sdata.images[key_added], transformation)
 
     if copy:
         return sdata
 
 
 def threshold(
-    sdata: spatialdata.SpatialData,
+    sdata,
     image_key: str = SDLayers.IMAGE,
     quantile: Union[float, list] = None,
     intensity: Union[int, list] = None,
@@ -216,6 +233,9 @@ def threshold(
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
         **kwargs: Additional keyword arguments to be passed to the thresholding function.
     """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
     if copy:
         sdata = cp.deepcopy(sdata)
 
@@ -225,16 +245,22 @@ def threshold(
         image, quantile=quantile, intensity=intensity, channels=channels, shift=shift, channel_coord="c", **kwargs
     )
     channels = sdata.images[image_key].coords["c"].values
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+
+    # add the image to the spatial data object
     sdata.images[key_added] = spatialdata.models.Image2DModel.parse(
         processed_image, c_coords=channels, transformations=None, dims=("c", "y", "x")
     )
+    set_transformation(sdata.images[key_added], transformation)
 
     if copy:
         return sdata
 
 
 def transform_expression_matrix(
-    sdata: spatialdata.SpatialData,
+    sdata,
     method: str = "arcsinh",
     table_key: str = SDLayers.TABLE,
     cofactor: float = 5.0,
@@ -272,6 +298,146 @@ def transform_expression_matrix(
         **kwargs,
     )
     adata.X = transformed_matrix
+
+    if copy:
+        return sdata
+
+
+def filter_by_obs(
+    sdata,
+    col: str,
+    func: Callable,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    copy: bool = False,
+):
+    """
+    Filter the object by observations based on a given feature and filtering function.
+
+    Parameters:
+        sdata (spatialdata.SpatialData): The spatialdata object to filter.
+        col (str): The name of the feature to filter by.
+        func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
+        segmentation_key (str): The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.
+        table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
+        copy (bool): If True, a copy of the object is returned. Default is False.
+    """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    segmentation = _process_segmentation(sdata, segmentation_key)
+    adata = _process_adata(sdata, table_key=table_key)
+    existing_features = adata.obs.columns
+
+    # checking if the feature exists in obs
+    assert col in existing_features, f"Feature {col} not found in obs. You can add it with pp.add_observations()."
+
+    # select the right column from the observations
+    cells = adata.obs[col].values.copy()
+    cells_bool = func(cells)
+    cells_sel = adata.obs.loc[cells_bool, SDFeatures.ID].values
+
+    # setting all cells that are not in cells to 0
+    segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
+    # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+    segmentation, relabel_dict = _relabel_cells(segmentation)
+
+    # removing the cells which are not in cells_sel
+    adata = adata[adata.obs[SDFeatures.ID].isin(cells_sel), :].copy()
+    # updating the cell coords of the object
+    adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
+    adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
+
+    # overwriting the segmentation mask in the object
+    # get transformations
+    transformation = get_transformation(sdata[segmentation_key])
+    # add the segmentation masks to the spatial data object
+    sdata.labels[segmentation_key] = spatialdata.models.Labels2DModel.parse(
+        segmentation, transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[segmentation_key], transformation)
+
+    # overwriting the anndata object in the object
+    sdata.tables[table_key] = adata
+
+    if copy:
+        return sdata
+
+
+def grow_cells(
+    sdata,
+    iterations: int = 2,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    suppress_warning: bool = False,
+    copy: bool = False,
+) -> xr.Dataset:
+    """
+    Grows the segmentation masks by expanding the labels in the object.
+
+    Parameters
+    ----------
+    sdata : spatialdata.SpatialData
+        The spatialdata object containing the segmentation masks.
+    iterations : int
+        The number of iterations to grow the segmentation masks. Default is 2.
+    segmentation_key : str
+        The key of the segmentation mask in the object. Default is segmentation.
+    suppress_warning :bool
+        Whether to suppress the warning about recalculating the observations. Used internally, default is False.
+    copy : bool
+        If True, a copy of the object is returned. Default is False.
+
+    Raises
+    ------
+    ValueError
+        If the object does not contain a segmentation mask.
+
+    Returns
+    -------
+    xr.Dataset
+        The object with the grown segmentation masks and updated observations.
+    """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    segmentation = _process_segmentation(sdata, segmentation_key)
+
+    # growing segmentation masks
+    masks_grown = expand_labels(segmentation, iterations)
+
+    # overwriting the segmentation mask in the object
+    # get transformations
+    transformation = get_transformation(sdata[segmentation_key])
+    # add the segmentation masks to the spatial data object
+    sdata.labels[segmentation_key] = spatialdata.models.Labels2DModel.parse(
+        masks_grown, transformations=None, dims=("y", "x")
+    )
+    set_transformation(sdata.labels[segmentation_key], transformation)
+
+    if len(sdata.tables.keys()) != 0:
+        # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
+        # if anything other than the default obs were present, a warning is shown, as they will be removed
+        adata = _process_adata(sdata, table_key=table_key)
+        existing_features = list(adata.obs.columns)
+
+        # getting all of the obs features
+        if existing_features != [SDFeatures.ID, SDFeatures.REGION] and not suppress_warning:
+            logger.warning(
+                "Mask growing requires recalculation of the observations. All features will be removed and should be recalculated with pp.add_observations()."
+            )
+
+        # removing the old obs
+        cell_idx = adata.obs[SDFeatures.ID].values.copy()
+        adata.obs = pd.DataFrame(index=adata.obs_names)
+        adata.obs[SDFeatures.ID] = cell_idx
+        adata.obs[SDFeatures.REGION] = segmentation_key
 
     if copy:
         return sdata
@@ -530,6 +696,7 @@ class PreprocessingAccessor:
         segmentation: Union[str, np.ndarray] = None,
         reindex: bool = True,
         keep_labels: bool = True,
+        add_obs: bool = True,
     ) -> xr.Dataset:
         """
         Adds a segmentation mask field to the xarray dataset. This will be stored in the '_segmentation' layer.
@@ -546,12 +713,18 @@ class PreprocessingAccessor:
         keep_labels : bool
             When using cellpose on multiple channels, you may already get some initial celltype annotations from those.
             If you want to keep those annotations, set this to True. Default is True.
+        add_obs : bool
+            If True, centroids are added to the xarray. Default is True.
 
         Returns
         --------
         xr.Dataset
             The amended xarray.
         """
+        assert (
+            Layers.SEGMENTATION not in self._obj
+        ), f'The key "{Layers.SEGMENTATION}" already exists in the object. If you want to make a new segmentation the default, drop the old one first using pp.drop_layers("{Layers.SEGMENTATION}").'
+
         # flag indicating if the segmentation mask is provided as a layer key or as a numpy array
         from_layer = None
         if isinstance(segmentation, str):
@@ -570,8 +743,6 @@ class PreprocessingAccessor:
             y_dim == self._obj.sizes[Dims.Y]
         ), "The shape of segmentation mask does not match that of the image."
 
-        # checking if there are any disconnected cells in the input
-        # handle_disconnected_cells(segmentation, mode=handle_disconnected)
         segmentation = segmentation.copy()
 
         if reindex:
@@ -599,7 +770,10 @@ class PreprocessingAccessor:
                     labels = {reindex_dict[k]: v for k, v in labels.items()}
                 obj = obj.la.add_labels(labels)
 
-        return xr.merge([obj, da]).pp.add_observations()
+        obj = xr.merge([obj, da])
+        if add_obs:
+            return obj.pp.add_observations()
+        return obj
 
     def add_layer(
         self,
@@ -1419,9 +1593,7 @@ class PreprocessingAccessor:
         # adding the new filtered and relabeled segmentation
         return xr.merge([obj, da])
 
-    def grow_cells(
-        self, iterations: int = 2, handle_disconnected: str = "ignore", suppress_warning: bool = False
-    ) -> xr.Dataset:
+    def grow_cells(self, iterations: int = 2, suppress_warning: bool = False) -> xr.Dataset:
         """
         Grows the segmentation masks by expanding the labels in the object.
 
@@ -1429,8 +1601,6 @@ class PreprocessingAccessor:
         ----------
         iterations : int
             The number of iterations to grow the segmentation masks. Default is 2.
-        handle_disconnected : str
-            The mode to handle disconnected segmentation masks. Options are "ignore", "remove", or "fill". Default is "ignore".
         suppress_warning :bool
             Whether to suppress the warning about recalculating the observations. Used internally, default is False.
 
@@ -1453,9 +1623,6 @@ class PreprocessingAccessor:
 
         # growing segmentation masks
         masks_grown = expand_labels(segmentation, iterations)
-
-        # checking if there are any disconnected segmentation masks
-        # handle_disconnected_cells(masks_grown, mode=handle_disconnected)
 
         # assigning the grown masks to the object
         da = xr.DataArray(
@@ -1489,7 +1656,7 @@ class PreprocessingAccessor:
         self,
         layer_key: str,
         key_added: str = "_merged_segmentation",
-        labels: Optional[Union[str, List[str]]] = None,
+        labels: Optional[List[str]] = None,
         threshold: float = 0.8,
     ):
         """
@@ -1499,21 +1666,14 @@ class PreprocessingAccessor:
 
         Parameters
         ----------
-        array : np.ndarray
-            The array containing the segmentation masks to be merged. It can be 2D or 3D.
-        from_key : str
-            The key of the segmentation mask in the xarray object to be merged.
-        labels : Optional[Union[str, List[str]]])
-            Optional. The labels corresponding to each segmentation mask in the array.
-            If provided, the number of labels must match the number of arrays.
-        threshold : float)
-            Optional. The threshold value for merging cells. Default is 1.0.
-        handle_disconnected : str
-            Optional. The method to handle disconnected cells. Default is "relabel".
-        key_base_segmentation : str
-            Optional. The key of the base segmentation mask in the xarray object to merge to.
+        layer_key : Union[str, List[str]]
+            The key(s) of the segmentation mask(s) to merge. Can be a single key (must be 3D) or a list of keys (each 2D).
         key_added : str
-        Optional. The key under which the merged segmentation mask will be stored in the xarray object. Default is "_segmentation".
+            The name of the new segmentation mask to be added to the xarray object. Default is "_merged_segmentation".
+        labels : Optional[List[str]]
+            Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
+        threshold : float
+            Optional. Threshold for merging cells. Default is 0.8.
 
         Returns
         -------
@@ -1522,10 +1682,8 @@ class PreprocessingAccessor:
 
         Raises
         ------
-            AssertionError: If no segmentation mask is found in the xarray object.
-            AssertionError: If the input array is not 2D or 3D.
-            AssertionError: If the input array is not of type int.
-            AssertionError: If the shape of the input array does not match the shape of the segmentation mask.
+            AssertionError
+                If specified keys are not found or other input inconsistencies exist.
 
         Notes
         -----
@@ -1534,38 +1692,95 @@ class PreprocessingAccessor:
             - The merging process starts with merging the biggest cells first, then the smaller ones.
             - Disconnected cells in the input are handled based on the specified method.
         """
+        # Make sure layer_key is a list internally
+        if isinstance(layer_key, str):
+            layer_keys = [layer_key]
+        else:
+            layer_keys = layer_key
 
-        # checking if the keys exist
-        assert layer_key in self._obj, f"The key {layer_key} does not exist in the object."
-        assert key_added not in self._obj, f"The key {key_added} already exists in the object."
+        # Check: All layer keys must exist in the object
+        for lk in layer_keys:
+            assert lk in self._obj, f"The key '{lk}' does not exist in the object."
+
+        # Check: The key_added must not already exist
+        assert key_added not in self._obj, f"The key '{key_added}' already exists in the object."
 
         # merge big cells first, then small cells
         channels = self._obj.coords[Dims.CHANNELS].values.tolist()
-        segmentation = self._obj.pp[channels[0]][layer_key].values
 
-        # iterating through the array to merge the segmentation masks
-        for i in range(1, len(channels)):
+        # checking that the number of labels matches the number of channels
+        if labels is not None:
+            if len(layer_keys) == 1:
+                assert len(labels) == len(
+                    channels
+                ), f"The number of labels ({len(labels)}) must match the number of channels ({len(channels)})."
+            else:
+                assert len(labels) == len(
+                    layer_keys
+                ), f"The number of labels ({len(labels)}) must match the number of layer keys ({len(layer_keys)})."
+
+        # Special check if only a single key is provided
+        if len(layer_keys) == 1:
+            first_array = self._obj[layer_keys[0]].values
+            if first_array.ndim != 3:
+                raise ValueError(
+                    f"The segmentation mask '{layer_keys[0]}' must be 3D (channels, y, x). "
+                    "If you have 2D arrays, provide multiple keys instead."
+                )
+            segmentation = first_array[0]  # Start with first channel
+        else:
+            # Check that all arrays are 2D
+            for lk in layer_keys:
+                arr = self._obj[lk].values
+                if arr.ndim != 2:
+                    raise ValueError(
+                        f"Segmentation mask '{lk}' must be 2D. " "All masks must be 2D when using a list of keys."
+                    )
+
+            segmentation = self._obj[layer_keys[0]].values
+
+        # Initialize an empty mapping
+        mapping = {}
+
+        if len(layer_keys) == 1:
+            # single 3D stack → one merge per extra channel
+            first_array = self._obj[layer_keys[0]].values
+            merge_range = range(1, first_array.shape[0])
+        else:
+            # multiple 2D masks → one merge per extra key
+            merge_range = range(1, len(layer_keys))
+
+        # Iterate over each “next” layer to merge in
+        for i in merge_range:
+            current_layer_key = layer_keys[i] if i < len(layer_keys) else layer_keys[-1]
+            if len(layer_keys) == 1:
+                # single 3D stack → pull channel i
+                next_segmentation = first_array[i]
+            else:
+                # multiple 2D masks → pull mask i
+                next_segmentation = self._obj[current_layer_key].values
+
             if labels is not None:
                 label_1, label_2 = labels[i - 1], labels[i]
             else:
                 label_1, label_2 = channels[i - 1], channels[i]
 
+            # Perform merging
             segmentation, final_mapping = _merge_segmentation(
                 segmentation.squeeze(),
-                self._obj.pp[channels[i]][layer_key].values.squeeze(),
+                next_segmentation.squeeze(),
                 label1=label_1,
                 label2=label_2,
                 threshold=threshold,
             )
 
+            # Update label mapping
             if i == 1:
-                # in the first iteration, we simply take the mapping we get from _merge_segmentation
                 mapping = final_mapping
             else:
-                # note the use of get here. If the cell already exists, we keep the original label, otherwise we use the new one
                 mapping = {k: mapping.get(k, v) for k, v in final_mapping.items()}
 
-        # if a segmentation mask already exists in the object, we merge to it
+        # Copy the object
         obj = self._obj.copy()
 
         # assigning the new segmentation to the object
