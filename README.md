@@ -18,7 +18,7 @@ Multiplexed imaging data comprises at least 3 dimensions (i.e. `channels`, `x`, 
 
 ## Getting Started
 
-Please refer to the [documentation](https://sagar87.github.io/spatialproteomics). For a more interactive learning experience, you can also check out [this workshop](https://github.com/MeyerBender/spatialproteomics_workshop).
+Please refer to the [documentation](https://sagar87.github.io/spatialproteomics) for details on the API and tutorials.
 
 ## Installation
 
