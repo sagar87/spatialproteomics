@@ -22,7 +22,7 @@ Please refer to the [documentation](https://sagar87.github.io/spatialproteomics)
 
 ## Installation
 
-To install `spatialproteomics` first create a python environment and install the package using 
+To install `spatialproteomics`, first create a python environment and install the package using 
 
 ```
 pip install spatialproteomics
