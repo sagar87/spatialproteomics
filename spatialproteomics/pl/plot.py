@@ -327,6 +327,9 @@ class PlotAccessor:
             Layers.PLOT not in self._obj
         ), "A plot layer already exists. If you want to plot the channel intensities and a segmentation mask, make sure to call pl.colorize() first, and then pl.render_segmentation() to render the segmentation on top of it. Alternatively, you can call pl.imshow(render_segmentation=True) to achieve the same effect."
 
+        if type(colors) is {}.keys().__class__ or type(colors) is {}.values().__class__:
+            colors = list(colors)
+
         if isinstance(colors, str):
             colors = [colors]
 

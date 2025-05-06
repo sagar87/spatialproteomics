@@ -9,6 +9,14 @@ def test_colorize(ds_image):
     # ensure a plot layer has been added
     assert Layers.PLOT in colorized
 
+    # dict keys and values
+    tmp_dict = {"blue": "blue", "green": "green", "red": "red", "yellow": "yellow", "black": "black"}
+    colorized = ds_image.pl.colorize(tmp_dict.keys())
+    assert Layers.PLOT in colorized
+
+    colorized = ds_image.pl.colorize(tmp_dict.values())
+    assert Layers.PLOT in colorized
+
 
 def test_colorize_plot_layer_exists(ds_image):
     with pytest.raises(AssertionError, match="A plot layer already exists."):
