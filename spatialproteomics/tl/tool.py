@@ -274,7 +274,7 @@ class ToolAccessor:
         self,
         channel: Optional[str] = None,
         key_added: str = Layers.SEGMENTATION,
-        diameter: float = 0,
+        diameter: float = None,
         channel_settings: list = [0, 0],
         num_iterations: int = 2000,
         cellprob_threshold: float = 0.0,

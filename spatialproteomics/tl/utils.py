@@ -1,8 +1,10 @@
+from importlib.metadata import version
 from typing import Callable
 
 import numpy as np
 import pandas as pd
 import xarray as xr
+from packaging import version as pkg_version
 
 from ..base_logger import logger
 from ..constants import Dims
@@ -50,7 +52,7 @@ def _convert_masks_to_data_array(obj, all_masks, key_added):
 
 def _cellpose(
     img: np.ndarray,
-    diameter: float = 0,
+    diameter: float = None,
     channel_settings: list = [0, 0],
     num_iterations: int = 2000,
     cellprob_threshold: float = 0.0,
@@ -76,7 +78,12 @@ def _cellpose(
             img.shape[0] == 2
         ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {img.shape[0]} channels in the object."
 
-    model = models.Cellpose(gpu=gpu, model_type=model_type)
+    # The cellpose API has changed in version 4.0, so we need to check the version
+    cp_version = version("cellpose")
+    if pkg_version.parse(cp_version).major >= 4:
+        model = models.CellposeModel(gpu=gpu, model_type=model_type)
+    else:
+        model = models.Cellpose(gpu=gpu, model_type=model_type)
 
     all_masks = []
     # if the channels are [0, 0], independent segmentation is performed on all channels
@@ -87,7 +94,7 @@ def _cellpose(
             )
         for ch in range(img.shape[0]):
             # get the image at the channel
-            masks_pred, _, _, diams = model.eval(
+            output = model.eval(
                 img[ch].squeeze(),
                 diameter=diameter,
                 channels=channel_settings,
@@ -98,11 +105,16 @@ def _cellpose(
                 **kwargs,
             )
 
+            if pkg_version.parse(cp_version).major >= 4:
+                masks_pred, _, diams = output
+            else:
+                masks_pred, _, _, diams = output
+
             masks_pred = postprocess_func(masks_pred)
             all_masks.append(masks_pred)
     else:
         # if the channels are anything else, joint segmentation is attempted
-        masks_pred, _, _, diams = model.eval(
+        output = model.eval(
             img.squeeze(),
             diameter=diameter,
             channels=channel_settings,
@@ -112,6 +124,11 @@ def _cellpose(
             batch_size=batch_size,
             **kwargs,
         )
+
+        if pkg_version.parse(cp_version).major >= 4:
+            masks_pred, _, diams = output
+        else:
+            masks_pred, _, _, diams = output
 
         masks_pred = postprocess_func(masks_pred)
         all_masks.append(masks_pred)
