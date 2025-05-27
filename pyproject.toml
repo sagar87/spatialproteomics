@@ -29,6 +29,7 @@ sphinx-multiversion = {version = "^0.2.4", optional = true}
 IPython = {version = "^8.0.0", optional = true}
 cellpose = {version = ">=3.1.0", optional = true}
 stardist = {version = "^0.9.1", optional = true}
+astir = {git = "https://github.com/camlab-bioml/astir.git", optional = true}
 pytest = {version = "^7.1.2", optional = true}
 
 [tool.poetry.dev-dependencies]
@@ -42,11 +43,12 @@ safety = "^2.1.1"
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-book-theme", "sphinxcontrib-napoleon", "nbsphinx", "sphinx-multiversion", "IPython"]
 spatialdata = ["spatialdata"]
+astir = ["astir"]
 cellpose = ["cellpose"]
 stardist = ["stardist"]
 anndata = ["anndata"]
 dev = ["pytest"]
-all = ["spatialdata", "cellpose", "stardist"]
+all = ["spatialdata", "cellpose", "stardist", "astir"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

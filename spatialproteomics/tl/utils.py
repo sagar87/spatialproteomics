@@ -53,7 +53,7 @@ def _convert_masks_to_data_array(obj, all_masks, key_added):
 def _cellpose(
     img: np.ndarray,
     diameter: float = None,
-    channel_settings: list = [0, 0],
+    channel_settings: list = None,
     num_iterations: int = 2000,
     cellprob_threshold: float = 0.0,
     flow_threshold: float = 0.4,
@@ -65,6 +65,8 @@ def _cellpose(
 ):
     from cellpose import models
 
+    cp_version = version("cellpose")
+
     # checking that the input is 2D or 3D
     if img.ndim not in [2, 3]:
         raise ValueError(f"Input image must be 2D or 3D, got {img.ndim}.")
@@ -73,17 +75,19 @@ def _cellpose(
     if img.ndim == 2:
         img = img[np.newaxis, :, :]
 
-    if channel_settings != [0, 0]:
+    # The cellpose API has changed in version 4.0, so we need to check the version
+
+    if pkg_version.parse(cp_version).major < 4 and channel_settings != [0, 0]:
+        assert (
+            channel_settings is not None
+        ), "The argument channel_settings must be provided for Cellpose < 4.0. For independent segmentation of each channel, set it to [0, 0]. For joint segmentation, set it to [1, 2] or [2, 1]."
         assert (
             img.shape[0] == 2
         ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {img.shape[0]} channels in the object."
-
-    # The cellpose API has changed in version 4.0, so we need to check the version
-    cp_version = version("cellpose")
-    if pkg_version.parse(cp_version).major >= 4:
-        model = models.CellposeModel(gpu=gpu, model_type=model_type)
-    else:
         model = models.Cellpose(gpu=gpu, model_type=model_type)
+    else:
+        # model_type is not used in cellpose 4.0
+        model = models.CellposeModel(gpu=gpu)
 
     all_masks = []
     # if the channels are [0, 0], independent segmentation is performed on all channels
@@ -93,11 +97,9 @@ def _cellpose(
                 "Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately."
             )
         for ch in range(img.shape[0]):
-            # get the image at the channel
-            output = model.eval(
-                img[ch].squeeze(),
+            # Build version-aware keyword arguments
+            eval_kwargs = dict(
                 diameter=diameter,
-                channels=channel_settings,
                 niter=num_iterations,
                 cellprob_threshold=cellprob_threshold,
                 flow_threshold=flow_threshold,
@@ -105,6 +107,13 @@ def _cellpose(
                 **kwargs,
             )
 
+            if pkg_version.parse(cp_version).major < 4:
+                eval_kwargs["channels"] = channel_settings
+
+            # Get the image at the channel and run Cellpose
+            output = model.eval(img[ch].squeeze(), **eval_kwargs)
+
+            # Unpack outputs based on version
             if pkg_version.parse(cp_version).major >= 4:
                 masks_pred, _, diams = output
             else:
@@ -114,10 +123,8 @@ def _cellpose(
             all_masks.append(masks_pred)
     else:
         # if the channels are anything else, joint segmentation is attempted
-        output = model.eval(
-            img.squeeze(),
+        eval_kwargs = dict(
             diameter=diameter,
-            channels=channel_settings,
             niter=num_iterations,
             cellprob_threshold=cellprob_threshold,
             flow_threshold=flow_threshold,
@@ -125,6 +132,12 @@ def _cellpose(
             **kwargs,
         )
 
+        if pkg_version.parse(cp_version).major < 4:
+            eval_kwargs["channels"] = channel_settings
+
+        output = model.eval(img.squeeze(), **eval_kwargs)
+
+        # Unpack based on version
         if pkg_version.parse(cp_version).major >= 4:
             masks_pred, _, diams = output
         else:
