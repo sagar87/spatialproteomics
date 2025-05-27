@@ -30,7 +30,7 @@
     
   <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script src="../_static/documentation_options.js?v=1027fec7"></script>
+    <script src="../_static/documentation_options.js?v=3096642c"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -297,11 +297,16 @@
 <p>Depending on your needs, you can choose which tools you want to install together with the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> core like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install spatialproteomics[stardist]
 pip install spatialproteomics[cellpose]
+pip install spatialproteomics[astir]
 pip install spatialproteomics[spatialdata]
 pip install spatialproteomics[all]
 </pre></div>
 </div>
 <p>The latter one will install all external packages automatically (apart from <code class="docutils literal notranslate"><span class="pre">deepcell</span></code>, the package behind <code class="docutils literal notranslate"><span class="pre">mesmer</span></code>, which strictly requires <code class="docutils literal notranslate"><span class="pre">python==3.10</span></code>. To reduce potential conflicts with other packages, this package needs to be installed by the user manually).</p>
+<p>You can also combine dependencies like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install spatialproteomics[cellpose,astir]
+</pre></div>
+</div>
 </section>
 </section>
 
