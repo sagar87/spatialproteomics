@@ -281,7 +281,8 @@ class ToolAccessor:
         flow_threshold: float = 0.4,
         batch_size: int = 8,
         gpu: bool = True,
-        model_type: str = "cyto3",
+        model_type: str = "cyto3",  # cellpose < 4.0
+        pretrained_model: str = "cpsam",  # cellpose 4.0
         postprocess_func: Callable = lambda x: x,
         return_diameters: bool = False,
         **kwargs,
@@ -313,6 +314,8 @@ class ToolAccessor:
             Whether to use GPU for segmentation.
         model_type : str, optional
             Type of Cellpose model to use.
+        pretrained_model : str, optional
+            Pretrained model to use for Cellpose (4+).
         postprocess_func : Callable, optional
             Function to apply to the segmentation masks after prediction.
         return_diameters : bool, optional
@@ -339,6 +342,7 @@ class ToolAccessor:
             batch_size=batch_size,
             gpu=gpu,
             model_type=model_type,
+            pretrained_model=pretrained_model,
             postprocess_func=postprocess_func,
             **kwargs,
         )

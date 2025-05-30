@@ -59,7 +59,8 @@ def _cellpose(
     flow_threshold: float = 0.4,
     batch_size: int = 8,
     gpu: bool = True,
-    model_type: str = "cyto3",
+    model_type: str = "cyto3",  # cellpose < 4.0
+    pretrained_model: str = "cpsam",  # cellpose 4.0
     postprocess_func: Callable = lambda x: x,
     **kwargs,
 ):
@@ -87,7 +88,7 @@ def _cellpose(
         model = models.Cellpose(gpu=gpu, model_type=model_type)
     else:
         # model_type is not used in cellpose 4.0
-        model = models.CellposeModel(gpu=gpu)
+        model = models.CellposeModel(gpu=gpu, pretrained_model=pretrained_model)
 
     all_masks = []
     # if the channels are [0, 0], independent segmentation is performed on all channels
