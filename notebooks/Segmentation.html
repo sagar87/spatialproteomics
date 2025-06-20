@@ -1832,6 +1832,7 @@ Mask growing requires recalculation of the observations. All features other than
 <span class="c1"># so you should have your largest cells first, and then go down by expected size</span>
 
 <span class="c1"># we use the channel_settings argument here to tell cellpose that it should perform an independent segmentation for each of our markers</span>
+<span class="c1"># without this argument, cellpose-sam would try to segment the cells based on all three markers combined</span>
 <span class="n">ds_cellpose</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD11c&quot;</span><span class="p">,</span> <span class="s2">&quot;CD68&quot;</span><span class="p">,</span> <span class="s2">&quot;DAPI&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;_cellpose_segmentation&quot;</span><span class="p">,</span> <span class="n">channel_settings</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
