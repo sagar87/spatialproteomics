@@ -28,6 +28,24 @@ To install `spatialproteomics`, first create a python environment and install th
 pip install spatialproteomics
 ```
 
+The installation of the package should take less than a minute.
+
+## System Requirements
+### Hardware Requirements
+`spatialproteomics` requires only a standard computer with enough RAM to support the in-memory operations. Certain steps of the pipeline, such as segmentation, benefit from using a GPU.
+
+### Software Requirements
+The base version of `spatialproteomics` depends on the following packages:
+```
+xarray
+zarr
+numpy
+scikit-image
+scikit-learn
+opencv-python
+matplotlib
+```
+
 ## Citation
 Spatialproteomics - an interoperable toolbox for analyzing highly multiplexed fluorescence image data
 
