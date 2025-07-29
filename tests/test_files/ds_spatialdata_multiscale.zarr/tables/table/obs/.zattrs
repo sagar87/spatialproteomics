@@ -1,0 +1,10 @@
+{
+    "_index": "_index",
+    "column-order": [
+        "cell_ID",
+        "fov_labels",
+        "annotation"
+    ],
+    "encoding-type": "dataframe",
+    "encoding-version": "0.2.0"
+}

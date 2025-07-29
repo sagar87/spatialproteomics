@@ -1,0 +1,9 @@
+{
+    "encoding-type": "anndata",
+    "encoding-version": "0.1.0",
+    "instance_key": "cell_ID",
+    "region": "nucleus_boundaries",
+    "region_key": "fov_labels",
+    "spatialdata-encoding-type": "ngff:regions_table",
+    "version": "0.1"
+}

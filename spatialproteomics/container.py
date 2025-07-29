@@ -5,7 +5,6 @@ import pandas as pd
 import xarray as xr
 from skimage.transform import resize
 
-
 from .base_logger import logger
 from .constants import Dims, Layers, SDFeatures
 from .sd.utils import _process_image, _process_segmentation
@@ -96,7 +95,13 @@ def load_image_data(
 
 
 def read_from_spatialdata(
-    spatial_data_object, image_key: str = "image", segmentation_key: str = "segmentation", table_key: str = "table", data_key: Optional[str] = None, consolidate_segmentation: bool = False, cell_id: Optional[str] = SDFeatures.ID,
+    spatial_data_object,
+    image_key: str = "image",
+    segmentation_key: str = "segmentation",
+    table_key: str = "table",
+    data_key: Optional[str] = None,
+    consolidate_segmentation: bool = False,
+    cell_id: Optional[str] = SDFeatures.ID,
 ):
     """
     Read data from a spatialdata object into the spatialproteomics object.
@@ -112,7 +117,12 @@ def read_from_spatialdata(
         spatialproteomics_object (xr.Dataset): The spatialproteomics object.
     """
     import spatialdata
-    from spatialdata.transformations import Affine, Translation, Identity, get_transformation
+    from spatialdata.transformations import (
+        Affine,
+        Identity,
+        Translation,
+        get_transformation,
+    )
 
     if isinstance(spatial_data_object, str):
         spatial_data_object = spatialdata.read_zarr(spatial_data_object)
@@ -121,7 +131,9 @@ def read_from_spatialdata(
     assert (
         image_key in spatial_data_object.images
     ), f"Image key {image_key} not found in spatial data object. Available keys: {list(spatial_data_object.images.keys())}"
-    image = _process_image(spatial_data_object, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False)
+    image = _process_image(
+        spatial_data_object, image_key=image_key, channels=None, key_added=None, data_key=data_key, return_values=False
+    )
     # coordinates
     markers = image.coords["c"].values
 
@@ -164,23 +176,27 @@ def read_from_spatialdata(
     # segmentation
     if segmentation_key in spatial_data_object.labels:
         segmentation = _process_segmentation(spatial_data_object, segmentation_key=segmentation_key)
-        
+
         # in the case of multi-scale images, it can happen that the user want to load an image and a segmentation which do not have the same shape
         # in that case, we throw an error, unless the user has set `consolidate_segmentation=True`
         # if consolidate_segmentation is True, we resize the segmentation to match the image shape
         if not consolidate_segmentation:
-            assert image.shape[1:] == segmentation.shape, f"Image shape {image.shape[1:]} does not match segmentation shape {segmentation.shape}. If you want to proceed regardless, set `consolidate_segmentation=True`. This will resize the segmentation to match the image shape, but may lead to loss of information."
-        else:            
+            assert (
+                image.shape[1:] == segmentation.shape
+            ), f"Image shape {image.shape[1:]} does not match segmentation shape {segmentation.shape}. If you want to proceed regardless, set `consolidate_segmentation=True`. This will resize the segmentation to match the image shape, but may lead to loss of information."
+        else:
             original_dtype = segmentation.dtype  # Save the dtype
-            
+
             segmentation = resize(
                 segmentation,
                 output_shape=image.shape[1:],  # (H, W)
-                order=0,                       # nearest neighbor
-                preserve_range=True,          # don't normalize to [0, 1]
-                anti_aliasing=False
-            ).astype(original_dtype)          # Cast back to original dtype
-        
+                order=0,  # nearest neighbor
+                preserve_range=True,  # don't normalize to [0, 1]
+                anti_aliasing=False,
+            ).astype(
+                original_dtype
+            )  # Cast back to original dtype
+
         # if there are obs in the spatialdata object, we just use those and do not recompute them
         add_obs_from_sdata = len(spatial_data_object.tables.keys()) > 0
 
@@ -188,7 +204,9 @@ def read_from_spatialdata(
         if add_obs_from_sdata:
             obs = spatial_data_object.tables[table_key].obs
             if not consolidate_segmentation:
-                assert obs.shape[0] == len(np.unique(segmentation)) - 1, f"The number of cells in the segmentation does not match the number of observations in the table.\nNumber of cells in the segmentation mask: {len(np.unique(segmentation)) - 1}\nNumber of observations: {obs.shape[0]}\nIf you wish to proceed regardless, set `consolidate_segmentation=True`, which will only keep cells appearing both in the segmentation mask and the table."
+                assert (
+                    obs.shape[0] == len(np.unique(segmentation)) - 1
+                ), f"The number of cells in the segmentation does not match the number of observations in the table.\nNumber of cells in the segmentation mask: {len(np.unique(segmentation)) - 1}\nNumber of observations: {obs.shape[0]}\nIf you wish to proceed regardless, set `consolidate_segmentation=True`, which will only keep cells appearing both in the segmentation mask and the table."
             else:
                 # Consolidate segmentation to only include cells that are present in the table and the segmentation mask
                 # Step 1: Get IDs in both segmentation and obs
