@@ -2,7 +2,6 @@ import os
 from distutils import dir_util
 
 import pytest
-import spatialdata as sd
 import xarray as xr
 from skimage.io import imread
 
@@ -32,10 +31,10 @@ def load_files(data_dir):
         if f.endswith("zarr") and f != "ds_spatialdata_multiscale.zarr"
     }
 
-    # this is just the path, because we want to test the loading of the multiscale zarr
-    files_loaded["ds_spatialdata_multiscale"] = sd.read_zarr(
-        os.path.join(str(data_dir), "ds_spatialdata_multiscale.zarr")
-    )
+    # this would be the correct way to load the multiscale dataset, but it currently does not work due to issues with non_self_contained datasets in spatialdata
+    # files_loaded["ds_spatialdata_multiscale"] = sd.read_zarr(
+    #     os.path.join(str(data_dir), "ds_spatialdata_multiscale.zarr")
+    # )
 
     # adding the tiff files to test the loading of images
     for f in files:
