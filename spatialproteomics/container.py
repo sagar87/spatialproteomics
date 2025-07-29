@@ -3,6 +3,8 @@ from typing import List, Optional, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
+from skimage.transform import resize
+
 
 from .base_logger import logger
 from .constants import Dims, Layers, SDFeatures
@@ -162,6 +164,23 @@ def read_from_spatialdata(
     # segmentation
     if segmentation_key in spatial_data_object.labels:
         segmentation = _process_segmentation(spatial_data_object, segmentation_key=segmentation_key)
+        
+        # in the case of multi-scale images, it can happen that the user want to load an image and a segmentation which do not have the same shape
+        # in that case, we throw an error, unless the user has set `consolidate_segmentation=True`
+        # if consolidate_segmentation is True, we resize the segmentation to match the image shape
+        if not consolidate_segmentation:
+            assert image.shape[1:] == segmentation.shape, f"Image shape {image.shape[1:]} does not match segmentation shape {segmentation.shape}. If you want to proceed regardless, set `consolidate_segmentation=True`. This will resize the segmentation to match the image shape, but may lead to loss of information."
+        else:            
+            original_dtype = segmentation.dtype  # Save the dtype
+            
+            segmentation = resize(
+                segmentation,
+                output_shape=image.shape[1:],  # (H, W)
+                order=0,                       # nearest neighbor
+                preserve_range=True,          # don't normalize to [0, 1]
+                anti_aliasing=False
+            ).astype(original_dtype)          # Cast back to original dtype
+        
         # if there are obs in the spatialdata object, we just use those and do not recompute them
         add_obs_from_sdata = len(spatial_data_object.tables.keys()) > 0
 
@@ -186,10 +205,10 @@ def read_from_spatialdata(
                 obs[cell_id] = obs[cell_id].astype(int)
                 obs = obs[obs[cell_id].isin(valid_ids)].copy()
 
-            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata)
+            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata, reindex=False)
             # next to adding the obs from the dataframe, we also add default obs to the object to ensure that obs includes the centroids
             obj = obj.pp.add_obs_from_dataframe(obs).pp.add_observations()
         else:
-            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata)
+            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata, reindex=False)
 
     return obj
