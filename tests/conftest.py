@@ -28,8 +28,13 @@ def load_files(data_dir):
     files_loaded = {
         str(f).split("/")[-1].split(".")[0]: xr.load_dataset(os.path.join(str(data_dir), f), engine="zarr")
         for f in files
-        if f.endswith("zarr")
+        if f.endswith("zarr") and f != "ds_spatialdata_multiscale.zarr"
     }
+
+    # this would be the correct way to load the multiscale dataset, but it currently does not work due to issues with non_self_contained datasets in spatialdata
+    # files_loaded["ds_spatialdata_multiscale"] = sd.read_zarr(
+    #     os.path.join(str(data_dir), "ds_spatialdata_multiscale.zarr")
+    # )
 
     # adding the tiff files to test the loading of images
     for f in files:
@@ -78,3 +83,8 @@ def load_ds_labels_spatialdata(data_dic):
 @pytest.fixture(scope="session", name="ds_neighborhoods_spatialdata")
 def load_ds_neighborhoods_spatialdata(data_dic):
     return data_dic["ds_neighborhoods"].tl.convert_to_spatialdata()
+
+
+@pytest.fixture(scope="session", name="ds_spatialdata_multiscale")
+def load_ds_spatialdata_multiscale(data_dic):
+    return data_dic["ds_spatialdata_multiscale"]
