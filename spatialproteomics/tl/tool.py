@@ -644,7 +644,7 @@ class ToolAccessor:
                 properties = self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)
                 if Props.COLOR in properties.columns:
                     # putting it into the anndata object
-                    adata.uns[f"{Features.LABELS}_colors"] = list(properties[Props.COLOR].values)
+                    adata.uns[f"{Features.LABELS}_colors"] = properties[Props.COLOR].values
 
             # to be compatible with squidpy out of the box, a spatial key is added to obsm if possible
             if Features.X in adata.obs and Features.Y in adata.obs:
