@@ -295,16 +295,16 @@
 <h2>Extras<a class="headerlink" href="#Extras" title="Link to this heading">¶</a></h2>
 <p>Some of the functionalities depend on external tools (e. g. <code class="docutils literal notranslate"><span class="pre">stardist</span></code>, <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code>). Since having lots of external tools also leads to lots of dependencies, installing all of them into one environment is prone to cause dependency conflicts.</p>
 <p>Depending on your needs, you can choose which tools you want to install together with the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> core like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install spatialproteomics[stardist]
-pip install spatialproteomics[cellpose]
-pip install spatialproteomics[spatialdata]
-pip install spatialproteomics[all]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install &quot;spatialproteomics[stardist]&quot;
+pip install &quot;spatialproteomics[cellpose]&quot;
+pip install &quot;spatialproteomics[spatialdata]&quot;
+pip install &quot;spatialproteomics[all]&quot;
 </pre></div>
 </div>
 <p>The latter one will install all external packages automatically (apart from <code class="docutils literal notranslate"><span class="pre">deepcell</span></code>, the package behind <code class="docutils literal notranslate"><span class="pre">mesmer</span></code>, which strictly requires <code class="docutils literal notranslate"><span class="pre">python==3.10</span></code>. To reduce potential conflicts with other packages, this package needs to be installed by the user manually).</p>
 <p>For <code class="docutils literal notranslate"><span class="pre">astir</span></code>, the version on pip is deprecated, so users will need to install it from <a class="reference external" href="https://github.com/camlab-bioml/astir">GitHub</a> directly.</p>
 <p>You can also combine dependencies like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install spatialproteomics[cellpose,spatialdata]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install &quot;spatialproteomics[cellpose,spatialdata]&quot;
 </pre></div>
 </div>
 </section>
