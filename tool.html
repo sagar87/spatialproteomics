@@ -191,6 +191,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/DownstreamAnalysis.html">
+   Downstream Analysis
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="notebooks/Interactivity.html">
    Interactivity
   </a>
@@ -476,17 +481,16 @@ is specified or not.</p>
 <dd class="field-odd"><p>anndata.AnnData</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>AssertionError</strong> – If the expression matrix key or additional layers are not found in the spatialproteomics object.</p></li>
-<li><p><strong>Notes:</strong> – </p></li>
-<li><p><strong>------</strong> – </p></li>
-<li><p><strong>- The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.</strong> – </p></li>
-<li><p><strong>- If additional layers are specified</strong><strong>, </strong><strong>they are extracted from the spatialproteomics object and added to the anndata.AnnData object.</strong> – </p></li>
-<li><p><strong>- If obs_key is present in the spatialproteomics object</strong><strong>, </strong><strong>it is used to create the obs DataFrame</strong><strong> of </strong><strong>the anndata.AnnData object.</strong> – </p></li>
-<li><p><strong>- If additional_uns is specified</strong><strong>, </strong><strong>the corresponding uns data is extracted from the spatialproteomics object and added to the anndata.AnnData object.</strong> – </p></li>
-</ul>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the expression matrix key or additional layers are not found in the spatialproteomics object.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.</p></li>
+<li><p>If additional layers are specified, they are extracted from the spatialproteomics object and added to the anndata.AnnData object.</p></li>
+<li><p>If obs_key is present in the spatialproteomics object, it is used to create the obs DataFrame of the anndata.AnnData object.</p></li>
+<li><p>If additional_uns is specified, the corresponding uns data is extracted from the spatialproteomics object and added to the anndata.AnnData object.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
