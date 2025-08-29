@@ -614,8 +614,8 @@ class ToolAccessor:
         AssertionError
             If the expression matrix key or additional layers are not found in the spatialproteomics object.
 
-        Notes:
-        ------
+        Notes
+        -----
         - The expression matrix is extracted from the spatialproteomics object using the provided expression matrix key.
         - If additional layers are specified, they are extracted from the spatialproteomics object and added to the anndata.AnnData object.
         - If obs_key is present in the spatialproteomics object, it is used to create the obs DataFrame of the anndata.AnnData object.
@@ -639,12 +639,21 @@ class ToolAccessor:
         if obs_key in self._obj:
             adata.obs = self._obj.pp.get_layer_as_df(obs_key, idx_to_str=True)
 
+            # converting the labels into categorical
+            if Dims.LABELS in self._obj.dims:
+                adata.obs[Features.LABELS] = adata.obs[Features.LABELS].astype("category")
+
             # if we have labels and colors for them, we add them to the anndata object
             if Dims.LABELS in self._obj.dims and Layers.LA_PROPERTIES in self._obj:
                 properties = self._obj.pp.get_layer_as_df(Layers.LA_PROPERTIES)
                 if Props.COLOR in properties.columns:
                     # putting it into the anndata object
                     adata.uns[f"{Features.LABELS}_colors"] = properties[Props.COLOR].values
+                # if the labels are in there, we want to use the order of them for the categories
+                if Props.NAME in properties.columns:
+                    adata.obs[Features.LABELS] = adata.obs[Features.LABELS].cat.reorder_categories(
+                        properties[Props.NAME].values
+                    )
 
             # to be compatible with squidpy out of the box, a spatial key is added to obsm if possible
             if Features.X in adata.obs and Features.Y in adata.obs:

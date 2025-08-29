@@ -42,6 +42,7 @@ It supports synchronization of shared coordinates across data modalities such as
    notebooks/CellTypePrediction
    notebooks/Neighborhoods
    notebooks/Interoperability
+   notebooks/DownstreamAnalysis
    notebooks/Interactivity
    notebooks/FAQ
 
