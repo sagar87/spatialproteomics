@@ -54,3 +54,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 120
+
+[tool.isort]
+profile = "black"
+skip = ["data", "*.tif", "*.tiff", "*.h5", "*.zarr"]
