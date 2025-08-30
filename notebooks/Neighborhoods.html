@@ -39,7 +39,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Interoperability" href="Interoperability.html" />
+    <link rel="next" title="Downstream Analysis" href="DownstreamAnalysis.html" />
     <link rel="prev" title="Cell Type Prediction" href="CellTypePrediction.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -153,23 +153,13 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="Slicing.html">
-   Subselecting Data
+  <a class="reference internal" href="Plotting.html">
+   Plotting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Segmentation.html">
    Segmentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ArtifactRemoval.html">
-   Interactive Removal of Artifacts
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Plotting.html">
-   Plotting
   </a>
  </li>
  <li class="toctree-l1">
@@ -188,11 +178,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="Interoperability.html">
-   Interoperability
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="DownstreamAnalysis.html">
    Downstream Analysis
   </a>
@@ -200,6 +185,21 @@
  <li class="toctree-l1">
   <a class="reference internal" href="Interactivity.html">
    Interactivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Interoperability.html">
+   Interoperability
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Slicing.html">
+   Subselecting Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ArtifactRemoval.html">
+   Interactive Removal of Artifacts
   </a>
  </li>
  <li class="toctree-l1">
@@ -563,6 +563,7 @@ div.rendered_html tbody tr:hover {
 <h1>Neighborhood Analysis<a class="headerlink" href="#Neighborhood-Analysis" title="Link to this heading">¶</a></h1>
 <p>To find structures within our tissues, we can use the concept of cellular neighborhoods. The idea is that we start by defining neighborhoods for each cell, which consist of the relative abundances of the surrounding cell types. Afterwards, we can use clustering across multiple samples to define the neighborhoods. Finally, we can add these neighborhood labels back into the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> object and use them to select specific regions of the tissue. Methods relating to neighborhoods are
 contained in the <code class="docutils literal notranslate"><span class="pre">nh</span></code> module. For convenience, you can use the <code class="docutils literal notranslate"><span class="pre">sp.ImageContainer</span></code> to perform this analysis with a single function call.</p>
+<p>If you want to follow along with this tutorial, you can download the data <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -583,15 +584,55 @@ contained in the <code class="docutils literal notranslate"><span class="pre">nh
 <section id="Neighborhood-Analysis-with-the-ImageContainer">
 <h2>Neighborhood Analysis with the ImageContainer<a class="headerlink" href="#Neighborhood-Analysis-with-the-ImageContainer" title="Link to this heading">¶</a></h2>
 <p>As a first step, we open three datasets and store them inside of a dictionary.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp_obj_1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/sample_1.zarr&quot;</span><span class="p">)</span>
-<span class="n">sp_obj_2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/sample_2.zarr&quot;</span><span class="p">)</span>
-<span class="n">sp_obj_3</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/sample_3.zarr&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sp_obj_1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">sp_obj_2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_11_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">sp_obj_3</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_13_1.zarr&quot;</span><span class="p">)</span>
+
+<span class="c1"># === OPTIONAL ===</span>
+<span class="c1"># setting the label level to the top level, so that we only consider major cell types (B, T, etc.)</span>
+<span class="c1"># this is done for demonstration purposes, you can just as well compute the neighborhood on more fine-grained cell types</span>
+<span class="n">celltype_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;B cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;T cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">sp_obj_1</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">sp_obj_1</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">([</span><span class="s2">&quot;_neighborhoods&quot;</span><span class="p">,</span> <span class="s2">&quot;_nh_properties&quot;</span><span class="p">,</span> <span class="s2">&quot;_adjacency_matrix&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="p">)</span>
+<span class="n">sp_obj_2</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">sp_obj_2</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">([</span><span class="s2">&quot;_neighborhoods&quot;</span><span class="p">,</span> <span class="s2">&quot;_nh_properties&quot;</span><span class="p">,</span> <span class="s2">&quot;_adjacency_matrix&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="p">)</span>
+<span class="n">sp_obj_3</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">sp_obj_3</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">([</span><span class="s2">&quot;_neighborhoods&quot;</span><span class="p">,</span> <span class="s2">&quot;_nh_properties&quot;</span><span class="p">,</span> <span class="s2">&quot;_adjacency_matrix&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
+Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
+Label Stromal cell not found in the data object. Skipping.
+Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -608,7 +649,7 @@ contained in the <code class="docutils literal notranslate"><span class="pre">nh
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image_container</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ImageContainer</span><span class="p">(</span><span class="n">sp_dict</span><span class="p">)</span>
 <span class="c1"># this method returns a dict in the same format as we provided as input</span>
-<span class="n">sp_dict</span> <span class="o">=</span> <span class="n">image_container</span><span class="o">.</span><span class="n">compute_neighborhoods</span><span class="p">()</span>
+<span class="n">sp_dict</span> <span class="o">=</span> <span class="n">image_container</span><span class="o">.</span><span class="n">compute_neighborhoods</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -621,7 +662,7 @@ contained in the <code class="docutils literal notranslate"><span class="pre">nh
 <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
 <span class="c1"># setting custom colors to be more in line with the cell types</span>
-<span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Neighborhood </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;darkgreen&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;darkred&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">]</span>
+<span class="n">neighborhoods</span><span class="p">,</span> <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Neighborhood </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span> <span class="s2">&quot;#99a3b5&quot;</span><span class="p">,</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">]</span>
 
 <span class="c1"># plotting labels</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -652,21 +693,11 @@ contained in the <code class="docutils literal notranslate"><span class="pre">nh
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Neighborhood Neighborhood 2 not found in the data object. Skipping.
-Neighborhood Neighborhood 2 not found in the data object. Skipping.
-Neighborhood Neighborhood 0 not found in the data object. Skipping.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Neighborhoods_8_1.png" src="../_images/notebooks_Neighborhoods_8_1.png" />
+<img alt="../_images/notebooks_Neighborhoods_8_0.png" src="../_images/notebooks_Neighborhoods_8_0.png" />
 </div>
 </div>
 <p>By using the function <code class="docutils literal notranslate"><span class="pre">get_neighborhood_composition()</span></code> from the image container, we can easily plot a heatmap showing the neighborhood composition. By default, this composition dataframe is standardized per cell type.</p>
@@ -706,12 +737,10 @@ Neighborhood Neighborhood 0 not found in the data object. Skipping.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># note that sp_dict[&#39;1&#39;] does not contain any cells belonging to neighborhood 2, hence we do not set a value for this one here</span>
-<span class="n">neighborhood_names</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;Neighborhood 0&quot;</span><span class="p">:</span> <span class="s2">&quot;T high&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Neighborhood 1&quot;</span><span class="p">:</span> <span class="s2">&quot;B medium&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Neighborhood 3&quot;</span><span class="p">:</span> <span class="s2">&quot;B high&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Neighborhood 4&quot;</span><span class="p">:</span> <span class="s2">&quot;T medium&quot;</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neighborhood_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Neighborhood 0&quot;</span><span class="p">:</span> <span class="s2">&quot;B high&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Neighborhood 1&quot;</span><span class="p">:</span> <span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Neighborhood 2&quot;</span><span class="p">:</span> <span class="s2">&quot;T high&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">sp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_name</span><span class="p">(</span><span class="n">neighborhood_names</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">neighborhood_names</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 </pre></div>
@@ -805,11 +834,11 @@ the resulting graph.</p>
 </div>
 <p>As a small sidenote, let’s quickly see how we can plot the network.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">tmp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter_labels</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">render_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">tmp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1500</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1500</span><span class="p">:</span><span class="mi">2000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter_labels</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">render_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -827,20 +856,26 @@ the resulting graph.</p>
 calling <code class="docutils literal notranslate"><span class="pre">ds.nh.add_neighborhood_obs()</span></code>. For more details on which features you can compute, refer to the documentation of the method.</p>
 <p>Let’s compute a couple of metrics. In the following codeblock, we compute: 1. Node degree: how many cells are connected to a cell. This can give you a hint about how dense the tissue is at any region (given you used the radius method for constructing your neighborhoods). 2. Homophily: ratio of cells of the same cell type as the center cell within the neighborhood. 3. Inter-Label Connectivity: ratio of cells of a different cell type as the center cell within the neighborhood. 4. Diversity Index:
 Shannon’s entropy. Measures the diversity of cells within a cells neighborhood.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting label colors</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;T high&quot;</span><span class="p">,</span> <span class="s2">&quot;T medium&quot;</span><span class="p">,</span> <span class="s2">&quot;B high&quot;</span><span class="p">,</span> <span class="s2">&quot;B medium&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;darkgreen&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;darkred&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">sp_dict</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">([</span><span class="s2">&quot;T high&quot;</span><span class="p">,</span> <span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;B high&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span> <span class="s2">&quot;#99a3b5&quot;</span><span class="p">,</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">])</span>
 <span class="c1"># computing the neighborhood features</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">(</span>
     <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="s2">&quot;homophily&quot;</span><span class="p">,</span> <span class="s2">&quot;inter_label_connectivity&quot;</span><span class="p">,</span> <span class="s2">&quot;diversity_index&quot;</span><span class="p">]</span>
 <span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversity_index&#39;, &#39;homophily&#39;, &#39;inter_label_connectivity&#39;]
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -873,13 +908,13 @@ Shannon’s entropy. Measures the diversity of cells within a cells neighborhood
 </div>
 <p>Note that we can also compute these on subsets of the sample. For example, we might want to select only the B and T cells within the B-rich neighborhood, and then compute the measures on this data alone.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># subselecting and recomputing the features</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">ds</span><span class="o">.</span><span class="n">nh</span><span class="p">[</span><span class="s2">&quot;B high&quot;</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">la</span><span class="p">[[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">]]</span>
+    <span class="o">.</span><span class="n">la</span><span class="p">[[</span><span class="s2">&quot;B cell&quot;</span><span class="p">,</span> <span class="s2">&quot;T cell&quot;</span><span class="p">]]</span>
     <span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">add_neighborhood_obs</span><span class="p">(</span>
         <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="s2">&quot;closeness_centrality&quot;</span><span class="p">,</span> <span class="s2">&quot;homophily&quot;</span><span class="p">,</span> <span class="s2">&quot;inter_label_connectivity&quot;</span><span class="p">,</span> <span class="s2">&quot;diversity_index&quot;</span><span class="p">]</span>
     <span class="p">)</span>
@@ -896,7 +931,7 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -937,7 +972,7 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="CellTypePrediction.html" title="previous page">Cell Type Prediction</a>
-    <a class='right-next' id="next-link" href="Interoperability.html" title="next page">Interoperability</a>
+    <a class='right-next' id="next-link" href="DownstreamAnalysis.html" title="next page">Downstream Analysis</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

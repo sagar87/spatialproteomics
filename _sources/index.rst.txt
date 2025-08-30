@@ -34,16 +34,16 @@ It supports synchronization of shared coordinates across data modalities such as
    notebooks/Installation
    notebooks/ExampleWorkflow
    notebooks/ExampleWorkflowSpatialdata
-   notebooks/Slicing
-   notebooks/Segmentation
-   notebooks/ArtifactRemoval
    notebooks/Plotting
+   notebooks/Segmentation
    notebooks/ImageProcessing
    notebooks/CellTypePrediction
    notebooks/Neighborhoods
-   notebooks/Interoperability
    notebooks/DownstreamAnalysis
    notebooks/Interactivity
+   notebooks/Interoperability
+   notebooks/Slicing
+   notebooks/ArtifactRemoval
    notebooks/FAQ
 
 

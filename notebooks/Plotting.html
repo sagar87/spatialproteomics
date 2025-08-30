@@ -39,8 +39,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Image Processing" href="ImageProcessing.html" />
-    <link rel="prev" title="Interactive Removal of Artifacts" href="ArtifactRemoval.html" />
+    <link rel="next" title="Segmentation" href="Segmentation.html" />
+    <link rel="prev" title="Example Workflow with spatialproteomics and spatialdata" href="ExampleWorkflowSpatialdata.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
   </head>
@@ -152,24 +152,14 @@
    Example Workflow with spatialproteomics and spatialdata
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Slicing.html">
-   Subselecting Data
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Plotting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Segmentation.html">
    Segmentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ArtifactRemoval.html">
-   Interactive Removal of Artifacts
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Plotting
   </a>
  </li>
  <li class="toctree-l1">
@@ -188,11 +178,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="Interoperability.html">
-   Interoperability
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="DownstreamAnalysis.html">
    Downstream Analysis
   </a>
@@ -200,6 +185,21 @@
  <li class="toctree-l1">
   <a class="reference internal" href="Interactivity.html">
    Interactivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Interoperability.html">
+   Interoperability
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Slicing.html">
+   Subselecting Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ArtifactRemoval.html">
+   Interactive Removal of Artifacts
   </a>
  </li>
  <li class="toctree-l1">
@@ -290,11 +290,6 @@
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Rendering-Obs">
    Rendering Obs
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Rendering-Labels">
-   Rendering Labels
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -582,6 +577,7 @@ div.rendered_html tbody tr:hover {
 <section id="Plotting">
 <h1>Plotting<a class="headerlink" href="#Plotting" title="Link to this heading">¶</a></h1>
 <p>Spatialproteomics has a variety of plotting functions, enabling the plotting of intensities, segmentation masks, and predicted cell type labels.</p>
+<p>If you want to follow along with this tutorial, you can download the data <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -600,7 +596,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading in a data set</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/BNHL_166_4_I2_LK_2.zarr&quot;</span><span class="p">)</span>
+<span class="n">ds_unprocessed</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1_unprocessed.zarr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -609,7 +605,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># having a look at the dataset</span>
-<span class="n">ds</span>
+<span class="n">ds_unprocessed</span>
 </pre></div>
 </div>
 </div>
@@ -649,6 +645,7 @@ div.rendered_html tbody tr:hover {
 }
 
 html[theme=dark],
+html[data-theme=dark],
 body[data-theme=dark],
 body.vscode-dark {
   --xr-font-color0: rgba(255, 255, 255, 1);
@@ -699,7 +696,7 @@ body.vscode-dark {
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
-  grid-template-columns: 150px auto auto 1fr 20px 20px;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
 }
 
 .xr-section-item {
@@ -707,7 +704,8 @@ body.vscode-dark {
 }
 
 .xr-section-item input {
-  display: none;
+  display: inline-block;
+  opacity: 0;
 }
 
 .xr-section-item input + label {
@@ -717,6 +715,10 @@ body.vscode-dark {
 .xr-section-item input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0);
 }
 
 .xr-section-item input:enabled + label:hover {
@@ -981,29 +983,25 @@ dl.xr-attrs {
   stroke: currentColor;
   fill: currentColor;
 }
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
-Dimensions:         (channels: 56, y: 3000, x: 3000, labels: 8, la_props: 2,
-                     cells: 12560, features: 3)
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 576MB
+Dimensions:        (channels: 56, y: 3000, x: 3000, cells: 18134, features: 2)
 Coordinates:
-  * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
-  * channels        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features        (features) &lt;U10 &#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
-  * la_props        (la_props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * labels          (labels) int64 1 2 3 4 5 6 7 8
-  * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
-  * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * cells          (cells) int64 145kB 1 2 3 4 5 ... 18131 18132 18133 18134
+  * channels       (channels) &lt;U11 2kB &#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features       (features) &lt;U10 80B &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
+  * x              (x) int64 24kB 0 1 2 3 4 5 ... 2994 2995 2996 2997 2998 2999
+  * y              (y) int64 24kB 0 1 2 3 4 5 ... 2994 2995 2996 2997 2998 2999
 Data variables:
-    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
-    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
-    _obs            (cells, features) float64 dask.array&lt;chunksize=(6280, 3), meta=np.ndarray&gt;
-    _segmentation   (y, x) int64 dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-8fd86649-463c-4776-b6f4-75a9209c63da' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-8fd86649-463c-4776-b6f4-75a9209c63da' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>y</span>: 3000</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>labels</span>: 8</li><li><span class='xr-has-index'>la_props</span>: 2</li><li><span class='xr-has-index'>cells</span>: 12560</li><li><span class='xr-has-index'>features</span>: 3</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-e50eb91c-1531-4d65-a273-45dac966c237' class='xr-section-summary-in' type='checkbox'  checked><label for='section-e50eb91c-1531-4d65-a273-45dac966c237' class='xr-section-summary' >Coordinates: <span>(7)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 12557 12558 12559 12560</div><input id='attrs-55b989ef-efd2-4242-99ce-dee65504f222' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-55b989ef-efd2-4242-99ce-dee65504f222' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8ee61374-29be-4a80-a7b4-5d87fd2c8b2c' class='xr-var-data-in' type='checkbox'><label for='data-8ee61374-29be-4a80-a7b4-5d87fd2c8b2c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 12558, 12559, 12560])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-ec81dec0-86fd-472f-95f1-c3a7171129a9' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ec81dec0-86fd-472f-95f1-c3a7171129a9' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a284d5b5-012a-4cea-8578-9d5b54f5a406' class='xr-var-data-in' type='checkbox'><label for='data-a284d5b5-012a-4cea-8578-9d5b54f5a406' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+    _image         (channels, y, x) uint8 504MB dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _obs           (cells, features) float64 290kB dask.array&lt;chunksize=(9067, 2), meta=np.ndarray&gt;
+    _segmentation  (y, x) int64 72MB dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-8552ab87-b6ec-4095-93a3-83f82bf3b30d' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-8552ab87-b6ec-4095-93a3-83f82bf3b30d' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>y</span>: 3000</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>cells</span>: 18134</li><li><span class='xr-has-index'>features</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-73907d29-c951-4cc3-ab9d-01c21e481c2d' class='xr-section-summary-in' type='checkbox'  checked><label for='section-73907d29-c951-4cc3-ab9d-01c21e481c2d' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 18131 18132 18133 18134</div><input id='attrs-6613f7c1-4e94-4620-9cb4-fb54b9a876d3' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-6613f7c1-4e94-4620-9cb4-fb54b9a876d3' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-355eba57-b557-42be-bb2f-fd8906b7552f' class='xr-var-data-in' type='checkbox'><label for='data-355eba57-b557-42be-bb2f-fd8906b7552f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 18132, 18133, 18134])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-18c631f8-51e0-40ab-9240-187545895496' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-18c631f8-51e0-40ab-9240-187545895496' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ab8b26a0-53c5-40d3-b4f8-dec1d6ef7131' class='xr-var-data-in' type='checkbox'><label for='data-ab8b26a0-53c5-40d3-b4f8-dec1d6ef7131' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
        &#x27;Collagen IV&#x27;, &#x27;CD4&#x27;, &#x27;CD7&#x27;, &#x27;Kappa&#x27;, &#x27;CD20&#x27;, &#x27;CD34&#x27;, &#x27;PAX5&#x27;, &#x27;PD-1&#x27;,
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
-       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granyzme B&#x27;,
-       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;_labels&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</div><input id='attrs-ebf0b9d1-b969-4ebc-83d2-82be001a06ae' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ebf0b9d1-b969-4ebc-83d2-82be001a06ae' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1c7e1db4-b427-4aa1-ba22-70d0d2950c58' class='xr-var-data-in' type='checkbox'><label for='data-1c7e1db4-b427-4aa1-ba22-70d0d2950c58' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_labels&#x27;, &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>la_props</span></div><div class='xr-var-dims'>(la_props)</div><div class='xr-var-dtype'>&lt;U6</div><div class='xr-var-preview xr-preview'>&#x27;_color&#x27; &#x27;_name&#x27;</div><input id='attrs-7422577d-e21a-4dc8-b9bf-dd13af48eb2e' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-7422577d-e21a-4dc8-b9bf-dd13af48eb2e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2d12dc7b-70f5-4e34-aa70-09eadf147367' class='xr-var-data-in' type='checkbox'><label for='data-2d12dc7b-70f5-4e34-aa70-09eadf147367' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;&lt;U6&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>labels</span></div><div class='xr-var-dims'>(labels)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 6 7 8</div><input id='attrs-ddf02dae-4ba9-4b76-8adb-da12de7d037e' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ddf02dae-4ba9-4b76-8adb-da12de7d037e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-372266af-5250-45a1-b49d-fada66fdbd44' class='xr-var-data-in' type='checkbox'><label for='data-372266af-5250-45a1-b49d-fada66fdbd44' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([1, 2, 3, 4, 5, 6, 7, 8])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-a553b041-eae9-485c-845d-974745278662' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a553b041-eae9-485c-845d-974745278662' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8135ef1f-7ecd-4dd9-90a6-4ac992deaf0c' class='xr-var-data-in' type='checkbox'><label for='data-8135ef1f-7ecd-4dd9-90a6-4ac992deaf0c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-77048fb7-9bcd-4e8b-8d46-f2b8a86c0726' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-77048fb7-9bcd-4e8b-8d46-f2b8a86c0726' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a1d46985-cde6-4e7e-a796-997123fad3b3' class='xr-var-data-in' type='checkbox'><label for='data-a1d46985-cde6-4e7e-a796-997123fad3b3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-735d2155-7204-46a9-8985-f4131e81f7f0' class='xr-section-summary-in' type='checkbox'  checked><label for='section-735d2155-7204-46a9-8985-f4131e81f7f0' class='xr-section-summary' >Data variables: <span>(4)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-9e69cff9-3f41-40c1-aefc-d41433bab6b8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9e69cff9-3f41-40c1-aefc-d41433bab6b8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1ae963a1-6e87-4a96-8ec6-d33cba2e0147' class='xr-var-data-in' type='checkbox'><label for='data-1ae963a1-6e87-4a96-8ec6-d33cba2e0147' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
+       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</div><input id='attrs-571d1d11-9538-4bdf-bac2-4d2dc304b653' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-571d1d11-9538-4bdf-bac2-4d2dc304b653' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-91fc4762-6b56-42b1-a80f-b1e96911e48c' class='xr-var-data-in' type='checkbox'><label for='data-91fc4762-6b56-42b1-a80f-b1e96911e48c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-1a2e4ef7-3c59-463f-8b43-556f2ed83da2' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1a2e4ef7-3c59-463f-8b43-556f2ed83da2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a9773c3b-931e-4dee-b6b4-6f4df3755a8c' class='xr-var-data-in' type='checkbox'><label for='data-a9773c3b-931e-4dee-b6b4-6f4df3755a8c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-e33dcc68-c04e-4d28-893e-51569cdc05bf' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e33dcc68-c04e-4d28-893e-51569cdc05bf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4cea440d-ab46-4faa-829f-db89debc1c7c' class='xr-var-data-in' type='checkbox'><label for='data-4cea440d-ab46-4faa-829f-db89debc1c7c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-6b1bcd3b-e7da-47a6-95ce-ec5696c5f6f5' class='xr-section-summary-in' type='checkbox'  checked><label for='section-6b1bcd3b-e7da-47a6-95ce-ec5696c5f6f5' class='xr-section-summary' >Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-a0c833a1-f442-4e5e-9f21-0f414ad4f512' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a0c833a1-f442-4e5e-9f21-0f414ad4f512' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d928b8a0-a35f-478d-ab41-91b2b1e62e91' class='xr-var-data-in' type='checkbox'><label for='data-d928b8a0-a35f-478d-ab41-91b2b1e62e91' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1115,7 +1113,7 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_la_properties</span></div><div class='xr-var-dims'>(labels, la_props)</div><div class='xr-var-dtype'>&lt;U20</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;</div><input id='attrs-14af8f99-0010-446e-beb8-763d0375b073' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-14af8f99-0010-446e-beb8-763d0375b073' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-24aa5b3a-1dec-46a0-b107-d1b83cfb7dad' class='xr-var-data-in' type='checkbox'><label for='data-24aa5b3a-1dec-46a0-b107-d1b83cfb7dad' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(9067, 2), meta=np.ndarray&gt;</div><input id='attrs-07ae9e0a-b264-4415-b13e-1056e2823972' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-07ae9e0a-b264-4415-b13e-1056e2823972' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-28ee3654-134d-435b-ada3-a29552f205d3' class='xr-var-data-in' type='checkbox'><label for='data-28ee3654-134d-435b-ada3-a29552f205d3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1130,69 +1128,14 @@ Data variables:
 
                     <tr>
                         <th> Bytes </th>
-                        <td> 1.25 kiB </td>
-                        <td> 1.25 kiB </td>
+                        <td> 283.34 kiB </td>
+                        <td> 141.67 kiB </td>
                     </tr>
 
                     <tr>
                         <th> Shape </th>
-                        <td> (8, 2) </td>
-                        <td> (8, 2) </td>
-                    </tr>
-                    <tr>
-                        <th> Dask graph </th>
-                        <td colspan="2"> 1 chunks in 2 graph layers </td>
-                    </tr>
-                    <tr>
-                        <th> Data type </th>
-                        <td colspan="2"> <U20 numpy.ndarray </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
-        <svg width="92" height="170" style="stroke:rgb(0,0,0);stroke-width:1" >
-
-  <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="42" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="120" x2="42" y2="120" style="stroke-width:2" />
-
-  <!-- Vertical lines -->
-  <line x1="0" y1="0" x2="0" y2="120" style="stroke-width:2" />
-  <line x1="42" y1="0" x2="42" y2="120" style="stroke-width:2" />
-
-  <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 42.89879552186203,0.0 42.89879552186203,120.0 0.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
-
-  <!-- Text -->
-  <text x="21.449398" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >2</text>
-  <text x="62.898796" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,62.898796,60.000000)">8</text>
-</svg>
-        </td>
-    </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(6280, 3), meta=np.ndarray&gt;</div><input id='attrs-97ee3e59-9032-42dc-adbf-0f1489cfe600' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-97ee3e59-9032-42dc-adbf-0f1489cfe600' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-edbcbd9c-1d01-4a61-9f1b-4470aa72bb47' class='xr-var-data-in' type='checkbox'><label for='data-edbcbd9c-1d01-4a61-9f1b-4470aa72bb47' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
-    <tr>
-        <td>
-            <table style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <td> </td>
-                        <th> Array </th>
-                        <th> Chunk </th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    <tr>
-                        <th> Bytes </th>
-                        <td> 294.38 kiB </td>
-                        <td> 147.19 kiB </td>
-                    </tr>
-
-                    <tr>
-                        <th> Shape </th>
-                        <td> (12560, 3) </td>
-                        <td> (6280, 3) </td>
+                        <td> (18134, 2) </td>
+                        <td> (9067, 2) </td>
                     </tr>
                     <tr>
                         <th> Dask graph </th>
@@ -1221,12 +1164,12 @@ Data variables:
   <polygon points="0.0,0.0 25.412616514582485,0.0 25.412616514582485,120.0 0.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
 
   <!-- Text -->
-  <text x="12.706308" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >3</text>
-  <text x="45.412617" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,45.412617,60.000000)">12560</text>
+  <text x="12.706308" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >2</text>
+  <text x="45.412617" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,45.412617,60.000000)">18134</text>
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-568103a3-4d47-41e7-8a04-5136d5ac5868' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-568103a3-4d47-41e7-8a04-5136d5ac5868' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a46b25d2-7379-4f66-b376-585c6aff15cb' class='xr-var-data-in' type='checkbox'><label for='data-a46b25d2-7379-4f66-b376-585c6aff15cb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-17931f6d-43e9-4977-8818-574698eb77ca' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-17931f6d-43e9-4977-8818-574698eb77ca' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fbc9dc82-1023-4521-9f99-bc05ce094852' class='xr-var-data-in' type='checkbox'><label for='data-fbc9dc82-1023-4521-9f99-bc05ce094852' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1295,24 +1238,24 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-d5cefd13-0ee5-42c2-b9d4-e08d7c3187ea' class='xr-section-summary-in' type='checkbox'  ><label for='section-d5cefd13-0ee5-42c2-b9d4-e08d7c3187ea' class='xr-section-summary' >Indexes: <span>(7)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-52105593-b4af-4bdc-af5e-92b10ebb0d8f' class='xr-index-data-in' type='checkbox'/><label for='index-52105593-b4af-4bdc-af5e-92b10ebb0d8f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-d8390202-fbdf-4e8d-8bb4-abb82852265a' class='xr-section-summary-in' type='checkbox'  ><label for='section-d8390202-fbdf-4e8d-8bb4-abb82852265a' class='xr-section-summary' >Indexes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-35383fea-f50a-4644-af03-f7427fe78b3f' class='xr-index-data-in' type='checkbox'/><label for='index-35383fea-f50a-4644-af03-f7427fe78b3f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
        ...
-       12551, 12552, 12553, 12554, 12555, 12556, 12557, 12558, 12559, 12560],
-      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=12560))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-2ef4c00c-cfa5-4e5f-b0e5-69f3b048c0dd' class='xr-index-data-in' type='checkbox'/><label for='index-2ef4c00c-cfa5-4e5f-b0e5-69f3b048c0dd' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+       18125, 18126, 18127, 18128, 18129, 18130, 18131, 18132, 18133, 18134],
+      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=18134))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-3ef8d427-f340-4bf5-ba2a-87ecd826490a' class='xr-index-data-in' type='checkbox'/><label for='index-3ef8d427-f340-4bf5-ba2a-87ecd826490a' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
        &#x27;Collagen IV&#x27;, &#x27;CD4&#x27;, &#x27;CD7&#x27;, &#x27;Kappa&#x27;, &#x27;CD20&#x27;, &#x27;CD34&#x27;, &#x27;PAX5&#x27;, &#x27;PD-1&#x27;,
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
-       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granyzme B&#x27;,
+       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
        &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;],
-      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-1293293b-9d41-485c-bf30-70ff9d1d6f13' class='xr-index-data-in' type='checkbox'/><label for='index-1293293b-9d41-485c-bf30-70ff9d1d6f13' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_labels&#x27;, &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>la_props</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-3d85f4a2-b490-4035-8ef4-20f752310320' class='xr-index-data-in' type='checkbox'/><label for='index-3d85f4a2-b490-4035-8ef4-20f752310320' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;object&#x27;, name=&#x27;la_props&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>labels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-db0621eb-1d98-4eaf-80af-a98aa6712511' class='xr-index-data-in' type='checkbox'/><label for='index-db0621eb-1d98-4eaf-80af-a98aa6712511' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([1, 2, 3, 4, 5, 6, 7, 8], dtype=&#x27;int64&#x27;, name=&#x27;labels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-5e70da09-6374-412d-9574-59463f8c3cf9' class='xr-index-data-in' type='checkbox'/><label for='index-5e70da09-6374-412d-9574-59463f8c3cf9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-4f3ffdaf-df6f-4ea4-82c0-de17fcb4cef9' class='xr-index-data-in' type='checkbox'/><label for='index-4f3ffdaf-df6f-4ea4-82c0-de17fcb4cef9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-9563cb0c-0658-48a8-8354-a68e342d923d' class='xr-index-data-in' type='checkbox'/><label for='index-9563cb0c-0658-48a8-8354-a68e342d923d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-c50ac538-453c-40ea-9b23-5776be76c749' class='xr-index-data-in' type='checkbox'/><label for='index-c50ac538-453c-40ea-9b23-5776be76c749' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-a74189df-bcbe-4224-a793-71d8a6db1719' class='xr-index-data-in' type='checkbox'/><label for='index-a74189df-bcbe-4224-a793-71d8a6db1719' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-53abf671-9284-4281-8159-4769be2e7a57' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-53abf671-9284-4281-8159-4769be2e7a57' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-aad8605b-8945-4436-9a15-fb4ade913c89' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-aad8605b-8945-4436-9a15-fb4ade913c89' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
 </div>
 <section id="Plotting-Channel-Intensities">
 <h2>Plotting Channel Intensities<a class="headerlink" href="#Plotting-Channel-Intensities" title="Link to this heading">¶</a></h2>
@@ -1322,7 +1265,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># selecting the DAPI channel and showing the result with pl.show()</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1338,7 +1281,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;orange&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;orange&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1354,7 +1297,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1375,9 +1318,13 @@ Data variables:
 
 <span class="c1"># populating the first subplot</span>
 <span class="c1"># note how we set ax=ax[0] to tell the plotting function to use the first subplot</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="c1"># populating the second subplot</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1394,7 +1341,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">legend_image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">legend_image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -1418,7 +1365,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">)</span>
@@ -1441,7 +1388,12 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s2">&quot;area&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">(</span><span class="s2">&quot;area&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1457,7 +1409,7 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;centroid-0&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;centroid-0&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">legend_obs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1468,12 +1420,33 @@ Data variables:
 <img alt="../_images/notebooks_Plotting_20_0.png" src="../_images/notebooks_Plotting_20_0.png" />
 </div>
 </div>
-</section>
-<section id="Rendering-Labels">
-<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Link to this heading">¶</a></h2>
+<p>ds = xr.open_zarr(“../../data/LN_24_1_unprocessed.zarr”)## Rendering Labels</p>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> also has an argument called <code class="docutils literal notranslate"><span class="pre">render_labels</span></code>, which can be used to render cell type labels. We can simultaneously deactivate the rendering of the intensities to get an image of only the labels.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reading in a dataset containing labels</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
+
+<span class="c1"># setting colors for nicer visualizations</span>
+<span class="n">celltype_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;B cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;T cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
+    <span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
@@ -1485,12 +1458,12 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_22_0.png" src="../_images/notebooks_Plotting_22_0.png" />
+<img alt="../_images/notebooks_Plotting_23_0.png" src="../_images/notebooks_Plotting_23_0.png" />
 </div>
 </div>
 <p>We can combine this with rendering the segmentation masks for a clearer picture of where exactly the cell boundaries lie.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
@@ -1502,20 +1475,20 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_24_0.png" src="../_images/notebooks_Plotting_24_0.png" />
+<img alt="../_images/notebooks_Plotting_25_0.png" src="../_images/notebooks_Plotting_25_0.png" />
 </div>
 </div>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">.la[]</span></code> accessor we can also subset cell labels, rather than displaying all of them. We can also use the <code class="docutils literal notranslate"><span class="pre">la.set_label_colors()</span></code> to set custom colors for our labels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s2">&quot;T (CD3)&quot;</span><span class="p">,</span> <span class="s2">&quot;B (PAX5)&quot;</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">&quot;T (CD3)&quot;</span><span class="p">,</span> <span class="s2">&quot;B (PAX5)&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s2">&quot;T cell&quot;</span><span class="p">,</span> <span class="s2">&quot;B cell&quot;</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">&quot;T cell&quot;</span><span class="p">,</span> <span class="s2">&quot;B cell&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="p">)</span>
 </pre></div>
@@ -1525,27 +1498,32 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_26_0.png" src="../_images/notebooks_Plotting_26_0.png" />
+<img alt="../_images/notebooks_Plotting_27_0.png" src="../_images/notebooks_Plotting_27_0.png" />
 </div>
 </div>
 </section>
 <section id="Rendering-Neighborhoods">
 <h2>Rendering Neighborhoods<a class="headerlink" href="#Rendering-Neighborhoods" title="Link to this heading">¶</a></h2>
-<p>Lastly, we can also render neighborhoods. How to obtain such neighborhoods is shown in the <code class="docutils literal notranslate"><span class="pre">Neighborhoods</span></code> notebook.</p>
+<p>We can also render neighborhoods. How to obtain such neighborhoods is shown in the <code class="docutils literal notranslate"><span class="pre">Neighborhoods</span></code> notebook.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># obtaining an object which contains neighborhoods</span>
-<span class="n">ds_neighborhood</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/sample_1_with_neighborhoods.zarr&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># obtaining an object that already contains neighborhoods</span>
+<span class="n">ds_neighborhood</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the neighborhoods</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting neighborhood colors</span>
+<span class="n">ds_neighborhood</span> <span class="o">=</span> <span class="n">ds_neighborhood</span><span class="o">.</span><span class="n">nh</span><span class="o">.</span><span class="n">set_neighborhood_colors</span><span class="p">(</span>
+    <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Neighborhood </span><span class="si">{</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="s2">&quot;darkgray&quot;</span><span class="p">,</span> <span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># plotting the neighborhoods</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_neighborhood</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -1555,7 +1533,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_29_0.png" src="../_images/notebooks_Plotting_29_0.png" />
+<img alt="../_images/notebooks_Plotting_30_0.png" src="../_images/notebooks_Plotting_30_0.png" />
 </div>
 </div>
 </section>
@@ -1563,13 +1541,13 @@ Data variables:
 <h2>Annotation of Regions or Cells<a class="headerlink" href="#Annotation-of-Regions-or-Cells" title="Link to this heading">¶</a></h2>
 <p>We can also annotate regions or cells within the plots.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># highlighting a region with pl.add_box()</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">add_box</span><span class="p">([</span><span class="mi">1230</span><span class="p">,</span> <span class="mi">1480</span><span class="p">],</span> <span class="p">[</span><span class="mi">640</span><span class="p">,</span> <span class="mi">840</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -1581,20 +1559,20 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_32_0.png" src="../_images/notebooks_Plotting_32_0.png" />
+<img alt="../_images/notebooks_Plotting_33_0.png" src="../_images/notebooks_Plotting_33_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># selecting all B cells and annotating them with pl.annotate()</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s2">&quot;B (PAX5)&quot;</span><span class="p">]</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1500</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1200</span><span class="p">:</span><span class="mi">1700</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">la</span><span class="p">[</span><span class="s2">&quot;B cell&quot;</span><span class="p">]</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
-    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">&quot;B (PAX5)&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">&quot;B cell&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">annotate</span><span class="p">()</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
 <span class="p">)</span>
@@ -1605,7 +1583,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_33_0.png" src="../_images/notebooks_Plotting_33_0.png" />
+<img alt="../_images/notebooks_Plotting_34_0.png" src="../_images/notebooks_Plotting_34_0.png" />
 </div>
 </div>
 </section>
@@ -1613,25 +1591,10 @@ Data variables:
 <h2>Expert Plotting<a class="headerlink" href="#Expert-Plotting" title="Link to this heading">¶</a></h2>
 <p>To gain more control over your plots, you can use the functions <code class="docutils literal notranslate"><span class="pre">colorize</span></code>, <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, and <code class="docutils literal notranslate"><span class="pre">render_labels</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">show</span></code>, which provides a high-level wrapper around these). Those methods allow for more nuanced adjustments of the final plot. Here are a few examples, for more details please consult the documentation of the corresponding methods.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_36_0.png" src="../_images/notebooks_Plotting_36_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1646,7 +1609,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1661,8 +1624,23 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_labels</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Plotting_39_0.png" src="../_images/notebooks_Plotting_39_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD3&quot;</span><span class="p">,</span> <span class="s2">&quot;PAX5&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_segmentation</span><span class="p">()</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
@@ -1674,12 +1652,12 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_39_0.png" src="../_images/notebooks_Plotting_39_0.png" />
+<img alt="../_images/notebooks_Plotting_40_0.png" src="../_images/notebooks_Plotting_40_0.png" />
 </div>
 </div>
 <p>You can also use scatterplots instad of always plotting the images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating a scatter plot of the labels</span>
@@ -1691,29 +1669,16 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Plotting_41_0.png" src="../_images/notebooks_Plotting_41_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># quickly adding a quantification</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="s2">&quot;intensity_mean&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;arcsinh&quot;</span><span class="p">)</span>
-</pre></div>
+<img alt="../_images/notebooks_Plotting_42_0.png" src="../_images/notebooks_Plotting_42_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating a scatter plot of any categorical variable in obs</span>
-<span class="c1"># as an example, we are adding a binarization column to the obs</span>
-<span class="n">ds_with_binarization_cd4</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">threshold_labels</span><span class="p">({</span><span class="s2">&quot;CD4&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">},</span> <span class="n">layer_key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">)</span>
-
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_binarization_cd4</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;CD4&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_binarization_cd4</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;CD4_binarized&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">},</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;CD8&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s2">&quot;CD8_binarized&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">},</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1747,7 +1712,7 @@ Data variables:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1759,12 +1724,34 @@ Data variables:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_multisegmentation</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;_cellpose_segmentation&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_multisegmentation</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ds_unprocessed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">]]</span>
+    <span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">:</span><span class="mi">2500</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cellpose</span><span class="p">(</span><span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;_cellpose_segmentation&quot;</span><span class="p">,</span> <span class="n">channel_settings</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+
+Welcome to CellposeSAM, cellpose v
+cellpose version:       4.0.4
+platform:               linux
+python version:         3.10.0
+torch version:          2.7.0+cu126! The neural network component of
+CPSAM is much larger than in previous versions and CPU excution is slow.
+We encourage users to use GPU/MPS if available.
+
+
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1774,30 +1761,12 @@ Data variables:
 Neither TORCH CUDA nor MPS version not installed/working.
 &gt;&gt;&gt;&gt; using CPU
 &gt;&gt;&gt;&gt; using CPU
-&gt;&gt; cyto3 &lt;&lt; model set to be used
-&gt;&gt;&gt;&gt; loading model /home/meyerben/.cellpose/models/cyto3
-/home/meyerben/meyerben/.conda/envs/tmp_env_2/lib/python3.10/site-packages/cellpose/resnet_torch.py:280: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
-  state_dict = torch.load(filename, map_location=torch.device(&#34;cpu&#34;))
-&gt;&gt;&gt;&gt; model diam_mean =  30.000 (ROIs rescaled to this size during training)
+&gt;&gt;&gt;&gt; loading model /home/meyerben/.cellpose/models/cpsam
 Performing independent segmentation on all markers. If you want to perform joint segmentation, please set the channel_settings argument appropriately.
-channels set to [0, 0]
-~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 6.95 sec
-&gt;&gt;&gt; diameter(s) =
-[ 12.36 ]
-~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 15.91 sec
-channels set to [0, 0]
-~~~ ESTIMATING CELL DIAMETER(S) ~~~
-estimated cell diameter(s) in 7.66 sec
-&gt;&gt;&gt; diameter(s) =
-[ 19.38 ]
-~~~ FINDING MASKS ~~~
-&gt;&gt;&gt;&gt; TOTAL TIME 18.80 sec
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
@@ -1816,7 +1785,7 @@ estimated cell diameter(s) in 7.66 sec
 </div>
 <p>We can also plot histograms of any table, for example the observations (e. g. cell area) or the marker distribution.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># quick check what our object looks like</span>
@@ -1825,7 +1794,7 @@ estimated cell diameter(s) in 7.66 sec
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1860,6 +1829,7 @@ estimated cell diameter(s) in 7.66 sec
 }
 
 html[theme=dark],
+html[data-theme=dark],
 body[data-theme=dark],
 body.vscode-dark {
   --xr-font-color0: rgba(255, 255, 255, 1);
@@ -1910,7 +1880,7 @@ body.vscode-dark {
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
-  grid-template-columns: 150px auto auto 1fr 20px 20px;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
 }
 
 .xr-section-item {
@@ -1918,7 +1888,8 @@ body.vscode-dark {
 }
 
 .xr-section-item input {
-  display: none;
+  display: inline-block;
+  opacity: 0;
 }
 
 .xr-section-item input + label {
@@ -1928,6 +1899,10 @@ body.vscode-dark {
 .xr-section-item input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0);
 }
 
 .xr-section-item input:enabled + label:hover {
@@ -2192,30 +2167,268 @@ dl.xr-attrs {
   stroke: currentColor;
   fill: currentColor;
 }
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
-Dimensions:         (cells: 12560, channels: 56, features: 4, la_props: 2,
-                     labels: 8, x: 3000, y: 3000)
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 7GB
+Dimensions:            (labels: 7, la_props: 2, cells: 18134, cells_2: 18134,
+                        channels: 56, features: 22, la_features: 4,
+                        neighborhoods: 6, nh_props: 2, x: 3000, y: 3000)
 Coordinates:
-  * cells           (cells) int64 1 2 3 4 5 6 ... 12556 12557 12558 12559 12560
-  * channels        (channels) &lt;U11 &#x27;DAPI&#x27; &#x27;Helios&#x27; &#x27;CD10&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
-  * features        (features) &lt;U10 &#x27;_labels&#x27; &#x27;area&#x27; &#x27;centroid-0&#x27; &#x27;centroid-1&#x27;
-  * la_props        (la_props) &lt;U6 &#x27;_color&#x27; &#x27;_name&#x27;
-  * labels          (labels) int64 1 2 3 4 5 6 7 8
-  * x               (x) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
-  * y               (y) int64 0 1 2 3 4 5 6 ... 2994 2995 2996 2997 2998 2999
+  * labels             (labels) int64 56B 1 2 3 4 5 6 7
+  * la_props           (la_props) &lt;U6 48B &#x27;_color&#x27; &#x27;_name&#x27;
+  * cells              (cells) int64 145kB 1 2 3 4 5 ... 18131 18132 18133 18134
+  * cells_2            (cells_2) int64 145kB 1 2 3 4 ... 18131 18132 18133 18134
+  * channels           (channels) &lt;U11 2kB &#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;
+  * features           (features) object 176B &#x27;BCL-2_binarized&#x27; ... &#x27;inter_la...
+  * la_features        (la_features) object 32B &#x27;labels_0&#x27; ... &#x27;labels_3&#x27;
+  * neighborhoods      (neighborhoods) int64 48B 1 2 3 4 5 6
+  * nh_props           (nh_props) &lt;U6 48B &#x27;_color&#x27; &#x27;_name&#x27;
+  * x                  (x) int64 24kB 0 1 2 3 4 5 ... 2995 2996 2997 2998 2999
+  * y                  (y) int64 24kB 0 1 2 3 4 5 ... 2995 2996 2997 2998 2999
 Data variables:
-    _image          (channels, y, x) uint8 dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
-    _la_properties  (labels, la_props) &lt;U20 dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;
-    _obs            (cells, features) float64 dask.array&lt;chunksize=(6280, 2), meta=np.ndarray&gt;
-    _segmentation   (y, x) int64 dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;
-    _intensity      (cells, channels) float64 3.111 0.0 1.391 ... 1.324 0.4174</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-608f9929-4bf6-4071-bedf-01d8bfe325b4' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-608f9929-4bf6-4071-bedf-01d8bfe325b4' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>cells</span>: 12560</li><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>features</span>: 4</li><li><span class='xr-has-index'>la_props</span>: 2</li><li><span class='xr-has-index'>labels</span>: 8</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>y</span>: 3000</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-ea61bd40-1527-44e2-9f7d-f1ebfae9871f' class='xr-section-summary-in' type='checkbox'  checked><label for='section-ea61bd40-1527-44e2-9f7d-f1ebfae9871f' class='xr-section-summary' >Coordinates: <span>(7)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 12557 12558 12559 12560</div><input id='attrs-ec4ac863-d879-4a05-a599-87e6d564efc5' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ec4ac863-d879-4a05-a599-87e6d564efc5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9ce15681-d320-4e86-8957-93f4105f934f' class='xr-var-data-in' type='checkbox'><label for='data-9ce15681-d320-4e86-8957-93f4105f934f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 12558, 12559, 12560])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-26723859-0856-4dc2-a3dd-13847c378585' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-26723859-0856-4dc2-a3dd-13847c378585' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bb2c0705-99ff-4069-b22d-1fc04ecd7577' class='xr-var-data-in' type='checkbox'><label for='data-bb2c0705-99ff-4069-b22d-1fc04ecd7577' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+    _adjacency_matrix  (cells, cells_2) int64 3GB dask.array&lt;chunksize=(567, 567), meta=np.ndarray&gt;
+    _image             (channels, y, x) float64 4GB dask.array&lt;chunksize=(4, 375, 375), meta=np.ndarray&gt;
+    _image_raw         (channels, y, x) uint8 504MB dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
+    _intensity         (cells, channels) float64 8MB dask.array&lt;chunksize=(4534, 14), meta=np.ndarray&gt;
+    _la_layers         (cells, la_features) object 580kB dask.array&lt;chunksize=(9067, 4), meta=np.ndarray&gt;
+    _nh_properties     (neighborhoods, nh_props) &lt;U14 672B dask.array&lt;chunksize=(6, 2), meta=np.ndarray&gt;
+    _obs               (cells, features) float64 3MB 0.0 0.0 ... 0.8421 0.1053
+    _segmentation      (y, x) int64 72MB dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;
+    _la_properties     (labels, la_props) object 112B &#x27;#5799d1&#x27; ... &#x27;T cell&#x27;</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-739b05bd-535b-4a6e-b596-172970cf152e' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-739b05bd-535b-4a6e-b596-172970cf152e' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>labels</span>: 7</li><li><span class='xr-has-index'>la_props</span>: 2</li><li><span class='xr-has-index'>cells</span>: 18134</li><li><span class='xr-has-index'>cells_2</span>: 18134</li><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>features</span>: 22</li><li><span class='xr-has-index'>la_features</span>: 4</li><li><span class='xr-has-index'>neighborhoods</span>: 6</li><li><span class='xr-has-index'>nh_props</span>: 2</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>y</span>: 3000</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-6be45a2e-51cb-4ba0-b101-8d4b76ff7552' class='xr-section-summary-in' type='checkbox'  checked><label for='section-6be45a2e-51cb-4ba0-b101-8d4b76ff7552' class='xr-section-summary' >Coordinates: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>labels</span></div><div class='xr-var-dims'>(labels)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 6 7</div><input id='attrs-21769c24-eb10-43bf-bd1b-1fd3270ceb2a' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-21769c24-eb10-43bf-bd1b-1fd3270ceb2a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-80062be1-42cc-4ed9-aab4-a3effa06cb72' class='xr-var-data-in' type='checkbox'><label for='data-80062be1-42cc-4ed9-aab4-a3effa06cb72' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([1, 2, 3, 4, 5, 6, 7])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>la_props</span></div><div class='xr-var-dims'>(la_props)</div><div class='xr-var-dtype'>&lt;U6</div><div class='xr-var-preview xr-preview'>&#x27;_color&#x27; &#x27;_name&#x27;</div><input id='attrs-9a435b77-2193-4bd4-8394-8d0fea4a7fb8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9a435b77-2193-4bd4-8394-8d0fea4a7fb8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d2341633-f03f-40ba-ad51-b36bfb1c67e9' class='xr-var-data-in' type='checkbox'><label for='data-d2341633-f03f-40ba-ad51-b36bfb1c67e9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;&lt;U6&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 18131 18132 18133 18134</div><input id='attrs-6e3eb280-1d24-4fed-8628-96d3155e754b' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-6e3eb280-1d24-4fed-8628-96d3155e754b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7fb93edc-e727-45a2-8477-54c9106da7c0' class='xr-var-data-in' type='checkbox'><label for='data-7fb93edc-e727-45a2-8477-54c9106da7c0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 18132, 18133, 18134])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells_2</span></div><div class='xr-var-dims'>(cells_2)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 18131 18132 18133 18134</div><input id='attrs-5c67d69e-7eeb-4b53-9869-bf90e86ad013' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-5c67d69e-7eeb-4b53-9869-bf90e86ad013' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3b6cab92-b059-4664-9d36-f724854772df' class='xr-var-data-in' type='checkbox'><label for='data-3b6cab92-b059-4664-9d36-f724854772df' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 18132, 18133, 18134])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-f7b11f3c-17fb-4801-bde3-ecfb2b1d5364' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-f7b11f3c-17fb-4801-bde3-ecfb2b1d5364' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b593d282-e795-4fd3-bf6a-eb995f10faf6' class='xr-var-data-in' type='checkbox'><label for='data-b593d282-e795-4fd3-bf6a-eb995f10faf6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
        &#x27;Collagen IV&#x27;, &#x27;CD4&#x27;, &#x27;CD7&#x27;, &#x27;Kappa&#x27;, &#x27;CD20&#x27;, &#x27;CD34&#x27;, &#x27;PAX5&#x27;, &#x27;PD-1&#x27;,
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
-       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granyzme B&#x27;,
-       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;_labels&#x27; &#x27;area&#x27; ... &#x27;centroid-1&#x27;</div><input id='attrs-1b440a1e-d502-4756-b789-ea5bfe21dc01' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1b440a1e-d502-4756-b789-ea5bfe21dc01' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bdbf9183-49ef-4159-9183-14a053cbbdf3' class='xr-var-data-in' type='checkbox'><label for='data-bdbf9183-49ef-4159-9183-14a053cbbdf3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_labels&#x27;, &#x27;area&#x27;, &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>la_props</span></div><div class='xr-var-dims'>(la_props)</div><div class='xr-var-dtype'>&lt;U6</div><div class='xr-var-preview xr-preview'>&#x27;_color&#x27; &#x27;_name&#x27;</div><input id='attrs-971bb54d-5938-4b52-a304-e0d86c0ad0b5' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-971bb54d-5938-4b52-a304-e0d86c0ad0b5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e478b645-9d10-48a7-b12d-fe6f0703bc53' class='xr-var-data-in' type='checkbox'><label for='data-e478b645-9d10-48a7-b12d-fe6f0703bc53' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;&lt;U6&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>labels</span></div><div class='xr-var-dims'>(labels)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 6 7 8</div><input id='attrs-040dc2c9-db1a-41e6-af91-b9364e98c5c6' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-040dc2c9-db1a-41e6-af91-b9364e98c5c6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-00b0d071-4b4e-45fe-883d-33a8f16bb525' class='xr-var-data-in' type='checkbox'><label for='data-00b0d071-4b4e-45fe-883d-33a8f16bb525' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([1, 2, 3, 4, 5, 6, 7, 8])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-2f343403-ea5e-42f5-8456-f1e36f991658' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-2f343403-ea5e-42f5-8456-f1e36f991658' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-69c71ce9-62a7-4c57-b58d-ee2fc24bade8' class='xr-var-data-in' type='checkbox'><label for='data-69c71ce9-62a7-4c57-b58d-ee2fc24bade8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-e96a19f6-7126-4c95-8fa4-286cda94b8b9' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e96a19f6-7126-4c95-8fa4-286cda94b8b9' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-40f057cb-56f2-4169-b884-1f34c1c59789' class='xr-var-data-in' type='checkbox'><label for='data-40f057cb-56f2-4169-b884-1f34c1c59789' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-0a7cd7f9-67dc-458c-b702-b72acd4a8c8f' class='xr-section-summary-in' type='checkbox'  checked><label for='section-0a7cd7f9-67dc-458c-b702-b72acd4a8c8f' class='xr-section-summary' >Data variables: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-f85a6226-aa72-492e-947d-cdcc3a704d38' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-f85a6226-aa72-492e-947d-cdcc3a704d38' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-de71be8d-6778-41d8-a6ad-6bbec88ea063' class='xr-var-data-in' type='checkbox'><label for='data-de71be8d-6778-41d8-a6ad-6bbec88ea063' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
+       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;BCL-2_binarized&#x27; ... &#x27;inter_lab...</div><input id='attrs-b14e2781-7f29-4bad-9497-1543c01c41f0' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-b14e2781-7f29-4bad-9497-1543c01c41f0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f7abe5f2-0e8e-4dfe-95ba-52963b56083e' class='xr-var-data-in' type='checkbox'><label for='data-f7abe5f2-0e8e-4dfe-95ba-52963b56083e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;BCL-2_binarized&#x27;, &#x27;BCL-6_binarized&#x27;, &#x27;CD163_binarized&#x27;,
+       &#x27;CD45RA_binarized&#x27;, &#x27;CD45RO_binarized&#x27;, &#x27;CD8_binarized&#x27;,
+       &#x27;DAPI_binarized&#x27;, &#x27;FOXP3_binarized&#x27;, &#x27;Helios_binarized&#x27;,
+       &#x27;ICOS_binarized&#x27;, &#x27;PD-1_binarized&#x27;, &#x27;TCF7-TCF1_binarized&#x27;,
+       &#x27;Tim3_binarized&#x27;, &#x27;_labels&#x27;, &#x27;_neighborhoods&#x27;, &#x27;area&#x27;, &#x27;centroid-0&#x27;,
+       &#x27;centroid-1&#x27;, &#x27;degree&#x27;, &#x27;diversity_index&#x27;, &#x27;homophily&#x27;,
+       &#x27;inter_label_connectivity&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>la_features</span></div><div class='xr-var-dims'>(la_features)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;labels_0&#x27; ... &#x27;labels_3&#x27;</div><input id='attrs-4b1b8a5f-c0f4-440c-9d40-b78a7c6b4f2d' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-4b1b8a5f-c0f4-440c-9d40-b78a7c6b4f2d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1fea872f-3df6-4591-bf69-7df45653b736' class='xr-var-data-in' type='checkbox'><label for='data-1fea872f-3df6-4591-bf69-7df45653b736' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;labels_0&#x27;, &#x27;labels_1&#x27;, &#x27;labels_2&#x27;, &#x27;labels_3&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>neighborhoods</span></div><div class='xr-var-dims'>(neighborhoods)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 5 6</div><input id='attrs-1628b21e-70a5-4e9f-b0a6-bbb788755c80' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1628b21e-70a5-4e9f-b0a6-bbb788755c80' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-db264fc6-c8e6-4402-bde9-b1460b3122a5' class='xr-var-data-in' type='checkbox'><label for='data-db264fc6-c8e6-4402-bde9-b1460b3122a5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([1, 2, 3, 4, 5, 6])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>nh_props</span></div><div class='xr-var-dims'>(nh_props)</div><div class='xr-var-dtype'>&lt;U6</div><div class='xr-var-preview xr-preview'>&#x27;_color&#x27; &#x27;_name&#x27;</div><input id='attrs-d197d9a2-32f1-4edf-9812-0b5685b8d503' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-d197d9a2-32f1-4edf-9812-0b5685b8d503' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-83d14cb6-21e9-423f-a80c-fe8a5b1464c8' class='xr-var-data-in' type='checkbox'><label for='data-83d14cb6-21e9-423f-a80c-fe8a5b1464c8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;&lt;U6&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-c23fd160-0e8d-4c46-a852-60a119ecc150' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c23fd160-0e8d-4c46-a852-60a119ecc150' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8e86b831-c377-4bbc-a637-28d45f493dbb' class='xr-var-data-in' type='checkbox'><label for='data-8e86b831-c377-4bbc-a637-28d45f493dbb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-1dc7fcf9-5a95-4054-9b15-fde767b89d89' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1dc7fcf9-5a95-4054-9b15-fde767b89d89' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-26962512-8902-4d7e-8642-f502ae5e605c' class='xr-var-data-in' type='checkbox'><label for='data-26962512-8902-4d7e-8642-f502ae5e605c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-b7e510bd-3925-4a20-95c5-a5b7d1cf264e' class='xr-section-summary-in' type='checkbox'  checked><label for='section-b7e510bd-3925-4a20-95c5-a5b7d1cf264e' class='xr-section-summary' >Data variables: <span>(9)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_adjacency_matrix</span></div><div class='xr-var-dims'>(cells, cells_2)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(567, 567), meta=np.ndarray&gt;</div><input id='attrs-e995a827-cd57-4fb0-9d5c-3dddbf7318da' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e995a827-cd57-4fb0-9d5c-3dddbf7318da' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-821249ec-6023-466f-8f0d-9c1fbd2cc141' class='xr-var-data-in' type='checkbox'><label for='data-821249ec-6023-466f-8f0d-9c1fbd2cc141' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 2.45 GiB </td>
+                        <td> 2.45 MiB </td>
+                    </tr>
+
+                    <tr>
+                        <th> Shape </th>
+                        <td> (18134, 18134) </td>
+                        <td> (567, 567) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 1024 chunks in 4 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> int64 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="170" height="170" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="0" y1="0" x2="120" y2="0" style="stroke-width:2" />
+  <line x1="0" y1="3" x2="120" y2="3" />
+  <line x1="0" y1="11" x2="120" y2="11" />
+  <line x1="0" y1="18" x2="120" y2="18" />
+  <line x1="0" y1="22" x2="120" y2="22" />
+  <line x1="0" y1="30" x2="120" y2="30" />
+  <line x1="0" y1="37" x2="120" y2="37" />
+  <line x1="0" y1="41" x2="120" y2="41" />
+  <line x1="0" y1="48" x2="120" y2="48" />
+  <line x1="0" y1="56" x2="120" y2="56" />
+  <line x1="0" y1="60" x2="120" y2="60" />
+  <line x1="0" y1="67" x2="120" y2="67" />
+  <line x1="0" y1="75" x2="120" y2="75" />
+  <line x1="0" y1="78" x2="120" y2="78" />
+  <line x1="0" y1="86" x2="120" y2="86" />
+  <line x1="0" y1="93" x2="120" y2="93" />
+  <line x1="0" y1="97" x2="120" y2="97" />
+  <line x1="0" y1="105" x2="120" y2="105" />
+  <line x1="0" y1="112" x2="120" y2="112" />
+  <line x1="0" y1="120" x2="120" y2="120" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="0" y1="0" x2="0" y2="120" style="stroke-width:2" />
+  <line x1="3" y1="0" x2="3" y2="120" />
+  <line x1="11" y1="0" x2="11" y2="120" />
+  <line x1="18" y1="0" x2="18" y2="120" />
+  <line x1="22" y1="0" x2="22" y2="120" />
+  <line x1="30" y1="0" x2="30" y2="120" />
+  <line x1="37" y1="0" x2="37" y2="120" />
+  <line x1="41" y1="0" x2="41" y2="120" />
+  <line x1="48" y1="0" x2="48" y2="120" />
+  <line x1="56" y1="0" x2="56" y2="120" />
+  <line x1="60" y1="0" x2="60" y2="120" />
+  <line x1="67" y1="0" x2="67" y2="120" />
+  <line x1="75" y1="0" x2="75" y2="120" />
+  <line x1="78" y1="0" x2="78" y2="120" />
+  <line x1="86" y1="0" x2="86" y2="120" />
+  <line x1="93" y1="0" x2="93" y2="120" />
+  <line x1="97" y1="0" x2="97" y2="120" />
+  <line x1="105" y1="0" x2="105" y2="120" />
+  <line x1="112" y1="0" x2="112" y2="120" />
+  <line x1="120" y1="0" x2="120" y2="120" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="0.0,0.0 120.0,0.0 120.0,120.0 0.0,120.0" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="60.000000" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >18134</text>
+  <text x="140.000000" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,140.000000,60.000000)">18134</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(4, 375, 375), meta=np.ndarray&gt;</div><input id='attrs-9a3f0820-cf0a-4d09-9c22-62546d4385a7' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9a3f0820-cf0a-4d09-9c22-62546d4385a7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5c00f68b-681a-4930-960b-eee87c6e1934' class='xr-var-data-in' type='checkbox'><label for='data-5c00f68b-681a-4930-960b-eee87c6e1934' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 3.76 GiB </td>
+                        <td> 4.29 MiB </td>
+                    </tr>
+
+                    <tr>
+                        <th> Shape </th>
+                        <td> (56, 3000, 3000) </td>
+                        <td> (4, 375, 375) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 896 chunks in 2 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> float64 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="196" height="186" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="26" y2="16" style="stroke-width:2" />
+  <line x1="10" y1="15" x2="26" y2="31" />
+  <line x1="10" y1="30" x2="26" y2="46" />
+  <line x1="10" y1="45" x2="26" y2="61" />
+  <line x1="10" y1="60" x2="26" y2="76" />
+  <line x1="10" y1="75" x2="26" y2="91" />
+  <line x1="10" y1="90" x2="26" y2="106" />
+  <line x1="10" y1="105" x2="26" y2="121" />
+  <line x1="10" y1="120" x2="26" y2="136" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="10" y2="120" style="stroke-width:2" />
+  <line x1="11" y1="1" x2="11" y2="121" />
+  <line x1="12" y1="2" x2="12" y2="122" />
+  <line x1="13" y1="3" x2="13" y2="123" />
+  <line x1="14" y1="4" x2="14" y2="124" />
+  <line x1="16" y1="6" x2="16" y2="126" />
+  <line x1="17" y1="7" x2="17" y2="127" />
+  <line x1="18" y1="8" x2="18" y2="128" />
+  <line x1="19" y1="9" x2="19" y2="129" />
+  <line x1="20" y1="10" x2="20" y2="130" />
+  <line x1="22" y1="12" x2="22" y2="132" />
+  <line x1="23" y1="13" x2="23" y2="133" />
+  <line x1="24" y1="14" x2="24" y2="134" />
+  <line x1="25" y1="15" x2="25" y2="135" />
+  <line x1="26" y1="16" x2="26" y2="136" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 26.8499639175441,16.8499639175441 26.8499639175441,136.8499639175441 10.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="130" y2="0" style="stroke-width:2" />
+  <line x1="11" y1="1" x2="131" y2="1" />
+  <line x1="12" y1="2" x2="132" y2="2" />
+  <line x1="13" y1="3" x2="133" y2="3" />
+  <line x1="14" y1="4" x2="134" y2="4" />
+  <line x1="16" y1="6" x2="136" y2="6" />
+  <line x1="17" y1="7" x2="137" y2="7" />
+  <line x1="18" y1="8" x2="138" y2="8" />
+  <line x1="19" y1="9" x2="139" y2="9" />
+  <line x1="20" y1="10" x2="140" y2="10" />
+  <line x1="22" y1="12" x2="142" y2="12" />
+  <line x1="23" y1="13" x2="143" y2="13" />
+  <line x1="24" y1="14" x2="144" y2="14" />
+  <line x1="25" y1="15" x2="145" y2="15" />
+  <line x1="26" y1="16" x2="146" y2="16" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="26" y2="16" style="stroke-width:2" />
+  <line x1="25" y1="0" x2="41" y2="16" />
+  <line x1="40" y1="0" x2="56" y2="16" />
+  <line x1="55" y1="0" x2="71" y2="16" />
+  <line x1="70" y1="0" x2="86" y2="16" />
+  <line x1="85" y1="0" x2="101" y2="16" />
+  <line x1="100" y1="0" x2="116" y2="16" />
+  <line x1="115" y1="0" x2="131" y2="16" />
+  <line x1="130" y1="0" x2="146" y2="16" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 130.0,0.0 146.8499639175441,16.8499639175441 26.8499639175441,16.8499639175441" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="26" y1="16" x2="146" y2="16" style="stroke-width:2" />
+  <line x1="26" y1="31" x2="146" y2="31" />
+  <line x1="26" y1="46" x2="146" y2="46" />
+  <line x1="26" y1="61" x2="146" y2="61" />
+  <line x1="26" y1="76" x2="146" y2="76" />
+  <line x1="26" y1="91" x2="146" y2="91" />
+  <line x1="26" y1="106" x2="146" y2="106" />
+  <line x1="26" y1="121" x2="146" y2="121" />
+  <line x1="26" y1="136" x2="146" y2="136" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="26" y1="16" x2="26" y2="136" style="stroke-width:2" />
+  <line x1="41" y1="16" x2="41" y2="136" />
+  <line x1="56" y1="16" x2="56" y2="136" />
+  <line x1="71" y1="16" x2="71" y2="136" />
+  <line x1="86" y1="16" x2="86" y2="136" />
+  <line x1="101" y1="16" x2="101" y2="136" />
+  <line x1="116" y1="16" x2="116" y2="136" />
+  <line x1="131" y1="16" x2="131" y2="136" />
+  <line x1="146" y1="16" x2="146" y2="136" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="26.8499639175441,16.8499639175441 146.8499639175441,16.8499639175441 146.8499639175441,136.8499639175441 26.8499639175441,136.8499639175441" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="86.849964" y="156.849964" font-size="1.0rem" font-weight="100" text-anchor="middle" >3000</text>
+  <text x="166.849964" y="76.849964" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,166.849964,76.849964)">3000</text>
+  <text x="8.424982" y="148.424982" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,8.424982,148.424982)">56</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_image_raw</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-2c0396f8-9eee-4d44-b0f3-e3d48ea64e55' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-2c0396f8-9eee-4d44-b0f3-e3d48ea64e55' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-51697b17-9dc1-441f-8dcb-f0fc87c4c9a3' class='xr-var-data-in' type='checkbox'><label for='data-51697b17-9dc1-441f-8dcb-f0fc87c4c9a3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2327,7 +2540,7 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_la_properties</span></div><div class='xr-var-dims'>(labels, la_props)</div><div class='xr-var-dtype'>&lt;U20</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(8, 2), meta=np.ndarray&gt;</div><input id='attrs-41c39850-4c39-4155-9c42-e3e99b54b27f' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-41c39850-4c39-4155-9c42-e3e99b54b27f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fbab1255-226d-4dff-87f6-9ef1f3c057e5' class='xr-var-data-in' type='checkbox'><label for='data-fbab1255-226d-4dff-87f6-9ef1f3c057e5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_intensity</span></div><div class='xr-var-dims'>(cells, channels)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(4534, 14), meta=np.ndarray&gt;</div><input id='attrs-8c7c09aa-2cf5-4772-8860-a3496bb90f54' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8c7c09aa-2cf5-4772-8860-a3496bb90f54' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-af14354d-fb17-4b22-8b6f-15ddfa6f2c5b' class='xr-var-data-in' type='checkbox'><label for='data-af14354d-fb17-4b22-8b6f-15ddfa6f2c5b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2342,47 +2555,53 @@ Data variables:
 
                     <tr>
                         <th> Bytes </th>
-                        <td> 1.25 kiB </td>
-                        <td> 1.25 kiB </td>
+                        <td> 7.75 MiB </td>
+                        <td> 495.91 kiB </td>
                     </tr>
 
                     <tr>
                         <th> Shape </th>
-                        <td> (8, 2) </td>
-                        <td> (8, 2) </td>
+                        <td> (18134, 56) </td>
+                        <td> (4534, 14) </td>
                     </tr>
                     <tr>
                         <th> Dask graph </th>
-                        <td colspan="2"> 1 chunks in 2 graph layers </td>
+                        <td colspan="2"> 16 chunks in 4 graph layers </td>
                     </tr>
                     <tr>
                         <th> Data type </th>
-                        <td colspan="2"> <U20 numpy.ndarray </td>
+                        <td colspan="2"> float64 numpy.ndarray </td>
                     </tr>
                 </tbody>
             </table>
         </td>
         <td>
-        <svg width="92" height="170" style="stroke:rgb(0,0,0);stroke-width:1" >
+        <svg width="75" height="170" style="stroke:rgb(0,0,0);stroke-width:1" >
 
   <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="42" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="120" x2="42" y2="120" style="stroke-width:2" />
+  <line x1="0" y1="0" x2="25" y2="0" style="stroke-width:2" />
+  <line x1="0" y1="30" x2="25" y2="30" />
+  <line x1="0" y1="60" x2="25" y2="60" />
+  <line x1="0" y1="90" x2="25" y2="90" />
+  <line x1="0" y1="120" x2="25" y2="120" style="stroke-width:2" />
 
   <!-- Vertical lines -->
   <line x1="0" y1="0" x2="0" y2="120" style="stroke-width:2" />
-  <line x1="42" y1="0" x2="42" y2="120" style="stroke-width:2" />
+  <line x1="6" y1="0" x2="6" y2="120" />
+  <line x1="12" y1="0" x2="12" y2="120" />
+  <line x1="19" y1="0" x2="19" y2="120" />
+  <line x1="25" y1="0" x2="25" y2="120" style="stroke-width:2" />
 
   <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 42.89879552186203,0.0 42.89879552186203,120.0 0.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
+  <polygon points="0.0,0.0 25.412616514582485,0.0 25.412616514582485,120.0 0.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
 
   <!-- Text -->
-  <text x="21.449398" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >2</text>
-  <text x="62.898796" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,62.898796,60.000000)">8</text>
+  <text x="12.706308" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >56</text>
+  <text x="45.412617" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,45.412617,60.000000)">18134</text>
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(6280, 2), meta=np.ndarray&gt;</div><input id='attrs-a42b6c61-5d33-44b6-ac41-9845b6038e72' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a42b6c61-5d33-44b6-ac41-9845b6038e72' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-09e1edea-8df1-444a-b1bf-70d0687d62ba' class='xr-var-data-in' type='checkbox'><label for='data-09e1edea-8df1-444a-b1bf-70d0687d62ba' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_la_layers</span></div><div class='xr-var-dims'>(cells, la_features)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(9067, 4), meta=np.ndarray&gt;</div><input id='attrs-dd2b09e1-0922-4a2b-bf8b-ed1ab42fceab' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-dd2b09e1-0922-4a2b-bf8b-ed1ab42fceab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-93be085c-2935-4d99-ab87-ad9e00dcf374' class='xr-var-data-in' type='checkbox'><label for='data-93be085c-2935-4d99-ab87-ad9e00dcf374' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2397,22 +2616,22 @@ Data variables:
 
                     <tr>
                         <th> Bytes </th>
-                        <td> 392.50 kiB </td>
-                        <td> 98.12 kiB </td>
+                        <td> 566.69 kiB </td>
+                        <td> 283.34 kiB </td>
                     </tr>
 
                     <tr>
                         <th> Shape </th>
-                        <td> (12560, 4) </td>
-                        <td> (6280, 2) </td>
+                        <td> (18134, 4) </td>
+                        <td> (9067, 4) </td>
                     </tr>
                     <tr>
                         <th> Dask graph </th>
-                        <td colspan="2"> 4 chunks in 11 graph layers </td>
+                        <td colspan="2"> 2 chunks in 4 graph layers </td>
                     </tr>
                     <tr>
                         <th> Data type </th>
-                        <td colspan="2"> float64 numpy.ndarray </td>
+                        <td colspan="2"> object numpy.ndarray </td>
                     </tr>
                 </tbody>
             </table>
@@ -2427,7 +2646,6 @@ Data variables:
 
   <!-- Vertical lines -->
   <line x1="0" y1="0" x2="0" y2="120" style="stroke-width:2" />
-  <line x1="12" y1="0" x2="12" y2="120" />
   <line x1="25" y1="0" x2="25" y2="120" style="stroke-width:2" />
 
   <!-- Colored Rectangle -->
@@ -2435,11 +2653,78 @@ Data variables:
 
   <!-- Text -->
   <text x="12.706308" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >4</text>
-  <text x="45.412617" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,45.412617,60.000000)">12560</text>
+  <text x="45.412617" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,45.412617,60.000000)">18134</text>
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-573f0d16-5e18-43a6-8821-e43b862e69a6' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-573f0d16-5e18-43a6-8821-e43b862e69a6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-72dc9a44-32bc-4258-a9e2-58952efafa1f' class='xr-var-data-in' type='checkbox'><label for='data-72dc9a44-32bc-4258-a9e2-58952efafa1f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_nh_properties</span></div><div class='xr-var-dims'>(neighborhoods, nh_props)</div><div class='xr-var-dtype'>&lt;U14</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(6, 2), meta=np.ndarray&gt;</div><input id='attrs-919143b4-df95-461b-8326-8eaf847d248e' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-919143b4-df95-461b-8326-8eaf847d248e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b3121c78-4ad6-4391-a84b-e94091107c24' class='xr-var-data-in' type='checkbox'><label for='data-b3121c78-4ad6-4391-a84b-e94091107c24' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 672 B </td>
+                        <td> 672 B </td>
+                    </tr>
+
+                    <tr>
+                        <th> Shape </th>
+                        <td> (6, 2) </td>
+                        <td> (6, 2) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 1 chunks in 2 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> <U14 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="93" height="170" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="0" y1="0" x2="43" y2="0" style="stroke-width:2" />
+  <line x1="0" y1="120" x2="43" y2="120" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="0" y1="0" x2="0" y2="120" style="stroke-width:2" />
+  <line x1="43" y1="0" x2="43" y2="120" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="0.0,0.0 43.88583450710766,0.0 43.88583450710766,120.0 0.0,120.0" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="21.942917" y="140.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" >2</text>
+  <text x="63.885835" y="60.000000" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,63.885835,60.000000)">6</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.0 0.0 ... 0.8421 0.1053</div><input id='attrs-5e3bb6b2-5d99-43ef-80d5-db29c40e58ef' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-5e3bb6b2-5d99-43ef-80d5-db29c40e58ef' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8be7f1e2-8c77-4bc5-8260-8b5ef6071947' class='xr-var-data-in' type='checkbox'><label for='data-8be7f1e2-8c77-4bc5-8260-8b5ef6071947' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[0.        , 0.        , 0.        , ..., 1.31901671, 0.05      ,
+        0.9       ],
+       [0.        , 0.        , 0.        , ..., 1.48871983, 0.35      ,
+        0.6       ],
+       [0.        , 0.        , 0.        , ..., 1.10633595, 0.13333333,
+        0.8       ],
+       ...,
+       [0.        , 0.        , 0.        , ..., 0.38169409, 0.84210526,
+        0.10526316],
+       [0.        , 0.        , 0.        , ..., 0.35606965, 0.85714286,
+        0.0952381 ],
+       [0.        , 0.        , 0.        , ..., 0.38169409, 0.84210526,
+        0.10526316]])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-bf544727-f20b-44bf-823d-457813f061dc' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-bf544727-f20b-44bf-823d-457813f061dc' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-03f87830-dfc7-4471-a232-0c97d5ce137e' class='xr-var-data-in' type='checkbox'><label for='data-03f87830-dfc7-4471-a232-0c97d5ce137e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2508,39 +2793,43 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_intensity</span></div><div class='xr-var-dims'>(cells, channels)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>3.111 0.0 1.391 ... 1.324 0.4174</div><input id='attrs-b1976335-2c90-4c9c-8191-f1386c2a83aa' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-b1976335-2c90-4c9c-8191-f1386c2a83aa' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e797013c-aa1a-4766-9464-fbfc03591fd0' class='xr-var-data-in' type='checkbox'><label for='data-e797013c-aa1a-4766-9464-fbfc03591fd0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[3.1113318 , 0.        , 1.39104035, ..., 0.42827631, 0.528275  ,
-        0.4582596 ],
-       [2.80498506, 0.        , 1.16832115, ..., 2.02908251, 0.42634428,
-        0.52842933],
-       [3.38021961, 0.        , 1.73394497, ..., 0.57174597, 0.72733529,
-        0.49741472],
-       ...,
-       [3.19334124, 0.        , 1.35344852, ..., 0.4051073 , 0.92614581,
-        0.43286647],
-       [3.43748239, 0.        , 1.5590982 , ..., 0.43428781, 1.39939674,
-        0.47313597],
-       [3.21632852, 0.        , 1.3602909 , ..., 0.39690411, 1.32359853,
-        0.41740323]])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d7388ec6-c33d-495e-9359-06411770c105' class='xr-section-summary-in' type='checkbox'  ><label for='section-d7388ec6-c33d-495e-9359-06411770c105' class='xr-section-summary' >Indexes: <span>(7)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-611deef0-61fc-472d-9df2-8fcbd1fd2552' class='xr-index-data-in' type='checkbox'/><label for='index-611deef0-61fc-472d-9df2-8fcbd1fd2552' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_la_properties</span></div><div class='xr-var-dims'>(labels, la_props)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;#5799d1&#x27; &#x27;B cell&#x27; ... &#x27;T cell&#x27;</div><input id='attrs-e09927f1-9b06-4d8a-a7be-50c40a1780c7' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e09927f1-9b06-4d8a-a7be-50c40a1780c7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-da9ce8e0-6ae2-4f9a-a946-af6e2556350e' class='xr-var-data-in' type='checkbox'><label for='data-da9ce8e0-6ae2-4f9a-a946-af6e2556350e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([[&#x27;#5799d1&#x27;, &#x27;B cell&#x27;],
+       [&#x27;#4cbcbd&#x27;, &#x27;Dendritic cell&#x27;],
+       [&#x27;#bf997d&#x27;, &#x27;Endothelial cell&#x27;],
+       [&#x27;#bb7cb4&#x27;, &#x27;Macrophage&#x27;],
+       [&#x27;#de6866&#x27;, &#x27;Myeloid cell&#x27;],
+       [&#x27;#62b346&#x27;, &#x27;Stromal cell&#x27;],
+       [&#x27;#ebc850&#x27;, &#x27;T cell&#x27;]], dtype=object)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-ee4bd302-d54d-4252-a212-259130817d28' class='xr-section-summary-in' type='checkbox'  ><label for='section-ee4bd302-d54d-4252-a212-259130817d28' class='xr-section-summary' >Indexes: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>labels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-df3126f0-3bfa-4b18-9f81-580867b5de75' class='xr-index-data-in' type='checkbox'/><label for='index-df3126f0-3bfa-4b18-9f81-580867b5de75' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([1, 2, 3, 4, 5, 6, 7], dtype=&#x27;int64&#x27;, name=&#x27;labels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>la_props</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-b72b7a32-0630-4341-b598-bf72b7a86e3c' class='xr-index-data-in' type='checkbox'/><label for='index-b72b7a32-0630-4341-b598-bf72b7a86e3c' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;object&#x27;, name=&#x27;la_props&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-1ceab80e-b1f6-4223-ac23-73254596501f' class='xr-index-data-in' type='checkbox'/><label for='index-1ceab80e-b1f6-4223-ac23-73254596501f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
        ...
-       12551, 12552, 12553, 12554, 12555, 12556, 12557, 12558, 12559, 12560],
-      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=12560))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-0436f7c0-8a38-4568-b03c-633a621ddcd0' class='xr-index-data-in' type='checkbox'/><label for='index-0436f7c0-8a38-4568-b03c-633a621ddcd0' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+       18125, 18126, 18127, 18128, 18129, 18130, 18131, 18132, 18133, 18134],
+      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=18134))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>cells_2</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-abb4756e-b927-44de-9073-583f034ba6ae' class='xr-index-data-in' type='checkbox'/><label for='index-abb4756e-b927-44de-9073-583f034ba6ae' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+       ...
+       18125, 18126, 18127, 18128, 18129, 18130, 18131, 18132, 18133, 18134],
+      dtype=&#x27;int64&#x27;, name=&#x27;cells_2&#x27;, length=18134))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-b3a929ad-0c9d-4d3c-b9be-0b5a117add3d' class='xr-index-data-in' type='checkbox'/><label for='index-b3a929ad-0c9d-4d3c-b9be-0b5a117add3d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
        &#x27;Collagen IV&#x27;, &#x27;CD4&#x27;, &#x27;CD7&#x27;, &#x27;Kappa&#x27;, &#x27;CD20&#x27;, &#x27;CD34&#x27;, &#x27;PAX5&#x27;, &#x27;PD-1&#x27;,
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
-       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granyzme B&#x27;,
+       &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
        &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;],
-      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-e6cb6a1d-fd5d-4406-a2c6-fa8ad9ffab6c' class='xr-index-data-in' type='checkbox'/><label for='index-e6cb6a1d-fd5d-4406-a2c6-fa8ad9ffab6c' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_labels&#x27;, &#x27;area&#x27;, &#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>la_props</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-6acf8f5c-ea5a-411f-a984-fc11be3dde82' class='xr-index-data-in' type='checkbox'/><label for='index-6acf8f5c-ea5a-411f-a984-fc11be3dde82' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;object&#x27;, name=&#x27;la_props&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>labels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-d59cf5b3-f244-4961-bca7-9707c7d44398' class='xr-index-data-in' type='checkbox'/><label for='index-d59cf5b3-f244-4961-bca7-9707c7d44398' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([1, 2, 3, 4, 5, 6, 7, 8], dtype=&#x27;int64&#x27;, name=&#x27;labels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-82a8b0d6-d23d-4627-b4e3-03d0c19ef83d' class='xr-index-data-in' type='checkbox'/><label for='index-82a8b0d6-d23d-4627-b4e3-03d0c19ef83d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-cdd07e9c-4617-4c4e-a7ce-f4f7d3689245' class='xr-index-data-in' type='checkbox'/><label for='index-cdd07e9c-4617-4c4e-a7ce-f4f7d3689245' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;BCL-2_binarized&#x27;, &#x27;BCL-6_binarized&#x27;, &#x27;CD163_binarized&#x27;,
+       &#x27;CD45RA_binarized&#x27;, &#x27;CD45RO_binarized&#x27;, &#x27;CD8_binarized&#x27;,
+       &#x27;DAPI_binarized&#x27;, &#x27;FOXP3_binarized&#x27;, &#x27;Helios_binarized&#x27;,
+       &#x27;ICOS_binarized&#x27;, &#x27;PD-1_binarized&#x27;, &#x27;TCF7-TCF1_binarized&#x27;,
+       &#x27;Tim3_binarized&#x27;, &#x27;_labels&#x27;, &#x27;_neighborhoods&#x27;, &#x27;area&#x27;, &#x27;centroid-0&#x27;,
+       &#x27;centroid-1&#x27;, &#x27;degree&#x27;, &#x27;diversity_index&#x27;, &#x27;homophily&#x27;,
+       &#x27;inter_label_connectivity&#x27;],
+      dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>la_features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-936b59c3-5dd0-4fc2-8edc-f7749761e1c6' class='xr-index-data-in' type='checkbox'/><label for='index-936b59c3-5dd0-4fc2-8edc-f7749761e1c6' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;labels_0&#x27;, &#x27;labels_1&#x27;, &#x27;labels_2&#x27;, &#x27;labels_3&#x27;], dtype=&#x27;object&#x27;, name=&#x27;la_features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>neighborhoods</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-fe167db4-66c2-463a-bcdb-8b28cbf6fa8d' class='xr-index-data-in' type='checkbox'/><label for='index-fe167db4-66c2-463a-bcdb-8b28cbf6fa8d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([1, 2, 3, 4, 5, 6], dtype=&#x27;int64&#x27;, name=&#x27;neighborhoods&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>nh_props</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-e9ecfd1b-e29f-4d5a-9e08-e00afe360385' class='xr-index-data-in' type='checkbox'/><label for='index-e9ecfd1b-e29f-4d5a-9e08-e00afe360385' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;_color&#x27;, &#x27;_name&#x27;], dtype=&#x27;object&#x27;, name=&#x27;nh_props&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-6bc3bf73-c45c-4903-9efb-ab263d83451c' class='xr-index-data-in' type='checkbox'/><label for='index-6bc3bf73-c45c-4903-9efb-ab263d83451c' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-9d48503a-b3e5-438d-8a27-c33dd40b0c20' class='xr-index-data-in' type='checkbox'/><label for='index-9d48503a-b3e5-438d-8a27-c33dd40b0c20' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-59261ecd-97c6-454b-b2bc-db5d88325605' class='xr-index-data-in' type='checkbox'/><label for='index-59261ecd-97c6-454b-b2bc-db5d88325605' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-156257b9-3eba-4aa4-815f-da8630e02843' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-156257b9-3eba-4aa4-815f-da8630e02843' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-f85ffb2a-b8be-4de5-a80b-b7df61705674' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-f85ffb2a-b8be-4de5-a80b-b7df61705674' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting a histogram for a feature in the obs table</span>
@@ -2557,7 +2846,7 @@ Data variables:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting a histogram for a feature in the expression matrix</span>
@@ -2575,11 +2864,17 @@ Data variables:
 </div>
 <p>Sidenote: you can also create a Vornoi diagram of your data by simply growing segmentation masks by a specified distance.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;gold&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">grow_cells</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="n">layer_key</span><span class="o">=</span><span class="s2">&quot;_image_raw&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2600,12 +2895,12 @@ Mask growing requires recalculation of the observations. All features other than
 </div>
 <p>For visualization, it is also possible to adjust the background color of the image. However, caution is advised when plotting fluorescence intensities on light backgrounds, as the background colors get mixed with the actual fluorescence values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="c1"># you can pass the background either in the pl.colorize() method or in pl.show()</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;#2e2e2e&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;#2e2e2e&quot;</span><span class="p">,</span> <span class="n">layer_key</span><span class="o">=</span><span class="s2">&quot;_image_raw&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -2629,8 +2924,8 @@ Mask growing requires recalculation of the observations. All features other than
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="ArtifactRemoval.html" title="previous page">Interactive Removal of Artifacts</a>
-    <a class='right-next' id="next-link" href="ImageProcessing.html" title="next page">Image Processing</a>
+    <a class='left-prev' id="prev-link" href="ExampleWorkflowSpatialdata.html" title="previous page">Example Workflow with spatialproteomics and spatialdata</a>
+    <a class='right-next' id="next-link" href="Segmentation.html" title="next page">Segmentation</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

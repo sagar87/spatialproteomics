@@ -39,7 +39,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Subselecting Data" href="Slicing.html" />
+    <link rel="next" title="Plotting" href="Plotting.html" />
     <link rel="prev" title="Example Workflow with spatialproteomics" href="ExampleWorkflow.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -153,23 +153,13 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="Slicing.html">
-   Subselecting Data
+  <a class="reference internal" href="Plotting.html">
+   Plotting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Segmentation.html">
    Segmentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ArtifactRemoval.html">
-   Interactive Removal of Artifacts
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Plotting.html">
-   Plotting
   </a>
  </li>
  <li class="toctree-l1">
@@ -188,11 +178,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="Interoperability.html">
-   Interoperability
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="DownstreamAnalysis.html">
    Downstream Analysis
   </a>
@@ -200,6 +185,21 @@
  <li class="toctree-l1">
   <a class="reference internal" href="Interactivity.html">
    Interactivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Interoperability.html">
+   Interoperability
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Slicing.html">
+   Subselecting Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ArtifactRemoval.html">
+   Interactive Removal of Artifacts
   </a>
  </li>
  <li class="toctree-l1">
@@ -595,7 +595,8 @@ imaging data should keep such shared dimensions consistent, ensuring that change
 <li><p>Predicting cell types with a simple argmax technique</p></li>
 <li><p>Plotting the results with spatialdata-plot</p></li>
 </ol>
-<p><strong>Important:</strong> In order to run <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend, it is important that <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> is installed. You can either do this manually, or install <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the additional backend by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">spatialproteomics[spatialdata]</span></code>.</p>
+<p><strong>Important:</strong> In order to run <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend, it is important that <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> is installed. You can either do this manually, or install <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> with the additional backend by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;spatialproteomics[spatialdata]&quot;</span></code>.</p>
+<p>If you want to follow along with this tutorial, you can download the data <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -1301,7 +1302,7 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="ExampleWorkflow.html" title="previous page">Example Workflow with spatialproteomics</a>
-    <a class='right-next' id="next-link" href="Slicing.html" title="next page">Subselecting Data</a>
+    <a class='right-next' id="next-link" href="Plotting.html" title="next page">Plotting</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
