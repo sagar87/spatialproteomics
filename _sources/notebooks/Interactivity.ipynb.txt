@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Interactivity\n",
+    "# Interactivity with napari\n",
     "\n",
     "*Spatialproteomics* has a variety of functions to ensure interoperability with existing tools. For example, we can export the *spatialproteomics* object into *spatialdata*, and the use *napari* for interactive visualizations."
    ]

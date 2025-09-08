@@ -39,8 +39,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Subselecting Data" href="Slicing.html" />
-    <link rel="prev" title="Interactivity" href="Interactivity.html" />
+    <link rel="next" title="Downstream Analysis" href="DownstreamAnalysis.html" />
+    <link rel="prev" title="Neighborhood Analysis" href="Neighborhoods.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
   </head>
@@ -177,6 +177,11 @@
    Neighborhood Analysis
   </a>
  </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Interoperability
+  </a>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="DownstreamAnalysis.html">
    Downstream Analysis
@@ -184,12 +189,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Interactivity.html">
-   Interactivity
+   Interactivity with napari
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Interoperability
+ <li class="toctree-l1">
+  <a class="reference internal" href="Customizability.html">
+   Customizability
   </a>
  </li>
  <li class="toctree-l1">
@@ -305,6 +310,11 @@
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Importing-from-Spatialdata">
    Importing from Spatialdata
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Exporting-to-Seurat">
+   Exporting to Seurat
   </a>
  </li>
 </ul>
@@ -2424,6 +2434,202 @@ Data variables:
       dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-34b68755-e7c7-4219-a29e-018cea975f45' class='xr-index-data-in' type='checkbox'/><label for='index-34b68755-e7c7-4219-a29e-018cea975f45' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-97d840ba-d123-40c4-85bb-2b5522f90749' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-97d840ba-d123-40c4-85bb-2b5522f90749' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
 </div>
 </section>
+<section id="Exporting-to-Seurat">
+<h2>Exporting to Seurat<a class="headerlink" href="#Exporting-to-Seurat" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Seurat</span></code> is widely used in the R community to analyze spatial omics data. Here, we show how you can create a <code class="docutils literal notranslate"><span class="pre">Seurat</span></code> object from a <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> one. It is most sensible to store the data frame to disk first, and then read it in with R. For demonstration purposes, we run R directly in this notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup and data loading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="c1"># setup for rpy2 to use the correct R binary</span>
+<span class="n">env_r_bin</span> <span class="o">=</span> <span class="s2">&quot;/g/huber/users/meyerben/.conda/envs/tmp_env_3/bin&quot;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_r_bin</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">&quot;R_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;R_HOME&quot;</span><span class="p">]</span>
+
+<span class="o">%</span><span class="k">load_ext</span> rpy2.ipython
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">spatialproteomics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+
+<span class="n">celltype_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;B cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;T cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># loading in a data set</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
+<span class="c1"># for clearer visualizations, we set the cell types to the broadest level (B cells, T cells, ...)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
+    <span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this gives us a data frame of cells by markers</span>
+<span class="n">intensity_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_intensity&quot;</span><span class="p">)</span>
+
+<span class="c1"># getting the spatial information and cell types from the spatialproteomics object</span>
+<span class="n">spatial_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[[</span><span class="s2">&quot;centroid-0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid-1&quot;</span><span class="p">,</span> <span class="s2">&quot;_labels&quot;</span><span class="p">]]</span>
+<span class="c1"># renaming the columns for better compatibility with R</span>
+<span class="n">spatial_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;centroid.0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid.1&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># send the data to R, so that we can use it directly</span>
+<span class="o">%</span><span class="k">R</span> -i intensity_df
+<span class="o">%</span><span class="k">R</span> -i spatial_df
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-r notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">R</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">Seurat</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+
+<span class="c1"># intensity_df: each row = cell, each col = marker</span>
+<span class="c1"># transpose so markers become &quot;genes&quot;</span>
+<span class="n">mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">intensity_df</span><span class="p">))</span>
+
+<span class="c1"># Make sure row/col names align</span>
+<span class="nf">colnames</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rownames</span><span class="p">(</span><span class="n">intensity_df</span><span class="p">)</span>
+
+<span class="c1"># Create Seurat object</span>
+<span class="n">seu</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">CreateSeuratObject</span><span class="p">(</span><span class="n">counts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mat</span><span class="p">)</span>
+
+<span class="c1"># Add metadata (spatial info + cell labels)</span>
+<span class="n">seu</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">AddMetaData</span><span class="p">(</span><span class="n">seu</span><span class="p">,</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spatial_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+    WARNING: The R package &#34;reticulate&#34; only fixed recently
+    an issue that caused a segfault when used with rpy2:
+    https://github.com/rstudio/reticulate/pull/1188
+    Make sure that you use a version of that package that includes
+    the fix.
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Loading required package: SeuratObject
+Loading required package: sp
+‘SeuratObject’ was built with package ‘Matrix’ 1.7.3 but the current
+version is 1.7.4; it is recomended that you reinstall ‘SeuratObject’ as
+the ABI for ‘Matrix’ may have changed
+
+Attaching package: ‘SeuratObject’
+
+The following objects are masked from ‘package:base’:
+
+    intersect, t
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning: Data is of class matrix. Coercing to dgCMatrix.
+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-r notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">R</span>
+<span class="c1"># Make sure the rownames exactly match the Seurat cells</span>
+<span class="n">spatial_coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">spatial_df</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;centroid.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;centroid.1&quot;</span><span class="p">)]</span>
+
+<span class="c1"># The cell names in the Seurat object</span>
+<span class="n">cell_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">Cells</span><span class="p">(</span><span class="n">seu</span><span class="p">)</span>
+
+<span class="c1"># Assign rownames</span>
+<span class="nf">rownames</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cell_names</span>
+<span class="nf">colnames</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+
+<span class="c1"># Convert to matrix</span>
+<span class="n">embeddings_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">)</span>
+
+<span class="c1"># Now create the spatial reduction</span>
+<span class="n">seu</span><span class="p">[[</span><span class="s">&quot;spatial&quot;</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">CreateDimReducObject</span><span class="p">(</span>
+<span class="w">  </span><span class="n">embeddings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">embeddings_mat</span><span class="p">,</span>
+<span class="w">  </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spatial_&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">assay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">DefaultAssay</span><span class="p">(</span><span class="n">seu</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-r notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">R</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+
+<span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">DimPlot</span><span class="p">(</span>
+<span class="w">  </span><span class="n">seu</span><span class="p">,</span>
+<span class="w">  </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spatial&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;labels&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pt.size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">coord_fixed</span><span class="p">()</span><span class="w">  </span><span class="c1"># ensures x and y axes have equal scale</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Learn more about the underlying theory at https://ggplot2-book.org/
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Interoperability_23_1.png" src="../_images/notebooks_Interoperability_23_1.png" />
+</div>
+</div>
+</section>
 </section>
 
 
@@ -2435,8 +2641,8 @@ Data variables:
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="Interactivity.html" title="previous page">Interactivity</a>
-    <a class='right-next' id="next-link" href="Slicing.html" title="next page">Subselecting Data</a>
+    <a class='left-prev' id="prev-link" href="Neighborhoods.html" title="previous page">Neighborhood Analysis</a>
+    <a class='right-next' id="next-link" href="DownstreamAnalysis.html" title="next page">Downstream Analysis</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
