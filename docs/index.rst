@@ -18,17 +18,6 @@ It supports synchronization of shared coordinates across data modalities such as
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
-
-   preprocessing
-   label
-   neighborhood
-   plot
-   tool
-   image_container
-
-.. toctree::
-   :maxdepth: 1
    :caption: Tutorials:
    
    notebooks/Installation
@@ -45,7 +34,19 @@ It supports synchronization of shared coordinates across data modalities such as
    notebooks/Customizability
    notebooks/Slicing
    notebooks/ArtifactRemoval
+   notebooks/MultiTechnologyIntegration
    notebooks/FAQ
+   
+.. toctree::
+   :maxdepth: 1
+   :caption: API:
+
+   preprocessing
+   label
+   neighborhood
+   plot
+   tool
+   image_container
 
 
 Indices and tables
