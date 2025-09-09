@@ -794,7 +794,7 @@ Already found marker FITC, continuing...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># downsampling the image for faster runtime</span>
@@ -807,13 +807,33 @@ Already found marker FITC, continuing...
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-2025-09-09 14:22:48.686211: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:22:48.686243: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2025-09-09 14:33:39.192442: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:39.192477: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+Checking for cached data
+Checking MultiplexSegmentation-9.tar.gz against provided file_hash...
+MultiplexSegmentation-9.tar.gz with hash a1dfbce2594f927b9112f23a0a1739e0 already available.
+Extracting /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz
+Successfully extracted /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz into /home/meyerben/.deepcell/models
+2025-09-09 14:33:45.084246: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:936] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2025-09-09 14:33:45.084842: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.084963: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcublas.so.11&#39;; dlerror: libcublas.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085074: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcublasLt.so.11&#39;; dlerror: libcublasLt.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085184: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcufft.so.10&#39;; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085303: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcurand.so.10&#39;; dlerror: libcurand.so.10: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085415: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcusolver.so.11&#39;; dlerror: libcusolver.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085523: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcusparse.so.11&#39;; dlerror: libcusparse.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085634: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudnn.so.8&#39;; dlerror: libcudnn.so.8: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-09 14:33:45.085648: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1850] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+2025-09-09 14:33:45.085874: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+No training configuration found in save file, so the model was *not* compiled. Compile it manually.
+Converting image dtype to float
 </pre></div></div>
 </div>
 <p>Next, we can once again predict cell types. While our markers are different now, our celltypes are still the same. This means that we can still compare things such as cell type abundances and cell-cell interactions later, assuming our cell type predictions are sensible for all technologies.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marker_to_celltype</span> <span class="o">=</span> <span class="p">{</span>
@@ -848,8 +868,8 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -862,12 +882,19 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_MultiTechnologyIntegration_16_0.png" src="../_images/notebooks_MultiTechnologyIntegration_16_0.png" />
+</div>
+</div>
 </section>
 <section id="CODEX">
 <h3>CODEX<a class="headerlink" href="#CODEX" title="Link to this heading">¶</a></h3>
 <p>This CODEX sample shows a DLBCL. It was segmented with <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, meaning that our three technologies were all segmented with different methods. In addition, it does not have the same markers as the other datasets, but the predicted cell types are the same.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marker_to_celltype</span> <span class="o">=</span> <span class="p">{</span>
@@ -892,8 +919,8 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -906,12 +933,19 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_MultiTechnologyIntegration_19_0.png" src="../_images/notebooks_MultiTechnologyIntegration_19_0.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="Comparing-cell-type-abundances">
 <h2>Comparing cell type abundances<a class="headerlink" href="#Comparing-cell-type-abundances" title="Link to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get counts for each modality</span>
@@ -939,8 +973,8 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -952,6 +986,13 @@ Already found marker FITC, continuing...
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_MultiTechnologyIntegration_22_0.png" src="../_images/notebooks_MultiTechnologyIntegration_22_0.png" />
 </div>
 </div>
 </section>
