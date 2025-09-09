@@ -146,11 +146,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="#CODEX">
-   CODEX
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="FAQ.html">
    FAQ
   </a>
@@ -292,46 +287,37 @@
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Integration of Multiple Technologies
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Data-Origin">
+   Data Origin
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Data-Preparation">
+   Data Preparation
   </a>
   <ul class="nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Data-Origin">
-     Data Origin
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Imaging-Mass-Cytometry-(IMC)">
+     Imaging Mass Cytometry (IMC)
     </a>
    </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Data-Preparation">
-     Data Preparation
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#MACSima-imaging-cyclic-staining-(MICS)">
+     MACSima imaging cyclic staining (MICS)
     </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#Imaging-Mass-Cytometry-(IMC)">
-       Imaging Mass Cytometry (IMC)
-      </a>
-     </li>
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#MACSima-imaging-cyclic-staining-(MICS)">
-       MACSima imaging cyclic staining (MICS)
-      </a>
-     </li>
-    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#CODEX">
+     CODEX
+    </a>
    </li>
   </ul>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#CODEX">
-   CODEX
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Comparing-cell-type-abundances">
+   Comparing cell type abundances
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Comparing-cell-type-abundances">
-     Comparing cell type abundances
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -877,10 +863,8 @@ Already found marker FITC, continuing...
 </div>
 </div>
 </section>
-</section>
-</section>
 <section id="CODEX">
-<h1>CODEX<a class="headerlink" href="#CODEX" title="Link to this heading">¶</a></h1>
+<h3>CODEX<a class="headerlink" href="#CODEX" title="Link to this heading">¶</a></h3>
 <p>This CODEX sample shows a DLBCL. It was segmented with <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, meaning that our three technologies were all segmented with different methods. In addition, it does not have the same markers as the other datasets, but the predicted cell types are the same.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -922,6 +906,8 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 </div>
+</section>
+</section>
 <section id="Comparing-cell-type-abundances">
 <h2>Comparing cell type abundances<a class="headerlink" href="#Comparing-cell-type-abundances" title="Link to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
