@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Spatialproteomics - an interoperable toolbox for analyzing highly multiplexed fluorescence images
-============================================================================================
+Spatialproteomics: an interoperable toolbox for analyzing highly multiplexed fluorescence images
+================================================================================================
 
 Spatialproteomics is an interoperable toolbox for analyzing high-dimensional imaging datasets. 
 This analysis involves a sequence of steps, including segmentation, image processing, marker quantification, cell type classification, and neighborhood analysis.
