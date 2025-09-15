@@ -651,8 +651,8 @@ class ToolAccessor:
                     adata.uns[f"{Features.LABELS}_colors"] = properties[Props.COLOR].values
                 # if the labels are in there, we want to use the order of them for the categories
                 if Props.NAME in properties.columns:
-                    adata.obs[Features.LABELS] = adata.obs[Features.LABELS].cat.reorder_categories(
-                        properties[Props.NAME].values
+                    adata.obs[Features.LABELS] = adata.obs[Features.LABELS].cat.set_categories(
+                        properties[Props.NAME].values, ordered=True
                     )
 
             # to be compatible with squidpy out of the box, a spatial key is added to obsm if possible
