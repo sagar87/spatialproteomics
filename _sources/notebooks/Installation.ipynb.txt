@@ -6,7 +6,10 @@
    "source": [
     "# Installation\n",
     "\n",
-    "Install `spatialproteomics` with `pip install spatialproteomics`.\n",
+    "Install `spatialproteomics` with \n",
+    "```\n",
+    "pip install spatialproteomics\n",
+    "```\n",
     "\n",
     "## Extras\n",
     "Some of the functionalities depend on external tools (e. g. `stardist`, `cellpose`,  `spatialdata`). Since having lots of external tools also leads to lots of dependencies, installing all of them into one environment is prone to cause dependency conflicts. \n",

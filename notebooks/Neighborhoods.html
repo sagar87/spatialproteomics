@@ -640,7 +640,6 @@ contained in the <code class="docutils literal notranslate"><span class="pre">nh
 <div class="highlight"><pre>
 Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
 Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
-Label Stromal cell not found in the data object. Skipping.
 Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False.
 </pre></div></div>
 </div>
@@ -844,7 +843,7 @@ the resulting graph.</p>
 </div>
 <p>As a small sidenote, let’s quickly see how we can plot the network.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
@@ -918,7 +917,7 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
 </div>
 <p>Note that we can also compute these on subsets of the sample. For example, we might want to select only the B and T cells within the B-rich neighborhood, and then compute the measures on this data alone.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># subselecting and recomputing the features</span>
@@ -941,7 +940,7 @@ Overwriting existing neighborhood observations: [&#39;degree&#39;, &#39;diversit
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>

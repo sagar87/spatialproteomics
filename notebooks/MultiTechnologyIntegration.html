@@ -593,11 +593,12 @@ div.rendered_html tbody tr:hover {
 <h2>Data Origin<a class="headerlink" href="#Data-Origin" title="Link to this heading">¶</a></h2>
 <p>The IMC data was downloaded from <a class="reference external" href="https://figshare.com/articles/dataset/Raw_images_for_DLBCL_samples/20010146?file=35633237">here</a>. It contains IMC images of DLBCL TMAs.</p>
 <p>MICS data was downloaded from <a class="reference external" href="https://zenodo.org/records/10057717">here</a>. It contains a tonsil sample.</p>
-<p>A link to the CODEX data can be found in the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> manuscript.</p>
+<p>The CODEX data can be downloaded from <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>. For this example, we consider three lymph node biopsies.</p>
 </section>
 <section id="Data-Preparation">
 <h2>Data Preparation<a class="headerlink" href="#Data-Preparation" title="Link to this heading">¶</a></h2>
-<p>For all three data modalities, we follow the same workflow of segmentation, protein quantification, and cell type prediction. Our downstream analysis is then carried out on the cell type level. This means that our data does not even need to have the same markers, as long as we can identify the same cell types with them.</p>
+<p>For all three data modalities, we follow the same general workflow of segmentation, protein quantification, and cell type prediction. Note that we do not need to use exactly the same tools, so if a certain segmentation method works better on one dataset than on the other, we can just apply different ones.</p>
+<p>Our downstream analysis is then carried out on the cell type level. This means that our data does not even need to have the same markers or cell types. The important part is that our cell type annotations should be sensible. We can then compare cell type abundances, interactions etc. across modalities and datasets.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -618,6 +619,7 @@ div.rendered_html tbody tr:hover {
     <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Macrophage (M2)&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
 <span class="p">}</span>
@@ -692,7 +694,6 @@ array([&#39;Histone3.Yb176Di&#39;, &#39;DNA.Ir193Di&#39;, &#39;CD45RA.Gd155Di&#3
     <span class="s2">&quot;CD31.Nd144Di&quot;</span><span class="p">:</span> <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CD68.Tb159Di&quot;</span><span class="p">:</span> <span class="s2">&quot;Macrophage&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Vimentin.Nd143Di&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal cell&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;HLADR.Yb174Di&quot;</span><span class="p">:</span> <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">marker_to_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">marker_to_celltype</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -703,7 +704,6 @@ array([&#39;Histone3.Yb176Di&#39;, &#39;DNA.Ir193Di&#39;, &#39;CD45RA.Gd155Di&#3
     <span class="s2">&quot;CD31.Nd144Di&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
     <span class="s2">&quot;CD68.Tb159Di&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
     <span class="s2">&quot;Vimentin.Nd143Di&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-    <span class="s2">&quot;HLADR.Yb174Di&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">ds_imc</span> <span class="o">=</span> <span class="p">(</span>
@@ -722,6 +722,8 @@ array([&#39;Histone3.Yb176Di&#39;, &#39;DNA.Ir193Di&#39;, &#39;CD45RA.Gd155Di&#3
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Label Myeloid cell not found in the data object. Skipping.
+Label Dendritic cell not found in the data object. Skipping.
+Label Macrophage (M2) not found in the data object. Skipping.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -798,7 +800,8 @@ Already found marker FITC, continuing...
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># downsampling the image for faster runtime</span>
-<span class="n">ds_mics</span> <span class="o">=</span> <span class="n">ds_mics</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">downsample</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">mesmer</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD45&quot;</span><span class="p">])</span>
+<span class="c1"># also removing the top part of the image to get rid of a CD11c artefact</span>
+<span class="n">ds_mics</span> <span class="o">=</span> <span class="n">ds_mics</span><span class="o">.</span><span class="n">pp</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">6000</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">downsample</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">mesmer</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">,</span> <span class="s2">&quot;CD45&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -807,32 +810,24 @@ Already found marker FITC, continuing...
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-2025-09-09 14:33:39.192442: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:39.192477: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2025-09-18 11:28:52.744905: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-18 11:28:52.744930: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
 Checking for cached data
 Checking MultiplexSegmentation-9.tar.gz against provided file_hash...
 MultiplexSegmentation-9.tar.gz with hash a1dfbce2594f927b9112f23a0a1739e0 already available.
 Extracting /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz
 Successfully extracted /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz into /home/meyerben/.deepcell/models
-2025-09-09 14:33:45.084246: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:936] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
-2025-09-09 14:33:45.084842: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.084963: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcublas.so.11&#39;; dlerror: libcublas.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085074: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcublasLt.so.11&#39;; dlerror: libcublasLt.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085184: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcufft.so.10&#39;; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085303: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcurand.so.10&#39;; dlerror: libcurand.so.10: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085415: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcusolver.so.11&#39;; dlerror: libcusolver.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085523: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcusparse.so.11&#39;; dlerror: libcusparse.so.11: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085634: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudnn.so.8&#39;; dlerror: libcudnn.so.8: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2025-09-09 14:33:45.085648: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1850] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
-Skipping registering GPU devices...
-2025-09-09 14:33:45.085874: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+2025-09-18 11:28:57.211604: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcuda.so.1&#39;; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
+2025-09-18 11:28:57.211632: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2025-09-18 11:28:57.211647: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (smet01-1.cluster.embl.de): /proc/driver/nvidia/version does not exist
+2025-09-18 11:28:57.211857: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
 No training configuration found in save file, so the model was *not* compiled. Compile it manually.
 Converting image dtype to float
 </pre></div></div>
 </div>
 <p>Next, we can once again predict cell types. While our markers are different now, our celltypes are still the same. This means that we can still compare things such as cell type abundances and cell-cell interactions later, assuming our cell type predictions are sensible for all technologies.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -840,22 +835,20 @@ Converting image dtype to float
     <span class="s2">&quot;CD20&quot;</span><span class="p">:</span> <span class="s2">&quot;B cell&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="s2">&quot;T cell&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD163&quot;</span><span class="p">:</span> <span class="s2">&quot;Macrophage&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD1c_C-BDCA1&quot;</span><span class="p">:</span> <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Vimentin&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal cell&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD163&quot;</span><span class="p">:</span> <span class="s2">&quot;Macrophage (M2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CD11c&quot;</span><span class="p">:</span> <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">marker_to_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">marker_to_celltype</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 <span class="n">threshold_dict</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;CD20&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-    <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-    <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
-    <span class="s2">&quot;CD163&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-    <span class="s2">&quot;CD1c_C-BDCA1&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
-    <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-    <span class="s2">&quot;Vimentin&quot;</span><span class="p">:</span> <span class="mf">0.98</span><span class="p">,</span>
+    <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="mf">0.98</span><span class="p">,</span>
+    <span class="s2">&quot;CD163&quot;</span><span class="p">:</span> <span class="mf">0.55</span><span class="p">,</span>
+    <span class="s2">&quot;CD11c&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">ds_mics</span> <span class="o">=</span> <span class="p">(</span>
@@ -867,6 +860,15 @@ Converting image dtype to float
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Label Macrophage not found in the data object. Skipping.
+Label Stromal cell not found in the data object. Skipping.
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -892,8 +894,8 @@ Converting image dtype to float
 </section>
 <section id="CODEX">
 <h3>CODEX<a class="headerlink" href="#CODEX" title="Link to this heading">¶</a></h3>
-<p>This CODEX sample shows a DLBCL. It was segmented with <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, meaning that our three technologies were all segmented with different methods. In addition, it does not have the same markers as the other datasets, but the predicted cell types are the same.</p>
-<div class="nbinput nblast docutils container">
+<p>Here we consider three lymph node cores. These were segmented with <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, meaning that our three technologies were all segmented with different methods. In addition, we do not have all markers in all datasets, but since we perform cell type prediction, we can perform comparisons between cell types later on.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -911,23 +913,42 @@ Converting image dtype to float
 
 <span class="n">marker_to_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">marker_to_celltype</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
-<span class="n">ds_codex</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/DLBCL_21_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">codex_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LN_11_1&quot;</span><span class="p">,</span> <span class="s2">&quot;LN_13_1&quot;</span><span class="p">,</span> <span class="s2">&quot;LN_24_1&quot;</span><span class="p">]</span>
+<span class="n">codex_ds_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../../data/</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.zarr&quot;</span><span class="p">)</span>
     <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span><span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-<span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">codex_ids</span>
+<span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Label Macrophage (M2) not found in the data object. Skipping.
+Label Macrophage (M2) not found in the data object. Skipping.
+Label Macrophage (M2) not found in the data object. Skipping.
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_codex</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">marker_to_color</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">marker_to_color</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_codex</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">sample_id</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">codex_ds_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">marker_to_color</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">marker_to_color</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -944,6 +965,7 @@ Converting image dtype to float
 </section>
 <section id="Comparing-cell-type-abundances">
 <h2>Comparing cell type abundances<a class="headerlink" href="#Comparing-cell-type-abundances" title="Link to this heading">¶</a></h2>
+<p>We can now compare the cell type abundances across the different modalities and datasets, as demonstrated below.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -951,10 +973,15 @@ Converting image dtype to float
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get counts for each modality</span>
 <span class="n">counts_imc</span> <span class="o">=</span> <span class="n">ds_imc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 <span class="n">counts_mics</span> <span class="o">=</span> <span class="n">ds_mics</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-<span class="n">counts_codex</span> <span class="o">=</span> <span class="n">ds_codex</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="n">counts_codex</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[</span><span class="s2">&quot;_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">codex_ds_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="p">)</span>
 
 <span class="c1"># Put into one dataframe</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;IMC (DLBCL)&quot;</span><span class="p">:</span> <span class="n">counts_imc</span><span class="p">,</span> <span class="s2">&quot;MICS (Tonsil)&quot;</span><span class="p">:</span> <span class="n">counts_mics</span><span class="p">,</span> <span class="s2">&quot;CODEX (DLBCL)&quot;</span><span class="p">:</span> <span class="n">counts_codex</span><span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;IMC (DLBCL)&quot;</span><span class="p">:</span> <span class="n">counts_imc</span><span class="p">,</span> <span class="s2">&quot;MICS (Tonsil)&quot;</span><span class="p">:</span> <span class="n">counts_mics</span><span class="p">,</span> <span class="s2">&quot;CODEX (LN)&quot;</span><span class="p">:</span> <span class="n">counts_codex</span><span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Convert to relative abundances (fractions per modality)</span>
 <span class="n">df_rel</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -964,7 +991,7 @@ Converting image dtype to float
     <span class="n">df_rel</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
     <span class="o">.</span><span class="n">melt</span><span class="p">(</span>
         <span class="n">id_vars</span><span class="o">=</span><span class="s2">&quot;_labels&quot;</span><span class="p">,</span>
-        <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;IMC (DLBCL)&quot;</span><span class="p">,</span> <span class="s2">&quot;MICS (Tonsil)&quot;</span><span class="p">,</span> <span class="s2">&quot;CODEX (DLBCL)&quot;</span><span class="p">],</span>
+        <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;IMC (DLBCL)&quot;</span><span class="p">,</span> <span class="s2">&quot;MICS (Tonsil)&quot;</span><span class="p">,</span> <span class="s2">&quot;CODEX (LN)&quot;</span><span class="p">],</span>
         <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;Modality&quot;</span><span class="p">,</span>
         <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;Relative Abundance&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -974,11 +1001,17 @@ Converting image dtype to float
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_rel</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;CellType&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Relative Abundance&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;Modality&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">df_rel</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;CellType&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Relative Abundance&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;Modality&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;IMC (DLBCL)&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6966&quot;</span><span class="p">,</span> <span class="s2">&quot;MICS (Tonsil)&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span> <span class="s2">&quot;CODEX (LN)&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc84f&quot;</span><span class="p">},</span>
+<span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Cell Type&quot;</span><span class="p">)</span>

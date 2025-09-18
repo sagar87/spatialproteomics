@@ -583,6 +583,7 @@ div.rendered_html tbody tr:hover {
 <h1>Interactive Removal of Artifacts<a class="headerlink" href="#Interactive-Removal-of-Artifacts" title="Link to this heading">¶</a></h1>
 <p>Sometimes, it can happen that only a part of the tissue is usable for analysis, for example due to artifacts or poor tissue quality in a certain region. In such cases, it can make sense to mask out problematic regions. This way, the image can still be used for downstream analysis, but the artifact will not influence results in a negative way. <code class="docutils literal notranslate"><span class="pre">Spatialproteomics</span></code> allows users to upload a binary mask, which indicates which part of the image is suitable for further analysis and which part is not.</p>
 <p>The example below shows how one could for example use <a class="reference external" href="https://github.com/Teichlab/TissueTag/tree/main">TissueTag</a> to obtain such a mask, load it into the spatialproteomics and use the mask to remove the artifact. Note that TissueTag runs in jupyter notebooks or jupyter lab, but has no implementation for jupyterhub at the moment.</p>
+<p>A link to this exact sample can be found in the spatialproteomics manuscript, if you want to follow along with a different sample you can download the data <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
