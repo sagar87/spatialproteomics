@@ -1,42 +1,49 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+
+<html lang="en" data-content_root="../" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>FAQ &#8212; spatialproteomics</title>
-    
-  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-  <link rel="stylesheet"
-    href="../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
-
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
-    
-  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=99d6104a"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=f3ab7b9d"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/FAQ';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The preprocessing (pp) accessor" href="../preprocessing.html" />
@@ -44,280 +51,306 @@
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-        <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../index.html">
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
   
   
-  <h1 class="site-logo" id="site-title">spatialproteomics</h1>
   
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/spatialproteomics_logo.png" class="logo__image only-light" alt="spatialproteomics - Home"/>
+    <script>document.write(`<img src="../_static/spatialproteomics_logo.png" class="logo__image only-dark" alt="spatialproteomics - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflow.html">Example Workflow with spatialproteomics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExampleWorkflowSpatialdata.html">Example Workflow with spatialproteomics and spatialdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Segmentation.html">Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ImageProcessing.html">Image Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CellTypePrediction.html">Cell Type Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Neighborhoods.html">Neighborhood Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DownstreamAnalysis.html">Downstream Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interactivity.html">Interactivity with napari</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Customizability.html">Customizability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Slicing.html">Subselecting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArtifactRemoval.html">Interactive Removal of Artifacts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTechnologyIntegration.html">Integration of Multiple Technologies</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">FAQ</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../label.html">The label (<code class="code docutils literal notranslate"><span class="pre">la</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neighborhood.html">The neighborhood (<code class="code docutils literal notranslate"><span class="pre">nh</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plot.html">The plot (<code class="code docutils literal notranslate"><span class="pre">pl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tool.html">The tool (<code class="code docutils literal notranslate"><span class="pre">tl</span></code>) accessor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_container.html">The image container</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/FAQ.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
 </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent" role="heading">
- <span class="caption-text">
-  Tutorials:
- </span>
-</p>
-<ul class="current nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="Installation.html">
-   Installation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ExampleWorkflow.html">
-   Example Workflow with spatialproteomics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ExampleWorkflowSpatialdata.html">
-   Example Workflow with spatialproteomics and spatialdata
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Plotting.html">
-   Plotting
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Segmentation.html">
-   Segmentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ImageProcessing.html">
-   Image Processing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="CellTypePrediction.html">
-   Cell Type Prediction
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Neighborhoods.html">
-   Neighborhood Analysis
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Interoperability.html">
-   Interoperability
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="DownstreamAnalysis.html">
-   Downstream Analysis
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Interactivity.html">
-   Interactivity with napari
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Customizability.html">
-   Customizability
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Slicing.html">
-   Subselecting Data
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ArtifactRemoval.html">
-   Interactive Removal of Artifacts
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="MultiTechnologyIntegration.html">
-   Integration of Multiple Technologies
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   FAQ
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent" role="heading">
- <span class="caption-text">
-  API:
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../preprocessing.html">
-   The preprocessing (
-   <code class="code docutils literal notranslate">
-    <span class="pre">
-     pp
-    </span>
-   </code>
-   ) accessor
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../label.html">
-   The label (
-   <code class="code docutils literal notranslate">
-    <span class="pre">
-     la
-    </span>
-   </code>
-   ) accessor
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../neighborhood.html">
-   The neighborhood (
-   <code class="code docutils literal notranslate">
-    <span class="pre">
-     nh
-    </span>
-   </code>
-   ) accessor
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../plot.html">
-   The plot (
-   <code class="code docutils literal notranslate">
-    <span class="pre">
-     pl
-    </span>
-   </code>
-   ) accessor
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tool.html">
-   The tool (
-   <code class="code docutils literal notranslate">
-    <span class="pre">
-     tl
-    </span>
-   </code>
-   ) accessor
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../image_container.html">
-   The image container
-  </a>
- </li>
-</ul>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
 
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-</div>
-
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
 </div>
 
 
-          
 
 
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
     </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/notebooks/FAQ.ipynb.txt"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.ipynb</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
+  
 </div>
+</div>
+              
+              
 
-        <!-- Source interaction buttons -->
-
-
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
-
-        <!-- Launch buttons -->
-
-    </div>
-
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>FAQ</h1>
     <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#How-can-I-optimize-my-memory-usage?">
-   How can I optimize my memory usage?
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?">
-   I have a lot of samples. Can I use parallelization to speed up the analysis?
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?">
-   When do I apply method directly on the object, and when do use sp.method()?
-  </a>
- </li>
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#How-can-I-optimize-my-memory-usage?">How can I optimize my memory usage?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?">I have a lot of samples. Can I use parallelization to speed up the analysis?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?">When do I apply method directly on the object, and when do use sp.method()?</a></li>
 </ul>
-
-        </nav>
-        
+            </nav>
+        </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
+
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="FAQ">
-<h1>FAQ<a class="headerlink" href="#FAQ" title="Link to this heading">¶</a></h1>
+<h1>FAQ<a class="headerlink" href="#FAQ" title="Link to this heading">#</a></h1>
 <p>Here are some common questions and answers. If you can’t find what you’re looking for here, please file an issue on our <a class="reference external" href="https://github.com/sagar87/spatialproteomics">GitHub page</a>.</p>
 <section id="How-can-I-optimize-my-memory-usage?">
-<h2>How can I optimize my memory usage?<a class="headerlink" href="#How-can-I-optimize-my-memory-usage?" title="Link to this heading">¶</a></h2>
+<h2>How can I optimize my memory usage?<a class="headerlink" href="#How-can-I-optimize-my-memory-usage?" title="Link to this heading">#</a></h2>
 <p>Running out of memory is a common problem when dealing with large images. Here are a couple of things you could consider to make your workflow more memory efficient.</p>
 <ul class="simple">
 <li><p><strong>Lazy loading with zarr:</strong> if you already have your objects stored in <code class="docutils literal notranslate"><span class="pre">zarr</span></code> format, it is usually more memory-efficient to load them using <code class="docutils literal notranslate"><span class="pre">xr.open_zarr(file)</span></code> than <code class="docutils literal notranslate"><span class="pre">xr.load_dataset(file)</span></code>. This is especially effective when you are subsetting your data, e. g. only looking at 10 channels when plotting a sample.</p></li>
@@ -340,7 +373,7 @@ for ds in [...]:
 </div>
 </section>
 <section id="I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?">
-<h2>I have a lot of samples. Can I use parallelization to speed up the analysis?<a class="headerlink" href="#I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?" title="Link to this heading">¶</a></h2>
+<h2>I have a lot of samples. Can I use parallelization to speed up the analysis?<a class="headerlink" href="#I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?" title="Link to this heading">#</a></h2>
 <p>Yes, this is exactly what <code class="docutils literal notranslate"><span class="pre">dask</span></code> is useful for. Their <a class="reference external" href="https://examples.dask.org/applications/embarrassingly-parallel.html">documentation</a> provides a good starting point for this. Since <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> is built on top of <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, parallelization with <code class="docutils literal notranslate"><span class="pre">dask</span></code> is natively supported. If you want to apply the same workflow to a bunch of files, you could do it like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from dask import delayed, compute
 
@@ -359,7 +392,7 @@ results = compute(*tasks, scheduler=&quot;processes&quot;, num_workers=16)
 <p align="center" width="100%"><p><img alt="Dask enables the parallelization of workflows, substantially speeding up execution times." src="../_images/dask_parallelization.png" /></p>
 </p></section>
 <section id="When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?">
-<h2>When do I apply method directly on the object, and when do use sp.method()?<a class="headerlink" href="#When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?" title="Link to this heading">¶</a></h2>
+<h2>When do I apply method directly on the object, and when do use sp.method()?<a class="headerlink" href="#When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?" title="Link to this heading">#</a></h2>
 <p>Spatialproteomics has two distinct backends: a <code class="docutils literal notranslate"><span class="pre">xarray</span></code> backend and a <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend. These follow slightly different philosophies.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">xarray</span></code> backend is based on a functional programming design. This means that you can use it to call methods directly on your object, allowing you to pipe data from one step to the next. For example, this could look like <code class="docutils literal notranslate"><span class="pre">my_data.pp.segment().la.predict_cell_types().pl.show()</span></code>. Internally, <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> takes care of synchronizing shared dimensions across your data.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> backend is for when you want to use <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code> objects from the start. In this case, the syntax is slightly different, but more similar to syntax you might be used to from scverse packages (such as scanpy or squidpy). Here, your code would look like this:</p>
@@ -373,38 +406,105 @@ sp.pp.predict_cell_types(my_data)
 </section>
 
 
-              </div>
+                </article>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
-        
-    <a class='left-prev' id="prev-link" href="MultiTechnologyIntegration.html" title="previous page">Integration of Multiple Technologies</a>
-    <a class='right-next' id="next-link" href="../preprocessing.html" title="next page">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</a>
 
-    </div>
-    <footer class="footer mt-5 mt-md-0">
-    <div class="container">
-      <p>
-        
-          By Matthias Meyer-Bender, Harald Vohringer<br/>
-        
-            &copy; Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.<br/>
-      </p>
-    </div>
-  </footer>
-</main>
-
-
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="MultiTechnologyIntegration.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Integration of Multiple Technologies</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../preprocessing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The preprocessing (<code class="code docutils literal notranslate"><span class="pre">pp</span></code>) accessor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#How-can-I-optimize-my-memory-usage?">How can I optimize my memory usage?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#I-have-a-lot-of-samples.-Can-I-use-parallelization-to-speed-up-the-analysis?">I have a lot of samples. Can I use parallelization to speed up the analysis?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#When-do-I-apply-method-directly-on-the-object,-and-when-do-use-sp.method()?">When do I apply method directly on the object, and when do use sp.method()?</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matthias Meyer-Bender, Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Matthias Meyer-Bender, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    
-  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>
