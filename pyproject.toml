@@ -31,7 +31,7 @@ docs = [
     "Sphinx>=7.0.0",
     "sphinx-book-theme>=0.0.39",
     "sphinxcontrib-napoleon==0.7",
-    "nbsphinx==0.8.9",
+    "nbsphinx>=0.9",
     "sphinx-multiversion>=0.2.4",
     "IPython>=8.0.0",
 ]
