@@ -50,6 +50,21 @@ jobs:
       - name: Install uv
         run: pip install uv
 
+      - name: Create uv virtual environment
+        run: uv venv
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+      
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+
       - name: Install dependencies
         run: uv pip install -e .[dev]
 
@@ -81,6 +96,18 @@ jobs:
 
       - name: Install uv
         run: pip install uv
+
+      - name: Create uv virtual environment
+        run: uv venv
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
+
+      - name: Install dependencies
+        run: uv pip install -e .[dev]
 
       - name: Install docs dependencies
         run: uv pip install -e .[docs]
