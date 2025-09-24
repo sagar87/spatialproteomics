@@ -34,6 +34,8 @@ html_static_path = ["_static"]
 html_title = project
 html_logo = "_static/img/spatialproteomics_logo.png"
 html_theme_options = {
+    "logo_only": True,
+    "home_page_in_toc": False,
     "navigation_with_keys": True,
 }
 pygments_style = "default"
