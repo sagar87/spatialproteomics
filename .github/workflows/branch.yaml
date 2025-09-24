@@ -23,7 +23,7 @@ jobs:
         run: uv venv
 
       - name: Install dependencies
-        run: uv pip install -e .[dev]
+        run: uv pip install -e .[dev,all]
 
       - name: Run tests
         run: uv run pytest --cov=./ --cov-report=xml
@@ -54,19 +54,7 @@ jobs:
         run: uv venv
 
       - name: Install dependencies
-        run: uv pip install -e .[dev]
-      
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
+        run: uv pip install -e .[dev,all]
 
       - name: Run isort
         run: uv run isort spatialproteomics --check-only --profile black --skip .venv --skip data --skip build --skip dist
@@ -101,16 +89,7 @@ jobs:
         run: uv venv
 
       - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install dependencies
-        run: uv pip install -e .[dev]
-
-      - name: Install docs dependencies
-        run: uv pip install -e .[docs]
+        run: uv pip install -e .[dev,docs,all]
 
       - name: Install Pandoc
         run: sudo apt-get install -y pandoc
