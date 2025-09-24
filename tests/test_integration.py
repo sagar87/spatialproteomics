@@ -33,5 +33,5 @@ def test_integration(ds_segmentation):
     image_container = sp.ImageContainer(sp_dict)
     sp_dict = image_container.compute_neighborhoods()
     sp_dict["1"] = sp_dict["1"].nh.set_neighborhood_name(
-        [f"Neighborhood {x}" for x in range(5)], [f"Neighborhood {x+1}" for x in range(5)]
+        [f"Neighborhood {x}" for x in range(5)], [f"Neighborhood {x + 1}" for x in range(5)]
     )

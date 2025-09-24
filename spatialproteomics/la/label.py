@@ -1072,9 +1072,9 @@ class LabelAccessor:
         else:
             # if there is a 0 in unique labels, we need to add an unlabeled category
             if 0 in unique_labels:
-                names = [Labels.UNLABELED, *[f"Cell type {i+1}" for i in range(len(unique_labels) - 1)]]
+                names = [Labels.UNLABELED, *[f"Cell type {i + 1}" for i in range(len(unique_labels) - 1)]]
             else:
-                names = [f"Cell type {i+1}" for i in range(len(unique_labels))]
+                names = [f"Cell type {i + 1}" for i in range(len(unique_labels))]
 
         obj = obj.la.add_properties(names, Props.NAME)
 
@@ -1152,7 +1152,7 @@ class LabelAccessor:
         ), f"Subtypes already predicted. Please remove them first with pp.drop_layers({Layers.LA_LAYERS})."
 
         # if the subtype dict is a path to a yaml file, we load it
-        if type(subtype_dict) == str:
+        if isinstance(subtype_dict, str):
             with open(subtype_dict, "r") as file:
                 subtype_dict = yaml.safe_load(file)
 

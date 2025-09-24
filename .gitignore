@@ -9,3 +9,7 @@ Dev-checkpoint.ipynb
 .DS_Store
 docs/notebooks/Interactivity.py
 docs/notebooks/.ipynb_checkpoints
+*.egg-info/
+*.egg
+dist/
+build/
