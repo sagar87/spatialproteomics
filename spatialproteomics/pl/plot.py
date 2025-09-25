@@ -963,7 +963,7 @@ class PlotAccessor:
         assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
 
         # creating a continuous colormap
-        cmap = plt.cm.get_cmap(cmap)
+        cmap = plt.get_cmap(cmap)
         feature_values = obs.sel(features=feature).values
 
         # mapping the feature values onto the segmentation mask (replacing the cell indices with the feature values)
