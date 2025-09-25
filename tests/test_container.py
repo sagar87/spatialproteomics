@@ -58,6 +58,7 @@ def test_load_data_wrong_inputs_segmentation_mask_dim_error(data_dic):
 
 def test_read_from_spatialdata(ds_neighborhoods_spatialdata):
     read_from_spatialdata(ds_neighborhoods_spatialdata)
+    read_from_spatialdata(ds_neighborhoods_spatialdata, consolidate_segmentation=True)
 
 
 # === SPATIALDATA MULTISCALE ===
