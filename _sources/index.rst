@@ -47,11 +47,3 @@ It supports synchronization of shared coordinates across data modalities such as
    plot
    tool
    image_container
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
