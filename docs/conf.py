@@ -37,8 +37,10 @@ html_theme_options = {
     "logo_only": True,
     "home_page_in_toc": False,
     "navigation_with_keys": True,
-    "logo_light": "_static/img/spatialproteomics_logo_light.png",
-    "logo_dark": "_static/img/spatialproteomics_logo_dark.png",
+    "logo": {
+        "image_light": "_static/img/spatialproteomics_logo_light.png",
+        "image_dark": "_static/img/spatialproteomics_logo_dark.png",
+    }
 }
 pygments_style = "default"
 
