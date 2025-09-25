@@ -540,7 +540,7 @@ class LabelAccessor:
                 name=Layers.OBS,
             )
 
-            obj = xr.merge([self._obj, da, db])
+            obj = xr.merge([self._obj, da, db], join="outer")
         else:
             new_coord = self._obj.coords[Dims.LABELS].values.max() + 1
             da = xr.DataArray(
@@ -553,7 +553,7 @@ class LabelAccessor:
                 [self._obj[Layers.LA_PROPERTIES], da],
                 dim=Dims.LABELS,
             )
-            obj = xr.merge([self._obj, da])
+            obj = xr.merge([self._obj, da], join="outer")
 
         return obj
 
@@ -668,7 +668,7 @@ class LabelAccessor:
                 dim=Dims.LA_PROPS,
             )
 
-        return xr.merge([da, self._obj])
+        return xr.merge([da, self._obj], join="outer")
 
     def set_label_name(self, label, name):
         """
@@ -716,7 +716,7 @@ class LabelAccessor:
         obj = self._obj.pp.drop_layers(Layers.LA_PROPERTIES)
 
         # adding the new property layer
-        return xr.merge([property_layer, obj])
+        return xr.merge([property_layer, obj], join="outer")
 
     def set_label_colors(self, labels: Union[str, List[str]], colors: Union[str, List[str]]):
         """
@@ -778,7 +778,7 @@ class LabelAccessor:
             name=Layers.LA_PROPERTIES,
         )
 
-        return xr.merge([self._obj.drop_vars(Layers.LA_PROPERTIES), da])
+        return xr.merge([self._obj.drop_vars(Layers.LA_PROPERTIES), da], join="outer")
 
     def predict_cell_types_argmax(
         self,
@@ -1058,7 +1058,14 @@ class LabelAccessor:
         obj = self._obj.copy()
         if ignore_neighborhoods:
             obj = obj.pp.drop_layers(Layers.NEIGHBORHOODS)
-        obj = xr.merge([obj.sel(cells=da.cells), da])
+
+        print("FIRST")
+        print(obj.sel(cells=da.cells))
+        print("SECOND")
+        print(da)
+        obj = xr.merge([obj.sel(cells=da.cells), da], join="outer")
+        print("FINAL")
+        print(obj)
 
         if colors is not None:
             assert len(colors) == len(unique_labels), "Colors has the same."
@@ -1078,7 +1085,7 @@ class LabelAccessor:
 
         obj = obj.la.add_properties(names, Props.NAME)
 
-        return xr.merge([obj.sel(cells=da.cells), da])
+        return xr.merge([obj.sel(cells=da.cells), da], join="outer")
 
     def add_properties(
         self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False
@@ -1124,7 +1131,7 @@ class LabelAccessor:
                 dim=Dims.LA_PROPS,
             )
 
-        return xr.merge([da, self._obj])
+        return xr.merge([da, self._obj], join="outer")
 
     def predict_cell_subtypes(
         self, subtype_dict: Union[dict, str], overwrite_existing_labels: bool = True

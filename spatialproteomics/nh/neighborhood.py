@@ -282,7 +282,7 @@ class NeighborhoodAccessor:
                 dim=Dims.NH_PROPS,
             )
 
-        return xr.merge([da, self._obj])
+        return xr.merge([da, self._obj], join="outer")
 
     def add_neighborhoods_from_dataframe(
         self,
@@ -487,7 +487,7 @@ class NeighborhoodAccessor:
             name=Layers.NH_PROPERTIES,
         )
 
-        return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da])
+        return xr.merge([self._obj.drop_vars(Layers.NH_PROPERTIES), da], join="outer")
 
     def set_neighborhood_name(self, neighborhoods: Union[int, str, List], names: Union[str, List]):
         """
@@ -582,7 +582,7 @@ class NeighborhoodAccessor:
         obj = self._obj.pp.drop_layers(Layers.NH_PROPERTIES, drop_obs=False)
 
         # Add the updated property layer
-        return xr.merge([property_layer, obj])
+        return xr.merge([property_layer, obj], join="outer")
 
     def compute_neighborhoods_radius(
         self,
@@ -645,7 +645,7 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        obj = xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da], join="outer")
 
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
@@ -657,7 +657,7 @@ class NeighborhoodAccessor:
             name=key_adjacency_matrix,
         )
 
-        return xr.merge([obj, da])
+        return xr.merge([obj, da], join="outer")
 
     def compute_neighborhoods_knn(
         self,
@@ -716,7 +716,7 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        obj = xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da], join="outer")
 
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
@@ -728,7 +728,7 @@ class NeighborhoodAccessor:
             name=key_adjacency_matrix,
         )
 
-        return xr.merge([obj, da])
+        return xr.merge([obj, da], join="outer")
 
     def compute_neighborhoods_delaunay(
         self,
@@ -781,7 +781,7 @@ class NeighborhoodAccessor:
             name=key_added,
         )
 
-        obj = xr.merge([self._obj, da])
+        obj = xr.merge([self._obj, da], join="outer")
 
         # adding the adjacency matrix to the object
         cells = obj.coords[Dims.CELLS].values
@@ -793,7 +793,7 @@ class NeighborhoodAccessor:
             name=key_adjacency_matrix,
         )
 
-        return xr.merge([obj, da])
+        return xr.merge([obj, da], join="outer")
 
     def add_neighborhood_obs(
         self, features: Union[str, List[str]] = ["degree", "homophily", "inter_label_connectivity", "diversity_index"]
