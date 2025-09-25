@@ -15,7 +15,7 @@ dependencies = [
     "matplotlib>=3.8.0",
     "tqdm>=4.64.0",
     "scikit-learn>=1.4.2",
-    "zarr<3.0.0",
+    "zarr>=2.0.0",
     "numpy>=1.23",
     "opencv-python>=4.11.0",
     "pyyaml>=6.0"

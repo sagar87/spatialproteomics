@@ -19,7 +19,7 @@ We recommend using [uv](https://github.com/astral-sh/uv) for fast dependency man
 You can set up an environment as follows:
 
 ```
-uv venv
+uv venv --python=python3.12  # specifying the python version is optional
 uv pip install -e ".[dev,all]"
 ```
 

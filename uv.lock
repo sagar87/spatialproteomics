@@ -5062,7 +5062,7 @@ requires-dist = [
     { name = "stardist", marker = "extra == 'stardist'", specifier = ">=0.9.1" },
     { name = "tqdm", specifier = ">=4.64.0" },
     { name = "xarray", specifier = ">=2024.0.0" },
-    { name = "zarr", specifier = "<3.0.0" },
+    { name = "zarr", specifier = ">=2.0.0" },
 ]
 provides-extras = ["docs", "spatialdata", "cellpose", "stardist", "anndata", "dev", "all"]
 
