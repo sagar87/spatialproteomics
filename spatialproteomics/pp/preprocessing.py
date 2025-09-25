@@ -617,7 +617,7 @@ class PreprocessingAccessor:
             obj = obj.drop_vars(Layers.SEGMENTATION)
 
             # adding the new filtered and relabeled segmentation
-            return xr.merge([obj, da], join="outer")
+            return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
         return self._obj.sel(query)
 
@@ -689,7 +689,7 @@ class PreprocessingAccessor:
             name=Layers.IMAGE,
         )
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def add_segmentation(
         self,
@@ -770,7 +770,7 @@ class PreprocessingAccessor:
                     labels = {reindex_dict[k]: v for k, v in labels.items()}
                 obj = obj.la.add_labels(labels)
 
-        obj = xr.merge([obj, da], join="outer")
+        obj = xr.merge([obj, da], join="outer", compat="no_conflicts")
         if add_obs:
             return obj.pp.add_observations()
         return obj
@@ -842,7 +842,7 @@ class PreprocessingAccessor:
             )
 
         obj = self._obj.copy()
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def add_layer_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.LA_LAYERS) -> xr.Dataset:
         """
@@ -879,7 +879,7 @@ class PreprocessingAccessor:
             name=key_added,
         )
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def add_observations(
         self,
@@ -967,7 +967,7 @@ class PreprocessingAccessor:
                     dim=Dims.FEATURES,
                 )
 
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def drop_observations(
         self,
@@ -1036,7 +1036,7 @@ class PreprocessingAccessor:
             dim=Dims.FEATURES,
         )
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def add_obs_from_dataframe(self, df: pd.DataFrame) -> xr.Dataset:
         """
@@ -1074,7 +1074,7 @@ class PreprocessingAccessor:
             name=Layers.OBS,
         )
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification(
         self,
@@ -1133,7 +1133,7 @@ class PreprocessingAccessor:
         if return_xarray:
             return da
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.INTENSITY) -> xr.Dataset:
         """
@@ -1176,7 +1176,7 @@ class PreprocessingAccessor:
             name=key_added,
         )
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def drop_layers(
         self,
@@ -1336,7 +1336,7 @@ class PreprocessingAccessor:
             dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=Layers.IMAGE if key_added is None else key_added,
         )
-        return xr.merge([obj, filtered], join="outer")
+        return xr.merge([obj, filtered], join="outer", compat="no_conflicts")
 
     def apply(self, func: Callable, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE, **kwargs):
         """
@@ -1393,7 +1393,7 @@ class PreprocessingAccessor:
             name=Layers.PLOT,
         )
 
-        return xr.merge([self._obj, normed], join="outer")
+        return xr.merge([self._obj, normed], join="outer", compat="no_conflicts")
 
     def downsample(self, rate: int):
         """
@@ -1463,7 +1463,7 @@ class PreprocessingAccessor:
 
         obj = obj.drop_dims([Dims.Y, Dims.X])
 
-        return xr.merge([obj, new_img, new_seg], join="outer")
+        return xr.merge([obj, new_img, new_seg], join="outer", compat="no_conflicts")
 
     def filter_by_obs(self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION):
         """
@@ -1528,7 +1528,7 @@ class PreprocessingAccessor:
         obj = obj.drop_vars(segmentation_key)
 
         # adding the new filtered and relabeled segmentation
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def remove_outlying_cells(
         self, dilation_size: int = 25, threshold: int = 5, segmentation_key: str = Layers.SEGMENTATION
@@ -1591,7 +1591,7 @@ class PreprocessingAccessor:
         # removing the old segmentation
         obj = obj.drop_vars(segmentation_key)
         # adding the new filtered and relabeled segmentation
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def grow_cells(self, iterations: int = 2, suppress_warning: bool = False) -> xr.Dataset:
         """
@@ -1634,7 +1634,7 @@ class PreprocessingAccessor:
 
         # replacing the old segmentation mask with the new one
         obj = self._obj.drop_vars(Layers.SEGMENTATION)
-        obj = xr.merge([obj, da], join="outer")
+        obj = xr.merge([obj, da], join="outer", compat="no_conflicts")
 
         # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
         # if anything other than the default obs were present, a warning is shown, as they will be removed
@@ -1792,7 +1792,7 @@ class PreprocessingAccessor:
             attrs=mapping,
         )
 
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def get_layer_as_df(
         self,
@@ -1910,7 +1910,7 @@ class PreprocessingAccessor:
             obj = obj.drop_vars(key)
 
         # adding the transformed matrix to the object
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def mask_region(self, key: str = Layers.MASK, image_key=Layers.IMAGE, key_added=Layers.IMAGE) -> xr.Dataset:
         """
@@ -1952,7 +1952,7 @@ class PreprocessingAccessor:
             name=key_added,
         )
 
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def mask_cells(self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION) -> xr.Dataset:
         """
@@ -2006,7 +2006,7 @@ class PreprocessingAccessor:
         obj = obj.drop_vars(segmentation_key)
 
         # adding the new filtered and relabeled segmentation
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def convert_to_8bit(self, key: str = Layers.IMAGE, key_added: str = Layers.IMAGE):
         """
@@ -2046,4 +2046,4 @@ class PreprocessingAccessor:
             name=key_added,
         )
 
-        return xr.merge([obj, da], join="outer")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")

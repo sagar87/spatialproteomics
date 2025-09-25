@@ -362,9 +362,9 @@ class ToolAccessor:
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
         if return_diameters:
-            return xr.merge([self._obj, da], join="outer"), diams
+            return xr.merge([self._obj, da], join="outer", compat="no_conflicts"), diams
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def stardist(
         self,
@@ -436,7 +436,7 @@ class ToolAccessor:
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def mesmer(
         self,
@@ -487,7 +487,7 @@ class ToolAccessor:
 
         da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
 
-        return xr.merge([self._obj, da], join="outer")
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def astir(
         self,
