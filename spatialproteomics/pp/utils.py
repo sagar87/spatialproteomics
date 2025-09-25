@@ -538,7 +538,7 @@ def _threshold(
 
         assert all(
             channel in all_channels for channel in channels
-        ), f"The following channels are not present in the image layer: {set(channels)-set(all_channels)}."
+        ), f"The following channels are not present in the image layer: {set(channels) - set(all_channels)}."
 
         if quantile is not None:
             assert len(channels) == len(quantile), "The number of channels must match the number of quantile values."

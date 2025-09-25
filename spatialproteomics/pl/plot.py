@@ -360,7 +360,7 @@ class PlotAccessor:
             da = da.sum(Dims.CHANNELS, keep_attrs=True)
             da.values[da.values > 1] = 1.0
 
-        return xr.merge([self._obj, da])
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def show(
         self,
@@ -474,7 +474,7 @@ class PlotAccessor:
                     name=Layers.PLOT,
                 )
 
-                obj = xr.merge([self._obj, da])
+                obj = xr.merge([self._obj, da], join="outer", compat="no_conflicts")
         else:
             # if a plot already exists, but the user tries to set a background color, we raise a warning
             if background != "black":
@@ -710,7 +710,7 @@ class PlotAccessor:
         da = da.sum(Dims.CHANNELS, keep_attrs=True)
         da.values[da.values > 1] = 1.0
 
-        return xr.merge([self._obj, da])
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def render_labels(
         self,
@@ -781,7 +781,7 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da])
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def render_neighborhoods(
         self,
@@ -905,7 +905,7 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da])
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def render_obs(
         self,
@@ -963,7 +963,7 @@ class PlotAccessor:
         assert feature in obs.coords[Dims.FEATURES], f"Feature {feature} not found in the observation layer."
 
         # creating a continuous colormap
-        cmap = plt.cm.get_cmap(cmap)
+        cmap = plt.get_cmap(cmap)
         feature_values = obs.sel(features=feature).values
 
         # mapping the feature values onto the segmentation mask (replacing the cell indices with the feature values)
@@ -1037,7 +1037,7 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da])
+        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
 
     def imshow(
         self,
@@ -1416,7 +1416,6 @@ class PlotAccessor:
     def autocrop(
         self, padding: int = 50, downsample: int = 10, key: str = Layers.IMAGE, channel: Optional[str] = None
     ) -> xr.Dataset:
-
         """
         Crop the image so that the background surrounding the tissue/TMA gets cropped away.
 
