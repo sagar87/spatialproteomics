@@ -227,12 +227,7 @@ def _astir(
     cell_type_col: str = "cell_type",
     **kwargs,
 ):
-    try:
-        import astir
-    except ImportError:
-        raise ImportError(
-            "Please install astir manually: pip install 'astir @ git+https://github.com/camlab-bioml/astir.git'"
-        )
+    import astir
     import torch
 
     model = astir.Astir(expression_df, marker_dict, dtype=torch.float64, random_seed=seed)

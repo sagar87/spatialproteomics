@@ -12,7 +12,7 @@ copyright = "2024, Matthias Meyer-Bender, Harald Vohringer"
 author = "Matthias Meyer-Bender, Harald Vohringer"
 
 # Dynamically set the release version for multi-version builds
-release = os.getenv("SPHINX_MULTIVERSION_NAME", "0.7.4")
+release = os.getenv("SPHINX_MULTIVERSION_NAME", "0.7.5")
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,7 +40,7 @@ html_theme_options = {
     "logo": {
         "image_light": "_static/img/spatialproteomics_logo_light.png",
         "image_dark": "_static/img/spatialproteomics_logo_dark.png",
-    }
+    },
 }
 pygments_style = "default"
 

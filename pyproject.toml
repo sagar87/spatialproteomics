@@ -1,6 +1,6 @@
 [project]
 name = "spatialproteomics"
-version = "0.7.4"
+version = "0.7.5"
 description = "Spatialproteomics is an interoperable toolbox for analyzing highly multiplexed fluorescence image data"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -39,16 +39,17 @@ spatialdata = ["spatialdata>=0.4.0"]
 cellpose = ["cellpose>=3.1.0"]
 stardist = ["stardist>=0.9.1"]
 anndata = ["anndata"]
+astir = ["astir>=0.1.5"]
 dev = [
     "pytest>=7.1.2",
     "pytest-cov>=3.0.0",
-    "black>=22.6.0",
+    "black[jupyter]>=22.6.0",
     "isort>=5.10.1",
     "flake8>=5.0.4",
     "bandit>=1.7.4",
     "safety>=2.1.1",
 ]
-all = ["spatialdata", "cellpose", "stardist"]
+all = ["spatialdata", "cellpose", "stardist", "astir"]
 
 [build-system]
 requires = ["setuptools>=61.0,<81.0"]
@@ -63,4 +64,4 @@ exclude = '/(\.venv|build|dist|data|.*\.tif|.*\.tiff|.*\.h5|.*\.zarr)/'
 [tool.isort]
 profile = "black"
 skip = ["data", "build", "dist"]
-skip_glob = [".venv/*", "*.tif", "*.tiff", "*.h5", "*.zarr"]
+skip_glob = [".venv/*", "*.tif", "*.tiff", "*.h5", "*.zarr", ".venv", "build", "dist", "data", ".git", "__pycache__"]

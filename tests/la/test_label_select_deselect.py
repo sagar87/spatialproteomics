@@ -25,6 +25,14 @@ def test_label_get_item_correct_inputs(ds_labels):
     assert np.all(ds_labels.la[["B", "T"]].coords[Dims.LABELS].values == np.array([1, 2]))
 
 
+def test_label_get_item_no_labels_present(ds_image):
+    with pytest.raises(
+        AssertionError,
+        match="No label layer found in the data object. Please add labels before setting colors",
+    ):
+        ds_image.la["B"]
+
+
 def test_label_get_item_wrong_inputs(ds_labels):
     # test that all cell types are present
     with pytest.raises(TypeError, match="Label indices must be valid integers"):

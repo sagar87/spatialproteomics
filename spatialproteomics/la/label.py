@@ -200,6 +200,11 @@ class LabelAccessor:
         if isinstance(indices, float):
             raise TypeError("Label indices must be valid integers, str, slices, List[int] or List[str].")
 
+        # checking that labels exist in the object
+        assert (
+            Layers.LA_PROPERTIES in self._obj
+        ), "No label layer found in the data object. Please add labels before setting colors, e. g. by using la.predict_cell_types_argmax() or tl.astir()."
+
         if isinstance(indices, int):
             if indices not in self._obj.coords[Dims.LABELS].values:
                 raise ValueError(f"Label type {indices} not found.")
