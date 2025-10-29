@@ -23,6 +23,7 @@ from .utils import (
     _remove_unlabeled_cells,
     _threshold,
     _transform_expression_matrix,
+    _validate_and_clamp_slice,
 )
 
 
@@ -571,6 +572,13 @@ class PreprocessingAccessor:
         y_start = ydim[0] if y_slice.start is None else y_slice.start
         x_stop = xdim[-1] if x_slice.stop is None else x_slice.stop
         y_stop = ydim[-1] if y_slice.stop is None else y_slice.stop
+
+        # raise a warning or an error if the slices are out of bounds
+        x_start_clamped, x_stop_clamped = _validate_and_clamp_slice(x_start, x_stop, xdim, "X_slice")
+        y_start_clamped, y_stop_clamped = _validate_and_clamp_slice(y_start, y_stop, ydim, "Y_slice")
+
+        x_slice = slice(x_start_clamped, x_stop_clamped)
+        y_slice = slice(y_start_clamped, y_stop_clamped)
 
         # set up query
         query = {

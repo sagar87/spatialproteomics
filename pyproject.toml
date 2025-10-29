@@ -42,7 +42,7 @@ anndata = ["anndata"]
 dev = [
     "pytest>=7.1.2",
     "pytest-cov>=3.0.0",
-    "black>=22.6.0",
+    "black[jupyter]>=22.6.0",
     "isort>=5.10.1",
     "flake8>=5.0.4",
     "bandit>=1.7.4",
@@ -63,4 +63,4 @@ exclude = '/(\.venv|build|dist|data|.*\.tif|.*\.tiff|.*\.h5|.*\.zarr)/'
 [tool.isort]
 profile = "black"
 skip = ["data", "build", "dist"]
-skip_glob = [".venv/*", "*.tif", "*.tiff", "*.h5", "*.zarr"]
+skip_glob = [".venv/*", "*.tif", "*.tiff", "*.h5", "*.zarr", ".venv", "build", "dist", "data", ".git", "__pycache__"]

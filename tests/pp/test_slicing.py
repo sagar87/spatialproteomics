@@ -14,6 +14,19 @@ def test_image_slicing_two_coordinates(ds_segmentation):
     assert ~np.all(sub[Layers.OBS].loc[:, Features.Y] > 2150)
 
 
+def test_image_slicing_out_of_bounds(ds_segmentation):
+    with pytest.raises(
+        ValueError,
+        match="X_slice is out of bounds. You are trying to access coordinates 5000:6000 but the image has coordinates from 1600 to 1700.",
+    ):
+        ds_segmentation.pp[5000:6000, 2100:2150]
+
+
+def test_image_slicing_invalid_coords(ds_segmentation):
+    with pytest.raises(ValueError, match="is invalid: start"):
+        ds_segmentation.pp[2000:1000, 2100:2150]
+
+
 def test_image_slicing_two_implicit_coordinate(ds_segmentation):
     sub = ds_segmentation.pp[:1650, :2150]
 

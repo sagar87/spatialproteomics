@@ -1,3 +1,4 @@
+import warnings
 from collections import defaultdict
 from typing import List, Optional, Tuple, Union
 
@@ -643,3 +644,46 @@ def _transform_expression_matrix(
         raise ValueError(f"Unknown transformation method: {method}")
 
     return transformed_matrix
+
+
+def _validate_and_clamp_slice(start, stop, dim, slice_name="x_slice"):
+    """
+    Validate a slice [start, stop) against the coordinate axis 'dim'.
+
+    - Assumes dim.values[0] .. dim.values[-1] are the valid (inclusive) coordinates.
+    - Treats `start` inclusive, `stop` exclusive (so valid stop <= max + 1).
+    - Raises ValueError if the slice is completely outside the image bounds.
+    - Warns and clamps if the slice is partially outside.
+    - Raises ValueError if start >= stop (empty/invalid slice).
+
+    Returns (clamped_start, clamped_stop).
+    """
+    minv = dim.values[0]
+    maxv = dim.values[-1]
+
+    # sanity check on slice ordering
+    if start >= stop:
+        raise ValueError(f"{slice_name} is invalid: start ({start}) >= stop ({stop}).")
+
+    # slice is entirely to the left if its last index (stop-1) < minv
+    entirely_left = (stop - 1) < minv
+    # slice is entirely to the right if its first index (start) > maxv
+    entirely_right = start > maxv
+
+    if entirely_left or entirely_right:
+        raise ValueError(
+            f"{slice_name} is out of bounds. You are trying to access coordinates "
+            f"{start}:{stop} but the image has coordinates from {minv} to {maxv}."
+        )
+
+    # Now check for partial out-of-bounds and clamp
+    clamped_start = max(start, minv)
+    clamped_stop = min(stop, maxv + 1)  # stop is exclusive, so allow maxv+1
+
+    if clamped_start != start or clamped_stop != stop:
+        warnings.warn(
+            f"{slice_name} is partially out of bounds. Requested {start}:{stop}, "
+            f"image bounds are {minv}:{maxv}. Defaulting to {clamped_start}:{clamped_stop}."
+        )
+
+    return clamped_start, clamped_stop

@@ -40,7 +40,7 @@ html_theme_options = {
     "logo": {
         "image_light": "_static/img/spatialproteomics_logo_light.png",
         "image_dark": "_static/img/spatialproteomics_logo_dark.png",
-    }
+    },
 }
 pygments_style = "default"
 
