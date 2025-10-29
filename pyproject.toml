@@ -39,6 +39,7 @@ spatialdata = ["spatialdata>=0.4.0"]
 cellpose = ["cellpose>=3.1.0"]
 stardist = ["stardist>=0.9.1"]
 anndata = ["anndata"]
+astir = ["astir>=0.1.5"]
 dev = [
     "pytest>=7.1.2",
     "pytest-cov>=3.0.0",
@@ -48,7 +49,7 @@ dev = [
     "bandit>=1.7.4",
     "safety>=2.1.1",
 ]
-all = ["spatialdata", "cellpose", "stardist"]
+all = ["spatialdata", "cellpose", "stardist", "astir"]
 
 [build-system]
 requires = ["setuptools>=61.0,<81.0"]
