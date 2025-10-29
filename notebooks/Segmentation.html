@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=59632855"></script>
+    <script src="../_static/documentation_options.js?v=aea636e0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -338,6 +338,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Mesmer">Whole-Cell Segmentation with Mesmer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fine-Tuning-Cellpose">Fine-Tuning Cellpose</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Merging-Segmentation-Masks-from-Different-Layers">Merging Segmentation Masks from Different Layers</a></li>
 </ul>
             </nav>
@@ -3254,7 +3255,10 @@ Data variables:
 <img alt="../_images/notebooks_Segmentation_26_0.png" src="../_images/notebooks_Segmentation_26_0.png" />
 </div>
 </div>
-<p>Note that this method is far from perfect, and does not always pick up on all masks. In this case, you might want to look into fine-tuning cellpose to your celltype of interest. You can also tweak the cellpose parameters to try to improve the segmentation.</p>
+</section>
+<section id="Fine-Tuning-Cellpose">
+<h2>Fine-Tuning Cellpose<a class="headerlink" href="#Fine-Tuning-Cellpose" title="Link to this heading">#</a></h2>
+<p>Cellpose often benefits from fine-tuning, which is detailed in their <a class="reference external" href="https://cellpose.readthedocs.io/en/latest/gui.html#training-your-own-cellpose-model">documentation</a>. You can load fine-tuned cellpose models into <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> by using <code class="docutils literal notranslate"><span class="pre">ds.tl.cellpose(channel=&quot;your_marker&quot;,</span> <span class="pre">pretrained_model=model_path)</span></code>.</p>
 </section>
 <section id="Merging-Segmentation-Masks-from-Different-Layers">
 <h2>Merging Segmentation Masks from Different Layers<a class="headerlink" href="#Merging-Segmentation-Masks-from-Different-Layers" title="Link to this heading">#</a></h2>
@@ -3906,6 +3910,7 @@ Data variables:
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Whole-Cell-Segmentation-with-Mesmer">Whole-Cell Segmentation with Mesmer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Nuclear-Segmentation-with-StarDist">Nuclear Segmentation with StarDist</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Segmenting-Multiple-Channels-with-Cellpose">Segmenting Multiple Channels with Cellpose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Fine-Tuning-Cellpose">Fine-Tuning Cellpose</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Merging-Segmentation-Masks-from-Different-Layers">Merging Segmentation Masks from Different Layers</a></li>
 </ul>
   </nav></div>
