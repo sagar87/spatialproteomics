@@ -53,9 +53,6 @@ class Dims(object):
     LA_PROPS = "la_props"
     NH_PROPS = "nh_props"
     NEIGHBORHOODS = "neighborhoods"
-    IMAGE = ["channels", "x", "y"]
-    COLORED_IMAGE = ["channels", "x", "y", "rgba"]
-    SEGMENTATION = ["x", "y"]
 
 
 class Attrs(object):

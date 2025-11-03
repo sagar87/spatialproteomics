@@ -651,7 +651,7 @@ class PreprocessingAccessor:
 
         return self._obj.sel(query)
 
-    def add_channel(self, channels: Union[str, list], array: np.ndarray) -> xr.Dataset:
+    def add_channel(self, channels: Union[str, list], array: np.ndarray, layer_key: str = Layers.IMAGE) -> xr.Dataset:
         """
         Adds channel(s) to an existing image container.
 
@@ -661,6 +661,8 @@ class PreprocessingAccessor:
             The name of the channel or a list of channel names to be added.
         array : np.ndarray
             The numpy array representing the channel(s) to be added.
+        layer_key : str
+            The layer key where the channel(s) should be added. Default is 'image'.
 
         Returns
         -------
@@ -692,9 +694,9 @@ class PreprocessingAccessor:
 
         da = xr.DataArray(
             array,
-            coords=[channels, range(other_x_dim), range(other_y_dim)],
-            dims=Dims.IMAGE,
-            name=Layers.IMAGE,
+            coords=[channels, range(other_y_dim), range(other_x_dim)],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=layer_key,
         )
 
         return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
@@ -2055,3 +2057,88 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([obj, da], join="outer", compat="no_conflicts")
+
+    def merge_channels(
+        self,
+        channels: List[str],
+        key_added: str = "merged_channel",
+        normalize: bool = True,
+        method: Union[str, Callable] = "max",
+        layer_key: str = Layers.IMAGE,
+    ) -> xr.Dataset:
+        """
+        Merge specified channels into a single channel by summing their values.
+
+        Parameters
+        ----------
+        channels : List[str]
+            The list of channel names to merge.
+        key_added : str
+            The name of the new channel.
+        normalize : bool
+            Whether to normalize the images before merging. Default is True.
+        method : Union[str, Callable]
+            The method to use for merging. Can be "max", "sum", "mean", or a custom callable function. Default is "max".
+        layer_key : str
+            The key of the image layer in the object. Default is Layers.IMAGE.
+
+        Returns
+        -------
+        xr.Dataset
+            The object with the merged channels in the image layer.
+        """
+        # check that the new channel name does not already exist
+        assert (
+            key_added not in self._obj.coords[Dims.CHANNELS].values
+        ), f"Channel {key_added} already exists in the object. Please choose a different name by setting the 'key_added' parameter."
+
+        # getting all relevant channels
+        arr = self._obj.pp[channels][layer_key].values
+
+        # normalize if specified
+        if normalize:
+            # this normalization step squeezes all channels into values between 0 and 1
+            arr = _normalize(arr, pmin=1, pmax=99, clip=True)
+            # after normalization, we want to map this back to the original dtype, while also using the full range of the dtype
+            dtype = self._obj[layer_key].dtype
+
+            if np.issubdtype(dtype, np.integer):
+                info = np.iinfo(dtype)
+                arr = (arr * info.max).astype(dtype)
+            elif np.issubdtype(dtype, np.floating):
+                arr = arr.astype(dtype)
+            else:
+                raise TypeError(f"Unsupported dtype: {dtype}")
+        else:
+            arr = arr.values
+
+        #  merge channels based on method
+        if method == "max":
+            merged = np.max(arr, axis=0)
+        elif method == "sum":
+            merged = np.sum(arr, axis=0)
+        elif method == "mean":
+            merged = np.mean(arr, axis=0)
+        elif callable(method):
+            merged = method(arr)
+        else:
+            raise ValueError(
+                f"Unknown merging method: {method}. Please use 'max', 'sum', 'mean', or provide a callable function."
+            )
+
+        # TODO: SOMETHING IS STILL WRONG WITH THE DTYPE HANDLING HERE
+        # ensure the merged array has the correct dtype (if the input was integer, output should also be integer, but we need to check for overflow)
+        # if there is overflow, we change the dtype to int64
+        dtype = self._obj[layer_key].dtype
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if merged.max() > info.max:
+                # TODO: SHOULD MAKE THIS MORE CUSTOMIZABLE
+                logger.warning(f"Overflow detected when merging channels. Changing dtype from {dtype} to int64")
+                merged = merged.astype(np.int64)
+        else:
+            merged = merged.astype(dtype)
+
+        # add the new channel to the object
+        obj = self._obj.pp.add_channel(channels=key_added, array=merged)
+        return obj
