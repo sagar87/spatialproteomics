@@ -34,6 +34,24 @@ def load_image_data(
         np.ndarray with image.shape = (n, x, y)
     channel_coords: str | List[str]
         list with the names for each channel
+    x_coords : np.ndarray | None, optional
+        x coordinates for the image, by default None
+    y_coords : np.ndarray | None, optional
+        y coordinates for the image, by default None
+    segmentation : np.ndarray | None, optional
+        np.ndarray with segmentation mask, by default None
+    labels : pd.DataFrame | None, optional
+        DataFrame with labels for each cell in the segmentation, by default None
+    neighborhood : pd.DataFrame | None, optional
+        DataFrame with neighborhood information for each cell in the segmentation, by default None
+    cell_col : str, optional
+        Column name in `labels` and `neighborhood` DataFrames that contains the cell IDs
+    label_col : str, optional
+        Column name in `labels` DataFrame that contains the label names
+    neighborhood_col : str, optional
+        Column name in `neighborhood` DataFrame that contains the neighborhood names
+    copy_image : bool, optional
+        Whether to copy the image array, by default False
 
     Returns
     -------
