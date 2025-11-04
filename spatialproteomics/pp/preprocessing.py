@@ -2126,19 +2126,17 @@ class PreprocessingAccessor:
                 f"Unknown merging method: {method}. Please use 'max', 'sum', 'mean', or provide a callable function."
             )
 
-        # TODO: SOMETHING IS STILL WRONG WITH THE DTYPE HANDLING HERE
         # ensure the merged array has the correct dtype (if the input was integer, output should also be integer, but we need to check for overflow)
         # if there is overflow, we change the dtype to int64
         dtype = self._obj[layer_key].dtype
         if np.issubdtype(dtype, np.integer):
             info = np.iinfo(dtype)
             if merged.max() > info.max:
-                # TODO: SHOULD MAKE THIS MORE CUSTOMIZABLE
-                logger.warning(f"Overflow detected when merging channels. Changing dtype from {dtype} to int64")
-                merged = merged.astype(np.int64)
+                merged = merged.astype(np.uint64)
         else:
             merged = merged.astype(dtype)
 
         # add the new channel to the object
+        # if there are multiple layers with channels as coordinates, this will turn it into float32, since it will introduce NaNs for the new channel in other layers
         obj = self._obj.pp.add_channel(channels=key_added, array=merged)
         return obj
