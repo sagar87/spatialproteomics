@@ -687,3 +687,44 @@ def _validate_and_clamp_slice(start, stop, dim, slice_name="x_slice"):
         )
 
     return clamped_start, clamped_stop
+
+
+def _merge_channels(arr: np.ndarray, method: Union[str, callable] = "max", normalize: bool = False) -> np.ndarray:
+    dtype = arr.dtype
+    # normalize if specified
+    if normalize:
+        # this normalization step squeezes all channels into values between 0 and 1
+        arr = _normalize(arr, pmin=1, pmax=99, clip=True)
+        # after normalization, we want to map this back to the original dtype, while also using the full range of the dtype
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            arr = (arr * info.max).astype(dtype)
+        elif np.issubdtype(dtype, np.floating):
+            arr = arr.astype(dtype)
+        else:
+            raise TypeError(f"Unsupported dtype: {dtype}")
+
+    #  merge channels based on method
+    if method == "max":
+        merged = np.max(arr, axis=0)
+    elif method == "sum":
+        merged = np.sum(arr, axis=0)
+    elif method == "mean":
+        merged = np.mean(arr, axis=0)
+    elif callable(method):
+        merged = method(arr)
+    else:
+        raise ValueError(
+            f"Unknown merging method: {method}. Please use 'max', 'sum', 'mean', or provide a callable function."
+        )
+
+    # ensure the merged array has the correct dtype (if the input was integer, output should also be integer, but we need to check for overflow)
+    # if there is overflow, we change the dtype to int64
+    if np.issubdtype(dtype, np.integer):
+        info = np.iinfo(dtype)
+        if merged.max() > info.max:
+            merged = merged.astype(np.uint64)
+    else:
+        merged = merged.astype(dtype)
+
+    return merged

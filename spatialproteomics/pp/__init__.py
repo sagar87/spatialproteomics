@@ -6,6 +6,7 @@ from .preprocessing import (
     apply,
     filter_by_obs,
     grow_cells,
+    merge_channels,
     threshold,
     transform_expression_matrix,
 )
@@ -21,4 +22,5 @@ __all__ = [
     "transform_expression_matrix",
     "filter_by_obs",
     "grow_cells",
+    "merge_channels",
 ]

@@ -16,6 +16,7 @@ from .utils import (
     _compute_quantification,
     _convert_to_8bit,
     _get_disconnected_cell,
+    _merge_channels,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -444,6 +445,91 @@ def grow_cells(
         return sdata
 
 
+def merge_channels(
+    sdata,
+    channels: List[str],
+    key_added: str,
+    normalize: bool = True,
+    method: str = "sum",
+    image_key: str = SDLayers.IMAGE,
+    copy: bool = False,
+):
+    """
+    Merges multiple channels into a single channel in the spatialdata object.
+
+    Parameters
+    ----------
+    sdata : spatialdata.SpatialData
+        The spatialdata object containing the image data.
+    channels : List[str]
+        The list of channels to be merged.
+    key_added : str
+        The key under which the merged channel will be stored in the images attribute of the spatialdata object.
+    normalize : bool
+        Whether to normalize the channels before merging. Default is True.
+    method : str
+        The method to use for merging the channels. Options are "sum", "mean", and "max". Default is "sum".
+    image_key : str
+        The key for the image data in the spatialdata object. Default is SDLayers.IMAGE.
+    copy : bool
+        If True, a copy of the object is returned. Default is False.
+
+    Raises
+    ------
+    AssertionError
+        If key_added already exists in the object.
+    KeyError
+        If any of the specified channels do not exist in the image data.
+    ValueError
+        If less than two channels are provided to merge.
+        If an unknown merging method is provided.
+
+    Returns
+    -------
+    xr.Dataset
+        The object with the merged channel added.
+    """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
+    # check that the new channel name does not already exist
+    assert (
+        key_added not in sdata.images[image_key].coords["c"].values
+    ), f"Channel {key_added} already exists in the object. Please choose a different name by setting the 'key_added' parameter."
+
+    # check that the channels are a list, and that there are at least two channels to merge
+    assert isinstance(channels, list), "Channels must be provided as a list."
+    assert len(channels) >= 2, "At least two channels must be provided to merge."
+
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    image = _process_image(sdata, image_key=image_key, key_added=None, return_values=False)
+    all_channels = list(sdata.images[image_key].coords["c"].values)
+
+    merged_image = _merge_channels(
+        image.sel(c=channels).values,
+        normalize=normalize,
+        method=method,
+    )
+
+    # adding the merged channel to the image data
+    merged_image = np.concatenate([image, merged_image[np.newaxis, :, :]], axis=0)
+    all_channels = all_channels + [key_added]
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+
+    # add the image to the spatial data object
+    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+        merged_image, c_coords=all_channels, transformations=None, dims=("c", "y", "x")
+    )
+    set_transformation(sdata.images[image_key], transformation)
+
+    if copy:
+        return sdata
+
+
 # === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("pp")
 class PreprocessingAccessor:
@@ -651,7 +737,7 @@ class PreprocessingAccessor:
 
         return self._obj.sel(query)
 
-    def add_channel(self, channels: Union[str, list], array: np.ndarray) -> xr.Dataset:
+    def add_channel(self, channels: Union[str, list], array: np.ndarray, layer_key: str = Layers.IMAGE) -> xr.Dataset:
         """
         Adds channel(s) to an existing image container.
 
@@ -661,6 +747,8 @@ class PreprocessingAccessor:
             The name of the channel or a list of channel names to be added.
         array : np.ndarray
             The numpy array representing the channel(s) to be added.
+        layer_key : str
+            The layer key where the channel(s) should be added. Default is 'image'.
 
         Returns
         -------
@@ -692,9 +780,9 @@ class PreprocessingAccessor:
 
         da = xr.DataArray(
             array,
-            coords=[channels, range(other_x_dim), range(other_y_dim)],
-            dims=Dims.IMAGE,
-            name=Layers.IMAGE,
+            coords=[channels, range(other_y_dim), range(other_x_dim)],
+            dims=[Dims.CHANNELS, Dims.Y, Dims.X],
+            name=layer_key,
         )
 
         return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
@@ -2055,3 +2143,51 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([obj, da], join="outer", compat="no_conflicts")
+
+    def merge_channels(
+        self,
+        channels: List[str],
+        key_added: str = "merged_channel",
+        normalize: bool = True,
+        method: Union[str, Callable] = "max",
+        layer_key: str = Layers.IMAGE,
+    ) -> xr.Dataset:
+        """
+        Merge specified channels into a single channel by summing their values.
+
+        Parameters
+        ----------
+        channels : List[str]
+            The list of channel names to merge.
+        key_added : str
+            The name of the new channel.
+        normalize : bool
+            Whether to normalize the images before merging. Default is True.
+        method : Union[str, Callable]
+            The method to use for merging. Can be "max", "sum", "mean", or a custom callable function. Default is "max".
+        layer_key : str
+            The key of the image layer in the object. Default is Layers.IMAGE.
+
+        Returns
+        -------
+        xr.Dataset
+            The object with the merged channels in the image layer.
+        """
+        # check that the new channel name does not already exist
+        assert (
+            key_added not in self._obj.coords[Dims.CHANNELS].values
+        ), f"Channel {key_added} already exists in the object. Please choose a different name by setting the 'key_added' parameter."
+
+        # check that the channels are a list, and that there are at least two channels to merge
+        assert isinstance(channels, list), "Channels must be provided as a list."
+        assert len(channels) >= 2, "At least two channels must be provided to merge."
+
+        # getting all relevant channels
+        arr = self._obj.pp[channels][layer_key].values
+
+        merged = _merge_channels(arr, method=method, normalize=normalize)
+
+        # add the new channel to the object
+        # if there are multiple layers with channels as coordinates, this will turn it into float32, since it will introduce NaNs for the new channel in other layers
+        obj = self._obj.pp.add_channel(channels=key_added, array=merged)
+        return obj
