@@ -311,7 +311,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -327,6 +329,16 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Thresholding">Thresholding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Combining-Channels">Combining Channels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Custom-Image-Processing">Custom Image Processing</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -401,14 +413,14 @@ document.write(`
   --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
 }
 
-html[theme="dark"],
-html[data-theme="dark"],
-body[data-theme="dark"],
+html[theme=dark],
+html[data-theme=dark],
+body[data-theme=dark],
 body.vscode-dark {
   --xr-font-color0: rgba(255, 255, 255, 1);
   --xr-font-color2: rgba(255, 255, 255, 0.54);
   --xr-font-color3: rgba(255, 255, 255, 0.38);
-  --xr-border-color: #1f1f1f;
+  --xr-border-color: #1F1F1F;
   --xr-disabled-color: #515151;
   --xr-background-color: #111111;
   --xr-background-color-row-even: #111111;
@@ -463,7 +475,6 @@ body.vscode-dark {
 .xr-section-item input {
   display: inline-block;
   opacity: 0;
-  height: 0;
 }
 
 .xr-section-item input + label {
@@ -500,7 +511,7 @@ body.vscode-dark {
 
 .xr-section-summary-in + label:before {
   display: inline-block;
-  content: "►";
+  content: '►';
   font-size: 11px;
   width: 15px;
   text-align: center;
@@ -511,7 +522,7 @@ body.vscode-dark {
 }
 
 .xr-section-summary-in:checked + label:before {
-  content: "▼";
+  content: '▼';
 }
 
 .xr-section-summary-in:checked + label > span {
@@ -583,15 +594,15 @@ body.vscode-dark {
 }
 
 .xr-dim-list:before {
-  content: "(";
+  content: '(';
 }
 
 .xr-dim-list:after {
-  content: ")";
+  content: ')';
 }
 
 .xr-dim-list li:not(:last-child):after {
-  content: ",";
+  content: ',';
   padding-right: 5px;
 }
 
@@ -752,14 +763,14 @@ Coordinates:
 Data variables:
     _image         (channels, y, x) uint8 504MB dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;
     _obs           (cells, features) float64 290kB dask.array&lt;chunksize=(9067, 2), meta=np.ndarray&gt;
-    _segmentation  (y, x) int64 72MB dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-1c8963d5-0df0-4815-aeba-9896b8be0e37' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-1c8963d5-0df0-4815-aeba-9896b8be0e37' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>y</span>: 3000</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>cells</span>: 18134</li><li><span class='xr-has-index'>features</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-d0f50658-cb18-4db7-94fc-af7e0f703df7' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d0f50658-cb18-4db7-94fc-af7e0f703df7' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 18131 18132 18133 18134</div><input id='attrs-013c9166-129f-4e52-a894-5125393587f8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-013c9166-129f-4e52-a894-5125393587f8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-151b4706-981d-43d3-81a1-79e00ee57652' class='xr-var-data-in' type='checkbox'><label for='data-151b4706-981d-43d3-81a1-79e00ee57652' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 18132, 18133, 18134])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-eef66e5a-6a1c-41d5-8f88-d8a921463272' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-eef66e5a-6a1c-41d5-8f88-d8a921463272' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bc0f39da-b899-43ea-89ee-caba20564290' class='xr-var-data-in' type='checkbox'><label for='data-bc0f39da-b899-43ea-89ee-caba20564290' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+    _segmentation  (y, x) int64 72MB dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-a77a2d1e-a67a-4299-a4dd-a2dc245ff0b8' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-a77a2d1e-a67a-4299-a4dd-a2dc245ff0b8' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>channels</span>: 56</li><li><span class='xr-has-index'>y</span>: 3000</li><li><span class='xr-has-index'>x</span>: 3000</li><li><span class='xr-has-index'>cells</span>: 18134</li><li><span class='xr-has-index'>features</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-415c4e31-eb47-4279-841c-4895ab8da876' class='xr-section-summary-in' type='checkbox'  checked><label for='section-415c4e31-eb47-4279-841c-4895ab8da876' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>cells</span></div><div class='xr-var-dims'>(cells)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>1 2 3 4 ... 18131 18132 18133 18134</div><input id='attrs-613297b6-5fea-4713-9803-e6c04c86f6b7' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-613297b6-5fea-4713-9803-e6c04c86f6b7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cb55e375-5143-4ea7-9d33-c56a101d79c6' class='xr-var-data-in' type='checkbox'><label for='data-cb55e375-5143-4ea7-9d33-c56a101d79c6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([    1,     2,     3, ..., 18132, 18133, 18134])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>channels</span></div><div class='xr-var-dims'>(channels)</div><div class='xr-var-dtype'>&lt;U11</div><div class='xr-var-preview xr-preview'>&#x27;DAPI&#x27; &#x27;Helios&#x27; ... &#x27;CD79a&#x27; &#x27;Ki-67&#x27;</div><input id='attrs-1ff6d23f-b2ef-4e7b-b1ea-b161e707833f' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1ff6d23f-b2ef-4e7b-b1ea-b161e707833f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5bffaf22-1d78-47f6-bb71-1d4f3f594097' class='xr-var-data-in' type='checkbox'><label for='data-5bffaf22-1d78-47f6-bb71-1d4f3f594097' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
        &#x27;Collagen IV&#x27;, &#x27;CD4&#x27;, &#x27;CD7&#x27;, &#x27;Kappa&#x27;, &#x27;CD20&#x27;, &#x27;CD34&#x27;, &#x27;PAX5&#x27;, &#x27;PD-1&#x27;,
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
        &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
-       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</div><input id='attrs-9293722d-9296-40a2-8f25-2020820572d9' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9293722d-9296-40a2-8f25-2020820572d9' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7bfcebd5-0b65-4c58-a261-57c52e47e55c' class='xr-var-data-in' type='checkbox'><label for='data-7bfcebd5-0b65-4c58-a261-57c52e47e55c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-84602d7f-95f4-4bfd-9d09-5c6f5196ce16' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-84602d7f-95f4-4bfd-9d09-5c6f5196ce16' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e0fc6c55-46cd-40b2-8b98-7b46d0590ad1' class='xr-var-data-in' type='checkbox'><label for='data-e0fc6c55-46cd-40b2-8b98-7b46d0590ad1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-c3d741cc-4258-4e93-8005-4921e9f16123' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c3d741cc-4258-4e93-8005-4921e9f16123' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-024f2595-41f8-4342-80e3-89c799f11538' class='xr-var-data-in' type='checkbox'><label for='data-024f2595-41f8-4342-80e3-89c799f11538' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-401234fb-6b80-4770-9121-13d8859c2221' class='xr-section-summary-in' type='checkbox'  checked><label for='section-401234fb-6b80-4770-9121-13d8859c2221' class='xr-section-summary' >Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-e7c4e5d0-aa21-4a8c-8f2a-bff4f68af7e7' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-e7c4e5d0-aa21-4a8c-8f2a-bff4f68af7e7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9daf0d6b-d706-4241-a22f-a2e051741cca' class='xr-var-data-in' type='checkbox'><label for='data-9daf0d6b-d706-4241-a22f-a2e051741cca' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+       &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;], dtype=&#x27;&lt;U11&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>features</span></div><div class='xr-var-dims'>(features)</div><div class='xr-var-dtype'>&lt;U10</div><div class='xr-var-preview xr-preview'>&#x27;centroid-0&#x27; &#x27;centroid-1&#x27;</div><input id='attrs-56b363f1-6b41-4d21-a59b-7d46deba3b44' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-56b363f1-6b41-4d21-a59b-7d46deba3b44' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-862a91a7-83a9-4bc9-99f8-0a3a821af82c' class='xr-var-data-in' type='checkbox'><label for='data-862a91a7-83a9-4bc9-99f8-0a3a821af82c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;&lt;U10&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>x</span></div><div class='xr-var-dims'>(x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-a39a6888-c48f-477d-b306-a83e76828974' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a39a6888-c48f-477d-b306-a83e76828974' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3c511b7f-ae96-4092-89b2-4c5f19af7c50' class='xr-var-data-in' type='checkbox'><label for='data-3c511b7f-ae96-4092-89b2-4c5f19af7c50' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>y</span></div><div class='xr-var-dims'>(y)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 ... 2996 2997 2998 2999</div><input id='attrs-1add21c2-8109-4519-8e99-5be8d04cf4a8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1add21c2-8109-4519-8e99-5be8d04cf4a8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6cdcbdd4-d271-4dc1-8594-e1c89d01d2f8' class='xr-var-data-in' type='checkbox'><label for='data-6cdcbdd4-d271-4dc1-8594-e1c89d01d2f8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([   0,    1,    2, ..., 2997, 2998, 2999])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-58ed2f62-68c6-41ad-a3d0-829536e151ff' class='xr-section-summary-in' type='checkbox'  checked><label for='section-58ed2f62-68c6-41ad-a3d0-829536e151ff' class='xr-section-summary' >Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>_image</span></div><div class='xr-var-dims'>(channels, y, x)</div><div class='xr-var-dtype'>uint8</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(7, 375, 750), meta=np.ndarray&gt;</div><input id='attrs-066bac8c-bc86-49b4-a87f-0726e2f62f01' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-066bac8c-bc86-49b4-a87f-0726e2f62f01' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2052c1b4-10f0-4fcb-ab90-82897abf2515' class='xr-var-data-in' type='checkbox'><label for='data-2052c1b4-10f0-4fcb-ab90-82897abf2515' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -871,7 +882,7 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(9067, 2), meta=np.ndarray&gt;</div><input id='attrs-647a2f1b-7c2c-4c1c-a41f-b78c5a0b44d2' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-647a2f1b-7c2c-4c1c-a41f-b78c5a0b44d2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-405c2e62-58a8-47f2-85f5-2d7f0f6bbfc9' class='xr-var-data-in' type='checkbox'><label for='data-405c2e62-58a8-47f2-85f5-2d7f0f6bbfc9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_obs</span></div><div class='xr-var-dims'>(cells, features)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(9067, 2), meta=np.ndarray&gt;</div><input id='attrs-b0e7db66-3ae5-4606-a4a2-358b5a9f1ec8' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-b0e7db66-3ae5-4606-a4a2-358b5a9f1ec8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-20181469-9550-4451-be9d-74527660545f' class='xr-var-data-in' type='checkbox'><label for='data-20181469-9550-4451-be9d-74527660545f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -927,7 +938,7 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-53cc7dac-28fa-4126-b33d-3b58d83025f1' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-53cc7dac-28fa-4126-b33d-3b58d83025f1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a63dd31c-3f77-4b68-99e1-18d18852d32b' class='xr-var-data-in' type='checkbox'><label for='data-a63dd31c-3f77-4b68-99e1-18d18852d32b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>_segmentation</span></div><div class='xr-var-dims'>(y, x)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(375, 375), meta=np.ndarray&gt;</div><input id='attrs-ede0e829-7265-45b0-b87b-1ce374424a99' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ede0e829-7265-45b0-b87b-1ce374424a99' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3e3c5343-ac1d-4ebe-8bda-12c9b447a78e' class='xr-var-data-in' type='checkbox'><label for='data-3e3c5343-ac1d-4ebe-8bda-12c9b447a78e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -996,10 +1007,10 @@ Data variables:
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-05c4f116-ce8c-41ca-904f-858c9b2d68b4' class='xr-section-summary-in' type='checkbox'  ><label for='section-05c4f116-ce8c-41ca-904f-858c9b2d68b4' class='xr-section-summary' >Indexes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-ee4042a7-4cb8-4a2c-9439-7f7d53a85bca' class='xr-index-data-in' type='checkbox'/><label for='index-ee4042a7-4cb8-4a2c-9439-7f7d53a85bca' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-b441c420-340e-47c7-8522-c7176f66917c' class='xr-section-summary-in' type='checkbox'  ><label for='section-b441c420-340e-47c7-8522-c7176f66917c' class='xr-section-summary' >Indexes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>cells</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-47f55401-e8bd-4563-8c68-e7c1fbe01808' class='xr-index-data-in' type='checkbox'/><label for='index-47f55401-e8bd-4563-8c68-e7c1fbe01808' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([    1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
        ...
        18125, 18126, 18127, 18128, 18129, 18130, 18131, 18132, 18133, 18134],
-      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=18134))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-00a08888-1bae-4243-96d5-90eaafb58acc' class='xr-index-data-in' type='checkbox'/><label for='index-00a08888-1bae-4243-96d5-90eaafb58acc' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
+      dtype=&#x27;int64&#x27;, name=&#x27;cells&#x27;, length=18134))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>channels</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-616f7654-dd15-4c5b-9df9-b9f988bd08f6' class='xr-index-data-in' type='checkbox'/><label for='index-616f7654-dd15-4c5b-9df9-b9f988bd08f6' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;DAPI&#x27;, &#x27;Helios&#x27;, &#x27;CD10&#x27;, &#x27;TCF7/TCF1&#x27;, &#x27;PD-L1&#x27;, &#x27;BCL-6&#x27;, &#x27;FOXP3&#x27;,
        &#x27;CD69&#x27;, &#x27;Perforin&#x27;, &#x27;CD19&#x27;, &#x27;LAG3&#x27;, &#x27;CD21&#x27;, &#x27;CD62L&#x27;, &#x27;c-myc&#x27;, &#x27;CD138&#x27;,
        &#x27;CD15&#x27;, &#x27;BCL-2&#x27;, &#x27;CD56&#x27;, &#x27;IKZF3&#x27;, &#x27;CD25&#x27;, &#x27;NOXA&#x27;, &#x27;Tim3&#x27;, &#x27;Serpin B9&#x27;,
        &#x27;Podoplanin&#x27;, &#x27;CD38&#x27;, &#x27;SPARC&#x27;, &#x27;ICOS&#x27;, &#x27;CXCR5&#x27;, &#x27;CD163&#x27;, &#x27;FADD&#x27;, &#x27;p53&#x27;,
@@ -1007,13 +1018,13 @@ Data variables:
        &#x27;CD45RA&#x27;, &#x27;CD11b&#x27;, &#x27;Lambda&#x27;, &#x27;CD57&#x27;, &#x27;CD11c&#x27;, &#x27;CD90&#x27;, &#x27;HLA DR&#x27;, &#x27;CD68&#x27;,
        &#x27;CD31&#x27;, &#x27;CD45&#x27;, &#x27;CD3&#x27;, &#x27;Cytokeratin&#x27;, &#x27;CD45RO&#x27;, &#x27;CD8&#x27;, &#x27;Granzyme B&#x27;,
        &#x27;CD79a&#x27;, &#x27;Ki-67&#x27;],
-      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-e78a9eed-e0d0-4496-90e9-476b58af4ca5' class='xr-index-data-in' type='checkbox'/><label for='index-e78a9eed-e0d0-4496-90e9-476b58af4ca5' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-7288007e-d81e-4c40-8fe2-0b9c8648ccd0' class='xr-index-data-in' type='checkbox'/><label for='index-7288007e-d81e-4c40-8fe2-0b9c8648ccd0' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;object&#x27;, name=&#x27;channels&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>features</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-24920ae4-7c21-4f44-85af-2cb2d6ab8ca9' class='xr-index-data-in' type='checkbox'/><label for='index-24920ae4-7c21-4f44-85af-2cb2d6ab8ca9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;centroid-0&#x27;, &#x27;centroid-1&#x27;], dtype=&#x27;object&#x27;, name=&#x27;features&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>x</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-7d7f3120-e454-4269-a783-5dc73a87c588' class='xr-index-data-in' type='checkbox'/><label for='index-7d7f3120-e454-4269-a783-5dc73a87c588' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-ff62b4e0-563e-4028-b6e4-5b164441d5af' class='xr-index-data-in' type='checkbox'/><label for='index-ff62b4e0-563e-4028-b6e4-5b164441d5af' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
+      dtype=&#x27;int64&#x27;, name=&#x27;x&#x27;, length=3000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>y</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-b47fcbb1-00c5-4086-bea9-bd7c79d4f382' class='xr-index-data-in' type='checkbox'/><label for='index-b47fcbb1-00c5-4086-bea9-bd7c79d4f382' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([   0,    1,    2,    3,    4,    5,    6,    7,    8,    9,
        ...
        2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999],
-      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-3f5de30f-6ada-41bf-b2a5-112837ad7ff3' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-3f5de30f-6ada-41bf-b2a5-112837ad7ff3' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
+      dtype=&#x27;int64&#x27;, name=&#x27;y&#x27;, length=3000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-92bb4f5b-2d53-48e7-b283-7806e1f0410c' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-92bb4f5b-2d53-48e7-b283-7806e1f0410c' class='xr-section-summary'  title='Expand/collapse section'>Attributes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'></dl></div></li></ul></div></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -1031,6 +1042,8 @@ Data variables:
 <img alt="../_images/notebooks_ImageProcessing_3_0.png" src="../_images/notebooks_ImageProcessing_3_0.png" />
 </div>
 </div>
+<section id="Thresholding">
+<h2>Thresholding<a class="headerlink" href="#Thresholding" title="Link to this heading">#</a></h2>
 <p>The marker above seems to have worked fairly well, but you can observe some unspecific binding. To boost the signal-to-noise ratio, we can threshold the image. This basically means that every value below that threshold gets set to zero. In addition, the other intensities get shifted downwards by your specified value (you can deactivate this behavior by setting <code class="docutils literal notranslate"><span class="pre">pp.threshold(shift=False)</span></code>, which will only set values below the threshold to 0 and keep the other values unchanged). You can either
 threshold using an absolute intensity, or using a quantile value.</p>
 <div class="nbinput docutils container">
@@ -1050,7 +1063,7 @@ threshold using an absolute intensity, or using a quantile value.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_5_0.png" src="../_images/notebooks_ImageProcessing_5_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_6_0.png" src="../_images/notebooks_ImageProcessing_6_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1070,7 +1083,7 @@ threshold using an absolute intensity, or using a quantile value.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_6_0.png" src="../_images/notebooks_ImageProcessing_6_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_7_0.png" src="../_images/notebooks_ImageProcessing_7_0.png" />
 </div>
 </div>
 <p>You can also use different thresholds for different channels.</p>
@@ -1087,7 +1100,7 @@ threshold using an absolute intensity, or using a quantile value.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_8_0.png" src="../_images/notebooks_ImageProcessing_8_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_9_0.png" src="../_images/notebooks_ImageProcessing_9_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1103,7 +1116,7 @@ threshold using an absolute intensity, or using a quantile value.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_9_0.png" src="../_images/notebooks_ImageProcessing_9_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_10_0.png" src="../_images/notebooks_ImageProcessing_10_0.png" />
 </div>
 </div>
 <p>After thresholding, a medianfilter can be useful to reduce the noise further. We can use the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method to apply any preprocessing function of our choice.</p>
@@ -1134,12 +1147,52 @@ threshold using an absolute intensity, or using a quantile value.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_11_0.png" src="../_images/notebooks_ImageProcessing_11_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_12_0.png" src="../_images/notebooks_ImageProcessing_12_0.png" />
 </div>
 </div>
-<p>With the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
+</section>
+<section id="Combining-Channels">
+<h2>Combining Channels<a class="headerlink" href="#Combining-Channels" title="Link to this heading">#</a></h2>
+<p>Sometimes, you might want to combine different channels into a single one. For example, if you have different membrane channels, you could merge them into a single channel and then perform segmentation on this new channel. This can be done with <code class="docutils literal notranslate"><span class="pre">pp.merge_channels()</span></code>. You can specify if you want to normalize channels before merging with <code class="docutils literal notranslate"><span class="pre">normalize</span></code> (defaults to True) and set a method using the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># let&#39;s consider the channels CD68 (macrophages) and CD11c (dendritic cells)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;CD68&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_15_0.png" src="../_images/notebooks_ImageProcessing_15_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merging the channels into one single channel</span>
+<span class="n">ds_merged</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">merge_channels</span><span class="p">([</span><span class="s2">&quot;CD68&quot;</span><span class="p">,</span> <span class="s2">&quot;CD11c&quot;</span><span class="p">],</span> <span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;combined_channel&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds_merged</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;combined_channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ImageProcessing_16_0.png" src="../_images/notebooks_ImageProcessing_16_0.png" />
+</div>
+</div>
+</section>
+<section id="Custom-Image-Processing">
+<h2>Custom Image Processing<a class="headerlink" href="#Custom-Image-Processing" title="Link to this heading">#</a></h2>
+<p>With the <code class="docutils literal notranslate"><span class="pre">pp.apply()</span></code> method, you can provide existing (e. g. from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">skimage</span></code>) or custom functions to your multichannel images.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># application to a single channel</span>
@@ -1162,7 +1215,7 @@ threshold using an absolute intensity, or using a quantile value.</p>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1174,11 +1227,11 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_13_1.png" src="../_images/notebooks_ImageProcessing_13_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_19_1.png" src="../_images/notebooks_ImageProcessing_19_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># application to multiple channels</span>
@@ -1194,7 +1247,7 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1206,11 +1259,11 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_14_1.png" src="../_images/notebooks_ImageProcessing_14_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_20_1.png" src="../_images/notebooks_ImageProcessing_20_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># total variation filter. The idea is that areas with large gradients are smoothed out, as this implies rapid fluctuation of pixel intensity values (noise).</span>
@@ -1236,12 +1289,12 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_15_0.png" src="../_images/notebooks_ImageProcessing_15_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_21_0.png" src="../_images/notebooks_ImageProcessing_21_0.png" />
 </div>
 </div>
 <p>We can of course also combine various processing methods. Let’s have a look at some more.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">skimage</span>
@@ -1278,12 +1331,12 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_17_0.png" src="../_images/notebooks_ImageProcessing_17_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_23_0.png" src="../_images/notebooks_ImageProcessing_23_0.png" />
 </div>
 </div>
 <p>We can also try to automatically find a good threshold. This follows the approach demonstrated <a class="reference external" href="http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2019a/content/lessons/lesson_05/basic_filtering_and_thresholding.html#Thresholding">here</a>, where we look for the highest rate of change.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">find_optimal_threshold</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">min_k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
@@ -1316,7 +1369,7 @@ Text(0.5, 1.0, &#39;Gaussian filter&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_19_0.png" src="../_images/notebooks_ImageProcessing_19_0.png" />
+<img alt="../_images/notebooks_ImageProcessing_25_0.png" src="../_images/notebooks_ImageProcessing_25_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1328,7 +1381,7 @@ Optimal threshold: 0.8585858585858586
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -1345,7 +1398,7 @@ Optimal threshold: 0.8585858585858586
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1357,10 +1410,11 @@ Text(0.5, 1.0, &#39;Local Thresholding&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ImageProcessing_20_1.png" src="../_images/notebooks_ImageProcessing_20_1.png" />
+<img alt="../_images/notebooks_ImageProcessing_26_1.png" src="../_images/notebooks_ImageProcessing_26_1.png" />
 </div>
 </div>
 <p>In this particular instance, the automated finding of a cutoff does not correspond to the best one, and manually looking at the parameters appears more promising. However, the example above illustrates one way to automate thresholding, which may work in certain situations.</p>
+</section>
 </section>
 
 
@@ -1398,6 +1452,23 @@ Text(0.5, 1.0, &#39;Local Thresholding&#39;)
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Thresholding">Thresholding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Combining-Channels">Combining Channels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Custom-Image-Processing">Custom Image Processing</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
