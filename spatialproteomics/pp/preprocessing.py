@@ -16,6 +16,7 @@ from .utils import (
     _compute_quantification,
     _convert_to_8bit,
     _get_disconnected_cell,
+    _merge_channels,
     _merge_segmentation,
     _normalize,
     _relabel_cells,
@@ -439,6 +440,91 @@ def grow_cells(
         adata.obs = pd.DataFrame(index=adata.obs_names)
         adata.obs[SDFeatures.ID] = cell_idx
         adata.obs[SDFeatures.REGION] = segmentation_key
+
+    if copy:
+        return sdata
+
+
+def merge_channels(
+    sdata,
+    channels: List[str],
+    key_added: str,
+    normalize: bool = True,
+    method: str = "sum",
+    image_key: str = SDLayers.IMAGE,
+    copy: bool = False,
+):
+    """
+    Merges multiple channels into a single channel in the spatialdata object.
+
+    Parameters
+    ----------
+    sdata : spatialdata.SpatialData
+        The spatialdata object containing the image data.
+    channels : List[str]
+        The list of channels to be merged.
+    key_added : str
+        The key under which the merged channel will be stored in the images attribute of the spatialdata object.
+    normalize : bool
+        Whether to normalize the channels before merging. Default is True.
+    method : str
+        The method to use for merging the channels. Options are "sum", "mean", and "max". Default is "sum".
+    image_key : str
+        The key for the image data in the spatialdata object. Default is SDLayers.IMAGE.
+    copy : bool
+        If True, a copy of the object is returned. Default is False.
+
+    Raises
+    ------
+    AssertionError
+        If key_added already exists in the object.
+    KeyError
+        If any of the specified channels do not exist in the image data.
+    ValueError
+        If less than two channels are provided to merge.
+        If an unknown merging method is provided.
+
+    Returns
+    -------
+    xr.Dataset
+        The object with the merged channel added.
+    """
+    import spatialdata
+    from spatialdata.transformations import get_transformation, set_transformation
+
+    # check that the new channel name does not already exist
+    assert (
+        key_added not in sdata.images[image_key].coords["c"].values
+    ), f"Channel {key_added} already exists in the object. Please choose a different name by setting the 'key_added' parameter."
+
+    # check that the channels are a list, and that there are at least two channels to merge
+    assert isinstance(channels, list), "Channels must be provided as a list."
+    assert len(channels) >= 2, "At least two channels must be provided to merge."
+
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    image = _process_image(sdata, image_key=image_key, key_added=None, return_values=False)
+    all_channels = list(sdata.images[image_key].coords["c"].values)
+
+    merged_image = _merge_channels(
+        image.sel(c=channels).values,
+        normalize=normalize,
+        method=method,
+    )
+
+    # adding the merged channel to the image data
+    merged_image = np.concatenate([image, merged_image[np.newaxis, :, :]], axis=0)
+    all_channels = all_channels + [key_added]
+
+    # get transformations
+    transformation = get_transformation(sdata.images[image_key])
+
+    # add the image to the spatial data object
+    sdata.images[image_key] = spatialdata.models.Image2DModel.parse(
+        merged_image, c_coords=all_channels, transformations=None, dims=("c", "y", "x")
+    )
+    set_transformation(sdata.images[image_key], transformation)
 
     if copy:
         return sdata
@@ -2099,44 +2185,7 @@ class PreprocessingAccessor:
         # getting all relevant channels
         arr = self._obj.pp[channels][layer_key].values
 
-        # normalize if specified
-        if normalize:
-            # this normalization step squeezes all channels into values between 0 and 1
-            arr = _normalize(arr, pmin=1, pmax=99, clip=True)
-            # after normalization, we want to map this back to the original dtype, while also using the full range of the dtype
-            dtype = self._obj[layer_key].dtype
-
-            if np.issubdtype(dtype, np.integer):
-                info = np.iinfo(dtype)
-                arr = (arr * info.max).astype(dtype)
-            elif np.issubdtype(dtype, np.floating):
-                arr = arr.astype(dtype)
-            else:
-                raise TypeError(f"Unsupported dtype: {dtype}")
-
-        #  merge channels based on method
-        if method == "max":
-            merged = np.max(arr, axis=0)
-        elif method == "sum":
-            merged = np.sum(arr, axis=0)
-        elif method == "mean":
-            merged = np.mean(arr, axis=0)
-        elif callable(method):
-            merged = method(arr)
-        else:
-            raise ValueError(
-                f"Unknown merging method: {method}. Please use 'max', 'sum', 'mean', or provide a callable function."
-            )
-
-        # ensure the merged array has the correct dtype (if the input was integer, output should also be integer, but we need to check for overflow)
-        # if there is overflow, we change the dtype to int64
-        dtype = self._obj[layer_key].dtype
-        if np.issubdtype(dtype, np.integer):
-            info = np.iinfo(dtype)
-            if merged.max() > info.max:
-                merged = merged.astype(np.uint64)
-        else:
-            merged = merged.astype(dtype)
+        merged = _merge_channels(arr, method=method, normalize=normalize)
 
         # add the new channel to the object
         # if there are multiple layers with channels as coordinates, this will turn it into float32, since it will introduce NaNs for the new channel in other layers
