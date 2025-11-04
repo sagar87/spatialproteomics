@@ -2092,6 +2092,10 @@ class PreprocessingAccessor:
             key_added not in self._obj.coords[Dims.CHANNELS].values
         ), f"Channel {key_added} already exists in the object. Please choose a different name by setting the 'key_added' parameter."
 
+        # check that the channels are a list, and that there are at least two channels to merge
+        assert isinstance(channels, list), "Channels must be provided as a list."
+        assert len(channels) >= 2, "At least two channels must be provided to merge."
+
         # getting all relevant channels
         arr = self._obj.pp[channels][layer_key].values
 
@@ -2109,8 +2113,6 @@ class PreprocessingAccessor:
                 arr = arr.astype(dtype)
             else:
                 raise TypeError(f"Unsupported dtype: {dtype}")
-        else:
-            arr = arr.values
 
         #  merge channels based on method
         if method == "max":
