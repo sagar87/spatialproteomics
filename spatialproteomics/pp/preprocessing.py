@@ -86,6 +86,8 @@ def add_quantification(
         adata = AnnData(measurements.T)
         adata.obs[SDFeatures.ID] = cell_idx
         adata.obs[SDFeatures.REGION] = segmentation_key
+        # conversion into categorical to pass spatialdata validation
+        adata.obs[SDFeatures.REGION] = adata.obs[SDFeatures.REGION].astype("category")
         adata.var_names = image.coords["c"].values
         # to be consistent with anndata standards, we add the Cell_ prefix to the obs_names
         adata.obs_names = [f"Cell_{x}" for x in cell_idx]
@@ -440,6 +442,8 @@ def grow_cells(
         adata.obs = pd.DataFrame(index=adata.obs_names)
         adata.obs[SDFeatures.ID] = cell_idx
         adata.obs[SDFeatures.REGION] = segmentation_key
+        # conversion into categorical to pass spatialdata validation
+        adata.obs[SDFeatures.REGION] = adata.obs[SDFeatures.REGION].astype("category")
 
     if copy:
         return sdata
