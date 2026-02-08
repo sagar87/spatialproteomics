@@ -38,7 +38,7 @@ It supports synchronization of shared coordinates across data modalities such as
    notebooks/FAQ
    
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API:
 
    preprocessing
