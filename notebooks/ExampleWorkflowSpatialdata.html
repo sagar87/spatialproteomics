@@ -390,18 +390,28 @@ imaging data should keep such shared dimensions consistent, ensuring that change
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">medfilt2d</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spatialdata version: </span><span class="si">{</span><span class="n">sd</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spatialdata-plot version: </span><span class="si">{</span><span class="n">spatialdata_plot</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/dask/dataframe/__init__.py:31: FutureWarning: The legacy Dask DataFrame implementation is deprecated and will be removed in a future version. Set the configuration option `dataframe.query-planning` to `True` or None to enable the new Dask Dataframe implementation and silence this warning.
-  warnings.warn(
 /home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/xarray_schema/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
   from pkg_resources import DistributionNotFound, get_distribution
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Spatialdata version: 0.7.1
+Spatialdata-plot version: 0.2.14
 </pre></div></div>
 </div>
 <section id="1.-Getting-Started">
@@ -481,7 +491,7 @@ with coordinate systems:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..3.3607843137254902].
+Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..1.4367858515955403].
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -516,19 +526,11 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..2.4].
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_13_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_13_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_13_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_13_0.png" />
 </div>
 </div>
 <p>Looking good, but we can make the signal a bit clearer by performing some image processing. In the following codeblock, we first threshold the channels by some percentile (so every value below that percentile gets set to 0). We then apply a 2D median filter with a kernel size of 3 to apply some smoothing.</p>
@@ -558,19 +560,11 @@ Clipping input data to the valid range for imshow with RGB data ([0..1] for floa
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [0.0..2.4].
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_17_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_17_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_17_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_17_0.png" />
 </div>
 </div>
 </section>
@@ -637,7 +631,7 @@ with coordinate systems:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:927: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
   val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
 </pre></div></div>
 </div>
@@ -893,6 +887,15 @@ np.float64(93.99656652360515)
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-blue-fg">INFO    </span> Your image has <span class="ansi-cyan-intense-fg ansi-bold">4</span> channels. Sampling categorical colors and using multichannel strategy <span class="ansi-green-fg">&#39;stack&#39;</span> to render.
@@ -903,9 +906,7 @@ np.float64(93.99656652360515)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:927: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:927: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
   val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
 </pre></div></div>
 </div>
@@ -913,7 +914,7 @@ np.float64(93.99656652360515)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_36_2.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_36_2.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_36_3.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_36_3.png" />
 </div>
 </div>
 </section>
@@ -1029,6 +1030,7 @@ np.float64(93.99656652360515)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-blue-fg">INFO    </span> Your image has <span class="ansi-cyan-intense-fg ansi-bold">4</span> channels. Sampling categorical colors and using multichannel strategy <span class="ansi-green-fg">&#39;stack&#39;</span> to render.
+<span class="ansi-blue-fg">INFO    </span> Successfully extracted <span class="ansi-cyan-intense-fg ansi-bold">4</span> colors from <span class="ansi-green-fg">&#39;celltype_colors&#39;</span> in table <span class="ansi-green-fg">&#39;table&#39;</span>.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1036,7 +1038,7 @@ np.float64(93.99656652360515)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:872: FutureWarning: The default value of &#39;ignore&#39; for the `na_action` parameter in pandas.Categorical.map is deprecated and will be changed to &#39;None&#39; in a future version. Please set na_action to the desired value to avoid seeing this warning
+/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1123: FutureWarning: The default value of &#39;ignore&#39; for the `na_action` parameter in pandas.Categorical.map is deprecated and will be changed to &#39;None&#39; in a future version. Please set na_action to the desired value to avoid seeing this warning
   color_vector = color_source_vector.map(color_mapping)
 </pre></div></div>
 </div>
