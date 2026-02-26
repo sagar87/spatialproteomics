@@ -20,7 +20,8 @@ You can set up an environment as follows:
 
 ```
 uv venv --python=python3.12  # specifying the python version is optional
-uv pip install -e ".[dev,all]"
+source .venv/bin/activate  # activates the virtual environment
+uv pip install -e ".[dev,all]"  # installs a local copy of the package
 ```
 
 ### 4. Make Your Changes
