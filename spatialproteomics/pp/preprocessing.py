@@ -772,8 +772,8 @@ class PreprocessingAccessor:
             set(channels).intersection(set(self._obj.coords[Dims.CHANNELS].values)) == set()
         ), "Can't add a channel that already exists."
 
-        self_channels, self_x_dim, self_y_dim = self._obj[Layers.IMAGE].shape
-        other_channels, other_x_dim, other_y_dim = array.shape
+        self_channels, self_y_dim, self_x_dim = self._obj[Layers.IMAGE].shape
+        other_channels, other_y_dim, other_x_dim = array.shape
 
         assert (
             len(channels) == other_channels
@@ -782,9 +782,13 @@ class PreprocessingAccessor:
             self_y_dim == other_y_dim
         ), "Dimensions of the original image and the input array do not match."
 
+        # correct for offset in case the image does not start at (0, 0)
+        x_start = int(self._obj.coords[Dims.X][0]) 
+        y_start = int(self._obj.coords[Dims.Y][0])
+
         da = xr.DataArray(
             array,
-            coords=[channels, range(other_y_dim), range(other_x_dim)],
+            coords=[channels, range(y_start, (other_y_dim + y_start)), range(x_start, (other_x_dim + x_start))],
             dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=layer_key,
         )
