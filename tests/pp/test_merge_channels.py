@@ -30,3 +30,30 @@ def test_merge_channels_empty_channel_list(ds_image):
 def test_merge_channels_invalid_method(ds_image):
     with pytest.raises(ValueError, match="Unknown merging method"):
         ds_image.pp.merge_channels(["DAPI", "CD4"], key_added="DAPI_CD4", method="invalid_method")
+
+
+def test_merge_channels_keep_xy_range(ds_image):
+    ds = ds_image.pp.merge_channels(["DAPI", "CD4"], key_added="DAPI_CD4")
+    assert len(ds.y) == len(ds_image.y)
+    assert len(ds.x) == len(ds_image.x)
+
+
+def test_merge_channels_asymmetric_dimensions(ds_image):
+    ds = ds_image.pp[1600:1650, 2100:2134]
+    original_y_dim = len(ds.coords[Dims.Y])
+    original_x_dim = len(ds.coords[Dims.X])
+
+    # This should succeed without coordinate validation errors
+    result = ds.pp.merge_channels(["DAPI", "CD4"], key_added="merged", method="max")
+
+    # Verify the merged channel was added
+    assert "merged" in result.coords[Dims.CHANNELS].values
+
+    # Verify dimensions are preserved correctly (bug would swap these)
+    assert len(result.coords[Dims.Y]) == original_y_dim, f"Y dimension should be {original_y_dim}"
+    assert len(result.coords[Dims.X]) == original_x_dim, f"X dimension should be {original_x_dim}"
+
+    assert result.coords[Dims.Y].values.min() == ds.coords[Dims.Y].values.min(), "min Y coordinates should be preserved"
+    assert result.coords[Dims.X].values.min() == ds.coords[Dims.X].values.min(), "min X coordinates should be preserved"
+    assert result.coords[Dims.Y].values.max() == ds.coords[Dims.Y].values.max(), "max Y coordinates should be preserved"
+    assert result.coords[Dims.X].values.max() == ds.coords[Dims.X].values.max(), "max X coordinates should be preserved"
