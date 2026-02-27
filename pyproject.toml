@@ -3,7 +3,7 @@ name = "spatialproteomics"
 version = "0.7.7"
 description = "Spatialproteomics is an interoperable toolbox for analyzing highly multiplexed fluorescence image data"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 authors = [
     {name="Matthias Meyer-Bender"},
     {name="Harald Vohringer"}
@@ -15,7 +15,7 @@ dependencies = [
     "matplotlib>=3.8.0",
     "tqdm>=4.64.0",
     "scikit-learn>=1.4.2",
-    "zarr>=3.0.0",
+    "zarr",  # note that if you use spatialdata, you should use zarr>=3.0.0
     "numpy>=1.23",
     "opencv-python>=4.11.0",
     "pyyaml>=6.0"
