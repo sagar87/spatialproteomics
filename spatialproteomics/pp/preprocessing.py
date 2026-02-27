@@ -783,7 +783,7 @@ class PreprocessingAccessor:
         ), "Dimensions of the original image and the input array do not match."
 
         # correct for offset in case the image does not start at (0, 0)
-        x_start = int(self._obj.coords[Dims.X][0]) 
+        x_start = int(self._obj.coords[Dims.X][0])
         y_start = int(self._obj.coords[Dims.Y][0])
 
         da = xr.DataArray(
