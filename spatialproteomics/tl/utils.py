@@ -77,14 +77,10 @@ def _cellpose(
         img = img[np.newaxis, :, :]
 
     # The cellpose API has changed in version 4.0, so we need to check the version
-
-    if pkg_version.parse(cp_version).major < 4 and channel_settings != [0, 0]:
+    if pkg_version.parse(cp_version).major < 4:
         assert (
             channel_settings is not None
         ), "The argument channel_settings must be provided for Cellpose < 4.0. For independent segmentation of each channel, set it to [0, 0]. For joint segmentation, set it to [1, 2] or [2, 1]."
-        assert (
-            img.shape[0] == 2
-        ), f"Joint segmentation requires exactly two channels. You set channel_settings to {channel_settings}, but provided {img.shape[0]} channels in the object."
         model = models.Cellpose(gpu=gpu, model_type=model_type)
     else:
         # model_type is not used in cellpose 4.0
