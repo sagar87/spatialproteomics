@@ -381,22 +381,13 @@ imaging data should keep such shared dimensions consistent, ensuring that change
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/xarray_schema/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
-  from pkg_resources import DistributionNotFound, get_distribution
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Spatialdata version: 0.7.1
-Spatialdata-plot version: 0.2.14
+Spatialdata version: 0.7.2
+Spatialdata-plot version: 0.3.0
 </pre></div></div>
 </div>
 <section id="1.-Getting-Started">
@@ -611,20 +602,11 @@ with coordinate systems:
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_21_1.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_21_1.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_21_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_21_0.png" />
 </div>
 </div>
 </section>
@@ -869,37 +851,11 @@ np.float64(93.99656652360515)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-blue-fg">INFO    </span> Your image has <span class="ansi-cyan-intense-fg ansi-bold">4</span> channels. Sampling categorical colors and using multichannel strategy <span class="ansi-green-fg">&#39;stack&#39;</span> to render.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1184: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  val_im[val_im == erosion(val_im, square(seg_erosionpx))] = 0
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_36_3.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_36_3.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_36_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_36_0.png" />
 </div>
 </div>
 </section>
@@ -1009,29 +965,11 @@ np.float64(93.99656652360515)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-blue-fg">INFO    </span> Your image has <span class="ansi-cyan-intense-fg ansi-bold">4</span> channels. Sampling categorical colors and using multichannel strategy <span class="ansi-green-fg">&#39;stack&#39;</span> to render.
-<span class="ansi-blue-fg">INFO    </span> Successfully extracted <span class="ansi-cyan-intense-fg ansi-bold">4</span> colors from <span class="ansi-green-fg">&#39;celltype_colors&#39;</span> in table <span class="ansi-green-fg">&#39;table&#39;</span>.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/meyerben/meyerben/.conda/envs/sdplot_sprot_env/lib/python3.13/site-packages/spatialdata_plot/pl/utils.py:1123: FutureWarning: The default value of &#39;ignore&#39; for the `na_action` parameter in pandas.Categorical.map is deprecated and will be changed to &#39;None&#39; in a future version. Please set na_action to the desired value to avoid seeing this warning
-  color_vector = color_source_vector.map(color_mapping)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_42_2.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_42_2.png" />
+<img alt="../_images/notebooks_ExampleWorkflowSpatialdata_42_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_42_0.png" />
 </div>
 </div>
 <p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! If you have any additional questions, check out the other notebooks for details.</p>
