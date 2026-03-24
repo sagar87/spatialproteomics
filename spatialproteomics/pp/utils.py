@@ -161,8 +161,8 @@ def _normalize(
     pmax: float = 99.8,
     eps: float = 1e-20,
     clip: bool = False,
-    amin: Optional[float] = None,
-    amax: Optional[float] = None,
+    amin: Optional[float | List] = None,
+    amax: Optional[float | List] = None,
 ) -> np.ndarray:
     """
     Performs a min max normalisation.
@@ -181,9 +181,9 @@ def _normalize(
     clip: bool
         Ensures that normed image array contains no values greater than 1.
     amin: float
-        Absolute value to perform normalization. If set, this overrides pmin.
+        Absolute value to perform normalization. If set, this overrides pmin. Can be a list of values, in which case each channel is normalized independently.
     amax: float
-        Absolute value to perform normalization. If set, this overrides pmax.
+        Absolute value to perform normalization. If set, this overrides pmax. Can be a list of values, in which case each channel is normalized independently.
 
     Returns
     -------

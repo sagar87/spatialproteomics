@@ -77,8 +77,8 @@ def _colorize(
     colors: List[str] = ["C1", "C2", "C3", "C4", "C5"],
     background: str = "black",
     normalize: bool = True,
-    amin: Optional[float] = None,
-    amax: Optional[float] = None,
+    amin: Optional[float | List] = None,
+    amax: Optional[float | List] = None,
 ) -> np.ndarray:
     """
     Apply colorization to an image based on a given colors.
@@ -88,8 +88,8 @@ def _colorize(
         colors (List[str], optional): The list of colors to be used for colorization. Defaults to ["C1", "C2", "C3", "C4", "C5"].
         background (str, optional): The background color. Defaults to "black".
         normalize (bool, optional): Whether to normalize the image before colorization. Defaults to True.
-        amin (Optional[float], optional): The minimum value for normalization. Defaults to None.
-        amax (Optional[float], optional): The maximum value for normalization. Defaults to None.
+        amin (Optional[float | List], optional): The minimum value for normalization. Defaults to None.
+        amax (Optional[float | List], optional): The maximum value for normalization. Defaults to None.
 
     Returns:
         np.ndarray: The colorized image.

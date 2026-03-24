@@ -294,8 +294,8 @@ class PlotAccessor:
         normalize: bool = True,
         merge: bool = True,
         layer_key: str = Layers.IMAGE,
-        amin: Optional[float] = None,
-        amax: Optional[float] = None,
+        amin: Optional[float | List] = None,
+        amax: Optional[float | List] = None,
     ) -> xr.Dataset:
         """
         Colorizes a stack of images.
@@ -312,10 +312,10 @@ class PlotAccessor:
             Merge the channel dimension. Default is True.
         layer_key : str, optional
             The key of the layer containing the image. Default is '_image'.
-        amin : float, optional
-            The minimum absolute value for normalization. Default is None.
-        amax : float, optional
-            The maximum absolute value for normalization. Default is None.
+        amin : float | List, optional
+            The minimum absolute value for normalization (either global or per channel). Default is None.
+        amax : float | List, optional
+            The maximum absolute value for normalization (either global or per channel). Default is None.
 
         Returns
         -------
