@@ -743,7 +743,7 @@ class PreprocessingAccessor:
 
     def add_channel(self, channels: Union[str, list], array: np.ndarray, layer_key: str = Layers.IMAGE) -> xr.Dataset:
         """
-        Adds channel(s) to an existing image container.
+        Adds channel(s) to an existing spatialproteomics object.
 
         Parameters
         ----------
@@ -752,12 +752,12 @@ class PreprocessingAccessor:
         array : np.ndarray
             The numpy array representing the channel(s) to be added.
         layer_key : str
-            The layer key where the channel(s) should be added. Default is 'image'.
+            The layer key where the channel(s) should be added. Default is '_image'.
 
         Returns
         -------
         xr.Dataset
-            The updated image container with added channel(s).
+            The updated spatialproteomics object with added channel(s).
         """
         assert type(array) is np.ndarray, "Added channels must be numpy arrays."
         assert array.ndim in [2, 3], "Added channels must be 2D or 3D arrays."
@@ -794,6 +794,30 @@ class PreprocessingAccessor:
         )
 
         return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+
+    def drop_channel(self, channels: Union[str, list]) -> xr.Dataset:
+        """
+        Drops channel(s) from an existing spatialproteomics object.
+
+        Parameters
+        ----------
+        channels : Union[str, list]
+            The name of the channel or a list of channel names to be dropped.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated spatialproteomics object with dropped channel(s).
+        """
+        if type(channels) is str:
+            channels = [channels]
+
+        nonexistent_channels = set(channels) - set(self._obj.coords[Dims.CHANNELS].values)
+        assert (
+            len(nonexistent_channels) == 0
+        ), f"Some of the channels to be dropped do not exist in the object: {nonexistent_channels}. Please set the channel_names argument to a list of existing channels."
+
+        return self._obj.drop_sel({Dims.CHANNELS: channels})
 
     def add_segmentation(
         self,
