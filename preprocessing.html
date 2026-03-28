@@ -329,6 +329,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.apply"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.apply()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.convert_to_8bit"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.convert_to_8bit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.downsample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_channel"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.drop_channel()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_layers"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.drop_layers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.filter_by_obs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_bbox"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.get_bbox()</span></code></a></li>
@@ -376,17 +377,17 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_channel">
 <span class="sig-name descname"><span class="pre">add_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_image'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_channel" title="Link to this definition">#</a></dt>
-<dd><p>Adds channel(s) to an existing image container.</p>
+<dd><p>Adds channel(s) to an existing spatialproteomics object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the channel or a list of channel names to be added.</p></li>
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The numpy array representing the channel(s) to be added.</p></li>
-<li><p><strong>layer_key</strong> (<em>str</em>) – The layer key where the channel(s) should be added. Default is ‘image’.</p></li>
+<li><p><strong>layer_key</strong> (<em>str</em>) – The layer key where the channel(s) should be added. Default is ‘_image’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated image container with added channel(s).</p>
+<dd class="field-even"><p>The updated spatialproteomics object with added channel(s).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
@@ -626,6 +627,23 @@ If you want to keep those annotations, set this to True. Default is True.</p></l
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The downsampled dataset with updated x and y coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_channel">
+<span class="sig-name descname"><span class="pre">drop_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_channel" title="Link to this definition">#</a></dt>
+<dd><p>Drops channel(s) from an existing spatialproteomics object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channels</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The name of the channel or a list of channel names to be dropped.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated spatialproteomics object with dropped channel(s).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
@@ -1257,6 +1275,7 @@ The transformed expression matrix is stored in the tables attribute of the spati
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.apply"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.apply()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.convert_to_8bit"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.convert_to_8bit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.downsample"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.downsample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_channel"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.drop_channel()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.drop_layers"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.drop_layers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.filter_by_obs"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.filter_by_obs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.get_bbox"><code class="docutils literal notranslate"><span class="pre">PreprocessingAccessor.get_bbox()</span></code></a></li>
