@@ -325,6 +325,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#6.-Plotting">6. Plotting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#7.-Saving-Results-to-Disk">7. Saving Results to Disk</a></li>
 </ul>
             </nav>
         </div>
@@ -636,7 +637,7 @@ SpatialData object
 ├── Labels
 │     └── &#39;segmentation&#39;: DataArray[yx] (500, 500)
 └── Tables
-      └── &#39;table&#39;: AnnData (2346, 5)
+      └── &#39;table&#39;: AnnData (2345, 5)
 with coordinate systems:
     ▸ &#39;global&#39;, with elements:
         image (Images), segmentation (Labels)
@@ -657,7 +658,7 @@ with coordinate systems:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-AnnData object with n_obs × n_vars = 2346 × 5
+AnnData object with n_obs × n_vars = 2345 × 5
     obs: &#39;id&#39;, &#39;region&#39;
     uns: &#39;spatialdata_attrs&#39;
 </pre></div></div>
@@ -736,7 +737,7 @@ AnnData object with n_obs × n_vars = 2346 × 5
       <th>Cell_5</th>
       <td>5</td>
       <td>segmentation</td>
-      <td>34.0</td>
+      <td>35.0</td>
     </tr>
   </tbody>
 </table>
@@ -768,8 +769,8 @@ AnnData object with n_obs × n_vars = 2346 × 5
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2330
-AnnData object with n_obs × n_vars = 2330 × 5
+2328
+AnnData object with n_obs × n_vars = 2328 × 5
     obs: &#39;id&#39;, &#39;region&#39;, &#39;area&#39;
     uns: &#39;spatialdata_attrs&#39;
 </pre></div></div>
@@ -789,7 +790,7 @@ AnnData object with n_obs × n_vars = 2330 × 5
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-np.float64(75.60858369098712)
+np.float64(75.6335910652921)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -825,7 +826,7 @@ Mask growing requires recalculation of the observations. All features will be re
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-np.float64(93.99656652360515)
+np.float64(94.08462199312714)
 </pre></div></div>
 </div>
 <p>The average area has indeed increased. Let’s also check what the new segmentation masks look like on top of DAPI or our other markers.</p>
@@ -954,7 +955,7 @@ np.float64(93.99656652360515)
 </section>
 <section id="6.-Plotting">
 <h2>6. Plotting<a class="headerlink" href="#6.-Plotting" title="Link to this heading">#</a></h2>
-<p>Finally, let’s do some plotting of the predicted cell types.</p>
+<p>Let’s do some plotting of the predicted cell types.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
@@ -972,7 +973,10 @@ np.float64(93.99656652360515)
 <img alt="../_images/notebooks_ExampleWorkflowSpatialdata_42_0.png" src="../_images/notebooks_ExampleWorkflowSpatialdata_42_0.png" />
 </div>
 </div>
-<p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! If you have any additional questions, check out the other notebooks for details.</p>
+</section>
+<section id="7.-Saving-Results-to-Disk">
+<h2>7. Saving Results to Disk<a class="headerlink" href="#7.-Saving-Results-to-Disk" title="Link to this heading">#</a></h2>
+<p>And this is how easy it can be to perform analysis of highly multiplexed immunofluorescence images! To store your processed object to disk, use <code class="docutils literal notranslate"><span class="pre">sdata.write(&quot;your_file_path&quot;)</span></code>. If you have any additional questions, check out the other notebooks for details, or write an issue on <a class="reference external" href="https://github.com/sagar87/spatialproteomics/issues">GitHub</a>.</p>
 </section>
 </section>
 
@@ -1029,6 +1033,7 @@ np.float64(93.99656652360515)
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Quantifying-Protein-Expression-per-Cell">4. Quantifying Protein Expression per Cell</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#5.-Cell-Type-Prediction">5. Cell Type Prediction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#6.-Plotting">6. Plotting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#7.-Saving-Results-to-Disk">7. Saving Results to Disk</a></li>
 </ul>
   </nav></div>
 
