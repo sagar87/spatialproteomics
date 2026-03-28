@@ -2223,3 +2223,83 @@ class PreprocessingAccessor:
         # if there are multiple layers with channels as coordinates, this will turn it into float32, since it will introduce NaNs for the new channel in other layers
         obj = self._obj.pp.add_channel(channels=key_added, array=merged)
         return obj
+
+    def find_bright_cells(
+        self,
+        channels: Optional[Union[str, list]] = None,
+        frac_channels: float = 0.5,
+        quantile: float = 0.95,
+        key: str = Layers.INTENSITY,
+        key_added: str = "is_bright",
+    ) -> xr.Dataset:
+        """
+        Flags cells that are bright across multiple channels (e.g., due to a lot of antibodies binding to that cell).
+        A cell is considered bright in a channel if its intensity exceeds the given quantile threshold
+        for that channel. Cells that are bright in at least frac_channels of the
+        considered channels are flagged.
+
+        Parameters
+        ----------
+        channels : Optional[Union[str, list]]
+            The channels to consider. If None, all channels are used.
+        frac_channels : float
+            The fraction of channels in which a cell must be bright to be flagged.
+            Default is 0.5.
+        quantile : float
+            The quantile threshold above which a cell is considered bright in a
+            given channel. Computed per channel. Default is 0.95.
+        key : str
+            The key of the intensity layer to use. Default is Layers.INTENSITY.
+        key_added : str
+            The name of the feature added to obs. Default is 'is_bright'.
+
+        Returns
+        -------
+        xr.Dataset
+            The updated image container with the 'is_bright' flag added to obs.
+
+        Raises
+        ------
+        ValueError
+            If no intensity matrix is found at the specified layer.
+
+        Example
+        -------
+        Flag cells that are bright in at least 50% of all channels at the 95th percentile:
+        >>> ds = ds.pp.find_bright_cells()
+
+        Flag cells that are bright in at least 2 out of 3 specific channels:
+        >>> ds = ds.pp.find_bright_cells(channels=['CD3', 'CD8', 'CD20'], frac_channels=0.66)
+        """
+        if key not in self._obj:
+            raise ValueError(f"No intensity matrix found at layer {key}. Please run pp.add_quantification() first.")
+
+        assert 0 <= frac_channels <= 1, "frac_channels must be between 0 and 1."
+        assert 0 <= quantile <= 1, "quantile must be between 0 and 1."
+
+        # resolve channels
+        all_channels = self._obj.coords[Dims.CHANNELS].values
+        if channels is None:
+            channels = all_channels
+        elif isinstance(channels, str):
+            channels = [channels]
+
+        nonexistent = set(channels) - set(all_channels)
+        assert (
+            len(nonexistent) == 0
+        ), f"The following channels were not found: {nonexistent}. Please adjust the 'channels' argument to only contain existing channels."
+
+        # get the intensity matrix for the selected channels, shape (n_cells, n_channels)
+        intensity = self._obj[key].sel({Dims.CHANNELS: channels}).values
+
+        # compute per-channel quantile thresholds
+        thresholds = np.quantile(intensity, quantile, axis=0)  # shape (n_channels,)
+
+        # a cell is bright in a channel if it exceeds that channel's threshold
+        is_above = intensity > thresholds  # shape (n_cells, n_channels)
+
+        # flag cells that are bright in at least frac_channels of the considered channels
+        min_channels = int(np.ceil(frac_channels * len(channels)))
+        is_bright = is_above.sum(axis=1) >= min_channels  # shape (n_cells,)
+
+        return self._obj.pp.add_feature(key_added, is_bright.astype(float))
