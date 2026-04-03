@@ -219,6 +219,9 @@ def _render_obs(
     vmin: float = None,
     vmax: float = None,
 ) -> np.ndarray:
+    # handling the special case where all values in the segmentation are the same,
+    # which would lead to a division by zero in the normalization step
+    vmax = vmax if vmax > vmin else vmin + 1
     # normalize the segmentation to be in the range [0, 1]
     segmentation = (segmentation - vmin) / (vmax - vmin)
 

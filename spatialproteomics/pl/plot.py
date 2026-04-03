@@ -245,6 +245,10 @@ class PlotAccessor:
             min_val = obs_colors["min"]
             max_val = obs_colors["max"]
 
+        # handling the special case where all values in the segmentation are the same,
+        # which would lead to a division by zero in the normalization step
+        max_val = max_val if max_val > min_val else min_val + 1
+
         # Create the colorbar with dynamic positioning and size
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min_val, vmax=max_val))
         sm.set_array([])
