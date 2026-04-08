@@ -322,6 +322,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Obs">Rendering Obs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Labels">Rendering Labels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Expert-Plotting">Expert Plotting</a></li>
@@ -1182,7 +1183,9 @@ Data variables:
 <img alt="../_images/notebooks_Plotting_20_0.png" src="../_images/notebooks_Plotting_20_0.png" />
 </div>
 </div>
-<p>ds = xr.open_zarr(“../../data/LN_24_1_unprocessed.zarr”)## Rendering Labels</p>
+</section>
+<section id="Rendering-Labels">
+<h2>Rendering Labels<a class="headerlink" href="#Rendering-Labels" title="Link to this heading">#</a></h2>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">render_segmentation</span></code>, <code class="docutils literal notranslate"><span class="pre">pl.show()</span></code> also has an argument called <code class="docutils literal notranslate"><span class="pre">render_labels</span></code>, which can be used to render cell type labels. We can simultaneously deactivate the rendering of the intensities to get an image of only the labels.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -2727,6 +2730,7 @@ Mask growing requires recalculation of the observations. All features other than
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Plotting-Channel-Intensities">Plotting Channel Intensities</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Segmentation-Masks">Rendering Segmentation Masks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Obs">Rendering Obs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Labels">Rendering Labels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Rendering-Neighborhoods">Rendering Neighborhoods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotation-of-Regions-or-Cells">Annotation of Regions or Cells</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Expert-Plotting">Expert Plotting</a></li>
