@@ -313,6 +313,7 @@ def filter_by_obs(
     func: Callable,
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
+    reindex: bool = False,
     copy: bool = False,
 ):
     """
@@ -324,6 +325,7 @@ def filter_by_obs(
         func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
         segmentation_key (str): The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.
         table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
+        reindex (bool): Whether to reindex the obs after filtering. Default is False.
         copy (bool): If True, a copy of the object is returned. Default is False.
     """
     import spatialdata
@@ -347,13 +349,15 @@ def filter_by_obs(
     # setting all cells that are not in cells to 0
     segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
     # relabeling cells in the segmentation mask so the IDs go from 1 to n again
-    segmentation, relabel_dict = _relabel_cells(segmentation)
+    if reindex:
+        segmentation, relabel_dict = _relabel_cells(segmentation)
 
     # removing the cells which are not in cells_sel
     adata = adata[adata.obs[SDFeatures.ID].isin(cells_sel), :].copy()
     # updating the cell coords of the object
-    adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
-    adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
+    if reindex:
+        adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
+        adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
 
     # overwriting the segmentation mask in the object
     # get transformations
@@ -822,7 +826,7 @@ class PreprocessingAccessor:
     def add_segmentation(
         self,
         segmentation: Union[str, np.ndarray] = None,
-        reindex: bool = True,
+        reindex: bool = False,
         keep_labels: bool = True,
         add_obs: bool = True,
     ) -> xr.Dataset:
@@ -1593,7 +1597,9 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, new_img, new_seg], join="outer", compat="no_conflicts")
 
-    def filter_by_obs(self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION):
+    def filter_by_obs(
+        self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION, reindex: bool = False
+    ):
         """
         Filter the object by observations based on a given feature and filtering function.
 
@@ -1601,6 +1607,7 @@ class PreprocessingAccessor:
             col (str): The name of the feature to filter by.
             func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
             segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
+            reindex (bool): Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns:
             xr.Dataset: The filtered object with the selected cells and updated segmentation mask.
@@ -1610,7 +1617,6 @@ class PreprocessingAccessor:
 
         Notes:
             - This method filters the object by selecting only the cells that satisfy the filtering condition.
-            - It also updates the segmentation mask to remove cells that are not selected and relabels the remaining cells.
 
         Example:
             To filter the object by the feature "area" and keep only the cells with an area greater than 70px:
@@ -1639,10 +1645,11 @@ class PreprocessingAccessor:
         segmentation = obj[segmentation_key].values
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
-        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
-        segmentation, relabel_dict = _relabel_cells(segmentation)
-        # updating the cell coords of the object
-        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
+        if reindex:
+            # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+            segmentation, relabel_dict = _relabel_cells(segmentation)
+            # updating the cell coords of the object
+            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
@@ -1659,7 +1666,11 @@ class PreprocessingAccessor:
         return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def remove_outlying_cells(
-        self, dilation_size: int = 25, threshold: int = 5, segmentation_key: str = Layers.SEGMENTATION
+        self,
+        dilation_size: int = 25,
+        threshold: int = 5,
+        segmentation_key: str = Layers.SEGMENTATION,
+        reindex: bool = False,
     ):
         """
         Removes outlying cells from the image container. It does so by dilating the segmentation mask and removing cells that belong to a connected component with less than 'threshold' cells.
@@ -1672,6 +1683,8 @@ class PreprocessingAccessor:
             The minimum number of cells in a connected component required for the cells to be kept. Default is 5.
         segmentation_key : str
             The key of the segmentation mask in the object. Default is '_segmentation'.
+        reindex : bool
+            Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns
         -------
@@ -1703,10 +1716,11 @@ class PreprocessingAccessor:
         obj = self._obj.sel(query)
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
-        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
-        segmentation, relabel_dict = _relabel_cells(segmentation)
-        # updating the cell coords of the object
-        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
+        if reindex:
+            # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+            segmentation, relabel_dict = _relabel_cells(segmentation)
+            # updating the cell coords of the object
+            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
@@ -2082,13 +2096,16 @@ class PreprocessingAccessor:
 
         return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
-    def mask_cells(self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION) -> xr.Dataset:
+    def mask_cells(
+        self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION, reindex: bool = False
+    ) -> xr.Dataset:
         """
         Mask cells in the segmentation mask.
 
         Parameters:
             mask_key (str): The key of the mask to use for masking.
             segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
+            reindex (bool): Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns:
             xr.Dataset: The object with the masked cells in the segmentation mask.
@@ -2117,10 +2134,11 @@ class PreprocessingAccessor:
         segmentation = obj[segmentation_key].values
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
-        # relabeling cells in the segmentation mask so the IDs go from 1 to n again
-        segmentation, relabel_dict = _relabel_cells(segmentation)
-        # updating the cell coords of the object
-        obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
+        if reindex:
+            # relabeling cells in the segmentation mask so the IDs go from 1 to n again
+            segmentation, relabel_dict = _relabel_cells(segmentation)
+            # updating the cell coords of the object
+            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(

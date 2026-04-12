@@ -3,10 +3,6 @@ import pytest
 
 from spatialproteomics.constants import Dims, Layers
 
-# test that there are less cells after
-# test that cells are labeled consecutively
-# test that the mask is binary
-
 
 def test_mask_cells(ds_segmentation):
     # x and y shape of the dataset
@@ -16,6 +12,24 @@ def test_mask_cells(ds_segmentation):
     labels[0:50, 0:50] = 0
 
     ds = ds_segmentation.pp.add_layer(labels).pp.mask_cells()
+
+    # check that there are less cells after masking
+    assert len(ds.coords[Dims.CELLS]) < len(ds_segmentation.coords[Dims.CELLS])
+
+    # check that cell IDs are not changed when reindex is False
+    cells_before = set(ds_segmentation.coords[Dims.CELLS].values)
+    cells_after = set(ds.coords[Dims.CELLS].values)
+    assert cells_after.issubset(cells_before)
+
+
+def test_mask_cells_reindex(ds_segmentation):
+    # x and y shape of the dataset
+    x, y = ds_segmentation.sizes[Dims.X], ds_segmentation.sizes[Dims.Y]
+    # creating a dummy mask
+    labels = np.ones((x, y))
+    labels[0:50, 0:50] = 0
+
+    ds = ds_segmentation.pp.add_layer(labels).pp.mask_cells(reindex=True)
 
     # check that there are less cells after masking
     assert len(ds.coords[Dims.CELLS]) < len(ds_segmentation.coords[Dims.CELLS])
