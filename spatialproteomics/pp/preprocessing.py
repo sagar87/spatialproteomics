@@ -313,7 +313,7 @@ def filter_by_obs(
     func: Callable,
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
-    reindex: bool = True,
+    reindex: bool = False,
     copy: bool = False,
 ):
     """
@@ -325,7 +325,7 @@ def filter_by_obs(
         func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
         segmentation_key (str): The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.
         table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
-        reindex (bool): Whether to reindex the obs after filtering. Default is True.
+        reindex (bool): Whether to reindex the obs after filtering. Default is False.
         copy (bool): If True, a copy of the object is returned. Default is False.
     """
     import spatialdata
@@ -826,7 +826,7 @@ class PreprocessingAccessor:
     def add_segmentation(
         self,
         segmentation: Union[str, np.ndarray] = None,
-        reindex: bool = True,
+        reindex: bool = False,
         keep_labels: bool = True,
         add_obs: bool = True,
     ) -> xr.Dataset:
@@ -1598,7 +1598,7 @@ class PreprocessingAccessor:
         return xr.merge([obj, new_img, new_seg], join="outer", compat="no_conflicts")
 
     def filter_by_obs(
-        self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION, reindex: bool = True
+        self, col: str, func: Callable, segmentation_key: str = Layers.SEGMENTATION, reindex: bool = False
     ):
         """
         Filter the object by observations based on a given feature and filtering function.
@@ -1607,7 +1607,7 @@ class PreprocessingAccessor:
             col (str): The name of the feature to filter by.
             func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
             segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
-            reindex (bool): Whether to reindex the cell IDs after filtering. Default is True.
+            reindex (bool): Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns:
             xr.Dataset: The filtered object with the selected cells and updated segmentation mask.
@@ -1670,7 +1670,7 @@ class PreprocessingAccessor:
         dilation_size: int = 25,
         threshold: int = 5,
         segmentation_key: str = Layers.SEGMENTATION,
-        reindex: bool = True,
+        reindex: bool = False,
     ):
         """
         Removes outlying cells from the image container. It does so by dilating the segmentation mask and removing cells that belong to a connected component with less than 'threshold' cells.
@@ -1684,7 +1684,7 @@ class PreprocessingAccessor:
         segmentation_key : str
             The key of the segmentation mask in the object. Default is '_segmentation'.
         reindex : bool
-            Whether to reindex the cell IDs after filtering. Default is True.
+            Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns
         -------
@@ -2097,7 +2097,7 @@ class PreprocessingAccessor:
         return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def mask_cells(
-        self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION, reindex: bool = True
+        self, mask_key: str = Layers.MASK, segmentation_key=Layers.SEGMENTATION, reindex: bool = False
     ) -> xr.Dataset:
         """
         Mask cells in the segmentation mask.
@@ -2105,7 +2105,7 @@ class PreprocessingAccessor:
         Parameters:
             mask_key (str): The key of the mask to use for masking.
             segmentation_key (str): The key of the segmentation mask in the object. Default is Layers.SEGMENTATION.
-            reindex (bool): Whether to reindex the cell IDs after filtering. Default is True.
+            reindex (bool): Whether to reindex the cell IDs after filtering. Default is False.
 
         Returns:
             xr.Dataset: The object with the masked cells in the segmentation mask.
