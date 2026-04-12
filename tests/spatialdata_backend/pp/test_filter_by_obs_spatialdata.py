@@ -16,6 +16,11 @@ def test_filter_by_obs(ds_labels_spatialdata):
 
     # coords are synchronized with the segmentation mask
     assert ds.tables[SDLayers.TABLE].obs.shape[0] == len(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - 1
+    cell_ids_in_obs = set(ds.tables[SDLayers.TABLE].obs[SDFeatures.ID].values)
+    cell_ids_in_obs_names = set([int(name.replace("Cell_", "")) for name in ds.tables[SDLayers.TABLE].obs_names])
+    cell_ids_in_segmentation = set(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - {0}
+    assert cell_ids_in_obs_names == cell_ids_in_segmentation
+    assert cell_ids_in_obs == cell_ids_in_segmentation
 
 
 def test_filter_by_obs_no_reindex(ds_labels_spatialdata):
@@ -29,6 +34,11 @@ def test_filter_by_obs_no_reindex(ds_labels_spatialdata):
 
     # coords are synchronized with the segmentation mask
     assert ds.tables[SDLayers.TABLE].obs.shape[0] == len(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - 1
+    cell_ids_in_obs = set(ds.tables[SDLayers.TABLE].obs[SDFeatures.ID].values)
+    cell_ids_in_obs_names = set([int(name.replace("Cell_", "")) for name in ds.tables[SDLayers.TABLE].obs_names])
+    cell_ids_in_segmentation = set(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - {0}
+    assert cell_ids_in_obs == cell_ids_in_segmentation
+    assert cell_ids_in_obs_names == cell_ids_in_segmentation
 
     # cell IDs are not changed when reindex is False
     assert set(ds.tables[SDLayers.TABLE].obs[SDFeatures.ID].values).issubset(
