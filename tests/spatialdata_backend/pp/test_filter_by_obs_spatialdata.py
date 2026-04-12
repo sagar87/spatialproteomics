@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import spatialproteomics as sp
-from spatialproteomics.constants import SDLayers
+from spatialproteomics.constants import SDFeatures, SDLayers
 
 
 def test_filter_by_obs(ds_labels_spatialdata):
@@ -16,6 +16,26 @@ def test_filter_by_obs(ds_labels_spatialdata):
 
     # coords are synchronized with the segmentation mask
     assert ds.tables[SDLayers.TABLE].obs.shape[0] == len(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - 1
+
+
+def test_filter_by_obs_no_reindex(ds_labels_spatialdata):
+    ds = sp.pp.add_observations(ds_labels_spatialdata, "area", copy=True)
+    sp.pp.filter_by_obs(ds, "area", func=lambda x: (x > 50) & (x < 100), reindex=False)
+
+    # table is retained after filtering
+    assert SDLayers.TABLE in ds.tables.keys()
+    # size is smaller than before filtering
+    assert ds.tables[SDLayers.TABLE].obs.shape[0] < ds_labels_spatialdata.tables[SDLayers.TABLE].obs.shape[0]
+
+    # coords are synchronized with the segmentation mask
+    assert ds.tables[SDLayers.TABLE].obs.shape[0] == len(np.unique(ds.labels[SDLayers.SEGMENTATION].values)) - 1
+
+    # cell IDs are not changed when reindex is False
+    assert set(ds.tables[SDLayers.TABLE].obs[SDFeatures.ID].values).issubset(
+        set(ds_labels_spatialdata.tables[SDLayers.TABLE].obs[SDFeatures.ID].values)
+    )
+    # cell IDs do not start at 1 when reindex is False (they technically could, but not in this example dataset)
+    assert 1 not in set(ds.tables[SDLayers.TABLE].obs[SDFeatures.ID].values)
 
 
 def test_filter_by_obs_no_change(ds_labels_spatialdata):

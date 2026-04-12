@@ -313,6 +313,7 @@ def filter_by_obs(
     func: Callable,
     segmentation_key: str = SDLayers.SEGMENTATION,
     table_key: str = SDLayers.TABLE,
+    reindex: bool = True,
     copy: bool = False,
 ):
     """
@@ -324,6 +325,7 @@ def filter_by_obs(
         func (Callable): A filtering function that takes in the values of the feature and returns a boolean array.
         segmentation_key (str): The key of the segmentation mask in the object. Default is SDLayers.SEGMENTATION.
         table_key (str): The key of the table in the object. Default is SDLayers.TABLE.
+        reindex (bool): Whether to reindex the obs after filtering. Default is True.
         copy (bool): If True, a copy of the object is returned. Default is False.
     """
     import spatialdata
@@ -347,13 +349,15 @@ def filter_by_obs(
     # setting all cells that are not in cells to 0
     segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
     # relabeling cells in the segmentation mask so the IDs go from 1 to n again
-    segmentation, relabel_dict = _relabel_cells(segmentation)
+    if reindex:
+        segmentation, relabel_dict = _relabel_cells(segmentation)
 
     # removing the cells which are not in cells_sel
     adata = adata[adata.obs[SDFeatures.ID].isin(cells_sel), :].copy()
     # updating the cell coords of the object
-    adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
-    adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
+    if reindex:
+        adata.obs[SDFeatures.ID] = [relabel_dict[cell] for cell in adata.obs[SDFeatures.ID].values]
+        adata.obs.index = [f"Cell_{x}" for x in adata.obs[SDFeatures.ID].values]
 
     # overwriting the segmentation mask in the object
     # get transformations
