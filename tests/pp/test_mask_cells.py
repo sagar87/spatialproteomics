@@ -24,6 +24,24 @@ def test_mask_cells(ds_segmentation):
     assert np.all(np.diff(ds.coords[Dims.CELLS]) == 1)
 
 
+def test_mask_cells_reindex_false(ds_segmentation):
+    # x and y shape of the dataset
+    x, y = ds_segmentation.sizes[Dims.X], ds_segmentation.sizes[Dims.Y]
+    # creating a dummy mask
+    labels = np.ones((x, y))
+    labels[0:50, 0:50] = 0
+
+    ds = ds_segmentation.pp.add_layer(labels).pp.mask_cells(reindex=False)
+
+    # check that there are less cells after masking
+    assert len(ds.coords[Dims.CELLS]) < len(ds_segmentation.coords[Dims.CELLS])
+
+    # check that cell IDs are not changed when reindex is False
+    cells_before = set(ds_segmentation.coords[Dims.CELLS].values)
+    cells_after = set(ds.coords[Dims.CELLS].values)
+    assert cells_after.issubset(cells_before)
+
+
 def test_mask_cells_no_segmentation(ds_image):
     # x and y shape of the dataset
     x, y = ds_image.sizes[Dims.X], ds_image.sizes[Dims.Y]
