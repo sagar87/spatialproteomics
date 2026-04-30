@@ -1799,12 +1799,21 @@ class PreprocessingAccessor:
         layer_key: str,
         key_added: str = "_merged_segmentation",
         labels: Optional[List[str]] = None,
-        threshold: float = 0.8,
+        threshold1: float = 0.7,
+        threshold2: float = 0.8,
     ):
         """
-        Merge segmentation masks.
-        This can be done in two ways: either by merging a multi-dimensional array from the object directly, or by adding a numpy array.
-        You can either just merge a multi-dimensional array, or merge to an existing 1D mask (e. g. a precomputed DAPI segmentation).
+        Merge segmentation masks. Merging works as follows:
+        1. Assume two segmentation masks, S1 (higher priority, e.g., macrophages) and S2 (lower priority, e.g., lymphocytes)
+        2. We start by copying the segmentation regions from S2 into S1, but only for pixels where S1 has background
+        3. Some S2 cells may now be partially overwritten by S1 cells — we drop any S2 cell where less than threshold1
+        fraction of its original area survived (e.g. with threshold1=0.7,
+        an S2 cell that lost more than 30% of its area to S1 is discarded)
+        4. Of the remaining S2 cells, we additionally drop any that overlap with threshold2 or
+        more of any single S1 cell's area — this prevents S2 cells from being retained when they
+        largely encapsulate an S1 cell (e.g. with threshold2=0.8, an S2 cell is discarded if it
+        covers more than 80% of any S1 cell)
+        5. The surviving S1 and S2 regions are combined into a final mask with sequential labels
 
         Parameters
         ----------
@@ -1814,7 +1823,9 @@ class PreprocessingAccessor:
             The name of the new segmentation mask to be added to the xarray object. Default is "_merged_segmentation".
         labels : Optional[List[str]]
             Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
-        threshold : float
+        threshold1: float
+            Optional. Threshold for merging cells. Default is 0.7.
+        threshold2: float
             Optional. Threshold for merging cells. Default is 0.8.
 
         Returns
@@ -1834,6 +1845,9 @@ class PreprocessingAccessor:
             - The merging process starts with merging the biggest cells first, then the smaller ones.
             - Disconnected cells in the input are handled based on the specified method.
         """
+        assert threshold1 >= 0 and threshold1 <= 1, "threshold1 must be between 0 and 1."
+        assert threshold2 >= 0 and threshold2 <= 1, "threshold2 must be between 0 and 1."
+
         # Make sure layer_key is a list internally
         if isinstance(layer_key, str):
             layer_keys = [layer_key]
@@ -1913,7 +1927,8 @@ class PreprocessingAccessor:
                 next_segmentation.squeeze(),
                 label1=label_1,
                 label2=label_2,
-                threshold=threshold,
+                threshold1=threshold1,
+                threshold2=threshold2,
             )
 
             # Update label mapping
