@@ -95,62 +95,144 @@ def _relabel_cells(segmentation: np.ndarray) -> Tuple[np.ndarray, dict]:
     return segmentation_relabeled, value_map
 
 
-def _merge_segmentation(s1: np.ndarray, s2: np.ndarray, label1: int = 1, label2: int = 2, threshold: float = 1.0):
+def _exceeds_overlap(i2: np.ndarray, s1: np.ndarray, n2: np.ndarray, p1: list, threshold2: float) -> np.ndarray:
+    """
+    Return a boolean mask over i2 indicating which s2 regions should be KEPT
+    (i.e. do not exceed the overlap threshold with any s1 cell).
+
+    Instead of looping per s2 label, this builds a joint overlap table in one pass
+    over the image, then checks the threshold condition vectorized.
+
+    Parameters
+    ----------
+    i2 : np.ndarray
+        Array of candidate s2 labels (already filtered by threshold1).
+    s1 : np.ndarray
+        First segmentation mask.
+    n2 : np.ndarray
+        Relabeled second segmentation mask.
+    p1 : list
+        Region properties of s1 (from skimage.measure.regionprops).
+    threshold2 : float
+        Maximum fraction of any s1 cell's area that may overlap with an s2 region
+        before that s2 region is excluded.
+    """
+    # Only consider pixels where both masks are non-zero
+    both = (s1 > 0) & (n2 > 0)
+    s1_vals = s1[both]
+    n2_vals = n2[both]
+
+    # Precompute s1 cell areas from regionprops
+    s1_areas = {p.label: p.area for p in p1}
+
+    # Count overlapping pixels for each (s1_label, s2_label) pair
+    pairs, counts = np.unique(np.stack([s1_vals, n2_vals], axis=1), axis=0, return_counts=True)
+
+    # Filter to only pairs where the s2 label is a candidate in i2
+    i2_set = set(i2.tolist())
+    mask = np.array([p[1] in i2_set for p in pairs])
+    pairs, counts = pairs[mask], counts[mask]
+
+    # Compute overlap fraction: intersection / s1 cell area
+    s1_areas_arr = np.array([s1_areas[p[0]] for p in pairs])
+    fractions = counts / s1_areas_arr
+
+    # Find s2 labels where any s1 cell exceeds the threshold
+    exceeds = pairs[fractions >= threshold2, 1]
+    exceeded_set = set(exceeds.tolist())
+
+    return np.array([label for label in i2 if label not in exceeded_set])
+
+
+def _merge_segmentation(
+    s1: np.ndarray,
+    s2: np.ndarray,
+    label1: int = 1,
+    label2: int = 2,
+    threshold1: float = 1.0,
+    threshold2: float = 1.0,
+) -> Tuple[np.ndarray, dict]:
     """
     Merge two segmentation masks based on specified criteria.
+
+    Regions from s1 are always included (subject to threshold1). Regions from s2 are only
+    included if they do not overlap with s1 beyond the threshold1 and threshold2 criteria.
 
     Parameters
     ----------
     s1 : numpy.ndarray
-        First segmentation mask.
+        First segmentation mask. Regions here take priority over s2.
     s2 : numpy.ndarray
-        Second segmentation mask.
+        Second segmentation mask. Regions are only added where they don't conflict with s1.
     label1 : int
-        Label for regions from the first mask in the final merged mask. Default is 1.
+        Label assigned to s1 regions in the output mapping. Default is 1.
     label2 : int
-        Label for regions from the second mask in the final merged mask. Default is 2.
-    threshold : float, optional
-        Threshold for area ratio of intersection over union for merging regions.
-        Default is 1.0, meaning all regions from the second mask are merged.
-
+        Label assigned to s2 regions in the output mapping. Default is 2.
+    threshold1 : float, optional
+        Minimum fraction of an s2 region's area that must be preserved (i.e. not masked by s1)
+        for it to be included. Default is 1.0, meaning only fully non-overlapping s2 regions
+        are included.
+    threshold2 : float, optional
+        Maximum fraction of any s1 cell's area that may overlap with an s2 region before
+        that s2 region is excluded. Default is 1.0, meaning an s2 region is only excluded
+        if it fully contains an s1 cell.
     Returns
     -------
     numpy.ndarray
-        Merged segmentation mask.
+        Merged segmentation mask with sequentially relabeled regions.
     dict
-        Mapping of labels from the merged mask to the original labels.
-
+        Mapping of labels in the final mask to their origin: label1 (from s1) or label2 (from s2).
     Notes
     -----
-    This function assumes that `s1` and `s2` are 2D segmentation masks with integer labels.
+    This function assumes that s1 and s2 are 2D segmentation masks with integer labels,
+    where 0 represents background.
     """
     s1 = s1.squeeze()
     s2 = s2.squeeze()
 
-    n2, fmap, bmap = relabel_sequential(s2, offset=s1.max() + 1)
+    # Relabel s2 so its labels don't collide with s1's labels
+    n2, fmap, _ = relabel_sequential(s2, offset=s1.max() + 1)
+
+    # Build a combined mask: start with s1, then fill background pixels with s2 regions.
+    # This means s1 always takes priority — s2 only fills where s1 has no label.
     s3 = s1.copy()
     s3[np.logical_and(n2 > 0, s1 == 0)] = n2[np.logical_and(n2 > 0, s1 == 0)]
 
+    # Collect region properties and labels for filtering
     p1 = regionprops(s1)
     p2 = regionprops(n2)
     p3 = regionprops(s3)
-
     l1 = [p.label for p in p1]
     l2 = [p.label for p in p2]
-    l3 = [p.label for p in p3]
+    l3 = [p.label for p in p3]  # labels still present after combining s1 and s2
 
-    # compute intersections
+    # i1: s1 regions that survived into the combined mask (should always be all of them)
+    # i2: s2 regions that survived into the combined mask (may be partial if they overlapped with s1)
     i1 = list(set(l1) & set(l3))
     i2 = list(set(l2) & set(l3))
 
+    # threshold1 filter: only keep s2 regions where the surviving area (in s3) is at least
+    # threshold1 fraction of the original s2 area. Regions heavily masked by s1 are dropped.
     area_ratio = np.array([p.area for p in p3 if p.label in i2]) / np.array([p.area for p in p2 if p.label in i2])
-    i2 = np.array(i2)[area_ratio >= threshold]
-    selected_cells = np.concatenate([np.array(i1), i2])
+    i2 = np.array(i2)[area_ratio >= threshold1]
 
-    # make final mask
+    # threshold2 filter: exclude s2 regions that overlap too much with any single s1 cell.
+    # If an s2 region covers >= threshold2 of an s1 cell's area, it's considered conflicting
+    # and dropped — even if it passed the threshold1 check.
+    i2 = _exceeds_overlap(i2, s1, n2, p1, threshold2)
+
+    # Combine selected s1 and s2 region labels, then clean and relabel the mask
+    selected_cells = np.concatenate([np.array(i1), i2])
     clean_mask = _remove_unlabeled_cells(s3, selected_cells)
-    final_mask, fmap, bmap = relabel_sequential(clean_mask)
-    mapping = dict(zip([fmap[i] for i in selected_cells.astype(int)], [label1] * len(i1) + [label2] * len(i2)))
+    final_mask, fmap, _ = relabel_sequential(clean_mask)
+
+    # Build a mapping from final mask labels back to their origin (label1 or label2)
+    mapping = dict(
+        zip(
+            [fmap[i] for i in selected_cells.astype(int)],
+            [label1] * len(i1) + [label2] * len(i2),
+        )
+    )
 
     return final_mask, mapping
 
