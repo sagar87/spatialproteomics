@@ -130,7 +130,7 @@ def _exceeds_overlap(i2: np.ndarray, s1: np.ndarray, n2: np.ndarray, p1: list, t
 
     # Filter to only pairs where the s2 label is a candidate in i2
     i2_set = set(i2.tolist())
-    mask = np.array([p[1] in i2_set for p in pairs])
+    mask = np.array([p[1] in i2_set for p in pairs], dtype=bool)
     pairs, counts = pairs[mask], counts[mask]
 
     # Compute overlap fraction: intersection / s1 cell area
