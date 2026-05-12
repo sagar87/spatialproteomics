@@ -1114,6 +1114,18 @@ class PlotAccessor:
             extent=bounds,
         )
 
+        # draw any pending boxes added via add_box()
+        for box in self._obj.attrs.pop("_pending_boxes", []):
+            rect = patches.Rectangle(
+                (box["xlim"][0], box["ylim"][0]),
+                box["xlim"][1] - box["xlim"][0],
+                box["ylim"][1] - box["ylim"][0],
+                edgecolor=box["color"],
+                linewidth=box["linewidth"],
+                facecolor="none",
+            )
+            ax.add_patch(rect)
+
         legend = []
 
         if legend_image:
@@ -1401,20 +1413,24 @@ class PlotAccessor:
         xr.Dataset
             The updated spatialproteomics object.
         """
-        if ax is None:
-            ax = plt.gca()
+        if ax is not None:
+            # existing immediate-draw behaviour when ax is explicit
+            rect = patches.Rectangle(
+                (xlim[0], ylim[0]),  # bottom left corner
+                xlim[1] - xlim[0],  # width
+                ylim[1] - ylim[0],  # height
+                edgecolor=color,
+                linewidth=linewidth,
+                facecolor="none",
+            )
+            ax.add_patch(rect)
+            return self._obj
 
-        # Create a rectangle and add it to the axis
-        rect = patches.Rectangle(
-            (xlim[0], ylim[0]),  # Bottom-left corner
-            xlim[1] - xlim[0],  # Width
-            ylim[1] - ylim[0],  # Height
-            edgecolor=color,
-            linewidth=linewidth,
-            facecolor="none",  # Ensure it's just an outline
-        )
-        ax.add_patch(rect)
-
+        # no ax provided: defer rendering by storing box params in the dataset attrs
+        # the boxes are then rendered in pl.imshow() when the plot is drawn
+        pending = list(self._obj.attrs.get("_pending_boxes", []))
+        pending.append(dict(xlim=xlim, ylim=ylim, color=color, linewidth=linewidth))
+        self._obj.attrs["_pending_boxes"] = pending
         return self._obj
 
     def autocrop(
