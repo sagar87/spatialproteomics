@@ -649,7 +649,6 @@ def _threshold(
     img = image.values  # shape (C, Y, X)
     img_dtype = img.dtype
 
-    # Normalise quantile/intensity arrays to match channels
     if quantile is not None:
         if quantile.size == 1:
             quantile = np.full(len(all_channels), quantile.item(), dtype=float)
