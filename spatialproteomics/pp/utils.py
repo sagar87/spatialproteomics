@@ -602,12 +602,12 @@ def _threshold(
     if (quantile is None and intensity is None) or (quantile is not None and intensity is not None):
         raise ValueError("Please provide a quantile or absolute intensity cut off.")
 
-    if isinstance(quantile, (float, int)):
+    if isinstance(quantile, (float, int, np.generic)):
         quantile = np.array([quantile])
     if isinstance(quantile, list):
         quantile = np.array(quantile)
 
-    if isinstance(intensity, (float, int)):
+    if isinstance(intensity, (float, int, np.generic)):
         intensity = np.array([intensity])
     if isinstance(intensity, list):
         intensity = np.array(intensity)
@@ -626,6 +626,7 @@ def _threshold(
         if quantile is not None:
             assert len(channels) == len(quantile), "The number of channels must match the number of quantile values."
             quantile_dict = dict(zip(channels, quantile))
+            # TODO: this needs fixing, since the 0-quantile can be above 0
             quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
         if intensity is not None:
             assert len(channels) == len(intensity), "The number of channels must match the number of intensity values."
