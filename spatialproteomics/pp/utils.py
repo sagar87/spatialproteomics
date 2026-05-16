@@ -626,12 +626,13 @@ def _threshold(
         if quantile is not None:
             assert len(channels) == len(quantile), "The number of channels must match the number of quantile values."
             quantile_dict = dict(zip(channels, quantile))
-            # TODO: this needs fixing, since the 0-quantile can be above 0
-            quantile = np.array([quantile_dict.get(channel, 0) for channel in all_channels])
+            # we cannot just use 0 in the get() here, because the minimum intensity of a marker might be above 0,
+            # #in which case we would be thresholding the wrong value. Instead, we use np.nan and then check for this later on.
+            quantile = np.array([quantile_dict.get(channel, np.nan) for channel in all_channels])
         if intensity is not None:
             assert len(channels) == len(intensity), "The number of channels must match the number of intensity values."
             intensity_dict = dict(zip(channels, intensity))
-            intensity = np.array([intensity_dict.get(channel, 0) for channel in all_channels])
+            intensity = np.array([intensity_dict.get(channel, np.nan) for channel in all_channels])
     else:
         # If no channels provided, assume the threshold applies to all channels
         if quantile is not None:
@@ -667,55 +668,58 @@ def _threshold(
 
     filtered = None
 
-    # --- QUANTILE BRANCH (unchanged logic, slightly cleaned) ---
+    # --- QUANTILE BRANCH ---
     if quantile is not None:
-        assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
+        assert np.all(quantile[~np.isnan(quantile)] >= 0) and np.all(
+            quantile[~np.isnan(quantile)] <= 1
+        ), "Quantile values must be between 0 and 1."
 
         flat = img.reshape(img.shape[0], -1)
-        lower = np.array([np.quantile(flat[i], q) for i, q in enumerate(quantile)]).astype(img_dtype)
+        lower = np.array([np.quantile(flat[i], q) if not np.isnan(q) else 0.0 for i, q in enumerate(quantile)]).astype(
+            img_dtype
+        )
 
         lower = lower[:, np.newaxis, np.newaxis]
         filtered = np.empty_like(img)
 
         if shift:
-            # clip at lower and subtract lower
             for c in range(img.shape[0]):
                 lc = lower[c, 0, 0]
-                np.maximum(img[c], lc, out=filtered[c])
-                filtered[c] -= lc
+                if np.isnan(quantile[c]):  # no-op channel: copy as-is
+                    np.copyto(filtered[c], img[c])
+                else:
+                    np.maximum(img[c], lc, out=filtered[c])
+                    filtered[c] -= lc
         else:
-            # set below lower to 0, keep others
             for c in range(img.shape[0]):
                 lc = lower[c, 0, 0]
                 np.copyto(filtered[c], img[c])
-                mask = filtered[c] < lc
-                filtered[c][mask] = img_dtype.type(0)
+                if not np.isnan(quantile[c]):  # only threshold specified channels
+                    mask = filtered[c] < lc
+                    filtered[c][mask] = img_dtype.type(0)
 
-    # --- INTENSITY BRANCH (rewritten, dtype-safe & channel-wise) ---
+    # --- INTENSITY BRANCH (dtype-safe & channel-wise) ---
     if intensity is not None:
-
         base = img if filtered is None else filtered
         result = np.empty_like(base)
-
         n_channels = base.shape[0]
 
         if shift:
-
-            # result[c] = max(base[c], thr) - thr
             for c in range(n_channels):
-
-                thr = img_dtype.type(intensity[c])  # scalar of same dtype as image
-                np.maximum(base[c], thr, out=result[c])
-                # subtract threshold in-place
-                result[c] -= thr
+                if np.isnan(intensity[c]):  # no-op channel
+                    np.copyto(result[c], base[c])
+                else:
+                    thr = img_dtype.type(intensity[c])
+                    np.maximum(base[c], thr, out=result[c])
+                    result[c] -= thr
         else:
-            # set values below thr to 0, keep others
             zero = img_dtype.type(0)
             for c in range(n_channels):
-                thr = img_dtype.type(intensity[c])
                 np.copyto(result[c], base[c])
-                mask = result[c] < thr
-                result[c][mask] = zero
+                if not np.isnan(intensity[c]):  # only threshold specified channels
+                    thr = img_dtype.type(intensity[c])
+                    mask = result[c] < thr
+                    result[c][mask] = zero
 
         filtered = result
 
