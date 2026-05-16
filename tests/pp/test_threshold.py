@@ -88,6 +88,11 @@ def test_threshold_too_high_intensity(ds_image):
         AssertionError,
         match="Intensity values must be smaller than the maximum intensity.",
     ):
+        ds_image.pp["CD8"].pp.threshold(intensity=200)
+    with pytest.raises(
+        OverflowError,
+        match="out of bounds for uint8",
+    ):
         ds_image.pp["CD8"].pp.threshold(intensity=100000)
 
 
@@ -208,3 +213,28 @@ def test_thresholds_nonexistent_channel(ds_image):
         match="The following channels are not present in the image layer",
     ):
         ds_image.pp.threshold(quantile=0.9, channels=["dummy_channel", "CD4"])
+
+
+def test_threshold_zero_pixels_after_thresholding(ds_image):
+    """A very high intensity threshold should zero out all pixels."""
+    max_val = ds_image.pp["CD8"][Layers.IMAGE].values.max()
+    d1 = ds_image.pp["CD8"].pp.threshold(intensity=max_val - 1, shift=False)
+    # only pixels at max value survive
+    assert d1[Layers.IMAGE].values[d1[Layers.IMAGE].values > 0].min() >= max_val - 1
+
+
+def test_threshold_shift_reduces_max(ds_image):
+    """With shift=True, the maximum should decrease by exactly the threshold value."""
+    d1 = ds_image.pp["CD8"].pp.threshold(intensity=10, shift=True)
+    expected_max = ds_image.pp["CD8"][Layers.IMAGE].values.max() - 10
+    assert d1[Layers.IMAGE].values.max() == expected_max
+
+
+def test_threshold_does_not_modify_other_channels(ds_image):
+    """Thresholding on selected channels should leave other channels untouched."""
+    d1 = ds_image.pp.threshold(intensity=10, channels="CD8")
+    np.testing.assert_array_equal(
+        d1.pp["CD4"][Layers.IMAGE].values,
+        ds_image.pp["CD4"][Layers.IMAGE].values,
+        err_msg="CD4 channel was modified when only CD8 was thresholded",
+    )

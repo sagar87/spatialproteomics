@@ -1,0 +1,222 @@
+{
+  "CD8__{\"intensity\": 10}": {
+    "mean": 2.360945005391628,
+    "min": 0.0,
+    "max": 74.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
+  },
+  "CD8__{\"intensity\": 10, \"shift\": false}": {
+    "mean": 5.387118909910793,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "6b8265a549de8baa61aebc078c0a3f4c"
+  },
+  "CD8__{\"quantile\": 0.9}": {
+    "mean": 0.7383589844132928,
+    "min": 0.0,
+    "max": 65.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "7356e11355385d4e76032996dfa9ff75"
+  },
+  "CD8__{\"quantile\": 0.9, \"shift\": false}": {
+    "mean": 2.72943829036369,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "1d072888505c1f091b116ed599b8a73e"
+  },
+  "CD4__{\"intensity\": 10}": {
+    "mean": 20.44299578472699,
+    "min": 0.0,
+    "max": 81.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "43755fa4c766f23b07900d8d4599dfa8"
+  },
+  "CD4__{\"intensity\": 10, \"shift\": false}": {
+    "mean": 30.136163121262623,
+    "min": 0.0,
+    "max": 91.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "44b2390dc8b8d77856e4abb889c9bcc7"
+  },
+  "CD4__{\"quantile\": 0.9}": {
+    "mean": 0.7439466718949123,
+    "min": 0.0,
+    "max": 44.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "6f6b80e475f3669a24beb436a1c3b8d9"
+  },
+  "CD4__{\"quantile\": 0.9, \"shift\": false}": {
+    "mean": 5.632388981472404,
+    "min": 0.0,
+    "max": 91.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "1d6f68c07d4c9e5ca918afe24ee897f5"
+  },
+  "CD8__{\"intensity\": [10, 20]}": {
+    "mean": 2.360945005391628,
+    "min": 0.0,
+    "max": 74.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
+  },
+  "CD4__{\"intensity\": [10, 20]}": {
+    "mean": 11.65875894520145,
+    "min": 0.0,
+    "max": 71.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "b2fff0b3576c559bcde04e743566a52a"
+  },
+  "CD8__{\"intensity\": [10, 20], \"shift\": false}": {
+    "mean": 5.387118909910793,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "6b8265a549de8baa61aebc078c0a3f4c"
+  },
+  "CD4__{\"intensity\": [10, 20], \"shift\": false}": {
+    "mean": 27.51406724830899,
+    "min": 0.0,
+    "max": 91.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "685e9b5103702733c8d590da2f1193cf"
+  },
+  "CD8__{\"quantile\": [0.9, 0.95]}": {
+    "mean": 0.7383589844132928,
+    "min": 0.0,
+    "max": 65.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "7356e11355385d4e76032996dfa9ff75"
+  },
+  "CD4__{\"quantile\": [0.9, 0.95]}": {
+    "mean": 0.38858935398490346,
+    "min": 0.0,
+    "max": 39.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "a4244211bba3aeaa26e0561953f92449"
+  },
+  "CD8__{\"quantile\": [0.9, 0.95], \"shift\": false}": {
+    "mean": 2.72943829036369,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "1d072888505c1f091b116ed599b8a73e"
+  },
+  "CD4__{\"quantile\": [0.9, 0.95], \"shift\": false}": {
+    "mean": 3.166748358004117,
+    "min": 0.0,
+    "max": 91.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "cb05cfa89d7d35776e72abd0eac03058"
+  },
+  "full_ds__{\"channels\": \"CD8\", \"intensity\": 10}": {
+    "mean": 2.360945005391628,
+    "min": 0.0,
+    "max": 74.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
+  },
+  "full_ds__{\"channels\": \"CD8\", \"intensity\": 10, \"shift\": false}": {
+    "mean": 5.387118909910793,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "6b8265a549de8baa61aebc078c0a3f4c"
+  },
+  "full_ds__{\"channels\": \"CD8\", \"quantile\": 0.9}": {
+    "mean": 0.7383589844132928,
+    "min": 0.0,
+    "max": 65.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "7356e11355385d4e76032996dfa9ff75"
+  },
+  "full_ds__{\"channels\": \"CD8\", \"quantile\": 0.9, \"shift\": false}": {
+    "mean": 2.72943829036369,
+    "min": 0.0,
+    "max": 84.0,
+    "shape": [
+      1,
+      101,
+      101
+    ],
+    "array_hash": "1d072888505c1f091b116ed599b8a73e"
+  }
+}
