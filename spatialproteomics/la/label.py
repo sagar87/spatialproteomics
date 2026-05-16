@@ -76,6 +76,7 @@ def threshold_labels(
 def predict_cell_types_argmax(
     sdata,
     marker_dict: dict,
+    min_intensity: float = 0.0,
     table_key: str = SDLayers.TABLE,
     label_key: str = SDFeatures.LABELS,
     copy: bool = False,
@@ -90,6 +91,7 @@ def predict_cell_types_argmax(
     Args:
         sdata (spatialdata.SpatialData): The spatialdata object containing the expression matrix.
         marker_dict (dict): A dictionary containing the marker genes for each cell type.
+        min_intensity (float, optional): The minimum intensity threshold for assigning cells to a type. Cells with all marker intensities below this threshold will be assigned to "Unlabeled". Defaults to 0.0.
         table_key (str, optional): The key under which the expression matrix is stored in the tables attribute of the spatialdata object. Defaults to "table".
         label_key (str, optional): The key under which the cell type labels are stored in the obs attribute of the spatialdata object. Defaults to "celltype".
         copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
@@ -102,7 +104,9 @@ def predict_cell_types_argmax(
     assert (
         len(set(marker_dict.keys()) - set(expression_df.columns)) == 0
     ), f"The following markers were not found in quantification layer: {set(marker_dict.keys()) - set(expression_df.columns)}."
-    celltypes = _predict_cell_types_argmax(expression_df, list(marker_dict.keys()), list(marker_dict.values()))
+    celltypes = _predict_cell_types_argmax(
+        expression_df, list(marker_dict.keys()), list(marker_dict.values()), min_intensity=min_intensity
+    )
     adata.obs[label_key] = celltypes
     adata.obs[label_key] = adata.obs[label_key].astype("category")
 
@@ -792,6 +796,7 @@ class LabelAccessor:
         overwrite_existing_labels: bool = False,
         cell_col: str = "cell",
         label_col: str = "label",
+        min_intensity: float = 0.0,
     ):
         """
         Predicts cell types based on the argmax classification of marker intensities.
@@ -802,6 +807,7 @@ class LabelAccessor:
             overwrite_existing_labels (bool, optional): Whether to overwrite existing labels. Defaults to False.
             cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
             label_col (str, optional): The name of the column to store predicted cell types in the output dataframe. Defaults to "label".
+            min_intensity (float, optional): The minimum intensity threshold for assigning cells to a type. Defaults to 0.0.
 
         Returns:
             xr.Dataset: A new spatialproteomics object with the predicted cell types added as labels.
@@ -825,7 +831,10 @@ class LabelAccessor:
         obj = self._obj.copy()
 
         celltypes_argmax = _predict_cell_types_argmax(
-            pd.DataFrame(obj.pp[markers][key].values, columns=markers), markers=markers, celltypes=celltypes
+            pd.DataFrame(obj.pp[markers][key].values, columns=markers),
+            markers=markers,
+            celltypes=celltypes,
+            min_intensity=min_intensity,
         )
 
         # putting everything into a dataframe
