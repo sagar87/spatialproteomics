@@ -66,6 +66,11 @@ def test_threshold_too_high_intensity(ds_image_spatialdata):
         AssertionError,
         match="Intensity values must be smaller than the maximum intensity.",
     ):
+        sp.pp.threshold(ds_image_spatialdata, intensity=200)
+    with pytest.raises(
+        OverflowError,
+        match="out of bounds for uint8",
+    ):
         sp.pp.threshold(ds_image_spatialdata, intensity=100000)
 
 

@@ -638,57 +638,89 @@ def _threshold(
             assert len(quantile) == 1 or len(quantile) == len(
                 all_channels
             ), "Quantile threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
-            quantile = np.full(len(all_channels), quantile.item() if quantile.size == 1 else quantile)
         if intensity is not None:
             assert len(intensity) == 1 or len(intensity) == len(
                 all_channels
             ), "Intensity threshold must be a single value or a list of values with the same length as the number of channels. If you only want to threshold a subset of channels, you can use the channels argument."
             assert np.all(intensity >= 0), "Intensity values must be positive."
-            assert np.all(
-                intensity <= np.max(image.values)
-            ), "Intensity values must be smaller than the maximum intensity."
-            intensity = np.full(len(all_channels), intensity.item() if intensity.size == 1 else intensity)
 
+    # Get underlying numpy array and its dtype
+    img = image.values  # shape (C, Y, X)
+    img_dtype = img.dtype
+
+    # Normalise quantile/intensity arrays to match channels
+    if quantile is not None:
+        if quantile.size == 1:
+            quantile = np.full(len(all_channels), quantile.item(), dtype=float)
+        else:
+            quantile = np.asarray(quantile, dtype=float)
+
+    if intensity is not None:
+        if intensity.size == 1:
+            intensity = np.full(len(all_channels), intensity.item(), dtype=img_dtype)
+        else:
+            # cast each provided value to image dtype
+            intensity = np.asarray(intensity, dtype=img_dtype)
+
+        max_val = np.max(img)
+        assert np.all(intensity <= max_val), "Intensity values must be smaller than the maximum intensity."
+
+    filtered = None
+
+    # --- QUANTILE BRANCH (unchanged logic, slightly cleaned) ---
     if quantile is not None:
         assert np.all(quantile >= 0) and np.all(quantile <= 1), "Quantile values must be between 0 and 1."
 
+        flat = img.reshape(img.shape[0], -1)
+        lower = np.array([np.quantile(flat[i], q) for i, q in enumerate(quantile)]).astype(img_dtype)
+
+        lower = lower[:, np.newaxis, np.newaxis]
+        filtered = np.empty_like(img)
+
         if shift:
-            # calculate quantile (and ensure the correct dtypes in order to be more memory-efficient)
-            # this is done by first clipping the values below the lower value, and subsequently subtracting the lower value from the result, which allows us to use the original dtype throughout
-            lower = np.quantile(image.values.reshape(image.values.shape[0], -1), quantile, axis=1).astype(image.dtype)
-
-            filtered = np.clip(
-                image, a_min=np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)), a_max=None
-            ).astype(image.dtype) - np.expand_dims(np.diag(lower) if lower.ndim > 1 else lower, (1, 2)).astype(
-                image.dtype
-            )
+            # clip at lower and subtract lower
+            for c in range(img.shape[0]):
+                lc = lower[c, 0, 0]
+                np.maximum(img[c], lc, out=filtered[c])
+                filtered[c] -= lc
         else:
-            # Calculate the quantile-based intensity threshold for each channel.
-            flattened_values = image.values.reshape(
-                image.values.shape[0], -1
-            )  # Flatten height and width for each channel.
-            lower = np.array(
-                [np.quantile(flattened_values[i], q) for i, q in enumerate(quantile)]
-            )  # Compute quantile per channel.
+            # set below lower to 0, keep others
+            for c in range(img.shape[0]):
+                lc = lower[c, 0, 0]
+                np.copyto(filtered[c], img[c])
+                mask = filtered[c] < lc
+                filtered[c][mask] = img_dtype.type(0)
 
-            # Reshape lower to match the broadcasting requirements.
-            lower = lower[:, np.newaxis, np.newaxis]  # Reshape to add height and width dimensions.
-
-            # Use np.where to apply the quantile threshold without shifting.
-            filtered = np.where(image.values >= lower, image.values, 0)
-
+    # --- INTENSITY BRANCH (rewritten, dtype-safe & channel-wise) ---
     if intensity is not None:
+
+        base = img if filtered is None else filtered
+        result = np.empty_like(base)
+
+        n_channels = base.shape[0]
+
         if shift:
-            # calculate intensity
-            filtered = (image - intensity.reshape(-1, 1, 1)).clip(min=0)
+
+            # result[c] = max(base[c], thr) - thr
+            for c in range(n_channels):
+
+                thr = img_dtype.type(intensity[c])  # scalar of same dtype as image
+                np.maximum(base[c], thr, out=result[c])
+                # subtract threshold in-place
+                result[c] -= thr
         else:
-            # Reshape intensity to broadcast correctly across all dimensions.
-            if len(intensity) == 1:
-                intensity = intensity[0]  # This will make it a scalar for simple broadcasting.
-            else:
-                intensity = intensity[:, np.newaxis, np.newaxis]  # Add two new axes for broadcasting.
-            # Apply thresholding: set all values below the intensity threshold to 0.
-            filtered = np.where(image.values >= intensity, image.values, 0)
+            # set values below thr to 0, keep others
+            zero = img_dtype.type(0)
+            for c in range(n_channels):
+                thr = img_dtype.type(intensity[c])
+                np.copyto(result[c], base[c])
+                mask = result[c] < thr
+                result[c][mask] = zero
+
+        filtered = result
+
+    if filtered is None:
+        raise RuntimeError("Internal error: neither quantile nor intensity branch produced a result.")
 
     return filtered
 

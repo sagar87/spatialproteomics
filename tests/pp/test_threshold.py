@@ -88,6 +88,11 @@ def test_threshold_too_high_intensity(ds_image):
         AssertionError,
         match="Intensity values must be smaller than the maximum intensity.",
     ):
+        ds_image.pp["CD8"].pp.threshold(intensity=200)
+    with pytest.raises(
+        OverflowError,
+        match="out of bounds for uint8",
+    ):
         ds_image.pp["CD8"].pp.threshold(intensity=100000)
 
 

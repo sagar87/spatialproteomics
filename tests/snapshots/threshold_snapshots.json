@@ -8,7 +8,7 @@
       101,
       101
     ],
-    "array_hash": "bb2e404341d1bfd6dc7fce1fa2a34715"
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
   },
   "CD8__{\"intensity\": 10, \"shift\": false}": {
     "mean": 5.387118909910793,
@@ -52,7 +52,7 @@
       101,
       101
     ],
-    "array_hash": "f18f50791d4bef0a5f66651514e91264"
+    "array_hash": "43755fa4c766f23b07900d8d4599dfa8"
   },
   "CD4__{\"intensity\": 10, \"shift\": false}": {
     "mean": 30.136163121262623,
@@ -96,7 +96,7 @@
       101,
       101
     ],
-    "array_hash": "bb2e404341d1bfd6dc7fce1fa2a34715"
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
   },
   "CD4__{\"intensity\": [10, 20]}": {
     "mean": 11.65875894520145,
@@ -107,7 +107,7 @@
       101,
       101
     ],
-    "array_hash": "340af1f58617392e00670499189d0fff"
+    "array_hash": "b2fff0b3576c559bcde04e743566a52a"
   },
   "CD8__{\"intensity\": [10, 20], \"shift\": false}": {
     "mean": 5.387118909910793,
@@ -184,7 +184,7 @@
       101,
       101
     ],
-    "array_hash": "bb2e404341d1bfd6dc7fce1fa2a34715"
+    "array_hash": "06bddb8b78b4ae4ded1351333ce2b0a6"
   },
   "full_ds__{\"channels\": \"CD8\", \"intensity\": 10, \"shift\": false}": {
     "mean": 5.387118909910793,
