@@ -659,11 +659,13 @@ def _threshold(
         if intensity.size == 1:
             intensity = np.full(len(all_channels), intensity.item(), dtype=img_dtype)
         else:
-            # cast each provided value to image dtype
-            intensity = np.asarray(intensity, dtype=img_dtype)
+            # casting to float here to allow for NAs (important when using the channels argument)
+            intensity = np.asarray(intensity, dtype=float)
 
         max_val = np.max(img)
-        assert np.all(intensity <= max_val), "Intensity values must be smaller than the maximum intensity."
+        assert np.all(
+            intensity[~np.isnan(intensity)] <= max_val
+        ), "Intensity values must be smaller than the maximum intensity."
 
     filtered = None
 

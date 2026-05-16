@@ -7,7 +7,7 @@ def test_to_zarr_image(ds_image):
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            ds_image.drop_encoding().to_zarr(output_path)
+            ds_image.drop_encoding().to_zarr(output_path, consolidated=False)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -21,7 +21,7 @@ def test_to_zarr_segmentation(ds_segmentation):
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            ds_segmentation.drop_encoding().to_zarr(output_path)
+            ds_segmentation.drop_encoding().to_zarr(output_path, consolidated=False)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -35,7 +35,7 @@ def test_to_zarr_labels(ds_labels):
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            ds_labels.drop_encoding().to_zarr(output_path)
+            ds_labels.drop_encoding().to_zarr(output_path, consolidated=False)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."
@@ -49,7 +49,7 @@ def test_to_zarr_neighborhoods(ds_neighborhoods):
     with tempfile.TemporaryDirectory() as temp_dir:
         output_path = os.path.join(temp_dir, "zarr_writing_test.zarr")
         try:
-            ds_neighborhoods.drop_encoding().to_zarr(output_path)
+            ds_neighborhoods.drop_encoding().to_zarr(output_path, consolidated=False)
             assert os.path.exists(output_path) and os.path.isdir(
                 output_path
             ), f"Directory {output_path} was not created."

@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from skimage.segmentation import relabel_sequential
 
+from spatialproteomics.constants import Labels
+
 from ..base_logger import logger
 
 
@@ -160,11 +162,17 @@ def _predict_cell_types_argmax(
     expression_df: pd.DataFrame,
     markers: List,
     celltypes: List,
+    min_intensity: float = 0.0,
 ):
     # getting the argmax for each cell
     argmax_classification = np.argmax(expression_df[markers], axis=1)
 
     # translating the argmax classification into cell types
-    celltypes_argmax = np.array(celltypes)[argmax_classification]
+    celltypes_argmax = np.array(celltypes, dtype=object)[argmax_classification]
+
+    # if all markers are below the minimum intensity, assign UNASSIGNED
+    if min_intensity > 0.0:
+        below_threshold = (expression_df[markers].max(axis=1) < min_intensity).values
+        celltypes_argmax[below_threshold] = Labels.UNLABELED
 
     return celltypes_argmax
