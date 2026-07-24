@@ -866,7 +866,7 @@ class PreprocessingAccessor:
             from_layer = segmentation
             segmentation = self._obj[segmentation].values.squeeze()
 
-        assert segmentation.ndim == 2, "A segmentation mask must 2 dimensional."
+        assert segmentation.ndim == 2, "A segmentation mask must be 2-dimensional."
         assert ~np.any(segmentation < 0), "A segmentation mask may not contain negative numbers."
 
         y_dim, x_dim = segmentation.shape
@@ -939,14 +939,14 @@ class PreprocessingAccessor:
         """
         # checking that the layer does not exist yet
         assert key_added not in self._obj, f"Layer {key_added} already exists."
-        assert array.ndim in [2, 3], "The array to add mask must 2 or 3-dimensional."
+        assert array.ndim in [2, 3], "The array to add mask must be 2- or 3-dimensional."
 
         if array.ndim == 2:
             # in the case of a 2D array
             y_dim, x_dim = array.shape
             assert (x_dim == self._obj.sizes[Dims.X]) & (
                 y_dim == self._obj.sizes[Dims.Y]
-            ), f"The shape of array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
+            ), f"The shape of the array does not match that of the image. Image has shape ({self._obj.sizes[Dims.Y]}, {self._obj.sizes[Dims.X]}), array has shape {array.shape}."
 
             # create a data array with the new layer
             da = xr.DataArray(
