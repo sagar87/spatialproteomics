@@ -588,6 +588,7 @@ class ToolAccessor:
         expression_matrix_key: str = Layers.INTENSITY,
         obs_key: str = Layers.OBS,
         additional_layers: Optional[dict] = None,
+        additional_obsm: Optional[dict] = None,
         additional_uns: Optional[dict] = None,
     ):
         """
@@ -601,6 +602,8 @@ class ToolAccessor:
             The key of the observation data in the spatialproteomics object. Default is '_obs'.
         additional_layers : dict, optional
             Additional layers to include in the anndata.AnnData object. The keys are the names of the layers and the values are the corresponding keys in the spatialproteomics object.
+        additional_obsm : dict, optional
+            Additional obsm data to include in the anndata.AnnData object. The keys are the names of the obsm data and the values are the corresponding keys in the spatialproteomics object.
         additional_uns : dict, optional
             Additional uns data to include in the anndata.AnnData object. The keys are the names of the uns data and the values are the corresponding keys in the spatialproteomics object.
 
@@ -612,7 +615,7 @@ class ToolAccessor:
         Raises
         ------
         AssertionError
-            If the expression matrix key or additional layers are not found in the spatialproteomics object.
+            If additional layers, obsm entries, or uns entries are not found in the spatialproteomics object, or if additional layers or obsm entries have incompatible shapes.
 
         Notes
         -----
@@ -633,6 +636,11 @@ class ToolAccessor:
             for key, layer in additional_layers.items():
                 # checking that the additional layer is present in the object
                 assert layer in self._obj, f"Layer {layer} not found in the object."
+                # checking that layer has the same shape as the expression matrix
+                assert self._obj[layer].shape == expression_matrix.shape, (
+                    f"Layer {layer} has shape {self._obj[layer].shape}, but AnnData layers must match "
+                    f"the shape of the expression matrix {expression_matrix.shape}."
+                )
                 adata.layers[key] = self._obj[layer].values
         adata.var_names = self._obj.coords[Dims.CHANNELS].values
 
@@ -661,9 +669,21 @@ class ToolAccessor:
                 adata.obs[Features.Y] = adata.obs[Features.Y].astype(float)
                 adata.obsm["spatial"] = np.array(adata.obs[[Features.X, Features.Y]])
 
+        if additional_obsm:
+            for key, layer in additional_obsm.items():
+                # checking that the additional obsm source layer is present in the object
+                assert layer in self._obj, f"Layer {layer} not found in the object."
+                # checking that the additional obsm layer has the same number of observations as the expression matrix
+                assert self._obj[layer].shape[0] == expression_matrix.shape[0], (
+                    f"Layer {layer} has {self._obj[layer].shape[0]} observations, but the expression "
+                    f"matrix has {expression_matrix.shape[0]} observations. AnnData obsm entries must match "
+                    "the number of observations in the expression matrix."
+                )
+                adata.obsm[key] = self._obj[layer].values
+
         if additional_uns:
             for key, layer in additional_uns.items():
-                # checking that the additional layer is present in the object
+                # checking that the additional uns source layer is present in the object
                 assert layer in self._obj, f"Layer {layer} not found in the object."
                 adata.uns[key] = self._obj.pp.get_layer_as_df(layer)
 
