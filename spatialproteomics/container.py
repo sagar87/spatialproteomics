@@ -106,9 +106,6 @@ def load_image_data(
             if neighborhood is not None:
                 dataset = dataset.nh.add_neighborhoods_from_dataframe(neighborhood, neighborhood_col=neighborhood_col)
 
-    else:
-        dataset = xr.Dataset(data_vars={Layers.IMAGE: im})
-
     return dataset
 
 
