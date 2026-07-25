@@ -34,7 +34,7 @@ def test_add_layer_wrong_dims(ds_image):
 
     with pytest.raises(
         AssertionError,
-        match="The array to add mask must 2 or 3-dimensional.",
+        match="The array to add mask must be 2- or 3-dimensional.",
     ):
         ds_image.pp.add_layer(labels, key_added=Layers.MASK)
 
@@ -45,7 +45,7 @@ def test_add_layer_wrong_shape(ds_image):
 
     with pytest.raises(
         AssertionError,
-        match="The shape of array does not match that of the image.",
+        match="The shape of the array does not match that of the image.",
     ):
         ds_image.pp.add_layer(labels, key_added=Layers.MASK)
 
