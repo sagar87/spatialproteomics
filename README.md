@@ -47,8 +47,4 @@ matplotlib
 ```
 
 ## Citation
-Spatialproteomics - an interoperable toolbox for analyzing highly multiplexed fluorescence image data
-
-Matthias Fabian Meyer-Bender, Harald Sager Voehringer, Christina Schniederjohann, Sarah Patricia Koziel, Erin Kim Chung, Ekaterina Popova, Alexander Brobeil, Lisa-Maria Held, Aamir Munir, Scverse Community, Sascha Dietrich, Peter-Martin Bruch, Wolfgang Huber
-
-bioRxiv 2025.04.29.651202; doi: https://doi.org/10.1101/2025.04.29.651202
+> Meyer-Bender, M., Voehringer, H., Schniederjohann, C., Koziel, S., Chung, E., Popova, E., ... & Huber, W. (2026). Spatialproteomics: an interoperable toolbox for analyzing highly multiplexed fluorescence image data. Nature Methods, 1-10.
