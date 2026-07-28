@@ -13,17 +13,11 @@ jobs:
       - name: Install UV
         run: pip install uv
 
-      - name: Create uv virtual environment
-        run: uv venv
-
-      - name: Install build tools
-        run: uv pip install build twine
-
       - name: Build distributions
-        run: uv run python -m build --wheel --sdist
+        run: uvx --from build pyproject-build --wheel --sdist
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: uv run python -m twine upload dist/*
+        run: uvx twine upload dist/*
