@@ -48,6 +48,7 @@ dev = [
     "flake8>=5.0.4",
     "bandit>=1.7.4",
     "safety>=2.1.1",
+    "typing_extensions>=4.16",  # to avoid anndata issues
 ]
 all = ["spatialdata", "cellpose", "stardist", "astir"]
 

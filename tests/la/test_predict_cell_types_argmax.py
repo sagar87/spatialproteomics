@@ -122,3 +122,11 @@ def test_predict_cell_types_argmax_min_intensity_preserves_existing_annotations(
     label_names = ds[Layers.LA_PROPERTIES].sel(la_props=Props.NAME).values
     # CT1 cells should still be labeled, since they already had annotations
     assert "CT1" in label_names
+
+
+def test_predict_cell_type_argmax_with_neighborhoods(ds_neighborhoods):
+    with pytest.raises(AssertionError, match="Already found neighborhoods in the object"):
+        _ = ds_neighborhoods.la.predict_cell_types_argmax(ct_dict)
+
+    # this should work
+    _ = ds_neighborhoods.la.predict_cell_types_argmax(ct_dict, ignore_neighborhoods=True)

@@ -19,7 +19,7 @@ We recommend using [uv](https://github.com/astral-sh/uv) for fast dependency man
 You can set up an environment as follows:
 
 ```
-uv venv --python=python3.12  # specifying the python version is optional
+uv venv --python=python3.12  # for development, the python version must be >=3.11
 source .venv/bin/activate  # activates the virtual environment
 uv pip install -e ".[dev,all]"  # installs a local copy of the package
 ```
@@ -51,6 +51,13 @@ make all
 ### 6. Open a Pull Request
 
 Once you are happy with your changes and all tests pass, go to the repository on GitHub and open a pull request from your branch.
+
+## Troubleshooting
+
+When running `make all` with `zarr<3`, you will get an error:
+`zarr.errors.GroupNotFoundError: group not found at path ''`.
+To fix this, install the correct zarr version (`uv pip install zarr==3`).
+Note that this requires `python>=3.11`.
 
 ## Code Style
 

@@ -1,5 +1,5 @@
 import os
-from distutils import dir_util
+import shutil
 
 import pytest
 import xarray as xr
@@ -13,7 +13,7 @@ def data_dir(tmpdir_factory):
     tmp_dir = tmpdir_factory.getbasetemp()
 
     if os.path.isdir(test_dir):
-        dir_util.copy_tree(test_dir, str(tmp_dir))
+        shutil.copytree(test_dir, str(tmp_dir), dirs_exist_ok=True)
 
     return tmp_dir
 

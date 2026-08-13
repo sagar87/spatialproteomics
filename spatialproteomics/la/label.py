@@ -797,6 +797,7 @@ class LabelAccessor:
         cell_col: str = "cell",
         label_col: str = "label",
         min_intensity: float = 0.0,
+        ignore_neighborhoods: bool = False,
     ):
         """
         Predicts cell types based on the argmax classification of marker intensities.
@@ -808,6 +809,7 @@ class LabelAccessor:
             cell_col (str, optional): The name of the column to store cell IDs in the output dataframe. Defaults to "cell".
             label_col (str, optional): The name of the column to store predicted cell types in the output dataframe. Defaults to "label".
             min_intensity (float, optional): The minimum intensity threshold for assigning cells to a type. Defaults to 0.0.
+            ignore_neighborhoods (bool, optional): Whether to remove existing neighborhoods when predicting cell types. Defaults to False.
 
         Returns:
             xr.Dataset: A new spatialproteomics object with the predicted cell types added as labels.
@@ -869,7 +871,7 @@ class LabelAccessor:
             obj = obj.pp.drop_layers(Layers.LA_PROPERTIES)
 
         # adding the new labels
-        return obj.la.add_labels_from_dataframe(celltype_prediction_df)
+        return obj.la.add_labels_from_dataframe(celltype_prediction_df, ignore_neighborhoods=ignore_neighborhoods)
 
     def _threshold_label(
         self, channel: str, threshold: float, layer_key: str = Layers.INTENSITY, label: Optional[str] = None
