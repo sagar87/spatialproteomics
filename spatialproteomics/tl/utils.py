@@ -12,7 +12,7 @@ from ..pp.utils import _normalize
 
 
 def _get_channels(obj, key_added, channel):
-    if key_added in obj:
+    if key_added is not None and key_added in obj:
         raise KeyError(f'The key "{key_added}" already exists. Please choose another key.')
 
     if channel is not None:
@@ -246,6 +246,43 @@ def _astir(
     assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
 
     return assigned_cell_types
+
+
+def _spotiflow(
+    img,
+    channel_names,
+    pretrained_name: str = "general",
+    model_kwargs: dict = None,
+    predict_kwargs: dict = None,
+):
+    model_kwargs = model_kwargs or {}
+    predict_kwargs = predict_kwargs or {}
+
+    from spotiflow.model import Spotiflow
+
+    if img.ndim not in [2, 3]:
+        raise ValueError(f"Input image must be 2D or 3D, got {img.ndim}.")
+
+    if img.ndim == 2:
+        img = img[np.newaxis, :, :]
+        channel_names = [channel_names] if np.isscalar(channel_names) else channel_names
+
+    assert img.shape[0] == len(channel_names), "Number of channels in image does not match number of channel names."
+
+    model = Spotiflow.from_pretrained(pretrained_name, **model_kwargs)
+
+    dfs = []
+    for ch_idx, ch_name in enumerate(channel_names):
+        single_image = img[ch_idx]
+        points, _ = model.predict(single_image, **predict_kwargs)
+        # spotiflow returns points as (row, col) == (y, x)
+        df = pd.DataFrame(points, columns=["y", "x"])
+        df["channel"] = ch_name
+        dfs.append(df)
+
+    df = pd.concat(dfs, ignore_index=True)
+    df.index.name = "points"
+    return df
 
 
 def _compute_transformation(x_coords, y_coords):

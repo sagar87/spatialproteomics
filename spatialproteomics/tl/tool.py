@@ -7,7 +7,12 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import Dims, Features, Layers, Props, SDLayers
-from ..sd.utils import _get_channels_spatialdata, _process_adata, _process_image
+from ..sd.utils import (
+    _get_channels_spatialdata,
+    _process_adata,
+    _process_image,
+    _process_segmentation,
+)
 from .utils import (
     _astir,
     _cellpose,
@@ -15,6 +20,7 @@ from .utils import (
     _convert_masks_to_data_array,
     _get_channels,
     _mesmer,
+    _spotiflow,
     _stardist,
 )
 
@@ -262,6 +268,96 @@ def astir(
         return sdata
 
 
+def spotiflow(
+    sdata,
+    channel: Optional[str] = None,
+    image_key: str = SDLayers.IMAGE,
+    segmentation_key: str = SDLayers.SEGMENTATION,
+    table_key: str = SDLayers.TABLE,
+    key_added: str = "spotiflow",
+    key_added_suffix: str = "_spots",
+    pretrained_name: str = "general",
+    model_kwargs: Optional[dict] = {"verbose": False},
+    predict_kwargs: Optional[dict] = {"verbose": False},
+    copy: bool = False,
+):
+    """
+    This function applies the Spotiflow algorithm to detect spots in the provided image data.
+    It extracts the image data from the spatialdata object, applies the Spotiflow algorithm,
+    and adds the detected spots to the spatialdata object.
+    The detected spots are stored in the points attribute of the spatialdata object.
+
+    Args:
+        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+        channel (Optional[str]): The channel(s) to be used for spot detection. If None, all channels will be used.
+        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to "image".
+        segmentation_key (str, optional): The key for the segmentation mask in the spatialdata object. Defaults to "segmentation".
+        table_key (str, optional): The key for the table in the spatialdata object. Defaults to "table".
+        key_added (str, optional): The key under which the detected spots will be stored in the points attribute of the spatialdata object. Defaults to "spotiflow".
+        key_added_suffix (str, optional): The suffix to be added to the channel names in the detected spots. Defaults to "_spots".
+        pretrained_name (str, optional): The name of the pretrained model to be used for spot detection. Defaults to "general".
+        model_kwargs (Optional[dict], optional): Additional keyword arguments to be passed to the Spotiflow model. Defaults to {'verbose': False}.
+        predict_kwargs (Optional[dict], optional): Additional keyword arguments to be passed to the Spotiflow prediction method. Defaults to {'verbose': False}.
+        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+
+    Returns:
+        spatialdata.SpatialData: The spatialdata object with the detected spots added to the points attribute.
+    """
+    import spatialdata as sd
+    from spatialdata.transformations import get_transformation, set_transformation
+
+    assert image_key in sdata, f"Image key {image_key} not found in the object."
+    assert segmentation_key in sdata, f"Segmentation key {segmentation_key} not found in the object."
+    assert table_key in sdata, f"Table key {table_key} not found in the object."
+
+    if copy:
+        sdata = cp.deepcopy(sdata)
+
+    channels = _get_channels_spatialdata(channel)
+    img = _process_image(sdata, channels=channel, image_key=image_key, key_added=None)
+    adata = _process_adata(sdata, table_key=table_key)
+
+    points_df = _spotiflow(
+        img,
+        channel_names=channels,
+        pretrained_name=pretrained_name,
+        model_kwargs=model_kwargs,
+        predict_kwargs=predict_kwargs,
+    )
+
+    seg = _process_segmentation(sdata, segmentation_key=segmentation_key)
+    yy = points_df["y"].round().astype(int).clip(0, seg.shape[0] - 1)
+    xx = points_df["x"].round().astype(int).clip(0, seg.shape[1] - 1)
+    points_df["cell_id"] = seg[yy, xx]
+    points_df = points_df[points_df["cell_id"] > 0]  # drop background detections
+
+    # --- counts per cell, per channel -------------------------------------
+    counts = points_df.groupby(["cell_id", "channel"]).size().unstack(fill_value=0)
+    counts.columns = [f"{ch}{key_added_suffix}" for ch in counts.columns]
+
+    # --- counts per cell, per channel -------------------------------------
+    counts = points_df.groupby(["cell_id", "channel"]).size().unstack(fill_value=0)
+    counts.columns = [f"{ch}{key_added_suffix}" for ch in counts.columns]
+    new_cols = counts.columns.tolist()  # remember which columns are new
+
+    # get transformations
+    transformation = get_transformation(sdata[image_key])
+
+    # write points to spatialdata
+    sdata.points[key_added] = sd.models.PointsModel.parse(points_df, coordinates={"x": "x", "y": "y"})
+    set_transformation(sdata.points[key_added], transformation)
+
+    # merge counts to existing obs
+    obs = adata.obs
+    obs = obs.merge(counts, left_on="id", right_index=True, how="left")
+    obs[new_cols] = obs[new_cols].fillna(0).astype(int)  # only fill the newly merged columns
+
+    sdata.tables[table_key].obs = obs
+
+    if copy:
+        return sdata
+
+
 # === SPATIALPROTEOMICS ACCESSOR ===
 @xr.register_dataset_accessor("tl")
 class ToolAccessor:
@@ -418,7 +514,7 @@ class ToolAccessor:
             self._obj.pp[channels]._image.values,
             scale=scale,
             n_tiles=n_tiles,
-            normalize=n_tiles,
+            normalize=normalize,
             predict_big=predict_big,
             postprocess_func=postprocess_func,
             **kwargs,
@@ -582,6 +678,77 @@ class ToolAccessor:
         return self._obj.la.add_labels_from_dataframe(
             assigned_cell_types, cell_col=cell_id_col, label_col=cell_type_col
         )
+
+    def spotiflow(
+        self,
+        channel: Optional[str] = None,
+        image_key: str = Layers.IMAGE,
+        segmentation_key: str = Layers.SEGMENTATION,
+        key_added_suffix: str = "_spots",
+        pretrained_name: str = "general",
+        return_spots: bool = False,
+        model_kwargs: Optional[dict] = {"verbose": False},
+        predict_kwargs: Optional[dict] = {"verbose": False},
+    ):
+        """
+        This method detects spots in the image using the Spotiflow algorithm and counts the number of spots per cell, per channel.
+
+        Parameters
+        ----------
+        channel : str, optional
+            Channel to use for spot detection. If None, all channels are used.
+        image_key : str, optional
+            Key to the image layer in the spatialproteomics object. Default is 'image'.
+        segmentation_key : str, optional
+            Key to the segmentation layer in the spatialproteomics object. Default is 'segmentation'.
+        key_added_suffix : str, optional
+            Suffix to add to the channel names in the resulting counts. Default is '_spots'.
+        pretrained_name : str, optional
+            Name of the pretrained model to use for spot detection. Default is 'general'.
+        return_spots : bool, optional
+            Whether to return the detected spots as a DataFrame. Default is False.
+        model_kwargs : dict, optional
+            Additional keyword arguments to pass to the Spotiflow model. Default is {'verbose': False}.
+        predict_kwargs : dict, optional
+            Additional keyword arguments to pass to the Spotiflow prediction method. Default is {'verbose': False}.
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset containing the counts of spots per cell, per channel. If return_spots is True, also returns a DataFrame of the detected spots with their coordinates and assigned cell IDs.
+        """
+        assert image_key in self._obj, f"Image key {image_key} not found in the object."
+        assert segmentation_key in self._obj, f"Segmentation key {segmentation_key} not found in the object."
+        channels = _get_channels(self._obj, key_added=None, channel=channel)
+        img = self._obj.pp[channels][image_key].values
+        points_df = _spotiflow(
+            img,
+            channel_names=channels,
+            pretrained_name=pretrained_name,
+            model_kwargs=model_kwargs,
+            predict_kwargs=predict_kwargs,
+        )
+
+        # assign each point to a cell via the segmentation mask
+        seg = self._obj[segmentation_key].values
+        yy = points_df["y"].round().astype(int).clip(0, seg.shape[0] - 1)
+        xx = points_df["x"].round().astype(int).clip(0, seg.shape[1] - 1)
+        points_df["cell_id"] = seg[yy, xx]
+        points_df = points_df[points_df["cell_id"] > 0]  # drop background detections
+
+        # count points per cell, per channel
+        counts = (
+            points_df.groupby(["cell_id", "channel"])
+            .size()
+            .unstack(fill_value=0)
+            .reindex(index=self._obj.cells.values, columns=channels, fill_value=0)
+        )
+        counts.columns = [f"{ch}{key_added_suffix}" for ch in counts.columns]
+
+        if return_spots:
+            return self._obj.pp.add_obs_from_dataframe(counts.reset_index(drop=True)), points_df
+
+        return self._obj.pp.add_obs_from_dataframe(counts.reset_index(drop=True))
 
     def convert_to_anndata(
         self,
