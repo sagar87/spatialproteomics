@@ -1,4 +1,4 @@
-from .tool import ToolAccessor, astir, cellpose, mesmer, stardist
+from .tool import ToolAccessor, astir, cellpose, mesmer, spotiflow, stardist
 
 __all__ = [
     "ToolAccessor",
@@ -6,4 +6,5 @@ __all__ = [
     "mesmer",
     "stardist",
     "astir",
+    "spotiflow",
 ]
