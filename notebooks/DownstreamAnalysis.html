@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=f4e94f7a"></script>
+    <script src="../_static/documentation_options.js?v=37d76ae4"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -396,10 +396,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># setup for rpy2 to use the correct R binary</span>
-<span class="n">env_r_bin</span> <span class="o">=</span> <span class="s2">&quot;/g/huber/users/meyerben/.conda/envs/tmp_env_3/bin&quot;</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_r_bin</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="k">if</span> <span class="s2">&quot;R_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;R_HOME&quot;</span><span class="p">]</span>
+<span class="n">env_r_bin</span> <span class="o">=</span> <span class="s2">"/g/huber/users/meyerben/.conda/envs/tmp_env_3/bin"</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_r_bin</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PATH"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"R_HOME"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"R_HOME"</span><span class="p">]</span>
 
 <span class="o">%</span><span class="k">load_ext</span> rpy2.ipython
 
@@ -409,13 +409,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">squidpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sq</span>
 
 <span class="n">celltype_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;B cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;T cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
+    <span class="s2">"B cell"</span><span class="p">:</span> <span class="s2">"#5799d1"</span><span class="p">,</span>
+    <span class="s2">"T cell"</span><span class="p">:</span> <span class="s2">"#ebc850"</span><span class="p">,</span>
+    <span class="s2">"Myeloid cell"</span><span class="p">:</span> <span class="s2">"#de6866"</span><span class="p">,</span>
+    <span class="s2">"Dendritic cell"</span><span class="p">:</span> <span class="s2">"#4cbcbd"</span><span class="p">,</span>
+    <span class="s2">"Macrophage"</span><span class="p">:</span> <span class="s2">"#bb7cb4"</span><span class="p">,</span>
+    <span class="s2">"Stromal cell"</span><span class="p">:</span> <span class="s2">"#62b346"</span><span class="p">,</span>
+    <span class="s2">"Endothelial cell"</span><span class="p">:</span> <span class="s2">"#bf997d"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -434,9 +434,9 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading in a data set</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">"../../data/LN_24_1.zarr"</span><span class="p">)</span>
 <span class="c1"># for clearer visualizations, we set the cell types to the broadest level (B cells, T cells, ...)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">"labels_0"</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
     <span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 <span class="p">)</span>
 </pre></div>
@@ -470,9 +470,9 @@ AnnData object with n_obs × n_vars = 18134 × 56
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">gr</span><span class="o">.</span><span class="n">spatial_neighbors</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">coord_type</span><span class="o">=</span><span class="s2">&quot;generic&quot;</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">140</span><span class="p">)</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">gr</span><span class="o">.</span><span class="n">nhood_enrichment</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s2">&quot;_labels&quot;</span><span class="p">)</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">nhood_enrichment</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s2">&quot;_labels&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">gr</span><span class="o">.</span><span class="n">spatial_neighbors</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">coord_type</span><span class="o">=</span><span class="s2">"generic"</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">140</span><span class="p">)</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">gr</span><span class="o">.</span><span class="n">nhood_enrichment</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s2">"_labels"</span><span class="p">)</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">nhood_enrichment</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s2">"_labels"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -508,9 +508,9 @@ AnnData object with n_obs × n_vars = 18134 × 56
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># getting the spatial information and cell types from the spatialproteomics object</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[[</span><span class="s2">&quot;centroid-0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid-1&quot;</span><span class="p">,</span> <span class="s2">&quot;_labels&quot;</span><span class="p">]]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[[</span><span class="s2">"centroid-0"</span><span class="p">,</span> <span class="s2">"centroid-1"</span><span class="p">,</span> <span class="s2">"_labels"</span><span class="p">]]</span>
 <span class="c1"># renaming the columns for better compatibility with R</span>
-<span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;centroid.0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid.1&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"centroid.0"</span><span class="p">,</span> <span class="s2">"centroid.1"</span><span class="p">,</span> <span class="s2">"labels"</span><span class="p">]</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -601,15 +601,15 @@ AnnData object with n_obs × n_vars = 18134 × 56
 <span class="n">cvxhull</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">convexhull.xy</span><span class="p">(</span><span class="nf">cbind</span><span class="p">(</span><span class="n">df</span><span class="o">$</span><span class="n">centroid.1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="o">$</span><span class="n">centroid.0</span><span class="p">))</span>
 
 <span class="c1"># subset to B cells</span>
-<span class="n">df_subset</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[[</span><span class="s">&quot;labels&quot;</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;B cell&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+<span class="n">df_subset</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[[</span><span class="s">"labels"</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"B cell"</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
 <span class="c1"># point pattern of B cell centroids inside hull</span>
 <span class="n">P</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ppp</span><span class="p">(</span><span class="n">df_subset</span><span class="o">$</span><span class="n">centroid.1</span><span class="p">,</span><span class="w"> </span><span class="n">df_subset</span><span class="o">$</span><span class="n">centroid.0</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cvxhull</span><span class="o">$</span><span class="n">bdry</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span>
 
-<span class="c1"># Ripley&#39;s K only</span>
+<span class="c1"># Ripley's K only</span>
 <span class="n">K</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">Kest</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
 <span class="c1"># plotting the result</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Ripley&#39;s K function for B cells&quot;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Ripley's K function for B cells"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -647,12 +647,12 @@ In addition: Warning message:
 <span class="c1"># quick visualization of the B cells and the convex hull</span>
 <span class="nf">plot</span><span class="p">(</span>
 <span class="w">  </span><span class="n">df_subset</span><span class="o">$</span><span class="n">centroid.1</span><span class="p">,</span><span class="w"> </span><span class="n">df_subset</span><span class="o">$</span><span class="n">centroid.0</span><span class="p">,</span>
-<span class="w">  </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Centroid X&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Centroid Y&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;B cell centroids with convex hull&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">pch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span>
+<span class="w">  </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Centroid X"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Centroid Y"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"B cell centroids with convex hull"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"blue"</span>
 <span class="p">)</span>
-<span class="nf">lines</span><span class="p">(</span><span class="n">cvxhull</span><span class="o">$</span><span class="n">bdry</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;red&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+<span class="nf">lines</span><span class="p">(</span><span class="n">cvxhull</span><span class="o">$</span><span class="n">bdry</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"red"</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

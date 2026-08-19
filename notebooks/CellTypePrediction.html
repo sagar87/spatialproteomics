@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=f4e94f7a"></script>
+    <script src="../_static/documentation_options.js?v=37d76ae4"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -419,7 +419,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1_unprocessed.zarr&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">"../../data/LN_24_1_unprocessed.zarr"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -432,43 +432,43 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># preprocessing: thresholding by percentiles and applying a median filter</span>
 <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;PAX5&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD3&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD11b&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD11c&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD15&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD68&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Podoplanin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD31&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD34&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD56&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD8&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Ki-67&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD45RA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD45RO&quot;</span><span class="p">,</span>
+    <span class="s2">"PAX5"</span><span class="p">,</span>
+    <span class="s2">"CD3"</span><span class="p">,</span>
+    <span class="s2">"CD11b"</span><span class="p">,</span>
+    <span class="s2">"CD11c"</span><span class="p">,</span>
+    <span class="s2">"CD15"</span><span class="p">,</span>
+    <span class="s2">"CD68"</span><span class="p">,</span>
+    <span class="s2">"Podoplanin"</span><span class="p">,</span>
+    <span class="s2">"CD31"</span><span class="p">,</span>
+    <span class="s2">"CD34"</span><span class="p">,</span>
+    <span class="s2">"CD90"</span><span class="p">,</span>
+    <span class="s2">"CD56"</span><span class="p">,</span>
+    <span class="s2">"CD4"</span><span class="p">,</span>
+    <span class="s2">"CD8"</span><span class="p">,</span>
+    <span class="s2">"Ki-67"</span><span class="p">,</span>
+    <span class="s2">"CD45RA"</span><span class="p">,</span>
+    <span class="s2">"CD45RO"</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">quantiles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">]</span>
 <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;#e6194B&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#3cb44b&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#ffe119&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#4363d8&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#ffd8b1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#f58231&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#911eb4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#fffac8&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#469990&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#fabed4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#9A6324&quot;</span><span class="p">,</span>
+    <span class="s2">"#e6194B"</span><span class="p">,</span>
+    <span class="s2">"#3cb44b"</span><span class="p">,</span>
+    <span class="s2">"#ffe119"</span><span class="p">,</span>
+    <span class="s2">"#4363d8"</span><span class="p">,</span>
+    <span class="s2">"#ffd8b1"</span><span class="p">,</span>
+    <span class="s2">"#f58231"</span><span class="p">,</span>
+    <span class="s2">"#911eb4"</span><span class="p">,</span>
+    <span class="s2">"#fffac8"</span><span class="p">,</span>
+    <span class="s2">"#469990"</span><span class="p">,</span>
+    <span class="s2">"#fabed4"</span><span class="p">,</span>
+    <span class="s2">"#9A6324"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">channels_celltypes</span> <span class="o">=</span> <span class="n">channels</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
 
 <span class="c1"># processing and recomputing quantification</span>
 <span class="n">ds_processed</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;arcsinh&quot;</span><span class="p">)</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">()</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_expression_matrix</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"arcsinh"</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -483,8 +483,8 @@
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels_celltypes</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels_celltypes</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Processed&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Raw"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Processed"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -505,17 +505,17 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marker_ct_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;PAX5&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="s2">&quot;Myeloid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD11c&quot;</span><span class="p">:</span> <span class="s2">&quot;Dendritic&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD15&quot;</span><span class="p">:</span> <span class="s2">&quot;Granulo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD68&quot;</span><span class="p">:</span> <span class="s2">&quot;Macro&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Podoplanin&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal PDPN&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD31&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD34&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD34&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD90&quot;</span><span class="p">:</span> <span class="s2">&quot;Stromal CD90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CD56&quot;</span><span class="p">:</span> <span class="s2">&quot;NK&quot;</span><span class="p">,</span>
+    <span class="s2">"PAX5"</span><span class="p">:</span> <span class="s2">"B"</span><span class="p">,</span>
+    <span class="s2">"CD3"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">,</span>
+    <span class="s2">"CD11b"</span><span class="p">:</span> <span class="s2">"Myeloid"</span><span class="p">,</span>
+    <span class="s2">"CD11c"</span><span class="p">:</span> <span class="s2">"Dendritic"</span><span class="p">,</span>
+    <span class="s2">"CD15"</span><span class="p">:</span> <span class="s2">"Granulo"</span><span class="p">,</span>
+    <span class="s2">"CD68"</span><span class="p">:</span> <span class="s2">"Macro"</span><span class="p">,</span>
+    <span class="s2">"Podoplanin"</span><span class="p">:</span> <span class="s2">"Stromal PDPN"</span><span class="p">,</span>
+    <span class="s2">"CD31"</span><span class="p">:</span> <span class="s2">"Stromal CD31"</span><span class="p">,</span>
+    <span class="s2">"CD34"</span><span class="p">:</span> <span class="s2">"Stromal CD34"</span><span class="p">,</span>
+    <span class="s2">"CD90"</span><span class="p">:</span> <span class="s2">"Stromal CD90"</span><span class="p">,</span>
+    <span class="s2">"CD56"</span><span class="p">:</span> <span class="s2">"NK"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -526,7 +526,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># predicting the cell type using the argmax</span>
 <span class="n">ds_with_ct_predictions</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span>
-    <span class="n">marker_ct_dict</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_labels</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">marker_ct_dict</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"_intensity"</span><span class="p">,</span> <span class="n">overwrite_existing_labels</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># adding colors to match the markers</span>
@@ -544,8 +544,8 @@
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels_celltypes</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Markers&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cell Type Predictions&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Markers"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Cell Type Predictions"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -571,7 +571,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels_celltypes</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">&quot;DAPI&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="s2">"DAPI"</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
 
@@ -584,9 +584,9 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
 
 <span class="c1"># setting titles</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Markers&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Segmentation&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cell Types&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Markers"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Segmentation"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Cell Types"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
@@ -605,7 +605,7 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># getting the obs with get_layer_as_df() to get human readable cell type annotations in a pandas data frame</span>
-<span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_obs&quot;</span><span class="p">,</span> <span class="n">celltypes_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">"_obs"</span><span class="p">,</span> <span class="n">celltypes_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -714,18 +714,18 @@ Text(0.5, 1.0, &#39;Cell Type Predictions&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># let&#39;s just consider two markers</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># let's just consider two markers</span>
 <span class="c1"># not all cells in this excerpt are B or T cells, hence they will express neither of the two markers</span>
-<span class="n">ds_tmp</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1200</span><span class="p">]</span>
+<span class="n">ds_tmp</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">"PAX5"</span><span class="p">,</span> <span class="s2">"CD3"</span><span class="p">],</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1200</span><span class="p">]</span>
 
 <span class="c1"># just predicting the maximum</span>
-<span class="n">ds_all</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">({</span><span class="s2">&quot;PAX5&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">]</span>
+<span class="n">ds_all</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">({</span><span class="s2">"PAX5"</span><span class="p">:</span> <span class="s2">"B"</span><span class="p">,</span> <span class="s2">"CD3"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">})</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"red"</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="c1"># cells where neither marker is above min_intensity are not labeled</span>
 <span class="n">ds_with_unlabeled</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_types_argmax</span><span class="p">(</span>
-    <span class="p">{</span><span class="s2">&quot;PAX5&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span><span class="p">},</span> <span class="n">min_intensity</span><span class="o">=</span><span class="mf">1.5</span>
-<span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">])</span>
+    <span class="p">{</span><span class="s2">"PAX5"</span><span class="p">:</span> <span class="s2">"B"</span><span class="p">,</span> <span class="s2">"CD3"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">},</span> <span class="n">min_intensity</span><span class="o">=</span><span class="mf">1.5</span>
+<span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">([</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"red"</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">])</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1273,8 +1273,8 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># minor reformatting</span>
-<span class="n">seg</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="p">[</span><span class="s2">&quot;_segmentation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">ds_for_astir</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="s2">&quot;_obs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+<span class="n">seg</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="p">[</span><span class="s2">"_segmentation"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ds_for_astir</span> <span class="o">=</span> <span class="n">ds_processed</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">drop_layers</span><span class="p">(</span><span class="s2">"_obs"</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_segmentation</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1758,18 +1758,18 @@ Data variables:
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># using astir to predict cell types</span>
 <span class="c1"># note the slightly different structure of the marker dictionary</span>
 <span class="n">ct_marker_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;cell_type&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PAX5&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD3&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Myeloid&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD11b&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Dendritic&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD11c&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Granulo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD15&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Macro&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD68&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Stroma PDPN&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Podoplanin&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Stroma CD31&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD31&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Stroma CD34&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD34&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Stroma CD90&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD90&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;NK&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD56&quot;</span><span class="p">],</span>
+    <span class="s2">"cell_type"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"B"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"PAX5"</span><span class="p">],</span>
+        <span class="s2">"T"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD3"</span><span class="p">],</span>
+        <span class="s2">"Myeloid"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD11b"</span><span class="p">],</span>
+        <span class="s2">"Dendritic"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD11c"</span><span class="p">],</span>
+        <span class="s2">"Granulo"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD15"</span><span class="p">],</span>
+        <span class="s2">"Macro"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD68"</span><span class="p">],</span>
+        <span class="s2">"Stroma PDPN"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Podoplanin"</span><span class="p">],</span>
+        <span class="s2">"Stroma CD31"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD31"</span><span class="p">],</span>
+        <span class="s2">"Stroma CD34"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD34"</span><span class="p">],</span>
+        <span class="s2">"Stroma CD90"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD90"</span><span class="p">],</span>
+        <span class="s2">"NK"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD56"</span><span class="p">],</span>
     <span class="p">}</span>
 <span class="p">}</span>
 <span class="n">ds_with_ct_predictions_astir</span> <span class="o">=</span> <span class="n">ds_for_astir</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">astir</span><span class="p">(</span><span class="n">ct_marker_dict</span><span class="p">)</span>
@@ -1795,21 +1795,21 @@ training restart (final):   8%|▊         | 41/500 [ 4.91s/epochs, current loss
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding custom colors and adding observations back in</span>
 <span class="n">cell_types</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;T&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Myeloid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Dendritic&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Granulo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Macro&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma PDPN&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD31&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD34&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stroma CD90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;NK&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+    <span class="s2">"B"</span><span class="p">,</span>
+    <span class="s2">"T"</span><span class="p">,</span>
+    <span class="s2">"Myeloid"</span><span class="p">,</span>
+    <span class="s2">"Dendritic"</span><span class="p">,</span>
+    <span class="s2">"Granulo"</span><span class="p">,</span>
+    <span class="s2">"Macro"</span><span class="p">,</span>
+    <span class="s2">"Stroma PDPN"</span><span class="p">,</span>
+    <span class="s2">"Stroma CD31"</span><span class="p">,</span>
+    <span class="s2">"Stroma CD34"</span><span class="p">,</span>
+    <span class="s2">"Stroma CD90"</span><span class="p">,</span>
+    <span class="s2">"NK"</span><span class="p">,</span>
+    <span class="s2">"Other"</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">ds_with_ct_predictions_astir</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions_astir</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
-    <span class="n">cell_types</span><span class="p">,</span> <span class="n">colors</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;darkgray&quot;</span><span class="p">]</span>
+    <span class="n">cell_types</span><span class="p">,</span> <span class="n">colors</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"darkgray"</span><span class="p">]</span>
 <span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_observations</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -2321,9 +2321,9 @@ Data variables:
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
 
 <span class="c1"># setting titles</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Markers&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Astir Predictions&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Argmax Predictions&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Markers"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Astir Predictions"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Argmax Predictions"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
@@ -2352,7 +2352,7 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding a new quantification: the percentage of positive pixels (this requires appropriate thresholding, as we have performed ealier)</span>
 <span class="n">ds_with_ct_predictions</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span>
-    <span class="n">func</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">percentage_positive</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;_percentage_positive&quot;</span>
+    <span class="n">func</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">percentage_positive</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s2">"_percentage_positive"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2363,9 +2363,9 @@ Data variables:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># these thresholds are the percentages of positive cells required</span>
 <span class="c1"># so a cell with more than 50% of non-zero CD4 pixels would be considered CD4 positive</span>
-<span class="n">threshold_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CD4&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;CD8&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;Ki-67&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;CD45RA&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;CD45RO&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="n">threshold_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"CD4"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"CD8"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"Ki-67"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"CD45RA"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"CD45RO"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
 
-<span class="n">ds_with_binarization</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">threshold_labels</span><span class="p">(</span><span class="n">threshold_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="o">=</span><span class="s2">&quot;_percentage_positive&quot;</span><span class="p">)</span>
+<span class="n">ds_with_binarization</span> <span class="o">=</span> <span class="n">ds_with_ct_predictions</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">threshold_labels</span><span class="p">(</span><span class="n">threshold_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="o">=</span><span class="s2">"_percentage_positive"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2478,18 +2478,18 @@ Data variables:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>B:
   subtypes:
     - name: B_prol
-      markers: [&quot;Ki67+&quot;]
+      markers: ["Ki67+"]
 T:
   subtypes:
     - name: T_h
-      markers: [&quot;CD4+&quot;]
+      markers: ["CD4+"]
     - name: T_tox
-      markers: [&quot;CD8+&quot;]
+      markers: ["CD8+"]
       subtypes:
         - name: T_tox_naive
-          markers: [&quot;CD45RA+&quot;]
+          markers: ["CD45RA+"]
         - name: T_tox_mem
-          markers: [&quot;CD45RO+&quot;]
+          markers: ["CD45RO+"]
 </pre></div>
 </div>
 <p>Note that after each marker, we add a <code class="docutils literal notranslate"><span class="pre">+</span></code> after its name if we want cells of this cell type to be positive for a marker, or a <code class="docutils literal notranslate"><span class="pre">-</span></code> if we require it to be negative for the marker instead.</p>
@@ -2499,16 +2499,16 @@ T:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calling of cell subtypes with a provided hierarchy</span>
 <span class="n">subtype_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;subtypes&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;B_prol&quot;</span><span class="p">,</span> <span class="s2">&quot;markers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Ki-67+&quot;</span><span class="p">]}]},</span>
-    <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;subtypes&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;T_h&quot;</span><span class="p">,</span> <span class="s2">&quot;markers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD4+&quot;</span><span class="p">]},</span>
+    <span class="s2">"B"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"subtypes"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"B_prol"</span><span class="p">,</span> <span class="s2">"markers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Ki-67+"</span><span class="p">]}]},</span>
+    <span class="s2">"T"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"subtypes"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"T_h"</span><span class="p">,</span> <span class="s2">"markers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD4+"</span><span class="p">]},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;markers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD8+&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;subtypes&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;T_tox_naive&quot;</span><span class="p">,</span> <span class="s2">&quot;markers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD45RA+&quot;</span><span class="p">]},</span>
-                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;T_tox_mem&quot;</span><span class="p">,</span> <span class="s2">&quot;markers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CD45RO+&quot;</span><span class="p">]},</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"T_tox"</span><span class="p">,</span>
+                <span class="s2">"markers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD8+"</span><span class="p">],</span>
+                <span class="s2">"subtypes"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"T_tox_naive"</span><span class="p">,</span> <span class="s2">"markers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD45RA+"</span><span class="p">]},</span>
+                    <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"T_tox_mem"</span><span class="p">,</span> <span class="s2">"markers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CD45RO+"</span><span class="p">]},</span>
                 <span class="p">],</span>
             <span class="p">},</span>
         <span class="p">]</span>
@@ -2524,7 +2524,7 @@ T:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># if you wanted to read the hierarchy from a file, you could do it like this</span>
-<span class="n">ds_with_subtypes</span> <span class="o">=</span> <span class="n">ds_with_binarization</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_subtypes</span><span class="p">(</span><span class="s2">&quot;../../data/subtype_hierarchy.yaml&quot;</span><span class="p">)</span>
+<span class="n">ds_with_subtypes</span> <span class="o">=</span> <span class="n">ds_with_binarization</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">predict_cell_subtypes</span><span class="p">(</span><span class="s2">"../../data/subtype_hierarchy.yaml"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2533,7 +2533,7 @@ T:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_la_layers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">400</span><span class="p">:</span><span class="mi">410</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">"_la_layers"</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">400</span><span class="p">:</span><span class="mi">410</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2654,10 +2654,10 @@ T:
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting the cell type predictions</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="p">[[</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;T_h&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox_mem&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox_naive&quot;</span><span class="p">]]</span>
+    <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="p">[[</span><span class="s2">"T"</span><span class="p">,</span> <span class="s2">"T_h"</span><span class="p">,</span> <span class="s2">"T_tox"</span><span class="p">,</span> <span class="s2">"T_tox_mem"</span><span class="p">,</span> <span class="s2">"T_tox_naive"</span><span class="p">]]</span>
     <span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
-        <span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;T_h&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox_mem&quot;</span><span class="p">,</span> <span class="s2">&quot;T_tox_naive&quot;</span><span class="p">],</span>
-        <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;darkblue&quot;</span><span class="p">,</span> <span class="s2">&quot;darkviolet&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">"T"</span><span class="p">,</span> <span class="s2">"T_h"</span><span class="p">,</span> <span class="s2">"T_tox"</span><span class="p">,</span> <span class="s2">"T_tox_mem"</span><span class="p">,</span> <span class="s2">"T_tox_naive"</span><span class="p">],</span>
+        <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">"gray"</span><span class="p">,</span> <span class="s2">"orange"</span><span class="p">,</span> <span class="s2">"deepskyblue"</span><span class="p">,</span> <span class="s2">"darkblue"</span><span class="p">,</span> <span class="s2">"darkviolet"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2682,7 +2682,7 @@ T:
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="c1"># going back a level (so that T_tox cells are not split into memory and naive)</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_1&quot;</span><span class="p">)</span>
+    <span class="n">ds_with_subtypes</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">"labels_1"</span><span class="p">)</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">autocrop</span><span class="p">()</span>
     <span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">render_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="p">)</span>
@@ -2706,13 +2706,13 @@ T:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>B:
   subtypes:
     - name: B_prol
-      markers: [&quot;Ki-67+&quot;]
+      markers: ["Ki-67+"]
 T:
   subtypes:
     - name: T_h
-      markers: [&quot;CD4+&quot;]
+      markers: ["CD4+"]
     - name: T_tox
-      markers: [&quot;CD8+&quot;, &quot;CD45RA+&quot;]
+      markers: ["CD8+", "CD45RA+"]
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -2721,13 +2721,13 @@ T:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>B:
   subtypes:
     - name: B_prol
-      markers: [&quot;Ki-67+&quot;]
+      markers: ["Ki-67+"]
 T:
   subtypes:
     - name: T_tox
-      markers: [&quot;CD45RA+&quot;]
+      markers: ["CD45RA+"]
     - name: T_tox
-      markers: [&quot;CD45RO+&quot;]
+      markers: ["CD45RO+"]
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
@@ -2736,13 +2736,13 @@ T:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>B:
   subtypes:
     - name: B_prol
-      markers: [&quot;Ki-67+&quot;]
+      markers: ["Ki-67+"]
 T:
   subtypes:
     - name: T_h
-      markers: [&quot;CD8-&quot;]
+      markers: ["CD8-"]
     - name: T_tox
-      markers: [&quot;CD8+&quot;]
+      markers: ["CD8+"]
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -2751,13 +2751,13 @@ T:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>B:
   subtypes:
     - name: B_prol
-      markers: [&quot;Ki-67+&quot;]
+      markers: ["Ki-67+"]
 T:
   subtypes:
     - name: T_h
-      markers: [&quot;CD4+&quot;, &quot;CD8-&quot;]
+      markers: ["CD4+", "CD8-"]
     - name: T_tox
-      markers: [&quot;CD8+&quot;]
+      markers: ["CD8+"]
 </pre></div>
 </div>
 </section>
@@ -2769,19 +2769,19 @@ T:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/bright_cells_example.zarr&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">"../../data/bright_cells_example.zarr"</span><span class="p">)</span>
 
 <span class="c1"># thresholding, just as show in the example workflow or the image processing notebooks</span>
 <span class="n">threshold_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;PAX5&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-    <span class="s2">&quot;CD3&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-    <span class="s2">&quot;CD11b&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-    <span class="s2">&quot;CD11c&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
-    <span class="s2">&quot;CD68&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
-    <span class="s2">&quot;CD31&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
-    <span class="s2">&quot;CD34&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
-    <span class="s2">&quot;CD90&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
-    <span class="s2">&quot;Podoplanin&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="s2">"PAX5"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="s2">"CD3"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="s2">"CD11b"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="s2">"CD11c"</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="s2">"CD68"</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="s2">"CD31"</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="s2">"CD34"</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="s2">"CD90"</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="s2">"Podoplanin"</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">channels</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">threshold_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">threshold_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">()</span>
@@ -2818,18 +2818,18 @@ T:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># filtering out the bright cells</span>
-<span class="n">ds_filtered</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_obs</span><span class="p">(</span><span class="s2">&quot;is_bright&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">ds_filtered</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_obs</span><span class="p">(</span><span class="s2">"is_bright"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># plotting</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="s2">&quot;is_bright&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># when rendering obs, we use imshow instead of show</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">render_obs</span><span class="p">(</span><span class="s2">"is_bright"</span><span class="p">)</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># when rendering obs, we use imshow instead of show</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">ds_filtered</span><span class="o">.</span><span class="n">pp</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 
-<span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="s2">&quot;is_bright flag&quot;</span><span class="p">,</span> <span class="s2">&quot;Initial segmentation&quot;</span><span class="p">,</span> <span class="s2">&quot;Filtered segmentation&quot;</span><span class="p">]):</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="p">[</span><span class="s2">"Image"</span><span class="p">,</span> <span class="s2">"is_bright flag"</span><span class="p">,</span> <span class="s2">"Initial segmentation"</span><span class="p">,</span> <span class="s2">"Filtered segmentation"</span><span class="p">]):</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>

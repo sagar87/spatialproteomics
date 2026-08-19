@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=f4e94f7a"></script>
+    <script src="../_static/documentation_options.js?v=37d76ae4"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -417,7 +417,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loading a test file which we will export later</span>
 <span class="c1"># notice how easy it is to load the file from a zarr using xarray</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_11_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">"../../data/LN_11_1.zarr"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -429,14 +429,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zarr_path</span> <span class="o">=</span> <span class="s2">&quot;tmp.zarr&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zarr_path</span> <span class="o">=</span> <span class="s2">"tmp.zarr"</span>
 
 <span class="c1"># removing the zarr if it exists</span>
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">zarr_path</span><span class="p">):</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">zarr_path</span><span class="p">)</span>
 
 <span class="c1"># exporting as zarr</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">drop_encoding</span><span class="p">()</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">&quot;tmp.zarr&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">drop_encoding</span><span class="p">()</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"tmp.zarr"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -457,7 +457,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_obs&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">"_obs"</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -639,7 +639,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># exporting as csv</span>
-<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;tmp.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"tmp.csv"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -652,7 +652,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding an additional quantification to demonstrate how those can be exported as well</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">percentage_positive</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s2">&quot;_percentage_positive&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">add_quantification</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">percentage_positive</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s2">"_percentage_positive"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -662,9 +662,9 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># putting the expression matrix into an anndata object</span>
 <span class="n">adata</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_anndata</span><span class="p">(</span>
-    <span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">,</span>
-    <span class="n">additional_layers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;percentage_positive&quot;</span><span class="p">:</span> <span class="s2">&quot;_percentage_positive&quot;</span><span class="p">},</span>
-    <span class="n">additional_uns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label_colors&quot;</span><span class="p">:</span> <span class="s2">&quot;_la_properties&quot;</span><span class="p">},</span>
+    <span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">"_intensity"</span><span class="p">,</span>
+    <span class="n">additional_layers</span><span class="o">=</span><span class="p">{</span><span class="s2">"percentage_positive"</span><span class="p">:</span> <span class="s2">"_percentage_positive"</span><span class="p">},</span>
+    <span class="n">additional_uns</span><span class="o">=</span><span class="p">{</span><span class="s2">"label_colors"</span><span class="p">:</span> <span class="s2">"_la_properties"</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">adata</span>
 </pre></div>
@@ -688,7 +688,7 @@ AnnData object with n_obs × n_vars = 16871 × 56
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># writing to disk as hdf5</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tmp.h5ad&quot;</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"tmp.h5ad"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -709,7 +709,7 @@ AnnData object with n_obs × n_vars = 16871 × 56
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spatialdata_object</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_spatialdata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">&quot;_intensity&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spatialdata_object</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">convert_to_spatialdata</span><span class="p">(</span><span class="n">expression_matrix_key</span><span class="o">=</span><span class="s2">"_intensity"</span><span class="p">)</span>
 <span class="n">spatialdata_object</span>
 </pre></div>
 </div>
@@ -755,7 +755,7 @@ with coordinate systems:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># storing as zarr file</span>
-<span class="n">spatialdata_object</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tmp.zarr&quot;</span><span class="p">)</span>
+<span class="n">spatialdata_object</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"tmp.zarr"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -775,7 +775,7 @@ with coordinate systems:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">read_from_spatialdata</span><span class="p">(</span><span class="s2">&quot;../../data/spatialdata_example.zarr&quot;</span><span class="p">,</span> <span class="n">image_key</span><span class="o">=</span><span class="s2">&quot;raccoon&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">read_from_spatialdata</span><span class="p">(</span><span class="s2">"../../data/spatialdata_example.zarr"</span><span class="p">,</span> <span class="n">image_key</span><span class="o">=</span><span class="s2">"raccoon"</span><span class="p">)</span>
 <span class="n">ds</span>
 </pre></div>
 </div>
@@ -1336,10 +1336,10 @@ Data variables:
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># setup for rpy2 to use the correct R binary</span>
-<span class="n">env_r_bin</span> <span class="o">=</span> <span class="s2">&quot;/g/huber/users/meyerben/.conda/envs/tmp_env_3/bin&quot;</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_r_bin</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="k">if</span> <span class="s2">&quot;R_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;R_HOME&quot;</span><span class="p">]</span>
+<span class="n">env_r_bin</span> <span class="o">=</span> <span class="s2">"/g/huber/users/meyerben/.conda/envs/tmp_env_3/bin"</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_r_bin</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PATH"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"R_HOME"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"R_HOME"</span><span class="p">]</span>
 
 <span class="o">%</span><span class="k">load_ext</span> rpy2.ipython
 
@@ -1347,19 +1347,19 @@ Data variables:
 <span class="kn">import</span><span class="w"> </span><span class="nn">spatialproteomics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
 
 <span class="n">celltype_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;B cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#5799d1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;T cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#ebc850&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Myeloid cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#de6866&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Dendritic cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#4cbcbd&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Macrophage&quot;</span><span class="p">:</span> <span class="s2">&quot;#bb7cb4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Stromal cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#62b346&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Endothelial cell&quot;</span><span class="p">:</span> <span class="s2">&quot;#bf997d&quot;</span><span class="p">,</span>
+    <span class="s2">"B cell"</span><span class="p">:</span> <span class="s2">"#5799d1"</span><span class="p">,</span>
+    <span class="s2">"T cell"</span><span class="p">:</span> <span class="s2">"#ebc850"</span><span class="p">,</span>
+    <span class="s2">"Myeloid cell"</span><span class="p">:</span> <span class="s2">"#de6866"</span><span class="p">,</span>
+    <span class="s2">"Dendritic cell"</span><span class="p">:</span> <span class="s2">"#4cbcbd"</span><span class="p">,</span>
+    <span class="s2">"Macrophage"</span><span class="p">:</span> <span class="s2">"#bb7cb4"</span><span class="p">,</span>
+    <span class="s2">"Stromal cell"</span><span class="p">:</span> <span class="s2">"#62b346"</span><span class="p">,</span>
+    <span class="s2">"Endothelial cell"</span><span class="p">:</span> <span class="s2">"#bf997d"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># loading in a data set</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">&quot;../../data/LN_24_1.zarr&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_zarr</span><span class="p">(</span><span class="s2">"../../data/LN_24_1.zarr"</span><span class="p">)</span>
 <span class="c1"># for clearer visualizations, we set the cell types to the broadest level (B cells, T cells, ...)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">&quot;labels_0&quot;</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_level</span><span class="p">(</span><span class="s2">"labels_0"</span><span class="p">,</span> <span class="n">ignore_neighborhoods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">set_label_colors</span><span class="p">(</span>
     <span class="n">celltype_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">celltype_colors</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 <span class="p">)</span>
 </pre></div>
@@ -1370,12 +1370,12 @@ Data variables:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this gives us a data frame of cells by markers</span>
-<span class="n">intensity_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">&quot;_intensity&quot;</span><span class="p">)</span>
+<span class="n">intensity_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">(</span><span class="s2">"_intensity"</span><span class="p">)</span>
 
 <span class="c1"># getting the spatial information and cell types from the spatialproteomics object</span>
-<span class="n">spatial_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[[</span><span class="s2">&quot;centroid-0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid-1&quot;</span><span class="p">,</span> <span class="s2">&quot;_labels&quot;</span><span class="p">]]</span>
+<span class="n">spatial_df</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">get_layer_as_df</span><span class="p">()[[</span><span class="s2">"centroid-0"</span><span class="p">,</span> <span class="s2">"centroid-1"</span><span class="p">,</span> <span class="s2">"_labels"</span><span class="p">]]</span>
 <span class="c1"># renaming the columns for better compatibility with R</span>
-<span class="n">spatial_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;centroid.0&quot;</span><span class="p">,</span> <span class="s2">&quot;centroid.1&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+<span class="n">spatial_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"centroid.0"</span><span class="p">,</span> <span class="s2">"centroid.1"</span><span class="p">,</span> <span class="s2">"labels"</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1398,7 +1398,7 @@ Data variables:
 <span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
 
 <span class="c1"># intensity_df: each row = cell, each col = marker</span>
-<span class="c1"># transpose so markers become &quot;genes&quot;</span>
+<span class="c1"># transpose so markers become "genes"</span>
 <span class="n">mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">intensity_df</span><span class="p">))</span>
 
 <span class="c1"># Make sure row/col names align</span>
@@ -1464,7 +1464,7 @@ Warning: Data is of class matrix. Coercing to dgCMatrix.
 </div>
 <div class="input_area highlight-r notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">R</span>
 <span class="c1"># Make sure the rownames exactly match the Seurat cells</span>
-<span class="n">spatial_coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">spatial_df</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;centroid.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;centroid.1&quot;</span><span class="p">)]</span>
+<span class="n">spatial_coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">spatial_df</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"centroid.0"</span><span class="p">,</span><span class="w"> </span><span class="s">"centroid.1"</span><span class="p">)]</span>
 
 <span class="c1"># The cell names in the Seurat object</span>
 <span class="n">cell_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">Cells</span><span class="p">(</span><span class="n">seu</span><span class="p">)</span>
@@ -1477,9 +1477,9 @@ Warning: Data is of class matrix. Coercing to dgCMatrix.
 <span class="n">embeddings_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">)</span>
 
 <span class="c1"># Now create the spatial reduction</span>
-<span class="n">seu</span><span class="p">[[</span><span class="s">&quot;spatial&quot;</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">CreateDimReducObject</span><span class="p">(</span>
+<span class="n">seu</span><span class="p">[[</span><span class="s">"spatial"</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">CreateDimReducObject</span><span class="p">(</span>
 <span class="w">  </span><span class="n">embeddings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">embeddings_mat</span><span class="p">,</span>
-<span class="w">  </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spatial_&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"spatial_"</span><span class="p">,</span>
 <span class="w">  </span><span class="n">assay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">DefaultAssay</span><span class="p">(</span><span class="n">seu</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -1494,8 +1494,8 @@ Warning: Data is of class matrix. Coercing to dgCMatrix.
 
 <span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">DimPlot</span><span class="p">(</span>
 <span class="w">  </span><span class="n">seu</span><span class="p">,</span>
-<span class="w">  </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spatial&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;labels&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"spatial"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"labels"</span><span class="p">,</span>
 <span class="w">  </span><span class="n">pt.size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
 <span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">coord_fixed</span><span class="p">()</span><span class="w">  </span><span class="c1"># ensures x and y axes have equal scale</span>
 

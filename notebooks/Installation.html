@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=f4e94f7a"></script>
+    <script src="../_static/documentation_options.js?v=37d76ae4"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -392,16 +392,16 @@
 <h2>Extras<a class="headerlink" href="#Extras" title="Link to this heading">#</a></h2>
 <p>Some of the functionalities depend on external tools (e. g. <code class="docutils literal notranslate"><span class="pre">stardist</span></code>, <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, <code class="docutils literal notranslate"><span class="pre">spatialdata</span></code>). Since having lots of external tools also leads to lots of dependencies, installing all of them into one environment is prone to cause dependency conflicts.</p>
 <p>Depending on your needs, you can choose which tools you want to install together with the <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code> core like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install &quot;spatialproteomics[stardist]&quot;
-pip install &quot;spatialproteomics[cellpose]&quot;
-pip install &quot;spatialproteomics[spatialdata]&quot;
-pip install &quot;spatialproteomics[astir]&quot;
-pip install &quot;spatialproteomics[all]&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install "spatialproteomics[stardist]"
+pip install "spatialproteomics[cellpose]"
+pip install "spatialproteomics[spatialdata]"
+pip install "spatialproteomics[astir]"
+pip install "spatialproteomics[all]"
 </pre></div>
 </div>
 <p>The latter one will install all external packages automatically (apart from <code class="docutils literal notranslate"><span class="pre">deepcell</span></code>, the package behind <code class="docutils literal notranslate"><span class="pre">mesmer</span></code>, which strictly requires <code class="docutils literal notranslate"><span class="pre">python==3.10</span></code>. To reduce potential conflicts with other packages, this package needs to be installed by the user manually).</p>
 <p>You can also combine dependencies like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install &quot;spatialproteomics[cellpose,spatialdata]&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install "spatialproteomics[cellpose,spatialdata]"
 </pre></div>
 </div>
 </section>
