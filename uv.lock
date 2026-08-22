@@ -6175,6 +6175,7 @@ all = [
     { name = "cellpose" },
     { name = "spatialdata", version = "0.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "spatialdata", version = "0.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "spotiflow" },
     { name = "stardist" },
 ]
 anndata = [
@@ -6246,6 +6247,7 @@ requires-dist = [
     { name = "sphinx-book-theme", marker = "extra == 'docs'", specifier = ">=0.0.39" },
     { name = "sphinx-multiversion", marker = "extra == 'docs'", specifier = ">=0.2.4" },
     { name = "sphinxcontrib-napoleon", marker = "extra == 'docs'", specifier = "==0.7" },
+    { name = "spotiflow", marker = "extra == 'all'" },
     { name = "spotiflow", marker = "extra == 'spotiflow'" },
     { name = "stardist", marker = "extra == 'all'" },
     { name = "stardist", marker = "extra == 'stardist'", specifier = ">=0.9.1" },

@@ -51,7 +51,7 @@ dev = [
     "safety>=2.1.1",
     "typing_extensions>=4.16",  # to avoid anndata issues
 ]
-all = ["spatialdata", "cellpose", "stardist", "astir"]
+all = ["spatialdata", "cellpose", "stardist", "astir", "spotiflow"]
 
 [build-system]
 requires = ["setuptools>=61.0,<81.0"]
