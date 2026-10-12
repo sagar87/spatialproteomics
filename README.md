@@ -20,6 +20,8 @@ Multiplexed imaging data comprises at least 3 dimensions (i.e. `channels`, `x`, 
 
 Please refer to the [documentation](https://sagar87.github.io/spatialproteomics) for details on the API and tutorials.
 
+If you work with an AI coding assistant, point it to [llms.txt](https://sagar87.github.io/spatialproteomics/llms.txt) (an index of the documentation in Markdown) or [llms-full.txt](https://sagar87.github.io/spatialproteomics/llms-full.txt) (the complete documentation in a single file). Contributors using coding agents will find repository instructions in [AGENTS.md](AGENTS.md).
+
 ## Installation
 
 To install `spatialproteomics`, first create a python environment and install the package using 

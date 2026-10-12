@@ -18,6 +18,12 @@ It supports synchronization of shared coordinates across data modalities such as
 
 .. toctree::
    :maxdepth: 1
+   :caption: Overview:
+
+   concepts
+
+.. toctree::
+   :maxdepth: 1
    :caption: Tutorials:
    
    notebooks/Installation
