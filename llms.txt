@@ -1,0 +1,49 @@
+# spatialproteomics
+
+> spatialproteomics is a Python toolbox for analyzing highly multiplexed fluorescence images (e.g. CODEX, MIBI, IMC): image processing, cell segmentation, marker quantification, cell type prediction, neighborhood analysis and plotting. It stores each sample as an xarray.Dataset whose layers (image, segmentation, expression matrix, labels) stay synchronized when subsetting.
+
+Key facts for using the library:
+
+- Install with `pip install spatialproteomics`; optional extras: `[cellpose]`, `[stardist]`, `[astir]`, `[spotiflow]`, `[spatialdata]`, `[all]`.
+- `import spatialproteomics as sp` registers five accessors on every `xarray.Dataset`: `ds.pp` (preprocessing, subsetting, quantification), `ds.tl` (segmentation and other external tools, export), `ds.la` (cell type labels), `ds.nh` (neighborhoods) and `ds.pl` (plotting).
+- Accessor methods return a new dataset and can be chained: `ds.pp.threshold(0.5).tl.cellpose(channel="DAPI").pp.add_quantification()`.
+- Create an object with `sp.load_image_data(image, channel_coords=[...])`, store it with `ds.drop_encoding().to_zarr(path)` and load it with `xr.open_zarr(path)`.
+- A second, scverse-style API works on `spatialdata.SpatialData` objects in place: `sp.pp.add_quantification(sdata)`, `sp.tl.cellpose(sdata, channel="DAPI")`.
+- Start with the "Core concepts and cheatsheet" page below; it covers the data model, indexing and a complete workflow.
+
+## Overview
+
+- [Core concepts and cheatsheet](https://sagar87.github.io/spatialproteomics/concepts.md): data model, accessors, indexing, a complete example workflow and common pitfalls (read this first)
+
+## Tutorials
+
+- [Installation](https://sagar87.github.io/spatialproteomics/notebooks/Installation.md): pip install and optional extras
+- [Example Workflow with spatialproteomics](https://sagar87.github.io/spatialproteomics/notebooks/ExampleWorkflow.md): end-to-end example: load, threshold, segment with cellpose, quantify, predict cell types, plot
+- [Example Workflow with spatialproteomics and spatialdata](https://sagar87.github.io/spatialproteomics/notebooks/ExampleWorkflowSpatialdata.md): the same workflow with the in-place spatialdata backend
+- [Plotting](https://sagar87.github.io/spatialproteomics/notebooks/Plotting.md): pl.show, colorize, render_* + imshow, scatter plots, annotations
+- [Segmentation](https://sagar87.github.io/spatialproteomics/notebooks/Segmentation.md): cellpose, mesmer and stardist segmentation, filtering and merging masks
+- [Image Processing](https://sagar87.github.io/spatialproteomics/notebooks/ImageProcessing.md): thresholding, merging channels and custom image filters
+- [Cell Type Prediction](https://sagar87.github.io/spatialproteomics/notebooks/CellTypePrediction.md): argmax prediction, marker binarization, subtypes and astir
+- [Neighborhood Analysis](https://sagar87.github.io/spatialproteomics/notebooks/Neighborhoods.md): neighborhood computation (radius, knn, delaunay), ImageContainer, graph features
+- [Interoperability](https://sagar87.github.io/spatialproteomics/notebooks/Interoperability.md): export to zarr, csv, AnnData and spatialdata, import from spatialdata
+- [Downstream Analysis](https://sagar87.github.io/spatialproteomics/notebooks/DownstreamAnalysis.md): neighborhood enrichment with squidpy and spatial statistics in R (spatstat)
+- [Interactivity with napari](https://sagar87.github.io/spatialproteomics/notebooks/Interactivity.md): interactive viewing with napari
+- [Customizability](https://sagar87.github.io/spatialproteomics/notebooks/Customizability.md): plugging in custom segmentation, image processing, quantification, cell type prediction and features; spot detection with spotiflow
+- [Subselecting Data](https://sagar87.github.io/spatialproteomics/notebooks/Slicing.md): subsetting by channels, coordinates, cell types and neighborhoods
+- [Interactive Removal of Artifacts](https://sagar87.github.io/spatialproteomics/notebooks/ArtifactRemoval.md): annotating artifact regions interactively and masking them out
+- [Integration of Multiple Technologies](https://sagar87.github.io/spatialproteomics/notebooks/MultiTechnologyIntegration.md): comparing samples from different imaging technologies; reading OME-TIFF files
+- [FAQ](https://sagar87.github.io/spatialproteomics/notebooks/FAQ.md): memory usage, parallelization with dask, xarray vs. spatialdata backend
+
+## API
+
+- [The preprocessing (pp) accessor](https://sagar87.github.io/spatialproteomics/preprocessing.md): API of ds.pp and the sp.pp functions
+- [The label (la) accessor](https://sagar87.github.io/spatialproteomics/label.md): API of ds.la and the sp.la functions
+- [The neighborhood (nh) accessor](https://sagar87.github.io/spatialproteomics/neighborhood.md): API of ds.nh
+- [The plot (pl) accessor](https://sagar87.github.io/spatialproteomics/plot.md): API of ds.pl
+- [The tool (tl) accessor](https://sagar87.github.io/spatialproteomics/tool.md): API of ds.tl and the sp.tl functions
+- [The image container](https://sagar87.github.io/spatialproteomics/image_container.md): API of sp.ImageContainer for multi-sample neighborhood analysis
+
+## Optional
+
+- [Full documentation](https://sagar87.github.io/spatialproteomics/llms-full.txt): all pages above concatenated into a single file
+- [Source code](https://github.com/sagar87/spatialproteomics): GitHub repository
