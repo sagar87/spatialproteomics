@@ -167,7 +167,7 @@ def _construct_neighborhood_df_knn(
             neighbors = neighbors[1:]
 
         # Update adjacency matrix: Set 1 for neighbors within the radius
-        adjacency_matrix[i, indices] = 1
+        adjacency_matrix[i, neighbors] = 1
 
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()

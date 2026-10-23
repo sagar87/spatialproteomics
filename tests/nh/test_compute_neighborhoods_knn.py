@@ -1,6 +1,9 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 from spatialproteomics import Layers
+from spatialproteomics.nh.utils import _construct_neighborhood_df_knn
 
 
 def test_compute_neighborhoods_knn(ds_labels):
@@ -23,3 +26,13 @@ def test_compute_neighborhoods_knn_no_labels(ds_segmentation):
 def test_compute_neighborhoods_knn_negative_k(ds_labels):
     with pytest.raises(AssertionError, match="K must be greater than 0."):
         ds_labels.nh.compute_neighborhoods_knn(k=-1)
+
+
+def test_knn_adjacency_is_local():
+    df = pd.DataFrame({"x": [0, 1, 2, 100, 101, 102], "y": [0] * 6, "labels": [1] * 6})
+    _, adj = _construct_neighborhood_df_knn(df, [1], x="x", y="y", label_col="labels", k=2)
+    expected = np.kron(np.eye(2, dtype=int), np.ones((3, 3), dtype=int))
+    np.testing.assert_array_equal(adj, expected)
+
+    _, adj = _construct_neighborhood_df_knn(df, [1], x="x", y="y", label_col="labels", k=2, include_center=False)
+    np.testing.assert_array_equal(adj, expected - np.eye(6, dtype=int))
