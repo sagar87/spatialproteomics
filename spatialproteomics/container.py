@@ -200,33 +200,42 @@ def read_from_spatialdata(
         # if there are obs in the spatialdata object, we just use those and do not recompute them
         add_obs_from_sdata = len(spatial_data_object.tables.keys()) > 0
 
-        # obs (from anndata)
         if add_obs_from_sdata:
-            obs = spatial_data_object.tables[table_key].obs
-            if not consolidate_segmentation:
-                assert (
-                    obs.shape[0] == len(np.unique(segmentation)) - 1
-                ), f"The number of cells in the segmentation does not match the number of observations in the table.\nNumber of cells in the segmentation mask: {len(np.unique(segmentation)) - 1}\nNumber of observations: {obs.shape[0]}\nIf you wish to proceed regardless, set `consolidate_segmentation=True`, which will only keep cells appearing both in the segmentation mask and the table."
-            else:
+            # copying, so that the table of the input object is not modified
+            obs = spatial_data_object.tables[table_key].obs.copy()
+            assert (
+                cell_id in obs.columns
+            ), f"Column {cell_id} not found in the table. It is required to match the rows of the table to the cells in the segmentation mask. Available columns: {list(obs.columns)}."
+            obs[cell_id] = obs[cell_id].astype(int)
+
+            if consolidate_segmentation:
                 # Consolidate segmentation to only include cells that are present in the table and the segmentation mask
-                # Step 1: Get IDs in both segmentation and obs
-                ids_in_segmentation = np.unique(segmentation).astype(int)
-                ids_in_obs = obs[cell_id].astype(int).unique()
+                # Step 1: Keep only valid IDs (appear in both the segmentation and the table)
+                valid_ids = np.intersect1d(np.unique(segmentation).astype(int), obs[cell_id].unique())
 
-                # Step 2: Keep only valid IDs (appear in both)
-                valid_ids = np.intersect1d(ids_in_segmentation, ids_in_obs, assume_unique=True)
-
-                # Step 3: Filter segmentation mask to keep only valid IDs
+                # Step 2: Filter segmentation mask to keep only valid IDs
                 segmentation = np.where(np.isin(segmentation, valid_ids), segmentation, 0)
 
-                # Step 4: Filter obs to keep only cells present in segmentation
-                obs[cell_id] = obs[cell_id].astype(int)
-                obs = obs[obs[cell_id].isin(valid_ids)].copy()
+                # Step 3: Filter obs to keep only cells present in segmentation
+                obs = obs[obs[cell_id].isin(valid_ids)]
 
-            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata, reindex=False)
+            obj = obj.pp.add_segmentation(segmentation, add_obs=False, reindex=False)
+
+            # the cells coordinate is sorted by cell id, while the rows of the table can be in any order
+            # hence we align the table to the cells by their id instead of relying on the row order
+            cells = obj.coords[Dims.CELLS].values
+            table_ids = obs[cell_id].values
+            cells_without_row = np.setdiff1d(cells, table_ids)
+            rows_without_cell = np.setdiff1d(table_ids, cells)
+            has_duplicates = obs[cell_id].duplicated().any()
+            assert (
+                len(cells_without_row) == 0 and len(rows_without_cell) == 0 and not has_duplicates
+            ), f"The cell ids in the table do not match the cells in the segmentation mask.\nCells in the segmentation mask without a row in the table: {len(cells_without_row)}\nRows in the table without a cell in the segmentation mask: {len(rows_without_cell)}\nDuplicate ids in the table: {has_duplicates}\nIf you wish to proceed regardless, set `consolidate_segmentation=True`, which will only keep cells appearing both in the segmentation mask and the table."
+            obs = obs.set_index(cell_id, drop=False).loc[cells].rename_axis(None)
+
             # next to adding the obs from the dataframe, we also add default obs to the object to ensure that obs includes the centroids
             obj = obj.pp.add_obs_from_dataframe(obs).pp.add_observations()
         else:
-            obj = obj.pp.add_segmentation(segmentation, add_obs=not add_obs_from_sdata, reindex=False)
+            obj = obj.pp.add_segmentation(segmentation, add_obs=True, reindex=False)
 
     return obj
