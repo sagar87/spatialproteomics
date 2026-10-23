@@ -39,7 +39,7 @@ spatialproteomics/
   la/label.py          ds.la accessor + sp.la.* functions
   nh/neighborhood.py   ds.nh accessor
   pl/plot.py           ds.pl accessor
-  tl/tool.py           ds.tl accessor + sp.tl.* functions (cellpose, stardist, mesmer, astir, spotiflow)
+  tl/tool.py           ds.tl accessor + sp.tl.* functions (cellpose, stardist, astir, spotiflow)
   sd/utils.py          conversion helpers for the spatialdata backend
   image_container/     ImageContainer (multi-sample neighborhoods)
   */utils.py           private helpers used by the accessors

@@ -187,28 +187,6 @@ def _stardist(
     return np.array(all_masks)
 
 
-def _mesmer(img: np.ndarray, postprocess_func: Callable = lambda x: x, **kwargs):
-    # checking that the input is 2D or 3D
-    if img.ndim not in [2, 3]:
-        raise ValueError(f"Input image must be 2D or 3D, got {img.ndim}.")
-
-    # if the input is 2D, we add a channel dimension
-    if img.ndim == 2:
-        img = img[np.newaxis, :, :]
-
-    from deepcell.applications import Mesmer
-
-    app = Mesmer()
-
-    # mesmer requires the data to be in shape batch_size (1), x, y, channels (2)
-    img = np.expand_dims(np.transpose(img, (1, 2, 0)), 0)
-
-    all_masks = app.predict(img, **kwargs)
-    all_masks = postprocess_func(all_masks)
-
-    return np.array(all_masks)
-
-
 def _astir(
     expression_df: pd.DataFrame,
     marker_dict: dict,
