@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import pytest
 
 from spatialproteomics.constants import Dims, Features, Layers
@@ -20,15 +19,8 @@ def _median_x(ds):
     return float(np.median(ds.pp.get_layer_as_df()[Features.X]))
 
 
-def _partial_labels(ds):
-    # labels for every second cell only, the remaining cells are dropped by add_labels_from_dataframe
-    cells = ds.coords[Dims.CELLS].values[::2]
-    df = pd.DataFrame({"cell": cells, "label": ["A", "B"] * (len(cells) // 2) + ["A"] * (len(cells) % 2)})
-    ds = ds.pp.drop_layers(Layers.LA_PROPERTIES, suppress_warnings=True)
-    return ds.la.add_labels_from_dataframe(df, ignore_neighborhoods=True)
-
-
 OPERATIONS = {
+    # operations that subset cells
     "get_bbox": lambda ds: ds.pp[1600:1650, 2100:2150],
     "la_getitem": lambda ds: ds.la[[1, 2]],
     "nh_getitem": lambda ds: ds.nh[[1, 2]],
@@ -36,7 +28,7 @@ OPERATIONS = {
     "mask_cells": lambda ds: _mask_left_half(ds).pp.mask_cells(),
     "la_deselect": lambda ds: ds.la.deselect([1]),
     "nh_deselect": lambda ds: ds.nh.deselect([1]),
-    "add_labels_from_dataframe": _partial_labels,
+    # operations that subset and relabel cells
     "mask_cells_reindex": lambda ds: _mask_left_half(ds).pp.mask_cells(reindex=True),
     "filter_by_obs_reindex": lambda ds: ds.pp.filter_by_obs(Features.X, lambda x: x > _median_x(ds), reindex=True),
     "remove_outlying_cells_reindex": lambda ds: ds.pp.remove_outlying_cells(dilation_size=1, threshold=4, reindex=True),

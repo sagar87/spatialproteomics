@@ -1550,6 +1550,12 @@ class PreprocessingAccessor:
         # This applies to every variable that depends on these dimensions.
         new_obj = new_obj.isel({Dims.X: slice(None, None, rate), Dims.Y: slice(None, None, rate)})
 
+        # If a segmentation mask exists, we need to ensure that only the cells present in the downsampled image are kept.
+        if Layers.SEGMENTATION in new_obj:
+            present = np.unique(new_obj[Layers.SEGMENTATION].values)
+            present = present[present > 0]
+            new_obj = _select_cells(new_obj, present)
+
         # Optionally, update the x and y coordinate arrays if needed.
         # In many cases, isel will automatically update the coordinate arrays,
         # but you can explicitly assign them if required.
