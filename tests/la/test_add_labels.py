@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -89,3 +90,24 @@ def test_add_labels_existing_labels(ds_labels):
         match="Already found label properties in the object.",
     ):
         ds_labels.la.add_labels(label_dict)
+
+
+@pytest.mark.parametrize("labels", [["A", "B"], [1, 2]], ids=["str", "int"])
+def test_add_labels_from_dataframe_partial_dataframe(ds_segmentation, labels):
+    # labels for every second cell only, the remaining cells should be kept as unlabeled cells
+    cells = ds_segmentation.coords[Dims.CELLS].values
+    labeled_cells = cells[::2]
+    df = pd.DataFrame({"cell": labeled_cells, "label": np.resize(labels, len(labeled_cells))})
+
+    ds = ds_segmentation.la.add_labels_from_dataframe(df)
+
+    # no cells are removed from obs or the segmentation mask
+    np.testing.assert_array_equal(ds.coords[Dims.CELLS].values, cells)
+    seg_cells = np.unique(ds[Layers.SEGMENTATION].values)
+    np.testing.assert_array_equal(seg_cells[seg_cells > 0], cells)
+
+    # the cells without a label are unlabeled
+    obs = ds.pp.get_layer_as_df()
+    unlabeled_cells = np.setdiff1d(cells, labeled_cells)
+    assert (obs.loc[unlabeled_cells, Features.LABELS] == Labels.UNLABELED).all()
+    assert (obs.loc[labeled_cells, Features.LABELS] != Labels.UNLABELED).all()

@@ -24,6 +24,7 @@ from ..la.utils import (
     _predict_cell_subtypes,
     _predict_cell_types_argmax,
 )
+from ..pp.utils import _select_cells
 from ..sd.utils import _process_adata
 
 
@@ -323,7 +324,7 @@ class LabelAccessor:
 
         cells = self._obj.la._filter_cells_by_label(inv_sel)
 
-        obj = self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
+        obj = _select_cells(self._obj, cells, **{Dims.LABELS: inv_sel})
 
         # removing all cells from the segmentation mask that are not in the cells array
         segmentation = obj[Layers.SEGMENTATION].values.copy()
@@ -463,31 +464,21 @@ class LabelAccessor:
 
         return label_names_reverse[label]
 
-    def _filter_by_intensity(
-        self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY, return_int_array: bool = True
-    ) -> xr.Dataset:
+    def _filter_by_intensity(self, channel: str, func: Callable, layer_key: str = Layers.INTENSITY) -> np.ndarray:
         """
-        Filter the cells based on intensity values for a specific channel. Useful for binarizing markers.
+        Binarize the intensity values of a channel. Used by la.threshold_labels().
 
         Parameters:
-            channel (str): The channel to filter on.
-            func (Callable): A function that takes in intensity values and returns a boolean array indicating which cells to keep.
+            channel (str): The channel to binarize.
+            func (Callable): A function that takes in intensity values and returns a boolean array.
             layer_key (str, optional): The key of the layer containing the intensity values. Defaults to Layers.INTENSITY.
-            return_int_array (bool, optional): Whether to return the filtered cells as a numeric array (0 for False, 1 for True). Defaults to True.
 
         Returns:
-            xarray.Dataset: The filtered cells as a DataArray if return_int_array is False, otherwise a numeric array.
+            np.ndarray: An integer array with 1 for cells where func is True and 0 otherwise.
         """
         cells = self._obj[layer_key].sel({Dims.CHANNELS: channel}).values.copy()
-        cells_bool = func(cells)
-
-        if return_int_array:
-            # turning the boolean array into a numeric array (where 0 is False, 1 is True)
-            return cells_bool.astype(int)
-
-        cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
-
-        return self._obj.sel({Dims.CELLS: cells_sel})
+        # turning the boolean array into a numeric array (where 0 is False, 1 is True)
+        return func(cells).astype(int)
 
     def add_label_type(self, name: str, color: str = "w") -> xr.Dataset:
         """
@@ -1038,6 +1029,17 @@ class LabelAccessor:
             assert (
                 sub.shape[0] != 0
             ), f"Could not find any overlap between the cells in the data frame's {cell_col} column and the cells in the object. Please make sure the cells for which you want to add labels are present in the object."
+
+            # cells without a label are kept as unlabeled cells, so that obs and the segmentation stay in sync
+            missing_cells = np.setdiff1d(self._obj.coords[Dims.CELLS].values, sub[cell_col].values)
+            if len(missing_cells) > 0:
+                logger.warning(
+                    f"Found {len(missing_cells)} cells without a label in the data frame. These cells will be set to {Labels.UNLABELED}."
+                )
+                fill_value = Labels.UNLABELED if sub[label_col].map(lambda x: isinstance(x, str)).all() else 0
+                sub = pd.concat([sub, pd.DataFrame({cell_col: missing_cells, label_col: fill_value})])
+            sub = sub.sort_values(cell_col)
+
             cells = sub.loc[:, cell_col].to_numpy().squeeze()
             labels = sub.loc[:, label_col].to_numpy().squeeze()
 
@@ -1059,7 +1061,7 @@ class LabelAccessor:
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
-            assert ~np.all(labels < 0), "Labels must be >= 0."
+            assert not np.any(labels < 0), "Labels must be >= 0."
 
             formated_labels = _format_labels(labels)
             unique_labels = np.unique(formated_labels)
@@ -1075,17 +1077,19 @@ class LabelAccessor:
         if ignore_neighborhoods:
             obj = obj.pp.drop_layers(Layers.NEIGHBORHOODS)
 
-        obj = xr.merge([obj.sel(cells=da.cells), da], join="outer", compat="no_conflicts")
+        obj = xr.merge([_select_cells(obj, cells), da], join="outer", compat="no_conflicts")
 
         if colors is not None:
-            assert len(colors) == len(unique_labels), "Colors has the same."
+            assert len(colors) == len(
+                unique_labels
+            ), f"Got {len(colors)} colors for {len(unique_labels)} unique labels."
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
         obj = obj.la.add_properties(colors, Props.COLOR)
 
         if names is not None:
-            assert len(names) == len(unique_labels), "Names has the same."
+            assert len(names) == len(unique_labels), f"Got {len(names)} names for {len(unique_labels)} unique labels."
         else:
             # if there is a 0 in unique labels, we need to add an unlabeled category
             if 0 in unique_labels:
@@ -1095,7 +1099,7 @@ class LabelAccessor:
 
         obj = obj.la.add_properties(names, Props.NAME)
 
-        return xr.merge([obj.sel(cells=da.cells), da], join="outer", compat="no_conflicts")
+        return xr.merge([_select_cells(obj, cells), da], join="outer", compat="no_conflicts")
 
     def add_properties(
         self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False

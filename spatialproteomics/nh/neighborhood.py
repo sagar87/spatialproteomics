@@ -6,6 +6,7 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
+from ..pp.utils import _select_cells
 from .utils import (
     _compute_global_network_features,
     _compute_network_features,
@@ -157,7 +158,7 @@ class NeighborhoodAccessor:
 
         cells = self._obj.nh._filter_cells_by_neighborhood(inv_sel)
 
-        obj = self._obj.sel({Dims.NEIGHBORHOODS: inv_sel, Dims.CELLS: cells})
+        obj = _select_cells(self._obj, cells, **{Dims.NEIGHBORHOODS: inv_sel})
 
         # removing all cells from the segmentation mask that are not in the cells array
         segmentation = obj[Layers.SEGMENTATION].values.copy()
