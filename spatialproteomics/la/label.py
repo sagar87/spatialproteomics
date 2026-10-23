@@ -24,6 +24,7 @@ from ..la.utils import (
     _predict_cell_subtypes,
     _predict_cell_types_argmax,
 )
+from ..pp.utils import _select_cells
 from ..sd.utils import _process_adata
 
 
@@ -323,7 +324,7 @@ class LabelAccessor:
 
         cells = self._obj.la._filter_cells_by_label(inv_sel)
 
-        obj = self._obj.sel({Dims.LABELS: inv_sel, Dims.CELLS: cells})
+        obj = _select_cells(self._obj, cells, **{Dims.LABELS: inv_sel})
 
         # removing all cells from the segmentation mask that are not in the cells array
         segmentation = obj[Layers.SEGMENTATION].values.copy()
@@ -487,7 +488,7 @@ class LabelAccessor:
 
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
 
-        return self._obj.sel({Dims.CELLS: cells_sel})
+        return _select_cells(self._obj, cells_sel)
 
     def add_label_type(self, name: str, color: str = "w") -> xr.Dataset:
         """
@@ -1059,7 +1060,7 @@ class LabelAccessor:
                 labels = np.array([label_to_num[label] for label in labels])
                 names = [k for k, v in sorted(label_to_num.items(), key=lambda x: x[1])]
 
-            assert ~np.all(labels < 0), "Labels must be >= 0."
+            assert not np.any(labels < 0), "Labels must be >= 0."
 
             formated_labels = _format_labels(labels)
             unique_labels = np.unique(formated_labels)
@@ -1075,17 +1076,19 @@ class LabelAccessor:
         if ignore_neighborhoods:
             obj = obj.pp.drop_layers(Layers.NEIGHBORHOODS)
 
-        obj = xr.merge([obj.sel(cells=da.cells), da], join="outer", compat="no_conflicts")
+        obj = xr.merge([_select_cells(obj, cells), da], join="outer", compat="no_conflicts")
 
         if colors is not None:
-            assert len(colors) == len(unique_labels), "Colors has the same."
+            assert len(colors) == len(
+                unique_labels
+            ), f"Got {len(colors)} colors for {len(unique_labels)} unique labels."
         else:
             colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
 
         obj = obj.la.add_properties(colors, Props.COLOR)
 
         if names is not None:
-            assert len(names) == len(unique_labels), "Names has the same."
+            assert len(names) == len(unique_labels), f"Got {len(names)} names for {len(unique_labels)} unique labels."
         else:
             # if there is a 0 in unique labels, we need to add an unlabeled category
             if 0 in unique_labels:
@@ -1095,7 +1098,7 @@ class LabelAccessor:
 
         obj = obj.la.add_properties(names, Props.NAME)
 
-        return xr.merge([obj.sel(cells=da.cells), da], join="outer", compat="no_conflicts")
+        return xr.merge([_select_cells(obj, cells), da], join="outer", compat="no_conflicts")
 
     def add_properties(
         self, array: Union[np.ndarray, list], prop: str = Features.LABELS, return_xarray: bool = False

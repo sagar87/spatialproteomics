@@ -13,6 +13,23 @@ from ..base_logger import logger
 from ..constants import Dims
 
 
+def _select_cells(obj, cells, **other_indexers):
+    """Subset an object to the given cells, keeping cells and cells_2 (adjacency matrix) in sync."""
+    cells = np.asarray(cells)
+    query = {Dims.CELLS: cells, **other_indexers}
+    if Dims.CELLS_2 in obj.dims:
+        query[Dims.CELLS_2] = cells
+    return obj.sel(query)
+
+
+def _relabel_cell_coords(obj, relabel_dict: dict):
+    """Rename the cell ids in cells (and cells_2, if present) according to relabel_dict."""
+    coords = {Dims.CELLS: [relabel_dict[c] for c in obj.coords[Dims.CELLS].values]}
+    if Dims.CELLS_2 in obj.dims:
+        coords[Dims.CELLS_2] = [relabel_dict[c] for c in obj.coords[Dims.CELLS_2].values]
+    return obj.assign_coords(coords)
+
+
 def merge(images: List[np.ndarray], proj: str = "sum", alpha: float = 0.5):
     """
     Merge multiple images into a single image using different projection methods.

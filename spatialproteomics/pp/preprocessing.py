@@ -19,9 +19,11 @@ from .utils import (
     _merge_channels,
     _merge_segmentation,
     _normalize,
+    _relabel_cell_coords,
     _relabel_cells,
     _remove_outlying_cells,
     _remove_unlabeled_cells,
+    _select_cells,
     _threshold,
     _transform_expression_matrix,
     _validate_and_clamp_slice,
@@ -1635,11 +1637,8 @@ class PreprocessingAccessor:
         cells_bool = func(cells)
         cells_sel = self._obj.coords[Dims.CELLS][cells_bool].values
 
-        # making sure that if there is a cells_2 coordinate, this is also subset correctly
-        query = {Dims.CELLS: cells_sel}
-        if Dims.CELLS_2 in self._obj.coords:
-            query[Dims.CELLS_2] = cells_sel
-        obj = self._obj.sel(query)
+        # selecting the cells (this also subsets cells_2, if there is an adjacency matrix)
+        obj = _select_cells(self._obj, cells_sel)
 
         # synchronizing the segmentation mask with the selected cells
         segmentation = obj[segmentation_key].values
@@ -1648,8 +1647,8 @@ class PreprocessingAccessor:
         if reindex:
             # relabeling cells in the segmentation mask so the IDs go from 1 to n again
             segmentation, relabel_dict = _relabel_cells(segmentation)
-            # updating the cell coords of the object
-            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
+            # updating the cell coords of the object (cells and cells_2)
+            obj = _relabel_cell_coords(obj, relabel_dict)
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
@@ -1710,17 +1709,15 @@ class PreprocessingAccessor:
         # removing outlying cells
         cells_sel = _remove_outlying_cells(segmentation, dilation_size, threshold)
         # making sure that if there is a cells_2 coordinate, this is also subset correctly
-        query = {Dims.CELLS: cells_sel}
-        if Dims.CELLS_2 in self._obj.coords:
-            query[Dims.CELLS_2] = cells_sel
-        obj = self._obj.sel(query)
+        obj = _select_cells(self._obj, cells_sel)
+
         # setting all cells that are not in cells to 0
         segmentation = _remove_unlabeled_cells(segmentation, cells_sel)
         if reindex:
             # relabeling cells in the segmentation mask so the IDs go from 1 to n again
             segmentation, relabel_dict = _relabel_cells(segmentation)
             # updating the cell coords of the object
-            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords[Dims.CELLS].values]
+            obj = _relabel_cell_coords(obj, relabel_dict)
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
@@ -2143,7 +2140,7 @@ class PreprocessingAccessor:
         cells_sel = np.array(sorted(set(self._obj.coords[Dims.CELLS].values) - set(cells_to_remove)))
 
         # selecting only the cells that are in cells_sel
-        obj = self._obj.sel({Dims.CELLS: cells_sel})
+        obj = _select_cells(self._obj, cells_sel)
 
         # synchronizing the segmentation mask with the selected cells
         segmentation = obj[segmentation_key].values
@@ -2152,8 +2149,8 @@ class PreprocessingAccessor:
         if reindex:
             # relabeling cells in the segmentation mask so the IDs go from 1 to n again
             segmentation, relabel_dict = _relabel_cells(segmentation)
-            # updating the cell coords of the object
-            obj.coords[Dims.CELLS] = [relabel_dict[cell] for cell in obj.coords["cells"].values]
+            # updating the cell coords of the object (cells and cells_2)
+            obj = _relabel_cell_coords(obj, relabel_dict)
 
         # creating a data array with the segmentation mask, so that we can merge it to the original
         da = xr.DataArray(
