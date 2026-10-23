@@ -26,13 +26,13 @@ Use the constants in `sp.Layers`, `sp.Dims`, `sp.Features` and `sp.Props` instea
 
 Importing spatialproteomics registers five accessors on every `xarray.Dataset`:
 
-| Name | Class                 | Responsibility                                                                            |
-|------|-----------------------|-------------------------------------------------------------------------------------------|
-| `pp` | PreprocessingAccessor | Subsetting, image processing, segmentation handling, quantification, tables.              |
-| `tl` | ToolAccessor          | Wrappers around external tools (cellpose, stardist, mesmer, astir, spotiflow) and export. |
-| `la` | LabelAccessor         | Cell type labels: prediction, naming, colors, subtype hierarchies.                        |
-| `nh` | NeighborhoodAccessor  | Cellular neighborhoods and graph features.                                                |
-| `pl` | PlotAccessor          | Plotting of images, masks, labels, neighborhoods and observations.                        |
+| Name | Class                 | Responsibility                                                                    |
+|------|-----------------------|-----------------------------------------------------------------------------------|
+| `pp` | PreprocessingAccessor | Subsetting, image processing, segmentation handling, quantification, tables.      |
+| `tl` | ToolAccessor          | Wrappers around external tools (cellpose, stardist, astir, spotiflow) and export. |
+| `la` | LabelAccessor         | Cell type labels: prediction, naming, colors, subtype hierarchies.                |
+| `nh` | NeighborhoodAccessor  | Cellular neighborhoods and graph features.                                        |
+| `pl` | PlotAccessor          | Plotting of images, masks, labels, neighborhoods and observations.                |
 
 Every accessor method returns a **new** dataset; nothing is modified in place. Always reassign (`ds = ds.pp.threshold(...)`) or chain calls:
 
@@ -112,7 +112,7 @@ sdata = ds.tl.convert_to_spatialdata()            # requires spatialdata
 
 Other frequently used operations:
 
-- Segmentation from elsewhere: `ds.pp.add_segmentation(mask)`; alternatives to cellpose: `ds.tl.stardist()`, `ds.tl.mesmer()`.
+- Segmentation from elsewhere: `ds.pp.add_segmentation(mask)`; alternatives to cellpose: `ds.tl.stardist()`
 - Labels from elsewhere: `ds.la.add_labels_from_dataframe(df, cell_col="cell", label_col="label")`.
 - Marker binarization and subtypes: `ds.la.threshold_labels({...})` then `ds.la.predict_cell_subtypes({...})`; switch levels with `ds.la.set_label_level(...)`.
 - Neighborhoods across samples: `sp.ImageContainer({"s1": ds1, "s2": ds2}).compute_neighborhoods(k=5)` computes compositions, clusters them with k-means and returns a dict of datasets with neighborhoods assigned (`ds.nh["Neighborhood 0"]`).
@@ -143,7 +143,7 @@ Convert between the two backends with `sp.read_from_spatialdata(sdata)` and `ds.
 - `la.predict_cell_types_argmax` and `la.predict_cell_subtypes` take **marker -\> cell type** mappings, e.g. `{"CD4": "T_h", "CD8": "T_tox", "FOXP3": "T_reg", "BCL6": "T_fh"}`, not the reverse.
 - `ds.pp[a:b, c:d]` slices **x first, then y**, while the image array is stored as `(channels, y, x)`. Slices select by coordinate value (like `xarray.Dataset.sel`), so the end point is included.
 - Call `drop_encoding()` before `to_zarr()` to avoid xarray encoding errors.
-- Optional tools must be installed separately: `cellpose`, `stardist`, `astir` and `spotiflow` (or all at once with `pip install "spatialproteomics[all]"`); `tl.mesmer` additionally needs `deepcell`.
+- Optional tools must be installed separately: `cellpose`, `stardist`, `astir` and `spotiflow` (or all at once with `pip install "spatialproteomics[all]"`).
 - Many methods require earlier steps: e.g. `la.predict_cell_types_argmax` needs `_intensity`, which needs `_segmentation`. Inspect the object (`print(ds)`) to see which layers are present.
 
 ## Examples

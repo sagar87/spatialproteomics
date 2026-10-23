@@ -89,26 +89,7 @@ ValueError
 
 ### `ds.tl.mesmer(key_added: str='_segmentation', channel: Optional[List]=None, postprocess_func: Callable=<lambda>, **kwargs)`
 
-Segment cells using Mesmer. Adds a layer to the spatialproteomics object
-with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).
-
-**Parameters**
-
-key_added : str, optional
-    Key to assign to the segmentation results.
-channel : List, optional
-    Channel to use for segmentation. If None, all channels are used.
-postprocess_func : Callable, optional
-    Function to apply to the segmentation masks after prediction.
-
-**Returns**
-
-xr.Dataset
-    Dataset containing original data and segmentation mask.
-
-**Notes**
-
-This method requires the 'mesmer' package to be installed.
+This function is deprecated.
 
 ### `ds.tl.astir(marker_dict: dict, key: str='_intensity', threshold: float=0, seed: int=42, learning_rate: float=0.001, batch_size: float=64, n_init: int=5, n_init_epochs: int=5, max_epochs: int=500, cell_id_col: str='cell_id', cell_type_col: str='cell_type', **kwargs)`
 
@@ -263,20 +244,7 @@ Args:
 
 ### `sp.tl.mesmer(sdata, channel: Optional[str]=None, image_key: str='image', key_added: str='segmentation', data_key: Optional[str]=None, copy: bool=False, **kwargs)`
 
-This function runs the mesmer segmentation algorithm on the provided image data.
-It extracts the image data from the spatialdata object, applies the mesmer algorithm,
-and adds the segmentation masks to the spatialdata object.
-The segmentation masks are stored in the labels attribute of the spatialdata object.
-The first channel is assumed to be nuclear and the second one membraneous.
-
-Args:
-    sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
-    channel (Optional[str]): The channel(s) to be used for segmentation.
-    image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
-    key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
-    data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
-    copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
-    **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
+This function is deprecated and will be removed in a future version of spatialproteomics.
 
 ### `sp.tl.astir(sdata, marker_dict: dict, table_key='table', threshold: float=0, seed: int=42, learning_rate: float=0.001, batch_size: float=64, n_init: int=5, n_init_epochs: int=5, max_epochs: int=500, cell_id_col: str='cell_id', cell_type_col: str='cell_type', copy: bool=False, **kwargs)`
 

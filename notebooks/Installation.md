@@ -18,9 +18,12 @@ pip install "spatialproteomics[spotiflow]"
 pip install "spatialproteomics[all]"
 ```
 
-The latter one will install all external packages automatically (apart from `deepcell`, the package behind `mesmer`, which strictly requires `python==3.10`. To reduce potential conflicts with other packages, this package needs to be installed by the user manually).
+The latter one will install all external packages automatically.
 
 You can also combine dependencies like this:
 ```
 pip install "spatialproteomics[cellpose,spatialdata]"
 ```
+
+## Deprecated Packages
+`Mesmer` only supported `python<=3.10`, which has reached its end of life in October 2026. It has hence been removed from `spatialproteomics`. If you want to run segmentation using `mesmer`, please downgrade to `python==3.10` and `spatialproteomics==0.8.6`.

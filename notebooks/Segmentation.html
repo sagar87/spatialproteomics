@@ -394,7 +394,7 @@
                   
   <section id="Segmentation">
 <h1>Segmentation<a class="headerlink" href="#Segmentation" title="Link to this heading">#</a></h1>
-<p>Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for StarDist, mesmer and cellpose.</p>
+<p>Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for <code class="docutils literal notranslate"><span class="pre">stardist</span></code> and <code class="docutils literal notranslate"><span class="pre">cellpose</span></code> (<code class="docutils literal notranslate"><span class="pre">cellpose</span> <span class="pre">3</span></code> or <code class="docutils literal notranslate"><span class="pre">cellpose-SAM</span></code>).</p>
 <p>If you want to follow along with this tutorial, you can download the data <a class="reference external" href="https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ">here</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -1464,46 +1464,7 @@ Data variables:
 </section>
 <section id="Whole-Cell-Segmentation-with-Mesmer">
 <h2>Whole-Cell Segmentation with Mesmer<a class="headerlink" href="#Whole-Cell-Segmentation-with-Mesmer" title="Link to this heading">#</a></h2>
-<p>You can also do the same thing with mesmer. Note however that mesmer expects the channels to be in the order <code class="docutils literal notranslate"><span class="pre">[nuclear,</span> <span class="pre">membrane]</span></code>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># running mesmer</span>
-<span class="n">ds_mesmer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">mesmer</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">[</span><span class="s2">"DAPI"</span><span class="p">,</span> <span class="s2">"Na/K ATPase"</span><span class="p">])</span>
-<span class="c1"># plotting the result</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">ds_mesmer</span><span class="o">.</span><span class="n">pp</span><span class="p">[[</span><span class="s2">"DAPI"</span><span class="p">,</span> <span class="s2">"Na/K ATPase"</span><span class="p">]]</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">colorize</span><span class="p">([</span><span class="s2">"gold"</span><span class="p">,</span> <span class="s2">"deepskyblue"</span><span class="p">])</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">render_segmentation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-2026-04-30 11:41:51.377911: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2026-04-30 11:41:51.377945: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
-Checking for cached data
-Checking MultiplexSegmentation-9.tar.gz against provided file_hash...
-MultiplexSegmentation-9.tar.gz with hash a1dfbce2594f927b9112f23a0a1739e0 already available.
-Extracting /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz
-Successfully extracted /home/meyerben/.deepcell/models/MultiplexSegmentation-9.tar.gz into /home/meyerben/.deepcell/models
-2026-04-30 11:41:56.801991: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcuda.so.1&#39;; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /g/huber/users/meyerben/.conda/envs/tmp_env_3/lib/python3.10/site-packages/cv2/../../lib64:
-2026-04-30 11:41:56.802022: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
-2026-04-30 11:41:56.802046: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (jupyter-meyerben): /proc/driver/nvidia/version does not exist
-2026-04-30 11:41:56.802265: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-No training configuration found in save file, so the model was *not* compiled. Compile it manually.
-Converting image dtype to float
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_9_1.png" src="../_images/notebooks_Segmentation_9_1.png" />
-</div>
-</div>
+<p>Segmentation with <code class="docutils literal notranslate"><span class="pre">mesmer</span></code> is deprecated, since <code class="docutils literal notranslate"><span class="pre">mesmer</span></code> only supported <code class="docutils literal notranslate"><span class="pre">python&lt;=3.10</span></code>, which has reached its end of life in October 2026. If you want to use it, please use <code class="docutils literal notranslate"><span class="pre">spatialproteomics&lt;=0.8.6</span></code>.</p>
 </section>
 <section id="Nuclear-Segmentation-with-StarDist">
 <h2>Nuclear Segmentation with StarDist<a class="headerlink" href="#Nuclear-Segmentation-with-StarDist" title="Link to this heading">#</a></h2>
@@ -1551,7 +1512,7 @@ Using default values: prob_thresh=0.479071, nms_thresh=0.3.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_12_0.png" src="../_images/notebooks_Segmentation_12_0.png" />
+<img alt="../_images/notebooks_Segmentation_11_0.png" src="../_images/notebooks_Segmentation_11_0.png" />
 </div>
 </div>
 <p>You might have noticed that StarDist tends to segment a lot of small cells. Let’s look at the distribution of cell sizes, and then remove all nuclei under a certain size.</p>
@@ -1568,7 +1529,7 @@ Using default values: prob_thresh=0.479071, nms_thresh=0.3.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_14_0.png" src="../_images/notebooks_Segmentation_14_0.png" />
+<img alt="../_images/notebooks_Segmentation_13_0.png" src="../_images/notebooks_Segmentation_13_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1589,7 +1550,7 @@ Using default values: prob_thresh=0.479071, nms_thresh=0.3.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_15_0.png" src="../_images/notebooks_Segmentation_15_0.png" />
+<img alt="../_images/notebooks_Segmentation_14_0.png" src="../_images/notebooks_Segmentation_14_0.png" />
 </div>
 </div>
 <p>To try to capture full cells, we can now grow the segmentation masks, e. g. by two pixels into each direction. If two masks collide, the masks will stop growing into that direction.</p>
@@ -1627,7 +1588,7 @@ Mask growing requires recalculation of the observations. All features other than
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_18_0.png" src="../_images/notebooks_Segmentation_18_0.png" />
+<img alt="../_images/notebooks_Segmentation_17_0.png" src="../_images/notebooks_Segmentation_17_0.png" />
 </div>
 </div>
 </section>
@@ -3276,7 +3237,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_26_0.png" src="../_images/notebooks_Segmentation_26_0.png" />
+<img alt="../_images/notebooks_Segmentation_25_0.png" src="../_images/notebooks_Segmentation_25_0.png" />
 </div>
 </div>
 </section>
@@ -3843,7 +3804,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_30_0.png" src="../_images/notebooks_Segmentation_30_0.png" />
+<img alt="../_images/notebooks_Segmentation_29_0.png" src="../_images/notebooks_Segmentation_29_0.png" />
 </div>
 </div>
 <p>In brief, <code class="docutils literal notranslate"><span class="pre">pp.merge_segmentation()</span></code> works like this:</p>
@@ -3890,7 +3851,7 @@ Data variables:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Segmentation_33_0.png" src="../_images/notebooks_Segmentation_33_0.png" />
+<img alt="../_images/notebooks_Segmentation_32_0.png" src="../_images/notebooks_Segmentation_32_0.png" />
 </div>
 </div>
 </section>

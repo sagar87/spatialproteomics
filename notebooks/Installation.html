@@ -375,6 +375,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Extras">Extras</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Deprecated-Packages">Deprecated Packages</a></li>
 </ul>
             </nav>
         </div>
@@ -404,11 +405,15 @@ pip install "spatialproteomics[spotiflow]"
 pip install "spatialproteomics[all]"
 </pre></div>
 </div>
-<p>The latter one will install all external packages automatically (apart from <code class="docutils literal notranslate"><span class="pre">deepcell</span></code>, the package behind <code class="docutils literal notranslate"><span class="pre">mesmer</span></code>, which strictly requires <code class="docutils literal notranslate"><span class="pre">python==3.10</span></code>. To reduce potential conflicts with other packages, this package needs to be installed by the user manually).</p>
+<p>The latter one will install all external packages automatically.</p>
 <p>You can also combine dependencies like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install "spatialproteomics[cellpose,spatialdata]"
 </pre></div>
 </div>
+</section>
+<section id="Deprecated-Packages">
+<h2>Deprecated Packages<a class="headerlink" href="#Deprecated-Packages" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Mesmer</span></code> only supported <code class="docutils literal notranslate"><span class="pre">python&lt;=3.10</span></code>, which has reached its end of life in October 2026. It has hence been removed from <code class="docutils literal notranslate"><span class="pre">spatialproteomics</span></code>. If you want to run segmentation using <code class="docutils literal notranslate"><span class="pre">mesmer</span></code>, please downgrade to <code class="docutils literal notranslate"><span class="pre">python==3.10</span></code> and <code class="docutils literal notranslate"><span class="pre">spatialproteomics==0.8.6</span></code>.</p>
 </section>
 </section>
 
@@ -460,6 +465,7 @@ pip install "spatialproteomics[all]"
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Extras">Extras</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Deprecated-Packages">Deprecated Packages</a></li>
 </ul>
   </nav></div>
 

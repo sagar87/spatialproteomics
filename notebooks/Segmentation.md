@@ -1,5 +1,5 @@
 # Segmentation
-Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for StarDist, mesmer and cellpose.
+Segmentation describes the process of finding cells in an image. This can be done either on the nucleus or on whole cell level. Spatialproteomics provides wrappers for `stardist` and `cellpose` (`cellpose 3` or `cellpose-SAM`).
 
 If you want to follow along with this tutorial, you can download the data [here](https://oc.embl.de/index.php/s/XzEa9po1tjiDzzJ).
 
@@ -67,14 +67,8 @@ _ = ds_cellpose.pp[["Na/K ATPase", "DAPI"]].pl.colorize(["deepskyblue", "gold"])
 
 ## Whole-Cell Segmentation with Mesmer
 
-You can also do the same thing with mesmer. Note however that mesmer expects the channels to be in the order `[nuclear, membrane]`.
-
-```python
-# running mesmer
-ds_mesmer = ds.tl.mesmer(channel=["DAPI", "Na/K ATPase"])
-# plotting the result
-_ = ds_mesmer.pp[["DAPI", "Na/K ATPase"]].pl.colorize(["gold", "deepskyblue"]).pl.show(render_segmentation=True)
-```
+Segmentation with `mesmer` is deprecated, since `mesmer` only supported `python<=3.10`, which has reached its end of life in October 2026.
+If you want to use it, please use `spatialproteomics<=0.8.6`.
 
 ## Nuclear Segmentation with StarDist
 

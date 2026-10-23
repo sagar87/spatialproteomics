@@ -127,7 +127,7 @@ plt.show()
 ```
 
 ### MACSima imaging cyclic staining (MICS)
-For MICS, we have a tonsil sample with high resolution. To illustrate how you can use `spatialproteomics` across different methods, we use `mesmer` to segment the cells based on DAPI and CD45.
+For MICS, we have a tonsil sample with high resolution. To illustrate how you can use `spatialproteomics` across different methods, we use `cellpose` to segment the cells based on DAPI and CD45.
 
 ```python
 def read_mics_data(path):
@@ -170,7 +170,7 @@ Already found marker FITC, continuing...
 ```python
 # downsampling the image for faster runtime
 # also removing the top part of the image to get rid of a CD11c artefact
-ds_mics = ds_mics.pp[:, :6000].pp.downsample(8).tl.mesmer(channel=["DAPI", "CD45"])
+ds_mics = ds_mics.pp[:, :6000].pp.downsample(8).tl.cellpose(channel=["DAPI", "CD45"])
 ```
 
 Next, we can once again predict cell types. While our markers are different now, our celltypes are still the same. This means that we can still compare things such as cell type abundances and cell-cell interactions later, assuming our cell type predictions are sensible for all technologies.

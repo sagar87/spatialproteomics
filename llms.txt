@@ -21,7 +21,7 @@ Key facts for using the library:
 - [Example Workflow with spatialproteomics](https://sagar87.github.io/spatialproteomics/notebooks/ExampleWorkflow.md): end-to-end example: load, threshold, segment with cellpose, quantify, predict cell types, plot
 - [Example Workflow with spatialproteomics and spatialdata](https://sagar87.github.io/spatialproteomics/notebooks/ExampleWorkflowSpatialdata.md): the same workflow with the in-place spatialdata backend
 - [Plotting](https://sagar87.github.io/spatialproteomics/notebooks/Plotting.md): pl.show, colorize, render_* + imshow, scatter plots, annotations
-- [Segmentation](https://sagar87.github.io/spatialproteomics/notebooks/Segmentation.md): cellpose, mesmer and stardist segmentation, filtering and merging masks
+- [Segmentation](https://sagar87.github.io/spatialproteomics/notebooks/Segmentation.md): cellpose and stardist segmentation, filtering and merging masks
 - [Image Processing](https://sagar87.github.io/spatialproteomics/notebooks/ImageProcessing.md): thresholding, merging channels and custom image filters
 - [Cell Type Prediction](https://sagar87.github.io/spatialproteomics/notebooks/CellTypePrediction.md): argmax prediction, marker binarization, subtypes and astir
 - [Neighborhood Analysis](https://sagar87.github.io/spatialproteomics/notebooks/Neighborhoods.md): neighborhood computation (radius, knn, delaunay), ImageContainer, graph features
