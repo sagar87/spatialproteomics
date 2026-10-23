@@ -120,15 +120,13 @@ spatialdata_object
 Output:
 
 ```text
-[34mINFO    [0m Transposing `data` of type: [1m<[0m[1;95mclass[0m[39m [0m[32m'dask.array.core.Array'[0m[1m>[0m to [1m([0m[32m'c'[0m, [32m'y'[0m, [32m'x'[0m[1m)[0m.                           
-[34mINFO    [0m Transposing `data` of type: [1m<[0m[1;95mclass[0m[39m [0m[32m'dask.array.core.Array'[0m[1m>[0m to [1m([0m[32m'y'[0m, [32m'x'[0m[1m)[0m.                                
 SpatialData object
 ├── Images
-│     └── 'image': DataArray[cyx] (5, 101, 101)
+│     └── 'image': DataArray[cyx] (56, 3000, 3000)
 ├── Labels
-│     └── 'segmentation': DataArray[yx] (101, 101)
+│     └── 'segmentation': DataArray[yx] (3000, 3000)
 └── Tables
-      └── 'table': AnnData (56, 5)
+      └── 'table': AnnData (16871, 56)
 with coordinate systems:
     ▸ 'global', with elements:
         image (Images), segmentation (Labels)
@@ -158,17 +156,17 @@ Output:
 
 ```text
 <xarray.Dataset> Size: 9MB
-Dimensions:        (channels: 3, y: 768, x: 1024, cells: 70, features: 2)
+Dimensions:        (channels: 3, y: 768, x: 1024, cells: 71, features: 2)
 Coordinates:
   * channels       (channels) int64 24B 0 1 2
-  * y              (y) int64 6kB 0 1 2 3 4 5 6 7 ... 761 762 763 764 765 766 767
-  * x              (x) int64 8kB 0 1 2 3 4 5 6 ... 1018 1019 1020 1021 1022 1023
-  * cells          (cells) int64 560B 1 2 3 4 5 6 7 8 ... 64 65 66 67 68 69 70
+  * y              (y) float64 6kB 0.0 1.0 2.0 3.0 ... 764.0 765.0 766.0 767.0
+  * x              (x) float64 8kB 0.0 1.0 2.0 ... 1.021e+03 1.022e+03 1.023e+03
+  * cells          (cells) int64 568B 1 2 3 4 5 6 7 8 ... 65 66 67 68 69 70 71
   * features       (features) <U10 80B 'centroid-0' 'centroid-1'
 Data variables:
     _image         (channels, y, x) uint8 2MB dask.array<chunksize=(3, 768, 1024), meta=np.ndarray>
-    _segmentation  (y, x) int64 6MB 0 0 0 0 0 0 0 0 ... 69 69 69 69 69 69 69 69
-    _obs           (cells, features) float64 1kB 44.79 402.5 ... 736.5 890.5
+    _segmentation  (y, x) int64 6MB 1 1 1 1 1 1 1 1 ... 70 70 70 70 70 70 70 70
+    _obs           (cells, features) float64 1kB 39.8 198.7 ... 736.5 890.5
 ```
 
 ## Exporting to Seurat
