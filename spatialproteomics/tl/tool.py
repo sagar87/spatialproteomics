@@ -878,12 +878,12 @@ class ToolAccessor:
 
         markers = self._obj.coords[Dims.CHANNELS].values
         image = spatialdata.models.Image2DModel.parse(
-            self._obj[image_key].values, transformations=None, dims=("c", "x", "y"), c_coords=markers
+            self._obj[image_key].values, transformations=None, dims=("c", "y", "x"), c_coords=markers
         )
         if Dims.CELLS in self._obj.coords:
             cells = self._obj.coords[Dims.CELLS].values
             segmentation = spatialdata.models.Labels2DModel.parse(
-                self._obj[segmentation_key].values, transformations=None, dims=("x", "y")
+                self._obj[segmentation_key].values, transformations=None, dims=("y", "x")
             )
             store_segmentation = True
 

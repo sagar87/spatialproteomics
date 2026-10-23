@@ -132,12 +132,7 @@ def read_from_spatialdata(
         spatialproteomics_object (xr.Dataset): The spatialproteomics object.
     """
     import spatialdata
-    from spatialdata.transformations import (
-        Affine,
-        Identity,
-        Translation,
-        get_transformation,
-    )
+    from spatialdata.transformations import get_transformation
 
     if isinstance(spatial_data_object, str):
         spatial_data_object = spatialdata.read_zarr(spatial_data_object)
@@ -160,30 +155,20 @@ def read_from_spatialdata(
     y_coords = np.arange(image.shape[1])
     x_coords = np.arange(image.shape[2])
 
-    # apply transform if exists
-    if isinstance(transform, Identity):
-        pass  # Identity transform — do nothing
-
-    elif isinstance(transform, Translation):
-        shift_y, shift_x = transform.translation
-        y_coords = y_coords + shift_y
-        x_coords = x_coords + shift_x
-
-    elif isinstance(transform, Affine):
-        matrix = transform.matrix
-
-        a, b, c = matrix[0, :]
-        d, e, f = matrix[1, :]
-
-        if not np.isclose(b, 0) or not np.isclose(d, 0):
-            logger.warning(
-                "Affine transformation has shear components, which are not supported in spatialproteomics. Resetting coordinates to start from 0."
-            )
-        else:
-            x_coords = a * x_coords + c
-            y_coords = e * y_coords + f
+    # express any transform (Identity, Translation, Scale, Affine, Sequence, ...) as a 2D x/y affine.
+    # do not read transform.matrix directly: after a zarr round trip spatialdata stores the affine on
+    # the element axes, e.g. (c, y, x -> c, x, y), so the raw matrix is 4x4 and its row order varies.
+    matrix = transform.to_affine_matrix(input_axes=("x", "y"), output_axes=("x", "y"))
+    a, b, c = matrix[0, :]
+    d, e, f = matrix[1, :]
+    if not np.isclose(b, 0) or not np.isclose(d, 0):
+        logger.warning(
+            "Affine transformation has shear components, which are not supported in spatialproteomics. "
+            "Resetting coordinates to start from 0."
+        )
     else:
-        logger.warning(f"Unsupported transform {transform}, resetting coordinates for the spatialproteomics object.")
+        x_coords = a * x_coords + c
+        y_coords = e * y_coords + f
 
     # create the spatialproteomics object
     obj = load_image_data(image, channel_coords=markers, x_coords=x_coords, y_coords=y_coords)
