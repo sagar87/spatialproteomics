@@ -42,6 +42,7 @@ The base version of `spatialproteomics` depends on the following packages:
 xarray
 zarr
 numpy
+pandas
 scikit-image
 scikit-learn
 opencv-python

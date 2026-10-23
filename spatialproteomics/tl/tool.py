@@ -19,7 +19,6 @@ from .utils import (
     _compute_transformation,
     _convert_masks_to_data_array,
     _get_channels,
-    _mesmer,
     _spotiflow,
     _stardist,
 )
@@ -154,50 +153,13 @@ def mesmer(
     **kwargs,
 ):
     """
-    This function runs the mesmer segmentation algorithm on the provided image data.
-    It extracts the image data from the spatialdata object, applies the mesmer algorithm,
-    and adds the segmentation masks to the spatialdata object.
-    The segmentation masks are stored in the labels attribute of the spatialdata object.
-    The first channel is assumed to be nuclear and the second one membraneous.
-
-    Args:
-        sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
-        channel (Optional[str]): The channel(s) to be used for segmentation.
-        image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
-        key_added (str, optional): The key under which the segmentation masks will be stored in the labels attribute of the spatialdata object. Defaults to segmentation.
-        data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
-        copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
-        **kwargs: Additional keyword arguments to be passed to the mesmer algorithm.
+    This function is deprecated and will be removed in a future version of spatialproteomics.
     """
-    import spatialdata
-    from spatialdata.transformations import get_transformation, set_transformation
-
-    if copy:
-        sdata = cp.deepcopy(sdata)
-
-    channels = _get_channels_spatialdata(channel)
-
-    assert (
-        len(channels) == 2
-    ), "Mesmer only supports two channel segmentation. Please ensure that the first channel is nuclear and the second one is membraneous."
-
-    # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
-
-    # run mesmer
-    segmentation_masks = _mesmer(image, **kwargs)
-
-    # get transformations
-    transformation = get_transformation(sdata[image_key])
-
-    # add the segmentation masks to the spatial data object
-    sdata.labels[key_added] = spatialdata.models.Labels2DModel.parse(
-        segmentation_masks[0].squeeze(), transformations=None, dims=("y", "x")
+    raise DeprecationWarning(
+        "Since it relied on python<=3.10, which has reached its end of life in October 2026, "
+        "the mesmer function is deprecated and will be removed in a future version of spatialproteomics. "
+        "Please use the cellpose or stardist functions for segmentation instead."
     )
-    set_transformation(sdata.labels[key_added], transformation)
-
-    if copy:
-        return sdata
 
 
 def astir(
@@ -542,48 +504,13 @@ class ToolAccessor:
         **kwargs,
     ):
         """
-        Segment cells using Mesmer. Adds a layer to the spatialproteomics object
-        with dimension (C, X, Y). Assumes C is two and has the order (nuclear, membrane).
-
-        Parameters
-        ----------
-        key_added : str, optional
-            Key to assign to the segmentation results.
-        channel : List, optional
-            Channel to use for segmentation. If None, all channels are used.
-        postprocess_func : Callable, optional
-            Function to apply to the segmentation masks after prediction.
-
-        Returns
-        -------
-        xr.Dataset
-            Dataset containing original data and segmentation mask.
-
-        Notes
-        -----
-        This method requires the 'mesmer' package to be installed.
+        This function is deprecated.
         """
-        channels = _get_channels(self._obj, key_added, channel)
-
-        assert (
-            len(channels) == 2
-        ), "Mesmer only supports two channels for segmentation. If two channels are provided, the first channel is assumed to be the nuclear channel and the second channel is assumed to be the membrane channel. You can set the channels using the 'channel' argument."
-
-        all_masks = _mesmer(self._obj.pp[channels]._image.values, postprocess_func=postprocess_func, **kwargs)
-
-        if all_masks.shape[0] == 1:
-            all_masks = all_masks[0].squeeze()
-        # if we segment on all of the channels, we need to add the channel dimension
-        else:
-            all_masks = np.stack(all_masks, 0)
-
-        # if no segmentation exists yet, and no key_added was specified, we make this one the default
-        if key_added == Layers.SEGMENTATION:
-            return self._obj.pp.add_segmentation(all_masks)
-
-        da = _convert_masks_to_data_array(self._obj, all_masks, key_added)
-
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        raise DeprecationWarning(
+            "Since it relied on python<=3.10, which has reached its end of life in October 2026, "
+            "the mesmer function is deprecated and will be removed in a future version of spatialproteomics. "
+            "Please use the cellpose or stardist functions for segmentation instead."
+        )
 
     def astir(
         self,

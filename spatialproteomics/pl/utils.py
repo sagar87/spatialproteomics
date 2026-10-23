@@ -65,9 +65,9 @@ def _get_listed_colormap(palette: dict):
 
     # adding black background if we don't have any unlabeled (0) cells
     if 0 in sorted_labels:
-        cmap = ListedColormap(colors, N=len(colors))
+        cmap = ListedColormap(colors)
     else:
-        cmap = ListedColormap(["black"] + colors, N=len(colors) + 1)
+        cmap = ListedColormap(["black"] + colors)
 
     return cmap
 

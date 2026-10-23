@@ -71,7 +71,7 @@ llms_txt_descriptions = {
     "notebooks/ExampleWorkflow": "end-to-end example: load, threshold, segment with cellpose, quantify, predict cell types, plot",
     "notebooks/ExampleWorkflowSpatialdata": "the same workflow with the in-place spatialdata backend",
     "notebooks/Plotting": "pl.show, colorize, render_* + imshow, scatter plots, annotations",
-    "notebooks/Segmentation": "cellpose, mesmer and stardist segmentation, filtering and merging masks",
+    "notebooks/Segmentation": "cellpose and stardist segmentation, filtering and merging masks",
     "notebooks/ImageProcessing": "thresholding, merging channels and custom image filters",
     "notebooks/CellTypePrediction": "argmax prediction, marker binarization, subtypes and astir",
     "notebooks/Neighborhoods": "neighborhood computation (radius, knn, delaunay), ImageContainer, graph features",
