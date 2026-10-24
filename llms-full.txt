@@ -4680,24 +4680,25 @@ rate : int
 xr.Dataset
     The downsampled dataset with updated x and y coordinates.
 
-### `ds.pp.rescale(scale: int)`
+### `ds.pp.rescale(scale: float)`
 
 Rescales the image and segmentation mask in the object by a given scale.
 
+The image is interpolated, while the segmentation mask is rescaled with nearest-neighbor interpolation so
+that the cell ids are preserved. The x and y coordinates keep their origin and are spaced so that they still
+cover the same region as before (analogous to `pp.downsample`). Cells that disappear when downscaling are
+removed from all layers, and observations that can be derived from the segmentation mask (e.g. centroids or
+area) are recomputed on the rescaled mask.
+
 **Parameters**
 
-scale :int
+scale : float
     The scale factor by which to rescale the image and segmentation mask.
 
 **Returns**
 
 xr.Dataset
-    The rescaled object containing the updated image and segmentation mask.
-
-**Raises**
-
-- AssertionError: If no image layer is found in the object.
-- AssertionError: If no segmentation mask is found in the object.
+    The rescaled dataset with updated image and segmentation mask.
 
 ### `ds.pp.filter_by_obs(col: str, func: Callable, segmentation_key: str='_segmentation', reindex: bool=False)`
 

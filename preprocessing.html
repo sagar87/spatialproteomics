@@ -1043,23 +1043,22 @@ covers more than 80% of any S1 cell)
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.rescale">
-<span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.rescale" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.rescale" title="Link to this definition">#</a></dt>
 <dd><p>Rescales the image and segmentation mask in the object by a given scale.</p>
+<p>The image is interpolated, while the segmentation mask is rescaled with nearest-neighbor interpolation so
+that the cell ids are preserved. The x and y coordinates keep their origin and are spaced so that they still
+cover the same region as before (analogous to <cite>pp.downsample</cite>). Cells that disappear when downscaling are
+removed from all layers, and observations that can be derived from the segmentation mask (e.g. centroids or
+area) are recomputed on the rescaled mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scale</strong> (<em>int</em>) – The scale factor by which to rescale the image and segmentation mask.</p>
+<dd class="field-odd"><p><strong>scale</strong> (<em>float</em>) – The scale factor by which to rescale the image and segmentation mask.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The rescaled object containing the updated image and segmentation mask.</p>
+<dd class="field-even"><p>The rescaled dataset with updated image and segmentation mask.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>- AssertionError</strong> – If no image layer is found in the object.:</p></li>
-<li><p><strong>- AssertionError</strong> – If no segmentation mask is found in the object.:</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
