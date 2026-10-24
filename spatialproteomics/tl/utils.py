@@ -220,8 +220,8 @@ def _astir(
     assigned_cell_types = assigned_cell_types.reset_index()
     # renaming the columns
     assigned_cell_types.columns = [cell_id_col, cell_type_col]
-    # setting the cell dtype to int
-    assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(int)
+    # restoring the dtype of the cell ids in the expression matrix (e.g. int for xarray, str for anndata)
+    assigned_cell_types[cell_id_col] = assigned_cell_types[cell_id_col].astype(expression_df.index.dtype)
 
     return assigned_cell_types
 
