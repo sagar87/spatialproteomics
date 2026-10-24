@@ -1563,24 +1563,25 @@ class PreprocessingAccessor:
 
         return new_obj
 
-    def rescale(self, scale: int):
+    def rescale(self, scale: float):
         """
         Rescales the image and segmentation mask in the object by a given scale.
 
+        The image is interpolated, while the segmentation mask is rescaled with nearest-neighbor interpolation so
+        that the cell ids are preserved. The x and y coordinates keep their origin and are spaced so that they still
+        cover the same region as before (analogous to `pp.downsample`). Cells that disappear when downscaling are
+        removed from all layers, and observations that can be derived from the segmentation mask (e.g. centroids or
+        area) are recomputed on the rescaled mask.
+
         Parameters
         ----------
-        scale :int
+        scale : float
             The scale factor by which to rescale the image and segmentation mask.
 
         Returns
         -------
         xr.Dataset
-            The rescaled object containing the updated image and segmentation mask.
-
-        Raises
-        ------
-        - AssertionError: If no image layer is found in the object.
-        - AssertionError: If no segmentation mask is found in the object.
+            The rescaled dataset with updated image and segmentation mask.
         """
         # checking if the object contains an image layer
         assert Layers.IMAGE in self._obj, "No image layer found in the object."
@@ -1588,20 +1589,61 @@ class PreprocessingAccessor:
         assert Layers.SEGMENTATION in self._obj, "No segmentation mask found in the object."
 
         image_layer = self._obj[Layers.IMAGE]
-        img = skimage.transform.rescale(image_layer.values, scale=scale, channel_axis=0)
-        x = np.array(range(img.shape[1]))
-        y = np.array(range(img.shape[2]))
-        c = self._obj.channels.values
+        img = skimage.transform.rescale(image_layer.values, scale=scale, channel_axis=0, preserve_range=True)
+        if np.issubdtype(image_layer.dtype, np.integer):
+            img = np.round(img)
+        img = img.astype(image_layer.dtype)
+
+        seg_layer = self._obj[Layers.SEGMENTATION]
+        seg = skimage.transform.rescale(
+            seg_layer.values, scale=scale, order=0, preserve_range=True, anti_aliasing=False
+        ).astype(seg_layer.dtype)
+
+        # the new coordinates keep the origin and cover the same region as the original coordinates
+        new_coords = {}
+        for dim, size in zip([Dims.Y, Dims.X], img.shape[1:]):
+            old = self._obj.coords[dim].values
+            spacing = (old[-1] - old[0]) / (len(old) - 1) if len(old) > 1 else 1
+            new_coords[dim] = old[0] + np.arange(size) * spacing / scale
+
+        y, x = new_coords[Dims.Y], new_coords[Dims.X]
+        c = self._obj.coords[Dims.CHANNELS].values
         new_img = xr.DataArray(img, coords=[c, y, x], dims=[Dims.CHANNELS, Dims.Y, Dims.X], name=Layers.IMAGE)
-        obj = self._obj.drop(Layers.IMAGE)
+        new_seg = xr.DataArray(seg, coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION)
 
-        if Layers.SEGMENTATION in self._obj:
-            seg_layer = self._obj[Layers.SEGMENTATION]
-            seg = skimage.transform.rescale(seg_layer.values, scale=scale)
-            new_seg = xr.DataArray(seg, coords=[y, x], dims=[Dims.Y, Dims.X], name=Layers.SEGMENTATION)
-            obj = obj.drop(Layers.SEGMENTATION)
+        obj = self._obj.drop_vars([Layers.IMAGE, Layers.SEGMENTATION]).drop_dims([Dims.Y, Dims.X])
 
-        obj = obj.drop_dims([Dims.Y, Dims.X])
+        # cells that are too small can vanish when downscaling, so we only keep the cells that are still present
+        if Dims.CELLS in obj.coords:
+            present = np.unique(seg)
+            present = present[present > 0]
+            obj = _select_cells(obj, obj.coords[Dims.CELLS].values[np.isin(obj.coords[Dims.CELLS].values, present)])
+
+        # observations that are derived from the segmentation mask (e.g. centroids, area) are recomputed
+        if Layers.OBS in obj:
+            obj = obj.copy()
+            obs = obj[Layers.OBS].values.copy()
+            cells = obj.coords[Dims.CELLS].values
+            features = list(obj.coords[Dims.FEATURES].values)
+            properties = {f.rsplit("-", 1)[0] if f.rsplit("-", 1)[-1].isdigit() else f for f in features}
+            for prop in properties:
+                try:
+                    table = regionprops_table(seg, properties=["label", prop])
+                except AttributeError:
+                    # the feature does not originate from regionprops (e.g. labels or binarizations)
+                    continue
+                order = pd.Index(table.pop("label")).get_indexer(cells)
+                for k, v in table.items():
+                    if k not in features:
+                        continue
+                    v = np.asarray(v, dtype=float)
+                    # converting pixel positions into coordinates
+                    if k == Features.X:
+                        v = x[0] + v * (x[1] - x[0] if len(x) > 1 else 1)
+                    if k == Features.Y:
+                        v = y[0] + v * (y[1] - y[0] if len(y) > 1 else 1)
+                    obs[:, features.index(k)] = v[order]
+            obj[Layers.OBS] = (obj[Layers.OBS].dims, obs)
 
         return xr.merge([obj, new_img, new_seg], join="outer", compat="no_conflicts")
 
