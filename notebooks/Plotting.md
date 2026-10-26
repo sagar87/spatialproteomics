@@ -26,11 +26,11 @@ Output:
 <xarray.Dataset> Size: 576MB
 Dimensions:        (channels: 56, y: 3000, x: 3000, cells: 18134, features: 2)
 Coordinates:
-  * cells          (cells) int64 145kB 1 2 3 4 5 ... 18131 18132 18133 18134
   * channels       (channels) <U11 2kB 'DAPI' 'Helios' ... 'CD79a' 'Ki-67'
-  * features       (features) <U10 80B 'centroid-0' 'centroid-1'
-  * x              (x) int64 24kB 0 1 2 3 4 5 ... 2994 2995 2996 2997 2998 2999
   * y              (y) int64 24kB 0 1 2 3 4 5 ... 2994 2995 2996 2997 2998 2999
+  * x              (x) int64 24kB 0 1 2 3 4 5 ... 2994 2995 2996 2997 2998 2999
+  * cells          (cells) int64 145kB 1 2 3 4 5 ... 18131 18132 18133 18134
+  * features       (features) <U10 80B 'centroid-0' 'centroid-1'
 Data variables:
     _image         (channels, y, x) uint8 504MB dask.array<chunksize=(7, 375, 750), meta=np.ndarray>
     _obs           (cells, features) float64 290kB dask.array<chunksize=(9067, 2), meta=np.ndarray>
