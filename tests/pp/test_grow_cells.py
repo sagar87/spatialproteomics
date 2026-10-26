@@ -34,3 +34,14 @@ def test_grow_cells(ds_segmentation):
 
         # ensuring that the obs have been updated (are not the same as before)
         assert not np.all(original_obs == grown[Layers.OBS])
+
+
+def test_grow_cells_without_observations(ds_segmentation):
+    ds = ds_segmentation.drop_vars(Layers.OBS).drop_dims(Dims.FEATURES)
+    assert Layers.OBS not in ds
+
+    grown = ds.pp.grow_cells(iterations=2)
+
+    assert Layers.SEGMENTATION in grown
+    assert Layers.OBS not in grown
+    assert np.sum(grown[Layers.SEGMENTATION].values > 0) > np.sum(ds[Layers.SEGMENTATION].values > 0)
