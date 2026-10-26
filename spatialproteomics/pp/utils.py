@@ -879,11 +879,13 @@ def _merge_channels(arr: np.ndarray, method: Union[str, callable] = "max", norma
         )
 
     # ensure the merged array has the correct dtype (if the input was integer, output should also be integer, but we need to check for overflow)
-    # if there is overflow, we change the dtype to int64
+    # if there is overflow, we change the dtype to a 64 bit integer (numpy reductions such as sum return those anyway)
     if np.issubdtype(dtype, np.integer):
         info = np.iinfo(dtype)
-        if merged.max() > info.max:
-            merged = merged.astype(np.uint64)
+        if merged.max() > info.max or merged.min() < info.min:
+            merged = merged.astype(np.int64 if np.issubdtype(dtype, np.signedinteger) else np.uint64)
+        else:
+            merged = np.round(merged).astype(dtype)
     else:
         merged = merged.astype(dtype)
 

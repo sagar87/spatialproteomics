@@ -805,7 +805,14 @@ class PreprocessingAccessor:
             name=layer_key,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        obj = self._obj
+        if layer_key in obj:
+            # concatenating along the channels keeps the dtype of the layer
+            # (an outer merge would first fill the layer with NaNs for the new channels, turning it into floats)
+            da = xr.concat([obj[layer_key], da], dim=Dims.CHANNELS)
+            obj = obj.drop_vars(layer_key)
+
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def drop_channel(self, channels: Union[str, list]) -> xr.Dataset:
         """

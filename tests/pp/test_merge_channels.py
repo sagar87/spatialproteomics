@@ -69,3 +69,21 @@ def test_merge_channels_layer_key(ds_image):
     assert np.array_equal(merged["_processed"].sel(channels="DAPI_CD4").values, expected)
     # the image layer does not get the merged channel
     assert np.all(np.isnan(merged["_image"].sel(channels="DAPI_CD4").values))
+
+
+@pytest.mark.parametrize("method", ["sum", "mean", "max"])
+@pytest.mark.parametrize("normalize", [True, False])
+def test_merge_channels_keeps_dtype(ds_image, method, normalize):
+    dtype = ds_image["_image"].dtype
+    ds = ds_image.pp.merge_channels(["DAPI", "CD4"], key_added="DAPI_CD4", normalize=normalize, method=method)
+    merged = ds["_image"].sel(channels="DAPI_CD4").values
+
+    if method == "sum" and normalize:
+        # normalized channels use the full uint8 range, so their sum overflows and a wider integer type is used
+        assert np.issubdtype(ds["_image"].dtype, np.integer)
+    else:
+        assert ds["_image"].dtype == dtype
+
+    if method == "sum" and not normalize:
+        expected = ds_image["_image"].sel(channels=["DAPI", "CD4"]).values.astype(np.int64).sum(0)
+        assert np.array_equal(merged, expected)
