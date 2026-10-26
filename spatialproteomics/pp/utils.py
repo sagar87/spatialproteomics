@@ -470,7 +470,8 @@ def _get_disconnected_cell(segmentation: np.ndarray) -> int:
     """
     for cell in sorted(np.unique(segmentation))[1:]:
         binary_mask = np.where(segmentation == cell, 1, 0)
-        _, num_features = scipy.ndimage.label(binary_mask)
+        # using 8-connectivity, as in _check_for_disconnected_cells and handle_disconnected_cells
+        _, num_features = scipy.ndimage.label(binary_mask, structure=np.ones((3, 3)))
         if num_features != 1:
             return cell
 
