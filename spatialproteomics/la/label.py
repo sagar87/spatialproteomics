@@ -616,9 +616,10 @@ class LabelAccessor:
         # if there is no entry for label 0 yet, we add one, so that every label in obs has properties
         if len(cells) > 0 and 0 not in obj.coords[Dims.LABELS].values:
             removed = obj.sel({Dims.LABELS: cell_type})
+            obj[Layers.LA_PROPERTIES] = obj[Layers.LA_PROPERTIES].astype(object)
             obj = obj.reindex({Dims.LABELS: [0, *remaining_labels]})
 
-            props = obj[Layers.LA_PROPERTIES].astype(object)
+            props = obj[Layers.LA_PROPERTIES]
             props.loc[{Dims.LABELS: 0}] = ""
             props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.NAME}] = Labels.UNLABELED
             props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.COLOR}] = "black"

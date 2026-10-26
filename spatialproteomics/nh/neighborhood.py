@@ -274,13 +274,15 @@ class NeighborhoodAccessor:
             name=Layers.NH_PROPERTIES,
         )
 
-        if Layers.NH_PROPERTIES in self._obj:
+        obj = self._obj
+        if Layers.NH_PROPERTIES in obj:
             da = xr.concat(
-                [self._obj[Layers.NH_PROPERTIES], da],
+                [obj[Layers.NH_PROPERTIES], da],
                 dim=Dims.NH_PROPS,
             )
+            obj = obj.drop_vars([Layers.NH_PROPERTIES, Dims.NH_PROPS])
 
-        return xr.merge([da, self._obj], join="outer", compat="no_conflicts")
+        return xr.merge([da, obj], join="outer", compat="no_conflicts")
 
     def add_neighborhoods_from_dataframe(
         self,
