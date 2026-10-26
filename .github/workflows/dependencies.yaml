@@ -1,0 +1,84 @@
+name: Dependency versions
+
+# Tests the package weekly against the lowest versions allowed by pyproject.toml (to check that the lower bounds
+# are correct) and against the newest releases of all dependencies (to notice breaking releases early).
+# The lockfile is ignored on purpose. If a job fails, an issue is opened (or updated if one is already open).
+on:
+  schedule:
+    - cron: "17 5 * * 1"  # Mondays at 05:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # lowest versions of the direct dependencies, without spatialdata (which requires newer versions of some)
+          - name: lowest versions (core)
+            python-version: "3.11"
+            extras: "anndata"
+            resolution: "lowest-direct"
+          # lowest versions of the direct dependencies, including the spatialdata backend
+          - name: lowest versions (spatialdata)
+            python-version: "3.11"
+            extras: "spatialdata,anndata"
+            resolution: "lowest-direct"
+          # newest releases of everything, including the optional tools
+          - name: newest versions
+            python-version: "3.14"
+            extras: "dev,all"
+            resolution: "highest"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Create uv virtual environment
+        run: uv venv
+
+      - name: Install dependencies
+        run: uv pip install -e ".[${{ matrix.extras }}]" --resolution ${{ matrix.resolution }}
+
+      # installed separately, so that pytest does not count as a direct dependency for the lowest resolution
+      - name: Install pytest
+        run: uv pip install pytest
+
+      - name: Show installed versions
+        run: uv pip list
+
+      # running pytest from the virtual environment directly, since uv run would sync it to uv.lock
+      - name: Run tests
+        run: .venv/bin/python -m pytest tests
+
+  report:
+    needs: test
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update an issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Dependency version check failed"
+          body="The weekly check against the lowest and newest dependency versions failed: $RUN_URL"
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

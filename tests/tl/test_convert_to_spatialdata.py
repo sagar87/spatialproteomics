@@ -1,6 +1,12 @@
+import importlib.util
+
 import numpy as np
 import pytest
-import spatialdata as sd
+
+if importlib.util.find_spec("spatialdata") is None:
+    pytest.skip("spatialdata is not installed", allow_module_level=True)
+
+import spatialdata as sd  # noqa: E402
 
 import spatialproteomics as sp
 

@@ -706,6 +706,9 @@ class LabelAccessor:
 
         # getting the original label properties
         property_layer = self._obj[Layers.LA_PROPERTIES].copy()
+        # fixed-width strings (e.g. from zarr v2 files) would truncate longer names, so we convert them to objects
+        if property_layer.dtype.kind == "U":
+            property_layer = property_layer.astype(object)
 
         if isinstance(label, str):
             label = self._obj.la._label_name_to_id(label)
@@ -758,6 +761,9 @@ class LabelAccessor:
         props_layer = self._obj.coords[Dims.LA_PROPS].values.tolist()
         labels_layer = self._obj.coords[Dims.LABELS].values.tolist()
         array = self._obj[Layers.LA_PROPERTIES].values.copy()
+        # fixed-width strings (e.g. from zarr v2 files) would truncate longer colors, so we convert them to objects
+        if array.dtype.kind == "U":
+            array = array.astype(object)
 
         for label, color in zip(labels, colors):
             # if the label does not exist in the object, a warning is thrown and we continue

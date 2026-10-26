@@ -1,4 +1,7 @@
+import numpy as np
 import pytest
+
+from spatialproteomics.constants import Layers, Props
 
 
 def test_set_neighborhood_name(ds_neighborhoods):
@@ -58,3 +61,18 @@ def test_set_neighborhood_name_duplicate_names(ds_neighborhoods):
         ds_neighborhoods.nh.set_neighborhood_name(
             ["Neighborhood 1", "Neighborhood 2"], ["Dummy Neighborhood 3", "Dummy Neighborhood 3"]
         )
+
+
+def test_set_neighborhood_name_fixed_width_strings(ds_neighborhoods):
+    # legacy data (e.g. zarr v2 files) stores the properties as fixed-width strings, which must not truncate new values
+    ds = ds_neighborhoods.copy()
+    ds[Layers.NH_PROPERTIES] = ds[Layers.NH_PROPERTIES].copy(
+        data=np.array(ds[Layers.NH_PROPERTIES].values.tolist(), dtype=str)
+    )
+    assert ds[Layers.NH_PROPERTIES].dtype.kind == "U"
+
+    renamed = ds.nh.set_neighborhood_name("Neighborhood 1", "A much longer neighborhood name")
+    assert "A much longer neighborhood name" in renamed[Layers.NH_PROPERTIES].sel(nh_props=Props.NAME).values
+
+    recolored = ds.nh.set_neighborhood_colors("Neighborhood 1", "lightgoldenrodyellow")
+    assert "lightgoldenrodyellow" in recolored[Layers.NH_PROPERTIES].sel(nh_props=Props.COLOR).values

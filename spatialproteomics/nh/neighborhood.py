@@ -463,6 +463,9 @@ class NeighborhoodAccessor:
         props_layer = self._obj.coords[Dims.NH_PROPS].values.tolist()
         neighborhoods_layer = self._obj.coords[Dims.NEIGHBORHOODS].values.tolist()
         array = self._obj[Layers.NH_PROPERTIES].values.copy()
+        # fixed-width strings (e.g. from zarr v2 files) would truncate longer colors, so we convert them to objects
+        if array.dtype.kind == "U":
+            array = array.astype(object)
 
         for neighborhood, color in zip(neighborhoods, colors):
             # if the neighborhoods does not exist in the object, a warning is thrown and we continue
@@ -567,6 +570,9 @@ class NeighborhoodAccessor:
 
         # Retrieve the original neighborhood properties
         property_layer = self._obj[Layers.NH_PROPERTIES].copy()
+        # fixed-width strings (e.g. from zarr v2 files) would truncate longer names, so we convert them to objects
+        if property_layer.dtype.kind == "U":
+            property_layer = property_layer.astype(object)
 
         for n, new_name in zip(neighborhoods, names):
             # Convert neighborhood name to ID if necessary

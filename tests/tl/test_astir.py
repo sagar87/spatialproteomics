@@ -1,3 +1,4 @@
+import importlib.util
 import sys
 import types
 
@@ -34,6 +35,7 @@ def fake_astir(monkeypatch):
 MARKER_DICT = {"cell_type": {"B": ["PAX5"], "T": ["CD3"]}}
 
 
+@pytest.mark.skipif(importlib.util.find_spec("spatialdata") is None, reason="spatialdata is not installed")
 def test_astir_spatialdata_with_string_obs_names(ds_segmentation, fake_astir):
     sdata = ds_segmentation.tl.convert_to_spatialdata()
     sp.pp.add_quantification(sdata)
