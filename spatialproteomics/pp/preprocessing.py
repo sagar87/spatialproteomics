@@ -1355,8 +1355,11 @@ class PreprocessingAccessor:
         assert layers is not None or keep is not None, "Please provide either layers or keep."
         assert not (layers is not None and keep is not None), "Please provide either layers or keep."
 
+        # copying the input, so that the list of the caller is not modified below
         if type(layers) is str:
             layers = [layers]
+        elif layers is not None:
+            layers = list(layers)
 
         if type(keep) is str:
             keep = [keep]
@@ -1373,9 +1376,9 @@ class PreprocessingAccessor:
 
         # if the segmentation layer is dropped, we also need to drop the obs and vice versa
         # this helps to ensure that the segmentation and obs always stay in sync
-        if Layers.SEGMENTATION in layers and Layers.OBS in self._obj.data_vars:
+        if Layers.SEGMENTATION in layers and Layers.OBS in self._obj.data_vars and Layers.OBS not in layers:
             layers.append(Layers.OBS)
-        if Layers.OBS in layers and Layers.SEGMENTATION in self._obj.data_vars:
+        if Layers.OBS in layers and Layers.SEGMENTATION in self._obj.data_vars and Layers.SEGMENTATION not in layers:
             layers.append(Layers.SEGMENTATION)
 
         assert all(
