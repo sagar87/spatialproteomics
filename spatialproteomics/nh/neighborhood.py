@@ -343,7 +343,7 @@ class NeighborhoodAccessor:
             neighborhoods = np.array([neighborhood_to_num[neighborhood] for neighborhood in neighborhoods])
             names = [k for k, v in sorted(neighborhood_to_num.items(), key=lambda x: x[1])]
 
-        assert ~np.all(neighborhoods < 0), "Neighborhoods must be >= 0."
+        assert not np.any(neighborhoods < 0), "Neighborhoods must be >= 0."
 
         formated_neighborhoods = _format_neighborhoods(neighborhoods)
         unique_neighborhoods = np.unique(formated_neighborhoods)
