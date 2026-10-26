@@ -48,7 +48,7 @@ from .pp import (
     threshold,
     transform_expression_matrix,
 )
-from .tl import ToolAccessor, astir, cellpose, stardist
+from .tl import ToolAccessor, astir, cellpose, instanseg, stardist
 
 __all__ = [
     "load_image_data",
@@ -67,6 +67,7 @@ __all__ = [
     "is_positive",
     "cellpose",
     "stardist",
+    "instanseg",
     "add_observations",
     "add_quantification",
     "apply",

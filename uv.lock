@@ -1253,6 +1253,15 @@ wheels = [
 ]
 
 [[package]]
+name = "einops"
+version = "0.8.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/77/850bef8d72ffb9219f0b1aac23fbc1bf7d038ee6ea666f331fa273031aa2/einops-0.8.2.tar.gz", hash = "sha256:609da665570e5e265e27283aab09e7f279ade90c4f01bcfca111f3d3e13f2827", size = 56261, upload-time = "2026-01-26T04:13:17.638Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/09/f8d8f8f31e4483c10a906437b4ce31bdf3d6d417b73fe33f1a8b59e34228/einops-0.8.2-py3-none-any.whl", hash = "sha256:54058201ac7087911181bfec4af6091bb59380360f069276601256a76af08193", size = 65638, upload-time = "2026-01-26T04:13:18.546Z" },
+]
+
+[[package]]
 name = "executing"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1820,6 +1829,25 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f2/97/ebf4da567aa6827c909642694d71c9fcf53e5b504f2d96afea02718862f3/iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7", size = 4793, upload-time = "2025-03-19T20:09:59.721Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760", size = 6050, upload-time = "2025-03-19T20:10:01.071Z" },
+]
+
+[[package]]
+name = "instanseg-torch"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "fastremap" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "requests" },
+    { name = "scikit-image" },
+    { name = "torch" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/96/ff/60f2e70d44c4aea2daf30822232ca506e4644788d237cbe3eba7c190df43/instanseg_torch-0.1.2.tar.gz", hash = "sha256:6dbb0435d910b94fd2bae8ddc8847e52f5c26855179f7ab3429e5deaa4e76b92", size = 112605, upload-time = "2026-09-29T22:59:07.392Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5c/5f/a2f85c190bfac9165b8733724ea34dcc5fef9ad795524f88900a162f58e9/instanseg_torch-0.1.2-py3-none-any.whl", hash = "sha256:f6ad98efb264125d205065a2768749bf4108ce2214cd597e3ee19707f6d63b9b", size = 127049, upload-time = "2026-09-29T22:59:06.007Z" },
 ]
 
 [[package]]
@@ -4850,6 +4878,7 @@ dependencies = [
 all = [
     { name = "astir" },
     { name = "cellpose" },
+    { name = "instanseg-torch" },
     { name = "spatialdata" },
     { name = "spotiflow" },
     { name = "stardist" },
@@ -4881,6 +4910,9 @@ docs = [
     { name = "sphinx-multiversion" },
     { name = "sphinxcontrib-napoleon" },
 ]
+instanseg = [
+    { name = "instanseg-torch" },
+]
 spatialdata = [
     { name = "spatialdata" },
 ]
@@ -4902,6 +4934,8 @@ requires-dist = [
     { name = "cellpose", marker = "extra == 'cellpose'", specifier = ">=3.1.0" },
     { name = "cffi", specifier = ">=1.15.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=5.0.4" },
+    { name = "instanseg-torch", marker = "extra == 'all'", specifier = ">=0.1.0" },
+    { name = "instanseg-torch", marker = "extra == 'instanseg'", specifier = ">=0.1.0" },
     { name = "ipython", marker = "extra == 'docs'", specifier = ">=8.0.0" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.10.1" },
     { name = "matplotlib", specifier = ">=3.8.0" },
@@ -4930,7 +4964,7 @@ requires-dist = [
     { name = "xarray", specifier = ">=2024.0.0" },
     { name = "zarr" },
 ]
-provides-extras = ["docs", "spatialdata", "cellpose", "stardist", "anndata", "astir", "spotiflow", "dev", "all"]
+provides-extras = ["docs", "spatialdata", "cellpose", "stardist", "anndata", "astir", "spotiflow", "instanseg", "dev", "all"]
 
 [[package]]
 name = "sphinx"

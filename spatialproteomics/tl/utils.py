@@ -1,5 +1,5 @@
 from importlib.metadata import version
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -185,6 +185,103 @@ def _stardist(
         all_masks.append(labels)
 
     return np.array(all_masks)
+
+
+def _instanseg(
+    img: np.ndarray,
+    model_type: str = "fluorescence_nuclei_and_cells",
+    pixel_size: Optional[float] = None,
+    target: str = "cells",
+    normalize: bool = True,
+    method: str = "auto",
+    tile_size: int = 512,
+    batch_size: int = 1,
+    device: Optional[str] = None,
+    verbosity: int = 1,
+    postprocess_func: Callable = lambda x: x,
+    **kwargs,
+):
+    """
+    Runs InstanSeg on a (channels, y, x) image. All channels are segmented jointly, since InstanSeg is channel-invariant.
+
+    Returns a dictionary mapping the output names ("nuclei" and/or "cells") to integer label masks of shape (y, x).
+    """
+    from instanseg import InstanSeg
+
+    # checking that the input is 2D or 3D
+    if img.ndim not in [2, 3]:
+        raise ValueError(f"Input image must be 2D or 3D, got {img.ndim}.")
+
+    # if the input is 2D, we add a channel dimension
+    if img.ndim == 2:
+        img = img[np.newaxis, :, :]
+
+    if target not in ["nuclei", "cells", "all_outputs"]:
+        raise ValueError(f"Target must be 'nuclei', 'cells' or 'all_outputs', got '{target}'.")
+
+    if method not in ["auto", "small", "medium"]:
+        raise ValueError(f"Method must be 'auto', 'small' or 'medium', got '{method}'.")
+
+    if pixel_size is None:
+        logger.warning(
+            "No pixel_size (in microns) was provided to InstanSeg, so the image is not rescaled to the pixel size the model was trained on. This may lead to inaccurate results."
+        )
+
+    model = InstanSeg(model_type, device=device, verbosity=verbosity)
+
+    # determining which outputs we will get back from the model
+    if model.instanseg.cells_and_nuclei:
+        output_names = ["nuclei", "cells"] if target == "all_outputs" else [target]
+    else:
+        if target == "cells":
+            logger.warning(
+                f"The InstanSeg model {model_type} only predicts nuclei, returning the nuclear segmentation."
+            )
+        output_names = ["nuclei"]
+
+    # instanseg infers the channel axis from the smallest dimension of the image
+    if img.shape[0] >= min(img.shape[1:]):
+        logger.warning(
+            "The image has at least as many channels as pixels along one of its spatial axes. InstanSeg may not be able to identify the channel axis correctly."
+        )
+
+    if method == "auto":
+        method = "small" if img.shape[1] * img.shape[2] <= model.small_image_threshold else "medium"
+
+    if method == "small":
+        labels = model.eval_small_image(
+            img, pixel_size=pixel_size, normalise=normalize, return_image_tensor=False, target=target, **kwargs
+        )
+    else:
+        labels = model.eval_medium_image(
+            img,
+            pixel_size=pixel_size,
+            normalise=normalize,
+            tile_size=tile_size,
+            batch_size=batch_size,
+            return_image_tensor=False,
+            target=target,
+            **kwargs,
+        )
+
+    # output has shape (1, num_outputs, y, x)
+    labels = labels.detach().cpu().numpy()[0].astype(np.int64)
+
+    assert labels.shape[0] == len(
+        output_names
+    ), f"Expected {len(output_names)} output(s) from InstanSeg, got {labels.shape[0]}."
+
+    return {name: postprocess_func(labels[i]) for i, name in enumerate(output_names)}
+
+
+def _instanseg_keys(masks: dict, key_added: str) -> dict:
+    """
+    Maps the InstanSeg outputs to the keys they are stored under. A single output is stored under key_added.
+    If both nuclei and cells are returned, the cells are stored under key_added and the nuclei under f"{key_added}_nuclei".
+    """
+    if len(masks) == 1:
+        return {name: key_added for name in masks}
+    return {name: key_added if name == "cells" else f"{key_added}_{name}" for name in masks}
 
 
 def _astir(
