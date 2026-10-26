@@ -552,7 +552,11 @@ class PreprocessingAccessor:
     def __getitem__(self, indices) -> xr.Dataset:
         """
         Fast subsetting the image container. The following examples show how
-        the user can subset the image container:
+        the user can subset the image container.
+
+        Slices of x and y coordinates are label-based (like xarray's ``.sel``), i.e. both start and stop
+        are inclusive: ``ds.pp[0:50, 0:50]`` returns the pixels with coordinates 0 to 50 (51 x 51 pixels
+        for integer coordinates). Cells are kept if their centroid lies within these bounds.
 
         Subset the image container using x and y coordinates:
         >>> ds.pp[0:50, 0:50]
@@ -654,9 +658,9 @@ class PreprocessingAccessor:
         Parameters
         ----------
         x_slice : slice
-            The slice representing the x-coordinates for the bounding box.
+            The slice representing the x-coordinates for the bounding box. Start and stop are inclusive.
         y_slice : slice
-            The slice representing the y-coordinates for the bounding box.
+            The slice representing the y-coordinates for the bounding box. Start and stop are inclusive.
 
         Returns
         -------

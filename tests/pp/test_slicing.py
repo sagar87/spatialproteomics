@@ -124,3 +124,18 @@ def test_image_slicing_channel_tuple(ds_segmentation, channels):
 def test_image_slicing_invalid_tuple(ds_segmentation):
     with pytest.raises(AssertionError, match="Second and third index must be slices"):
         ds_segmentation.pp["DAPI", :1650, 3]
+
+
+def test_image_slicing_stop_is_inclusive(ds_segmentation):
+    # slices are label-based (like xarray's sel), so both start and stop are included
+    sub = ds_segmentation.pp[1600:1610, 2100:2110]
+    assert sub.sizes[Dims.X] == 11
+    assert sub.sizes[Dims.Y] == 11
+
+
+def test_image_slicing_ending_at_first_coordinate(ds_segmentation):
+    # a slice that ends exactly at the first coordinate contains that coordinate and is not out of bounds
+    xmin = int(ds_segmentation.coords[Dims.X].values[0])
+    with pytest.warns(UserWarning, match="partially out of bounds"):
+        sub = ds_segmentation.pp[xmin - 10 : xmin, 2100:2110]
+    assert sub.sizes[Dims.X] == 1
