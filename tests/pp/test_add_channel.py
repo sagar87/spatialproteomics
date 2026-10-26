@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatialproteomics.constants import Layers
+from spatialproteomics.constants import Dims, Layers
 
 
 def test_add_channel_existing_channel(ds_image):
@@ -50,3 +50,20 @@ def test_add_channel_too_many_markers(ds_image):
     # trying to add something where the number of channels and the array shape are inconsistent
     with pytest.raises(AssertionError, match="The length of channels must match the number of channels in array"):
         ds_image.pp.add_channel(channels=["new_channel_1", "new_channel_2"], array=new_channel_array)
+
+
+def test_add_channel_with_scaled_coordinates(ds_image):
+    # coordinates that are not plain pixel indices, e.g. after reading from spatialdata with a Scale transform
+    ds = ds_image.assign_coords(
+        {
+            Dims.X: 0.5 * np.arange(ds_image.sizes[Dims.X]) + 10,
+            Dims.Y: 0.5 * np.arange(ds_image.sizes[Dims.Y]) + 20,
+        }
+    )
+    new_channel_array = ds[Layers.IMAGE].values[0]
+    ds = ds.pp.add_channel(channels="new_channel", array=new_channel_array)
+
+    assert ds.sizes[Dims.X] == ds_image.sizes[Dims.X]
+    assert ds.sizes[Dims.Y] == ds_image.sizes[Dims.Y]
+    assert not np.isnan(ds[Layers.IMAGE].values).any()
+    assert np.array_equal(ds[Layers.IMAGE].sel(channels="new_channel").values, new_channel_array)

@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from spatialproteomics.constants import Dims, Layers
+from spatialproteomics.constants import Dims, Features, Layers
 
 
 def test_add_obs_centroids(ds_segmentation):
@@ -49,3 +49,43 @@ def test_add_obs_with_mismatching_obs_keeps_segmentation(ds_segmentation):
     assert dataset.sizes[Dims.CELLS] == ds_segmentation.sizes[Dims.CELLS]
     assert "area" in dataset.coords[Dims.FEATURES]
     assert not np.isnan(dataset[Layers.OBS].values).any()
+
+
+def _scale_coords(ds):
+    # coordinates that are not plain pixel indices, e.g. after reading from spatialdata with a Scale transform
+    return ds.assign_coords(
+        {
+            Dims.X: 0.5 * np.arange(ds.sizes[Dims.X]) + 10,
+            Dims.Y: 0.5 * np.arange(ds.sizes[Dims.Y]) + 20,
+        }
+    )
+
+
+def test_add_obs_centroids_with_scaled_coordinates(ds_segmentation):
+    ds_pixel = ds_segmentation.pp.drop_observations(["centroid-0", "centroid-1"])
+    ds_pixel = ds_pixel.assign_coords(
+        {Dims.X: np.arange(ds_pixel.sizes[Dims.X]), Dims.Y: np.arange(ds_pixel.sizes[Dims.Y])}
+    )
+    pixel_centroids = ds_pixel.pp.add_observations()
+
+    ds = _scale_coords(ds_segmentation.pp.drop_observations(["centroid-0", "centroid-1"])).pp.add_observations()
+    x = ds[Layers.OBS].sel(features=Features.X).values
+    y = ds[Layers.OBS].sel(features=Features.Y).values
+
+    # the centroids lie within the coordinates
+    assert x.min() >= ds.coords[Dims.X].values.min() and x.max() <= ds.coords[Dims.X].values.max()
+    assert y.min() >= ds.coords[Dims.Y].values.min() and y.max() <= ds.coords[Dims.Y].values.max()
+    # and are the pixel centroids mapped onto the coordinates
+    assert np.allclose(x, 0.5 * pixel_centroids[Layers.OBS].sel(features=Features.X).values + 10)
+    assert np.allclose(y, 0.5 * pixel_centroids[Layers.OBS].sel(features=Features.Y).values + 20)
+
+
+def test_get_bbox_with_scaled_coordinates(ds_segmentation):
+    ds = ds_segmentation.pp.drop_observations(["centroid-0", "centroid-1"]).pp.add_observations()
+    ds_scaled = _scale_coords(ds_segmentation.pp.drop_observations(["centroid-0", "centroid-1"])).pp.add_observations()
+
+    # the same region in pixel and in scaled coordinates
+    cropped = ds.pp[1620:1660, 2120:2160]
+    cropped_scaled = ds_scaled.pp[20:40, 30:50]
+
+    assert np.array_equal(cropped.coords[Dims.CELLS].values, cropped_scaled.coords[Dims.CELLS].values)

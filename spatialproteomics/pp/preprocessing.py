@@ -19,6 +19,7 @@ from .utils import (
     _merge_channels,
     _merge_segmentation,
     _normalize,
+    _pixel_to_coordinate,
     _relabel_cell_coords,
     _relabel_cells,
     _remove_outlying_cells,
@@ -792,13 +793,10 @@ class PreprocessingAccessor:
             self_y_dim == other_y_dim
         ), "Dimensions of the original image and the input array do not match."
 
-        # correct for offset in case the image does not start at (0, 0)
-        x_start = int(self._obj.coords[Dims.X][0])
-        y_start = int(self._obj.coords[Dims.Y][0])
-
+        # the new channels use the same coordinates as the existing image
         da = xr.DataArray(
             array,
-            coords=[channels, range(y_start, (other_y_dim + y_start)), range(x_start, (other_x_dim + x_start))],
+            coords=[channels, self._obj.coords[Dims.Y].values, self._obj.coords[Dims.X].values],
             dims=[Dims.CHANNELS, Dims.Y, Dims.X],
             name=layer_key,
         )
@@ -1065,13 +1063,13 @@ class PreprocessingAccessor:
             if Dims.FEATURES in self._obj.coords:
                 if k in self._obj.coords[Dims.FEATURES] and not return_xarray:
                     continue
-            # when looking at centroids, it could happen that the image has been cropped before
-            # in this case, the x and y coordinates do not necessarily start at 0
-            # to accommodate for this, we add the x and y coordinates to the centroids
+            # the centroids are computed in pixel space, but the coordinates do not necessarily correspond to
+            # pixel indices (e. g. after cropping they do not start at 0, or they can be scaled after reading
+            # from spatialdata), so we map the centroids onto the x and y coordinates
             if k == Features.X:
-                v += self._obj.coords[Dims.X].values[0]
+                v = _pixel_to_coordinate(v, self._obj.coords[Dims.X].values)
             if k == Features.Y:
-                v += self._obj.coords[Dims.Y].values[0]
+                v = _pixel_to_coordinate(v, self._obj.coords[Dims.Y].values)
             cols.append(k)
             data.append(v)
 
