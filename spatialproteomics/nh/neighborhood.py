@@ -672,9 +672,9 @@ class NeighborhoodAccessor:
         Parameters
         ----------
         k : int, optional
-            The number of nearest neighbors to consider. Default is 10.
+            The number of nearest neighbors to consider, not counting the center cell. Default is 10.
         include_center : bool, optional
-            Whether to include the center cell in the neighborhood. Default is True.
+            Whether to add the center cell to its k nearest neighbors in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
@@ -845,6 +845,8 @@ class NeighborhoodAccessor:
 
             adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
             G = nx.from_numpy_array(adjacency_matrix)
+            # a cell is not its own neighbor (adjacency matrices computed with older versions contain self-loops)
+            G.remove_edges_from(list(nx.selfloop_edges(G)))
 
             # adding labels as node attributes
             spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
@@ -921,6 +923,8 @@ class NeighborhoodAccessor:
 
             adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
             G = nx.from_numpy_array(adjacency_matrix)
+            # a cell is not its own neighbor (adjacency matrices computed with older versions contain self-loops)
+            G.remove_edges_from(list(nx.selfloop_edges(G)))
 
             # adding labels as node attributes
             spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)

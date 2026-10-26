@@ -22,7 +22,6 @@ def _format_neighborhoods(neighborhoods):
     numpy.ndarray
         The formatted array of neighborhoods with consecutive numbering.
     """
-
     formatted_neighborhoods = neighborhoods.copy()
     unique_neighborhoods = np.unique(neighborhoods)
 
@@ -61,6 +60,7 @@ def _construct_neighborhood_df_radius(
         The values represent the normalized counts of neighboring cell types within the specified radius.
     adjacency_matrix : np.ndarray
         A square adjacency matrix where each element (i, j) is 1 if cell 'i' is within the radius of cell 'j', 0 otherwise.
+        The center cell is not part of the adjacency matrix.
     """
     # Build KDTree for efficient neighborhood queries
     tree = KDTree(df[[x, y]])
@@ -78,15 +78,14 @@ def _construct_neighborhood_df_radius(
 
     # Iterate over each cell
     for i in range(N):
-        # Query the KDTree for neighbors within the radius (including the center cell)
-        indices = tree.query_ball_point(df.loc[i, [x, y]], r=radius)
+        # Query the KDTree for neighbors within the radius (excluding the center cell)
+        neighbors = [idx for idx in tree.query_ball_point(df.loc[i, [x, y]], r=radius) if idx != i]
 
-        # If include_center is False, exclude the center cell (i.e., cell 'i') from the indices
-        if not include_center:
-            indices = [idx for idx in indices if idx != i]
+        # Update adjacency matrix: Set 1 for neighbors within the radius (a cell is not its own neighbor)
+        adjacency_matrix[i, neighbors] = 1
 
-        # Update adjacency matrix: Set 1 for neighbors within the radius
-        adjacency_matrix[i, indices] = 1
+        # Optionally include the center cell (i.e., the cell itself) in the neighborhood profile
+        indices = neighbors + [i] if include_center else neighbors
 
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[indices, label_col].value_counts()
@@ -130,9 +129,9 @@ def _construct_neighborhood_df_knn(
     label_col : str, optional
         Column name for the cell type labels (default is 'labels').
     k : int, optional
-        The number of nearest neighbors to consider (default is 10).
+        The number of nearest neighbors to consider, not counting the center cell (default is 10).
     include_center : bool, optional
-        Whether to include the center cell in the neighborhood profile (default is True).
+        Whether to add the center cell to its k neareast neighbors in the neighborhood profile (default is True).
 
     Returns
     -------
@@ -140,7 +139,8 @@ def _construct_neighborhood_df_knn(
         A DataFrame where each row corresponds to a cell and each column corresponds to a cell type.
         The values represent the normalized counts of neighboring cell types within the k-nearest neighbors.
     adjacency_matrix : np.ndarray
-        A square adjacency matrix where each element (i, j) is 1 if cell 'i' is within the radius of cell 'j', 0 otherwise.
+        A square adjacency matrix where each element (i, j) is 1 if cell 'j' is one of the k nearest neighbors of
+        cell 'i', 0 otherwise. The center cell is not part of the adjacency matrix.
     """
     # Build NearestNeighbors for k-nearest neighbor queries
     knn = NearestNeighbors(n_neighbors=k + 1)  # +1 because the first neighbor is the cell itself
@@ -162,12 +162,16 @@ def _construct_neighborhood_df_knn(
 
     # Iterate over each cell
     for i, neighbors in enumerate(indices):
-        if not include_center:
-            # Exclude the first element (the center cell)
-            neighbors = neighbors[1:]
+        # Exclude the center cell, so that we keep the k nearest neighbors (usually the center is the first element,
+        # but with duplicate coordinates, it can be at a different position)
+        neighbors = [idx for idx in neighbors if idx != i][:k]
 
-        # Update adjacency matrix: Set 1 for neighbors within the radius
+        # Update adjacency matrix: Set 1 for the k nearest neighbors (a cell is not its own neighbor)
         adjacency_matrix[i, neighbors] = 1
+
+        # Optionally include the center cell (i.e., the cell itself) in the neighborhood profile
+        if include_center:
+            neighbors = neighbors + [i]
 
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()
@@ -212,7 +216,8 @@ def _construct_neighborhood_df_delaunay(
         A DataFrame where each row corresponds to a cell and each column corresponds to a cell type.
         The values represent the normalized counts of neighboring cell types connected via Delaunay triangulation.
     adjacency_matrix : np.ndarray
-        A square adjacency matrix where each element (i, j) is 1 if cell 'i' is within the radius of cell 'j', 0 otherwise.
+        A square adjacency matrix where each element (i, j) is 1 if cell 'i' and cell 'j' are connected via Delaunay
+        triangulation, 0 otherwise. The center cell is not part of the adjacency matrix.
     """
     # Extract the coordinates from the DataFrame
     coords = df[[x, y]].values
@@ -238,12 +243,12 @@ def _construct_neighborhood_df_delaunay(
             tri.vertex_neighbor_vertices[0][i] : tri.vertex_neighbor_vertices[0][i + 1]
         ]
 
-        # Optionally include the center cell (i.e., the cell itself)
+        # Update adjacency matrix: Set 1 for neighbors connected via Delaunay triangulation
+        adjacency_matrix[i, neighbors] = 1
+
+        # Optionally include the center cell (i.e., the cell itself) in the neighborhood profile
         if include_center:
             neighbors = list(neighbors) + [i]
-
-        # Update adjacency matrix: Set 1 for neighbors within the radius
-        adjacency_matrix[i, neighbors] = 1
 
         # Count the cell types of the neighbors
         neighbor_counts = df.loc[neighbors, label_col].value_counts()
