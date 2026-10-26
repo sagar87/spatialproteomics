@@ -83,3 +83,34 @@ def test_merge_segmentation_from_multiple_layers_incompatible_shapes(ds_segmenta
         match="Segmentation mask '_segmentation_to_merge' must be 2D.",
     ):
         ds.pp.merge_segmentation(layer_key=["_segmentation", key])
+
+
+def test_merge_segmentation_threshold1_with_large_labels():
+    # regression test: with labels > 1000, the set of surviving labels is no longer iterated in sorted order,
+    # which used to misalign the area ratios with the labels they belong to
+    from spatialproteomics.pp.utils import _merge_segmentation
+
+    s1 = np.zeros((100, 100), dtype=int)
+    s2 = np.zeros((100, 100), dtype=int)
+    overlapping = set()
+    label = 0
+    for r in range(10):
+        for c in range(10):
+            label += 1
+            s2[r * 10 : r * 10 + 4, c * 10 : c * 10 + 4] = label
+            # every third s2 cell is partially covered by the single s1 cell
+            if label % 3 == 0:
+                s1[r * 10 : r * 10 + 4, c * 10 : c * 10 + 2] = 1000
+                overlapping.add(label)
+
+    merged, mapping = _merge_segmentation(s1, s2, label1="s1", label2="s2", threshold1=1.0, threshold2=1.0)
+
+    # only the s1 cell and the s2 cells that do not overlap with s1 are kept
+    assert len(mapping) == 1 + 100 - len(overlapping)
+    for lbl in range(1, 101):
+        region = s2 == lbl
+        if lbl in overlapping:
+            # the part of the s2 cell that is not covered by s1 must have been removed
+            assert np.all(merged[region & (s1 == 0)] == 0)
+        else:
+            assert np.all(merged[region] > 0)

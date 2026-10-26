@@ -610,8 +610,27 @@ class LabelAccessor:
         # Replace the OBS layer in the copied object
         obj = obj.assign({Layers.OBS: new_obs})
 
-        # Exclude the specified cell types from the label dimension
-        obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS].values if i not in cell_type]})
+        remaining_labels = [i for i in obj.coords[Dims.LABELS].values if i not in cell_type]
+
+        # the cells of the removed types are now unlabeled (0)
+        # if there is no entry for label 0 yet, we add one, so that every label in obs has properties
+        if len(cells) > 0 and 0 not in obj.coords[Dims.LABELS].values:
+            removed = obj.sel({Dims.LABELS: cell_type})
+            obj = obj.reindex({Dims.LABELS: [0, *remaining_labels]})
+
+            props = obj[Layers.LA_PROPERTIES].astype(object)
+            props.loc[{Dims.LABELS: 0}] = ""
+            props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.NAME}] = Labels.UNLABELED
+            props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.COLOR}] = "black"
+            obj[Layers.LA_PROPERTIES] = props.astype(str)
+
+            # other layers with a labels dimension (e. g. neighborhood compositions) attribute the removed types to 0
+            for layer in obj.data_vars:
+                if layer != Layers.LA_PROPERTIES and Dims.LABELS in obj[layer].dims:
+                    obj[layer].loc[{Dims.LABELS: 0}] = removed[layer].sum(Dims.LABELS)
+        else:
+            # Exclude the specified cell types from the label dimension
+            obj = obj.sel({Dims.LABELS: remaining_labels})
 
         return obj
 

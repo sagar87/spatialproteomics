@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatialproteomics.constants import Dims, Features, Layers
+from spatialproteomics.constants import Dims, Features, Labels, Layers, Props
 
 
 def test_remove_label_type(ds_labels):
@@ -9,7 +9,8 @@ def test_remove_label_type(ds_labels):
 
     assert Layers.LA_PROPERTIES in ds
     assert Dims.LABELS in ds.coords
-    assert np.all(ds.coords[Dims.LABELS].values == np.array([2, 3, 4]))
+    # the removed cells are unlabeled, hence an entry for label 0 is added
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([0, 2, 3, 4]))
     assert 0 in ds.pp.get_layer_as_df(celltypes_to_str=False)[Features.LABELS].values
     # making sure there was no in-place operation
     assert np.all(ds_labels.coords[Dims.LABELS].values == np.array([1, 2, 3, 4]))
@@ -24,9 +25,31 @@ def test_remove_label_type(ds_labels):
 def test_remove_multiple_label_types(ds_labels, cell_types):
     ds = ds_labels.la.remove_label_type(cell_types)
 
-    assert np.all(ds.coords[Dims.LABELS].values == np.array([3, 4]))
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([0, 3, 4]))
     old_labels = ds_labels.pp.get_layer_as_df(celltypes_to_str=False)[Features.LABELS].values
     new_labels = ds.pp.get_layer_as_df(celltypes_to_str=False)[Features.LABELS].values
     # cells of the removed types are unlabeled, all other cells keep their label
     assert np.all(new_labels[np.isin(old_labels, [1, 2])] == 0)
     assert np.all(new_labels[~np.isin(old_labels, [1, 2])] == old_labels[~np.isin(old_labels, [1, 2])])
+
+
+def test_remove_label_type_adds_unlabeled_entry(ds_labels):
+    ds = ds_labels.la.remove_label_type("B")
+    props = ds.pp.get_layer_as_df(Layers.LA_PROPERTIES)
+    assert props.loc[0, Props.NAME] == Labels.UNLABELED
+
+    # looking up the names of the labels used to fail for the unlabeled cells
+    df = ds.pp.get_layer_as_df()
+    assert Labels.UNLABELED in df[Features.LABELS].values
+    assert "B" not in df[Features.LABELS].values
+
+    # removing another type keeps the single unlabeled entry
+    ds = ds.la.remove_label_type("T")
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([0, 3, 4]))
+
+
+def test_remove_label_type_then_predict_cell_types_argmax(ds_labels):
+    ds = ds_labels.la.remove_label_type("B")
+    # partial annotations with unlabeled cells are filled in by the argmax prediction
+    ds = ds.la.predict_cell_types_argmax({"PAX5": "B", "CD3": "T"}, overwrite_existing_labels=False)
+    assert Layers.LA_PROPERTIES in ds

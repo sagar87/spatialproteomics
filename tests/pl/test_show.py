@@ -52,3 +52,32 @@ def test_add_box(ds_image):
 def test_show_no_rendering_element_specified(ds_image):
     with pytest.raises(AssertionError, match="No rendering element specified."):
         ds_image.pl.show(render_image=False, render_labels=False, render_segmentation=False)
+
+
+@pytest.mark.parametrize("method", ["render_segmentation", "render_labels"])
+def test_render_does_not_modify_accessor(ds_labels, method):
+    # xarray caches the accessor of a dataset, so rendering must not replace the accessor's object
+    ds = ds_labels.pl.render_segmentation()
+    rendered = getattr(ds.pl, method)()
+
+    assert Layers.PLOT in rendered
+    assert ds.pl._obj is ds
+    assert Layers.PLOT in ds.pl._obj
+
+
+def test_render_neighborhoods_does_not_modify_accessor(ds_neighborhoods):
+    ds = ds_neighborhoods.pl.render_segmentation()
+    ds.pl.render_neighborhoods(style="cells")
+    assert ds.pl._obj is ds
+
+
+def test_render_obs_does_not_modify_accessor(ds_neighborhoods):
+    ds = ds_neighborhoods.pl.render_segmentation()
+    ds.pl.render_obs(feature="centroid-0")
+    assert ds.pl._obj is ds
+
+
+def test_imshow_does_not_modify_accessor(ds_segmentation):
+    ds_segmentation.pl.imshow()
+    assert ds_segmentation.pl._obj is ds_segmentation
+    assert Layers.PLOT not in ds_segmentation.pl._obj

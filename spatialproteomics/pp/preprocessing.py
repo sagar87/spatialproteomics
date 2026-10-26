@@ -552,7 +552,11 @@ class PreprocessingAccessor:
     def __getitem__(self, indices) -> xr.Dataset:
         """
         Fast subsetting the image container. The following examples show how
-        the user can subset the image container:
+        the user can subset the image container.
+
+        Slices of x and y coordinates are label-based (like xarray's ``.sel``), i.e. both start and stop
+        are inclusive: ``ds.pp[0:50, 0:50]`` returns the pixels with coordinates 0 to 50 (51 x 51 pixels
+        for integer coordinates). Cells are kept if their centroid lies within these bounds.
 
         Subset the image container using x and y coordinates:
         >>> ds.pp[0:50, 0:50]
@@ -654,9 +658,9 @@ class PreprocessingAccessor:
         Parameters
         ----------
         x_slice : slice
-            The slice representing the x-coordinates for the bounding box.
+            The slice representing the x-coordinates for the bounding box. Start and stop are inclusive.
         y_slice : slice
-            The slice representing the y-coordinates for the bounding box.
+            The slice representing the y-coordinates for the bounding box. Start and stop are inclusive.
 
         Returns
         -------
@@ -1198,11 +1202,13 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended image container.
         """
-        if Dims.CELLS not in self._obj.coords:
-            self._obj = self._obj.pp.add_observations()
+        # using a local variable, since the accessor (and hence self._obj) is cached by xarray and reused
+        obj = self._obj
+        if Dims.CELLS not in obj.coords:
+            obj = obj.pp.add_observations()
 
         # pulls out the cell and feature coordinates from the image container
-        cells = self._obj.coords[Dims.CELLS].values
+        cells = obj.coords[Dims.CELLS].values
 
         # ensuring that the shape of the data frame fits the number of cells in the segmentation
         assert len(cells) == len(
@@ -1217,7 +1223,7 @@ class PreprocessingAccessor:
             name=Layers.OBS,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification(
         self,
@@ -1254,15 +1260,17 @@ class PreprocessingAccessor:
 
         assert layer_key in self._obj, f"Layer {layer_key} not found in image container."
 
-        if Dims.CELLS not in self._obj.coords:
+        # using a local variable, since the accessor (and hence self._obj) is cached by xarray and reused
+        obj = self._obj
+        if Dims.CELLS not in obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
-            self._obj = self._obj.pp.add_observations()
+            obj = obj.pp.add_observations()
 
         measurements = []
-        all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        all_channels = obj.coords[Dims.CHANNELS].values.tolist()
 
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        image = self._obj[layer_key].values
+        segmentation = obj[Layers.SEGMENTATION].values
+        image = obj[layer_key].values
 
         measurements, cell_idx = _compute_quantification(image, segmentation, func)
 
@@ -1276,7 +1284,7 @@ class PreprocessingAccessor:
         if return_xarray:
             return da
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.INTENSITY) -> xr.Dataset:
         """
@@ -1351,8 +1359,11 @@ class PreprocessingAccessor:
         assert layers is not None or keep is not None, "Please provide either layers or keep."
         assert not (layers is not None and keep is not None), "Please provide either layers or keep."
 
+        # copying the input, so that the list of the caller is not modified below
         if type(layers) is str:
             layers = [layers]
+        elif layers is not None:
+            layers = list(layers)
 
         if type(keep) is str:
             keep = [keep]
@@ -1369,9 +1380,9 @@ class PreprocessingAccessor:
 
         # if the segmentation layer is dropped, we also need to drop the obs and vice versa
         # this helps to ensure that the segmentation and obs always stay in sync
-        if Layers.SEGMENTATION in layers and Layers.OBS in self._obj.data_vars:
+        if Layers.SEGMENTATION in layers and Layers.OBS in self._obj.data_vars and Layers.OBS not in layers:
             layers.append(Layers.OBS)
-        if Layers.OBS in layers and Layers.SEGMENTATION in self._obj.data_vars:
+        if Layers.OBS in layers and Layers.SEGMENTATION in self._obj.data_vars and Layers.SEGMENTATION not in layers:
             layers.append(Layers.SEGMENTATION)
 
         assert all(
@@ -2288,7 +2299,7 @@ class PreprocessingAccessor:
         Returns
         -------
         xr.Dataset
-            The object with the merged channels in the image layer.
+            The object with the merged channel added to the layer given by layer_key.
         """
         # check that the new channel name does not already exist
         assert (
@@ -2306,7 +2317,7 @@ class PreprocessingAccessor:
 
         # add the new channel to the object
         # if there are multiple layers with channels as coordinates, this will turn it into float32, since it will introduce NaNs for the new channel in other layers
-        obj = self._obj.pp.add_channel(channels=key_added, array=merged)
+        obj = self._obj.pp.add_channel(channels=key_added, array=merged, layer_key=layer_key)
         return obj
 
     def find_bright_cells(

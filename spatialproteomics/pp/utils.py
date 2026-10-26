@@ -238,8 +238,9 @@ def _merge_segmentation(
 
     # i1: s1 regions that survived into the combined mask (should always be all of them)
     # i2: s2 regions that survived into the combined mask (may be partial if they overlapped with s1)
-    i1 = list(set(l1) & set(l3))
-    i2 = list(set(l2) & set(l3))
+    # both are sorted, so that they line up with the regionprops below (which are ordered by label)
+    i1 = sorted(set(l1) & set(l3))
+    i2 = sorted(set(l2) & set(l3))
 
     # threshold1 filter: only keep s2 regions where the surviving area (in s3) is at least
     # threshold1 fraction of the original s2 area. Regions heavily masked by s1 are dropped.
@@ -469,7 +470,8 @@ def _get_disconnected_cell(segmentation: np.ndarray) -> int:
     """
     for cell in sorted(np.unique(segmentation))[1:]:
         binary_mask = np.where(segmentation == cell, 1, 0)
-        _, num_features = scipy.ndimage.label(binary_mask)
+        # using 8-connectivity, as in _check_for_disconnected_cells and handle_disconnected_cells
+        _, num_features = scipy.ndimage.label(binary_mask, structure=np.ones((3, 3)))
         if num_features != 1:
             return cell
 
@@ -803,12 +805,15 @@ def _transform_expression_matrix(
 
 def _validate_and_clamp_slice(start, stop, dim, slice_name="x_slice"):
     """
-    Validate a slice [start, stop) against the coordinate axis 'dim'.
+    Validate a slice [start, stop] against the coordinate axis 'dim'.
 
     - Assumes dim.values[0] .. dim.values[-1] are the valid (inclusive) coordinates.
     - Treats `start` inclusive, `stop` exclusive (so valid stop <= max + 1).
     - Raises ValueError if the slice is completely outside the image bounds.
     - Warns and clamps if the slice is partially outside.
+    - Treats both `start` and `stop` as inclusive, since the slice is applied with label-based
+      indexing (xarray's .sel). A stop of max + 1 is accepted without a warning, so that
+      slices such as 0:width do not warn.
     - Raises ValueError if start >= stop (empty/invalid slice).
 
     Returns (clamped_start, clamped_stop).
@@ -820,8 +825,8 @@ def _validate_and_clamp_slice(start, stop, dim, slice_name="x_slice"):
     if start >= stop:
         raise ValueError(f"{slice_name} is invalid: start ({start}) >= stop ({stop}).")
 
-    # slice is entirely to the left if its last index (stop-1) < minv
-    entirely_left = (stop - 1) < minv
+    # slice is entirely to the left if its last index (stop) < minv
+    entirely_left = stop < minv
     # slice is entirely to the right if its first index (start) > maxv
     entirely_right = start > maxv
 
@@ -833,7 +838,7 @@ def _validate_and_clamp_slice(start, stop, dim, slice_name="x_slice"):
 
     # Now check for partial out-of-bounds and clamp
     clamped_start = max(start, minv)
-    clamped_stop = min(stop, maxv + 1)  # stop is exclusive, so allow maxv+1
+    clamped_stop = min(stop, maxv + 1)  # allow maxv+1 without a warning, selecting up to maxv
 
     if clamped_start != start or clamped_stop != stop:
         warnings.warn(

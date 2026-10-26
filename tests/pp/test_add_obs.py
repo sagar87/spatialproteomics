@@ -89,3 +89,16 @@ def test_get_bbox_with_scaled_coordinates(ds_segmentation):
     cropped_scaled = ds_scaled.pp[20:40, 30:50]
 
     assert np.array_equal(cropped.coords[Dims.CELLS].values, cropped_scaled.coords[Dims.CELLS].values)
+
+
+def test_add_obs_from_dataframe_does_not_modify_accessor(ds_segmentation):
+    # xarray caches the accessor of a dataset, so the method must not replace the accessor's object
+    import pandas as pd
+
+    ds = ds_segmentation.drop_dims(["cells", "features"])
+    num_cells = len(ds_segmentation.coords["cells"])
+    df = pd.DataFrame({"feature": range(num_cells)})
+    ds.pp.add_obs_from_dataframe(df)
+
+    assert ds.pp._obj is ds
+    assert Layers.OBS not in ds.pp._obj

@@ -125,6 +125,7 @@ def read_from_spatialdata(
         spatial_data_object (spatialdata.SpatialData, str): The spatialdata object to read data from. If str, spatialdata is used to read the file from that path.
         image_key (str): The key of the image in the spatialdata object.
         segmentation_key (str): The key of the segmentation in the spatialdata object.
+        table_key (str): The key of the table in the spatialdata object. If it does not exist, the observations are computed from the segmentation.
         data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
         consolidate_segmentation (bool, optional): If True, the segmentation will be consolidated to only include cells that are present in the table. Defaults to False.
         cell_id (Optional[str], optional): The column name for the cell ID in the table. Defaults to "id".
@@ -198,7 +199,12 @@ def read_from_spatialdata(
             )  # Cast back to original dtype
 
         # if there are obs in the spatialdata object, we just use those and do not recompute them
-        add_obs_from_sdata = len(spatial_data_object.tables.keys()) > 0
+        add_obs_from_sdata = table_key in spatial_data_object.tables
+        if not add_obs_from_sdata and len(spatial_data_object.tables.keys()) > 0:
+            logger.warning(
+                f"Table key {table_key} not found in spatial data object (available keys: {list(spatial_data_object.tables.keys())}). "
+                "Computing the observations from the segmentation instead."
+            )
 
         if add_obs_from_sdata:
             # copying, so that the table of the input object is not modified
