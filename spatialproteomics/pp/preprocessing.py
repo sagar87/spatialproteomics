@@ -805,7 +805,14 @@ class PreprocessingAccessor:
             name=layer_key,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        obj = self._obj
+        if layer_key in obj:
+            # concatenating along the channels keeps the dtype of the layer
+            # (an outer merge would first fill the layer with NaNs for the new channels, turning it into floats)
+            da = xr.concat([obj[layer_key], da], dim=Dims.CHANNELS)
+            obj = obj.drop_vars(layer_key)
+
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def drop_channel(self, channels: Union[str, list]) -> xr.Dataset:
         """
@@ -1187,15 +1194,17 @@ class PreprocessingAccessor:
 
     def add_obs_from_dataframe(self, df: pd.DataFrame) -> xr.Dataset:
         """
-        Adds an observation table to the image container. Columns of the
-        dataframe have to match the feature coordinates of the image
-        container, and the index of the dataframe has to match the cell coordinates
-        of the image container.
+        Adds an observation table to the image container. Each column of the
+        dataframe is added as a feature to the obs layer.
+
+        If the index of the dataframe contains exactly the cell ids of the image container,
+        the rows are matched to the cells by their id (in any order). Otherwise, the rows are
+        assumed to be in the same order as the cell coordinates of the image container.
 
         Parameters
         ----------
         df : pd.DataFrame
-            A dataframe with the observation values.
+            A dataframe with the observation values (one row per cell).
 
         Returns
         -------
@@ -1215,9 +1224,13 @@ class PreprocessingAccessor:
             df.index
         ), "Number of cells in the image container does not match the number of cells in the dataframe."
 
+        # if the dataframe is indexed by cell id, we match the rows to the cells by their id instead of their position
+        if df.index.is_unique and set(df.index) == set(cells):
+            df = df.loc[cells]
+
         # create a data array from the dataframe
         da = xr.DataArray(
-            df,
+            df.values,
             coords=[cells, df.columns],
             dims=[Dims.CELLS, Dims.FEATURES],
             name=Layers.OBS,
@@ -1373,10 +1386,10 @@ class PreprocessingAccessor:
             layers = [str(x) for x in self._obj.data_vars if str(x) not in keep]
 
             # if the user wants to keep obs but not segmentation or vice versa, we throw a warning that this is not possible
-            if Layers.SEGMENTATION in keep and Layers.OBS not in keep:
-                logger.warning("Cannot drop segmentation and keep observations. Removing both.")
-            if Layers.OBS in keep and Layers.SEGMENTATION not in keep:
-                logger.warning("Cannot drop observations and keep segmentation. Removing both.")
+            if Layers.SEGMENTATION in keep and Layers.OBS not in keep and Layers.OBS in self._obj:
+                logger.warning("Cannot keep segmentation and drop observations. Removing both.")
+            if Layers.OBS in keep and Layers.SEGMENTATION not in keep and Layers.SEGMENTATION in self._obj:
+                logger.warning("Cannot keep observations and drop segmentation. Removing both.")
 
         # if the segmentation layer is dropped, we also need to drop the obs and vice versa
         # this helps to ensure that the segmentation and obs always stay in sync
@@ -1886,6 +1899,7 @@ class PreprocessingAccessor:
             The name of the new segmentation mask to be added to the xarray object. Default is "_merged_segmentation".
         labels : Optional[List[str]]
             Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
+            By default, the channel names are used for a single 3D mask, and the layer keys for a list of 2D masks.
         threshold1: float
             Optional. Threshold for merging cells. Default is 0.7.
         threshold2: float
@@ -1958,6 +1972,10 @@ class PreprocessingAccessor:
 
             segmentation = self._obj[layer_keys[0]].values
 
+        # by default, the cells are labeled by the channel they come from (single 3D mask) or by their layer key (list of 2D masks)
+        if labels is None:
+            labels = channels if len(layer_keys) == 1 else list(layer_keys)
+
         # Initialize an empty mapping
         mapping = {}
 
@@ -1979,10 +1997,7 @@ class PreprocessingAccessor:
                 # multiple 2D masks → pull mask i
                 next_segmentation = self._obj[current_layer_key].values
 
-            if labels is not None:
-                label_1, label_2 = labels[i - 1], labels[i]
-            else:
-                label_1, label_2 = channels[i - 1], channels[i]
+            label_1, label_2 = labels[i - 1], labels[i]
 
             # Perform merging
             segmentation, final_mapping = _merge_segmentation(

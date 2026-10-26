@@ -114,3 +114,19 @@ def test_merge_segmentation_threshold1_with_large_labels():
             assert np.all(merged[region & (s1 == 0)] == 0)
         else:
             assert np.all(merged[region] > 0)
+
+
+def test_merge_segmentation_list_of_keys_default_labels(ds_segmentation):
+    # with a list of 2D masks, the merged cells are labeled by the layer key they originate from by default
+    seg = ds_segmentation[Layers.SEGMENTATION].values
+    mask_a = np.zeros_like(seg)
+    mask_a[10:20, 10:20] = 1
+    mask_b = np.zeros_like(seg)
+    mask_b[40:50, 40:50] = 1
+    mask_c = np.zeros_like(seg)
+    mask_c[70:80, 70:80] = 1
+    ds = ds_segmentation.pp.add_layer(mask_a, "_seg_a").pp.add_layer(mask_b, "_seg_b").pp.add_layer(mask_c, "_seg_c")
+
+    merged = ds.pp.merge_segmentation(["_seg_a", "_seg_b", "_seg_c"], key_added="_merged")
+
+    assert merged["_merged"].attrs == {1: "_seg_a", 2: "_seg_b", 3: "_seg_c"}

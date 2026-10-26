@@ -568,7 +568,7 @@ class PlotAccessor:
             cells = self._obj.coords[Dims.CELLS]
         else:
             assert len(bbox) == 4, "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
-            sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
+            sub = self._obj.pp[bbox[0] : bbox[1], bbox[2] : bbox[3]]
             cells = sub.coords[Dims.CELLS]
 
         for cell in cells:
@@ -669,7 +669,7 @@ class PlotAccessor:
         colors = colors[: len(channels)]
 
         if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
+            attrs = dict(self._obj[Layers.PLOT].attrs)
             rendered = _render_segmentation(
                 segmentation,
                 colors=colors,
@@ -760,7 +760,7 @@ class PlotAccessor:
         mask = _label_segmentation_mask(segmentation, cells_dict)
 
         if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
+            attrs = dict(self._obj[Layers.PLOT].attrs)
             rendered = _render_labels(
                 mask,
                 cmap,
@@ -851,7 +851,7 @@ class PlotAccessor:
             mask = _label_segmentation_mask(segmentation, cells_dict)
 
             if Layers.PLOT in self._obj:
-                attrs = self._obj[Layers.PLOT].attrs
+                attrs = dict(self._obj[Layers.PLOT].attrs)
                 rendered = _render_labels(
                     mask,
                     cmap,
@@ -876,7 +876,7 @@ class PlotAccessor:
             mask = _label_segmentation_mask(segmentation, cells_dict)
 
             if Layers.PLOT in self._obj:
-                attrs = self._obj[Layers.PLOT].attrs
+                attrs = dict(self._obj[Layers.PLOT].attrs)
                 rendered = _render_neighborhoods(
                     mask,
                     cmap,
@@ -886,7 +886,6 @@ class PlotAccessor:
                     boundary_color=boundary_color,
                     boundary_thickness=boundary_thickness,
                 )
-                self._obj = self._obj.drop_vars(Layers.PLOT)
             else:
                 attrs = {}
                 rendered = _render_neighborhoods(
@@ -993,7 +992,7 @@ class PlotAccessor:
         segmentation = np.vectorize(lambda x: feature_mapping.get(x, 0), otypes=[np.float64])(segmentation)
 
         if Layers.PLOT in self._obj:
-            attrs = self._obj[Layers.PLOT].attrs
+            attrs = dict(self._obj[Layers.PLOT].attrs)
 
             rendered = _render_obs(
                 segmentation,
@@ -1223,7 +1222,8 @@ class PlotAccessor:
             try:
                 import networkx as nx
 
-                adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
+                # copying, so that the adjacency matrix of the input object is not modified below
+                adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values.copy()
 
                 # removing self-edges
                 if not render_self_edges:

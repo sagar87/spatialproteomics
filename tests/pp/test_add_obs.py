@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 from spatialproteomics.constants import Dims, Features, Layers
@@ -102,3 +103,23 @@ def test_add_obs_from_dataframe_does_not_modify_accessor(ds_segmentation):
 
     assert ds.pp._obj is ds
     assert Layers.OBS not in ds.pp._obj
+
+
+def test_add_obs_from_dataframe_aligns_by_cell_id(ds_segmentation):
+    # rows of a dataframe indexed by cell id are matched to the cells by id, not by position
+    cells = ds_segmentation.coords[Dims.CELLS].values
+    df = pd.DataFrame({"cell_id_copy": cells.astype(float)}, index=cells).iloc[::-1]
+
+    ds = ds_segmentation.pp.add_obs_from_dataframe(df)
+
+    assert np.all(ds[Layers.OBS].sel({Dims.FEATURES: "cell_id_copy"}).values == cells)
+
+
+def test_add_obs_from_dataframe_positional(ds_segmentation):
+    # without a cell id index, the rows are assumed to be in the order of the cells
+    cells = ds_segmentation.coords[Dims.CELLS].values
+    df = pd.DataFrame({"position": np.arange(len(cells), dtype=float)})
+
+    ds = ds_segmentation.pp.add_obs_from_dataframe(df)
+
+    assert np.all(ds[Layers.OBS].sel({Dims.FEATURES: "position"}).values == np.arange(len(cells)))
