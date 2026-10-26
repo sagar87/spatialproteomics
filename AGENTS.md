@@ -39,7 +39,7 @@ spatialproteomics/
   la/label.py          ds.la accessor + sp.la.* functions
   nh/neighborhood.py   ds.nh accessor
   pl/plot.py           ds.pl accessor
-  tl/tool.py           ds.tl accessor + sp.tl.* functions (cellpose, stardist, astir, spotiflow)
+  tl/tool.py           ds.tl accessor + sp.tl.* functions (cellpose, stardist, instanseg, astir, spotiflow)
   sd/utils.py          conversion helpers for the spatialdata backend
   image_container/     ImageContainer (multi-sample neighborhoods)
   */utils.py           private helpers used by the accessors
@@ -59,7 +59,7 @@ docs/_ext/llms_txt.py  Sphinx extension that writes llms.txt, llms-full.txt and 
   string literals.
 - **Keep dimensions in sync.** Any operation that removes cells must update `_segmentation`, `_obs`, `_intensity`
   and all other layers with a `cells` dimension (see `pp.get_bbox` and `la.__getitem__` for examples).
-- **Optional dependencies** (cellpose, stardist, deepcell, astir, spotiflow, spatialdata, anndata) are imported
+- **Optional dependencies** (cellpose, stardist, instanseg, deepcell, astir, spotiflow, spatialdata, anndata) are imported
   inside the functions that need them, never at module level.
 - **Docstrings** are the API documentation (rendered by autodoc and by `docs/_ext/llms_txt.py`). Every public method
   needs a docstring with parameters and return value; numpydoc style is the most common in the code base.
