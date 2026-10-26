@@ -11,7 +11,11 @@ Available on any `xarray.Dataset` after `import spatialproteomics as sp`, as `ds
 ### `ds.pp[...]`
 
 Fast subsetting the image container. The following examples show how
-the user can subset the image container:
+the user can subset the image container.
+
+Slices of x and y coordinates are label-based (like xarray's ``.sel``), i.e. both start and stop
+are inclusive: ``ds.pp[0:50, 0:50]`` returns the pixels with coordinates 0 to 50 (51 x 51 pixels
+for integer coordinates). Cells are kept if their centroid lies within these bounds.
 
 Subset the image container using x and y coordinates:
 >>> ds.pp[0:50, 0:50]
@@ -42,9 +46,9 @@ Returns the bounds of the image container.
 **Parameters**
 
 x_slice : slice
-    The slice representing the x-coordinates for the bounding box.
+    The slice representing the x-coordinates for the bounding box. Start and stop are inclusive.
 y_slice : slice
-    The slice representing the y-coordinates for the bounding box.
+    The slice representing the y-coordinates for the bounding box. Start and stop are inclusive.
 
 **Returns**
 
@@ -575,7 +579,7 @@ layer_key : str
 **Returns**
 
 xr.Dataset
-    The object with the merged channels in the image layer.
+    The object with the merged channel added to the layer given by layer_key.
 
 ### `ds.pp.find_bright_cells(channels: Union[str, list, NoneType]=None, frac_channels: float=0.5, quantile: float=0.95, key: str='_intensity', key_added: str='is_bright') -> xr.Dataset`
 

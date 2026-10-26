@@ -805,8 +805,8 @@ given channel. Computed per channel. Default is 0.95.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_slice</strong> (<em>slice</em>) – The slice representing the x-coordinates for the bounding box.</p></li>
-<li><p><strong>y_slice</strong> (<em>slice</em>) – The slice representing the y-coordinates for the bounding box.</p></li>
+<li><p><strong>x_slice</strong> (<em>slice</em>) – The slice representing the x-coordinates for the bounding box. Start and stop are inclusive.</p></li>
+<li><p><strong>y_slice</strong> (<em>slice</em>) – The slice representing the y-coordinates for the bounding box. Start and stop are inclusive.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -951,7 +951,7 @@ given channel. Computed per channel. Default is 0.95.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The object with the merged channels in the image layer.</p>
+<dd class="field-even"><p>The object with the merged channel added to the layer given by layer_key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
