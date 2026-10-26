@@ -1098,7 +1098,14 @@ class PreprocessingAccessor:
                 logger.warning(
                     "Found _obs with different number of cells in the image container. Removing all old _obs for consistency."
                 )
-                obj = obj.pp.drop_layers(Layers.OBS)
+                # we only drop the old _obs here, pp.drop_layers would also remove the segmentation mask
+                obj = obj.drop_vars(Layers.OBS)
+                unused_dims = [
+                    dim
+                    for dim in (Dims.FEATURES, Dims.CELLS)
+                    if dim in obj.dims and all(dim not in obj[layer].dims for layer in obj.data_vars)
+                ]
+                obj = obj.drop_dims(unused_dims)
             else:
                 da = xr.concat(
                     [obj[Layers.OBS].copy(), da],
