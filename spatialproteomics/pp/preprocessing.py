@@ -1187,15 +1187,17 @@ class PreprocessingAccessor:
 
     def add_obs_from_dataframe(self, df: pd.DataFrame) -> xr.Dataset:
         """
-        Adds an observation table to the image container. Columns of the
-        dataframe have to match the feature coordinates of the image
-        container, and the index of the dataframe has to match the cell coordinates
-        of the image container.
+        Adds an observation table to the image container. Each column of the
+        dataframe is added as a feature to the obs layer.
+
+        If the index of the dataframe contains exactly the cell ids of the image container,
+        the rows are matched to the cells by their id (in any order). Otherwise, the rows are
+        assumed to be in the same order as the cell coordinates of the image container.
 
         Parameters
         ----------
         df : pd.DataFrame
-            A dataframe with the observation values.
+            A dataframe with the observation values (one row per cell).
 
         Returns
         -------
@@ -1215,9 +1217,13 @@ class PreprocessingAccessor:
             df.index
         ), "Number of cells in the image container does not match the number of cells in the dataframe."
 
+        # if the dataframe is indexed by cell id, we match the rows to the cells by their id instead of their position
+        if df.index.is_unique and set(df.index) == set(cells):
+            df = df.loc[cells]
+
         # create a data array from the dataframe
         da = xr.DataArray(
-            df,
+            df.values,
             coords=[cells, df.columns],
             dims=[Dims.CELLS, Dims.FEATURES],
             name=Layers.OBS,
