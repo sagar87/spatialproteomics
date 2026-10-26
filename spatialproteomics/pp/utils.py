@@ -22,6 +22,13 @@ def _select_cells(obj, cells, **other_indexers):
     return obj.sel(query)
 
 
+def _ids_in_slice(ids, indices: slice) -> list:
+    """Return the ids (e.g. labels or neighborhoods) that lie within the slice. The stop value is excluded."""
+    return [
+        i for i in ids if (indices.start is None or i >= indices.start) and (indices.stop is None or i < indices.stop)
+    ][:: indices.step]
+
+
 def _relabel_cell_coords(obj, relabel_dict: dict):
     """Rename the cell ids in cells (and cells_2, if present) according to relabel_dict."""
     coords = {Dims.CELLS: [relabel_dict[c] for c in obj.coords[Dims.CELLS].values]}

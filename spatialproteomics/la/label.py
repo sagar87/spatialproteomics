@@ -24,7 +24,7 @@ from ..la.utils import (
     _predict_cell_subtypes,
     _predict_cell_types_argmax,
 )
-from ..pp.utils import _select_cells
+from ..pp.utils import _ids_in_slice, _select_cells
 from ..sd.utils import _process_adata
 
 
@@ -229,9 +229,7 @@ class LabelAccessor:
             sel = [label_dict[indices]]
 
         if isinstance(indices, slice):
-            l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.LABELS]
-            sel = [i for i in range(l_start, l_stop)]
+            sel = _ids_in_slice(self._obj.coords[Dims.LABELS].values, indices)
 
         if isinstance(indices, (list, tuple)):
             if not all([isinstance(i, (str, int)) for i in indices]):
@@ -297,9 +295,7 @@ class LabelAccessor:
         - The function then updates the data object to remove the deselected label indices.
         """
         if isinstance(indices, slice):
-            l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.LABELS]
-            sel = [i for i in range(l_start, l_stop)]
+            sel = _ids_in_slice(self._obj.coords[Dims.LABELS].values, indices)
         elif isinstance(indices, list):
             assert all([isinstance(i, (int, str)) for i in indices]), "All label indices must be integers or strings."
             if all([isinstance(i, int) for i in indices]):
