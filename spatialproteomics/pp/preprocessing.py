@@ -1971,7 +1971,7 @@ class PreprocessingAccessor:
                     )
 
             segmentation = self._obj[layer_keys[0]].values
-            
+
         # by default, the cells are labeled by the channel they come from (single 3D mask) or by their layer key (list of 2D masks)
         if labels is None:
             labels = channels if len(layer_keys) == 1 else list(layer_keys)

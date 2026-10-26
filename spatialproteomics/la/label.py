@@ -773,7 +773,7 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
-        if isinstance(labels, str):
+        if isinstance(labels, (str, int)):
             labels = [labels]
         if isinstance(colors, str):
             colors = [colors]
@@ -799,9 +799,10 @@ class LabelAccessor:
             if label not in self._obj.la:
                 logger.warning(f"Label {label} not found in the data object. Skipping.")
                 continue
-
-            # getting the id for the label
-            label = self._obj.la._label_name_to_id(label)
+            
+            # getting the id for the label (if the input was not numeric already)
+            if isinstance(label, str):
+                label = self._obj.la._label_name_to_id(label)
 
             # setting the new color for the given label
             array[labels_layer.index(label), props_layer.index(Props.COLOR)] = color
