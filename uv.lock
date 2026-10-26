@@ -2,15 +2,19 @@ version = 1
 revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version >= '3.14' and sys_platform == 'darwin'",
+    "python_full_version == '3.13.*' and sys_platform == 'darwin'",
     "python_full_version == '3.12.*' and sys_platform == 'darwin'",
     "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
     "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
     "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
     "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
-    "python_full_version < '3.12' and sys_platform == 'darwin'",
-    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version > '3.11' and python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version <= '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.11' and python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version <= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.11' and python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.11' and python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 
 [[package]]
@@ -1052,6 +1056,14 @@ wheels = [
 name = "dask"
 version = "2026.1.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version > '3.11' and python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version <= '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.11' and python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version <= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.11' and python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.11' and python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
     { name = "click" },
     { name = "cloudpickle" },
@@ -1078,11 +1090,49 @@ dataframe = [
 ]
 
 [[package]]
+name = "dask"
+version = "2026.8.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and sys_platform == 'darwin'",
+    "python_full_version == '3.13.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "click" },
+    { name = "cloudpickle" },
+    { name = "fsspec" },
+    { name = "packaging" },
+    { name = "partd" },
+    { name = "pyyaml" },
+    { name = "toolz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/a7/6b3c7ac32b642fbbe0821111654e0bd8cfbe88f68560bcf23cc78ab35c71/dask-2026.8.0.tar.gz", hash = "sha256:8a94c37b5de6d869343340dc26c3c3acca7ec48a3abdabe00ea3abb1125884d5", size = 11561752, upload-time = "2026-08-24T19:21:25.906Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f8/3a/4fc99e788bcfa1b3b3f21abf57da45898d807d007e7f6fd1c7300904eb70/dask-2026.8.0-py3-none-any.whl", hash = "sha256:ccc0c83a189b0398602435189771d28dad7b5773b6089bb8dce14ae732dd782c", size = 1492182, upload-time = "2026-08-24T19:21:23.997Z" },
+]
+
+[package.optional-dependencies]
+array = [
+    { name = "numpy" },
+]
+dataframe = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyarrow" },
+]
+
+[[package]]
 name = "dask-image"
 version = "2024.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "dask", extra = ["array", "dataframe"] },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, extra = ["array", "dataframe"], marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, extra = ["array", "dataframe"], marker = "python_full_version >= '3.12'" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "pims" },
@@ -1197,10 +1247,18 @@ wheels = [
 name = "distributed"
 version = "2026.1.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version > '3.11' and python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version <= '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.11' and python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version <= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.11' and python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.11' and python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
     { name = "click" },
     { name = "cloudpickle" },
-    { name = "dask" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
     { name = "jinja2" },
     { name = "locket" },
     { name = "msgpack" },
@@ -1217,6 +1275,40 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/45/19/0c13efdffc55cb311594f66c1c8d36a3c4711e427c820155fb9c59138b5e/distributed-2026.1.1.tar.gz", hash = "sha256:3d2709a43912797df3c345af3bb333bbf1a386ec1e9e6a134e5f050521373dbd", size = 2102870, upload-time = "2026-01-16T12:34:58.258Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b9/dc/6d709bcf8fed7611d8a510aeed23b0436cf6db5b61e63c8eb8451eb0d4d8/distributed-2026.1.1-py3-none-any.whl", hash = "sha256:506759b1ed88e45e12ba65e2a429de9911862db55d27dd8bb293c6268430374e", size = 1008417, upload-time = "2026-01-16T12:34:55.535Z" },
+]
+
+[[package]]
+name = "distributed"
+version = "2026.8.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and sys_platform == 'darwin'",
+    "python_full_version == '3.13.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "click" },
+    { name = "cloudpickle" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "jinja2" },
+    { name = "locket" },
+    { name = "msgpack" },
+    { name = "packaging" },
+    { name = "psutil" },
+    { name = "pyyaml" },
+    { name = "sortedcontainers" },
+    { name = "tblib" },
+    { name = "toolz" },
+    { name = "tornado" },
+    { name = "zict" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/18/1c98f0a36eccfcce109f054456f38767ac5d4b3fac124dcd5a35b1cd6167/distributed-2026.8.0.tar.gz", hash = "sha256:6f55008ecacf96ba945309fc12e680544764995e27bd63cc5e109afb97d7044d", size = 2465942, upload-time = "2026-08-24T19:36:00.554Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/d4/017e2d39d797eaa38a52b4459c8bea875d5e0ada335a62aafe98193041a6/distributed-2026.8.0-py3-none-any.whl", hash = "sha256:3bd8882861a2cf497453f28c6b61135fa8ef2bb1d6885ad3b9f27e887e9c0e01", size = 1008640, upload-time = "2026-08-24T19:35:58.622Z" },
 ]
 
 [[package]]
@@ -2555,7 +2647,8 @@ name = "multiscale-spatial-image"
 version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "dask" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "numpy" },
     { name = "python-dateutil" },
     { name = "spatial-image" },
@@ -3130,11 +3223,20 @@ wheels = [
 
 [[package]]
 name = "ome-zarr"
-version = "0.13.0"
+version = "0.15.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version > '3.11' and python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version <= '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.11' and python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version <= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.11' and python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.11' and python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
     { name = "aiohttp" },
-    { name = "dask" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "deprecated" },
     { name = "fsspec", extra = ["s3"] },
     { name = "numpy" },
     { name = "rangehttpserver" },
@@ -3143,9 +3245,39 @@ dependencies = [
     { name = "toolz" },
     { name = "zarr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b5/13/566a1a84b88aad11dea5d920b665eeea0df0885b312a4e1b706885ae50ae/ome_zarr-0.13.0.tar.gz", hash = "sha256:29c0ab52045c1b9d3037444dab691876591ec1db74c4a01e10cb0f0f4288a6e5", size = 71802, upload-time = "2026-02-06T14:00:57.619Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/ee/0e99c62dd3d453c9fb84d8c8cc9f64e255c2d7638546836516282fae2be5/ome_zarr-0.15.0.tar.gz", hash = "sha256:e9479d3a9849c194a616355290f6ae574a7d4402559c5f7005be20cf81945435", size = 81497, upload-time = "2026-04-08T11:57:25.475Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/f8/9d2945ef9a64de619f52158b8bd27eecad971ff327139b8082796319f858/ome_zarr-0.13.0-py3-none-any.whl", hash = "sha256:895e9530bc81c487a6281644a16b2888ca8d992685ec116bb529a5386aa7d4a2", size = 42109, upload-time = "2026-02-06T14:00:56.646Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/71/159de9929fe98326ada41393d2133fda3f9869ea10bf94996c48846ff68f/ome_zarr-0.15.0-py3-none-any.whl", hash = "sha256:99789b0c4c27fbd197ab1a8bb3ae58b1c7b4e72d0d6b95e9dda6e6416623d3eb", size = 45200, upload-time = "2026-04-08T11:57:24.399Z" },
+]
+
+[[package]]
+name = "ome-zarr"
+version = "0.17.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and sys_platform == 'darwin'",
+    "python_full_version == '3.13.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "aiohttp" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "deprecated" },
+    { name = "fsspec", extra = ["s3"] },
+    { name = "numpy" },
+    { name = "rangehttpserver" },
+    { name = "requests" },
+    { name = "scikit-image" },
+    { name = "toolz" },
+    { name = "zarr" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/00/ff25c09eb6b31656d6e8da309f62cf0f493ffac3623ee300ff6cdc597c85/ome_zarr-0.17.0.tar.gz", hash = "sha256:39e79475bb94d8950161833fb4c7c344c0b24f3a6eb756ca5ebaa6740a5a7fc5", size = 88172, upload-time = "2026-06-09T11:50:59.136Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/ee/20f79a9485f9b2e1700a1058121c6a34035c2f935e7e12cd544d410fb549/ome_zarr-0.17.0-py3-none-any.whl", hash = "sha256:9e9d32e943ac352311722d2b3f72ed4708bc328f7590a3d035a98c99d9ed300f", size = 47690, upload-time = "2026-06-09T11:50:58.054Z" },
 ]
 
 [[package]]
@@ -4819,23 +4951,31 @@ wheels = [
 
 [[package]]
 name = "spatialdata"
-version = "0.7.2"
+version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version > '3.11' and python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version <= '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.11' and python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version <= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.11' and python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.11' and python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
     { name = "anndata" },
     { name = "annsel" },
     { name = "click" },
-    { name = "dask" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
     { name = "dask-image" },
     { name = "datashader" },
-    { name = "distributed" },
+    { name = "distributed", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
     { name = "fsspec", extra = ["http", "s3"] },
     { name = "geopandas" },
     { name = "multiscale-spatial-image" },
     { name = "networkx" },
     { name = "numba" },
     { name = "numpy" },
-    { name = "ome-zarr" },
+    { name = "ome-zarr", version = "0.15.0", source = { registry = "https://pypi.org/simple" } },
     { name = "pandas" },
     { name = "pooch" },
     { name = "pyarrow" },
@@ -4851,9 +4991,57 @@ dependencies = [
     { name = "xarray-spatial" },
     { name = "zarr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/81/b4/3cd97a7f473def2cf0fdb94d980efd5982274e8aedae944af144327b979c/spatialdata-0.7.2.tar.gz", hash = "sha256:17cfa4be157dd00d5dfc009038b2f0ba5ceaaad4fb15cf58cb8b53b7e28fc75e", size = 347975, upload-time = "2026-02-09T15:45:07.182Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3c/50/248fae79a62f3d9dffbe70e9b66be6e3f8aaf77caa20a8c931a79256b689/spatialdata-0.7.3.tar.gz", hash = "sha256:6054d66d00e19af96368a897faa0b369f3a25dbf9e0371f091129f8522ee6986", size = 359317, upload-time = "2026-05-06T16:02:42.446Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7d/eb/15962d23094016d13f057e9de97021f8cd6b16bc39f21bab8e55e3f0a63e/spatialdata-0.7.2-py3-none-any.whl", hash = "sha256:c41f985dee9c272b790dca0ab54130128af426591df61c8d12556d6aa86c70b5", size = 192281, upload-time = "2026-02-09T15:45:06.061Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/bd/76cd29c982ed8f06db839411f1f44c521bf36b8714074652368353856b44/spatialdata-0.7.3-py3-none-any.whl", hash = "sha256:15e0df647f149a8be70cef6b866dcf033c71890440583bca8bb1c20c37566e6c", size = 199244, upload-time = "2026-05-06T16:02:40.994Z" },
+]
+
+[[package]]
+name = "spatialdata"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and sys_platform == 'darwin'",
+    "python_full_version == '3.13.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "anndata" },
+    { name = "annsel" },
+    { name = "click" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "dask-image" },
+    { name = "datashader" },
+    { name = "distributed", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "fsspec", extra = ["http", "s3"] },
+    { name = "geopandas" },
+    { name = "multiscale-spatial-image" },
+    { name = "networkx" },
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "ome-zarr", version = "0.17.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "pandas" },
+    { name = "pooch" },
+    { name = "pyarrow" },
+    { name = "rich" },
+    { name = "scikit-image" },
+    { name = "scipy" },
+    { name = "setuptools" },
+    { name = "shapely" },
+    { name = "spatial-image" },
+    { name = "typing-extensions" },
+    { name = "universal-pathlib" },
+    { name = "xarray" },
+    { name = "xarray-spatial" },
+    { name = "zarr" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b7/70/e575bc26b0410cf1349f5115b55d8d119edd6b2cf18e32ab84e222ee17e3/spatialdata-0.8.0.tar.gz", hash = "sha256:14143788a1de83302f8e83a29dd723b2d4e82f5b130d840409822fbf3a778e25", size = 369880, upload-time = "2026-07-02T20:42:20.597Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/08/f5cac3e58d1bb092bfb6015104e6cce925bbe10a2cae44428c790d4e5d06/spatialdata-0.8.0-py3-none-any.whl", hash = "sha256:75139b0df0e27c4573141a8dbe6b3301b47231571505926ad6a633c046ec1010", size = 202596, upload-time = "2026-07-02T20:42:19.268Z" },
 ]
 
 [[package]]
@@ -4879,7 +5067,8 @@ all = [
     { name = "astir" },
     { name = "cellpose" },
     { name = "instanseg-torch" },
-    { name = "spatialdata" },
+    { name = "spatialdata", version = "0.7.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "spatialdata", version = "0.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "spotiflow" },
     { name = "stardist" },
 ]
@@ -4914,7 +5103,9 @@ instanseg = [
     { name = "instanseg-torch" },
 ]
 spatialdata = [
-    { name = "spatialdata" },
+    { name = "spatialdata", version = "0.7.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "spatialdata", version = "0.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "zarr" },
 ]
 spotiflow = [
     { name = "spotiflow" },
@@ -4925,7 +5116,7 @@ stardist = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anndata", marker = "extra == 'anndata'" },
+    { name = "anndata", marker = "extra == 'anndata'", specifier = ">=0.10.0" },
     { name = "astir", marker = "extra == 'all'" },
     { name = "astir", marker = "extra == 'astir'", specifier = ">=0.1.5" },
     { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.7.4" },
@@ -4940,9 +5131,9 @@ requires-dist = [
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.10.1" },
     { name = "matplotlib", specifier = ">=3.8.0" },
     { name = "nbsphinx", marker = "extra == 'docs'", specifier = ">=0.9" },
-    { name = "numpy", specifier = ">=1.23" },
+    { name = "numpy", specifier = ">=1.25" },
     { name = "opencv-python", specifier = ">=4.11.0" },
-    { name = "pandas", specifier = ">=2.0.0" },
+    { name = "pandas", specifier = ">=2.2.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.1.2" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "pyyaml", specifier = ">=6.0" },
@@ -4950,7 +5141,7 @@ requires-dist = [
     { name = "scikit-image", specifier = ">=0.25" },
     { name = "scikit-learn", specifier = ">=1.4.2" },
     { name = "spatialdata", marker = "extra == 'all'" },
-    { name = "spatialdata", marker = "extra == 'spatialdata'", specifier = ">=0.4.0" },
+    { name = "spatialdata", marker = "extra == 'spatialdata'", specifier = ">=0.7.3" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.0" },
     { name = "sphinx-book-theme", marker = "extra == 'docs'", specifier = ">=0.0.39" },
     { name = "sphinx-multiversion", marker = "extra == 'docs'", specifier = ">=0.2.4" },
@@ -4961,8 +5152,9 @@ requires-dist = [
     { name = "stardist", marker = "extra == 'stardist'", specifier = ">=0.9.1" },
     { name = "tqdm", specifier = ">=4.64.0" },
     { name = "typing-extensions", marker = "extra == 'dev'", specifier = ">=4.16" },
-    { name = "xarray", specifier = ">=2024.0.0" },
-    { name = "zarr" },
+    { name = "xarray", specifier = ">=2025.6.0" },
+    { name = "zarr", specifier = ">=3.0.0" },
+    { name = "zarr", marker = "extra == 'spatialdata'", specifier = ">=3.1.2" },
 ]
 provides-extras = ["docs", "spatialdata", "cellpose", "stardist", "anndata", "astir", "spotiflow", "instanseg", "dev", "all"]
 
@@ -5133,7 +5325,8 @@ dependencies = [
     { name = "configargparse" },
     { name = "crick" },
     { name = "csbdeep" },
-    { name = "dask" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "fsspec" },
     { name = "h5py" },
     { name = "lightning" },

@@ -10,15 +10,15 @@ authors = [
 ]
 dependencies = [
     "cffi>=1.15.0",
-    "xarray>=2024.0.0",
+    "xarray>=2025.6.0",
     "scikit-image>=0.25",
     "matplotlib>=3.8.0",
     "tqdm>=4.64.0",
     "scikit-learn>=1.4.2",
-    "zarr",  # note that if you use spatialdata, you should use zarr>=3.0.0
-    "numpy>=1.23",
+    "zarr>=3.0.0",  # zarr-python 3 reads and writes both zarr format v2 and v3
+    "numpy>=1.25",
     "opencv-python>=4.11.0",
-    "pandas>=2.0.0",
+    "pandas>=2.2.2",
     "pyyaml>=6.0"
 ]
 
@@ -31,10 +31,10 @@ docs = [
     "sphinx-multiversion>=0.2.4",
     "IPython>=8.0.0",
 ]
-spatialdata = ["spatialdata>=0.4.0"]
+spatialdata = ["spatialdata>=0.7.3", "zarr>=3.1.2"]  # spatialdata needs zarr>=3.1.2 but does not declare it
 cellpose = ["cellpose>=3.1.0"]
 stardist = ["stardist>=0.9.1"]
-anndata = ["anndata"]
+anndata = ["anndata>=0.10.0"]
 astir = ["astir>=0.1.5"]
 spotiflow = ["spotiflow"]
 instanseg = ["instanseg-torch>=0.1.0"]

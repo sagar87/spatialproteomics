@@ -687,6 +687,11 @@ def _threshold(
 
     if intensity is not None:
         if intensity.size == 1:
+            # numpy < 2 silently wraps out-of-bounds integers around, so we check the bounds explicitly
+            if np.issubdtype(img_dtype, np.integer) and not (
+                np.iinfo(img_dtype).min <= intensity.item() <= np.iinfo(img_dtype).max
+            ):
+                raise OverflowError(f"Python integer {intensity.item()} out of bounds for {img_dtype}")
             intensity = np.full(len(all_channels), intensity.item(), dtype=img_dtype)
         else:
             # casting to float here to allow for NAs (important when using the channels argument)

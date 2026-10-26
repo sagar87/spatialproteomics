@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 from spatialproteomics.constants import Dims, Layers, Props
@@ -57,3 +58,18 @@ def test_set_label_colors_multiple_colors(ds_labels):
     # testing what happens if the number of colors and cell types does not match
     with pytest.raises(AssertionError, match="The number of labels and colors must be the same."):
         ds_labels.la.set_label_colors(["B", "T"], ["black"])
+
+
+def test_label_properties_fixed_width_strings(ds_labels):
+    # legacy data (e.g. zarr v2 files) stores the properties as fixed-width strings, which must not truncate new values
+    ds = ds_labels.copy()
+    ds[Layers.LA_PROPERTIES] = ds[Layers.LA_PROPERTIES].copy(
+        data=np.array(ds[Layers.LA_PROPERTIES].values.tolist(), dtype=str)
+    )
+    assert ds[Layers.LA_PROPERTIES].dtype.kind == "U"
+
+    renamed = ds.la.set_label_name("T", "Macrophage")
+    assert "Macrophage" in renamed[Layers.LA_PROPERTIES].sel(la_props=Props.NAME).values
+
+    recolored = ds.la.set_label_colors("B", "lightgoldenrodyellow")
+    assert "lightgoldenrodyellow" in recolored[Layers.LA_PROPERTIES].sel(la_props=Props.COLOR).values

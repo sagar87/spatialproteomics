@@ -1,9 +1,21 @@
+import importlib.util
 import os
 import shutil
 
 import pytest
 import xarray as xr
 from skimage.io import imread
+
+# the spatialdata backend is optional, so its tests are skipped if spatialdata is not installed
+# (we only check whether it is installed, so that a broken installation still makes the tests fail)
+HAS_SPATIALDATA = importlib.util.find_spec("spatialdata") is not None
+if not HAS_SPATIALDATA:
+    collect_ignore_glob = ["spatialdata_backend/*"]
+
+
+def _skip_without_spatialdata():
+    if not HAS_SPATIALDATA:
+        pytest.skip("spatialdata is not installed")
 
 
 # === NEW ===
@@ -69,21 +81,25 @@ def load_ds_neighborhoods(data_dic):
 # === SPATIALDATA OBJECTS ===
 @pytest.fixture(scope="session", name="ds_image_spatialdata")
 def load_ds_image_spatialdata(data_dic):
+    _skip_without_spatialdata()
     return data_dic["ds_image"].tl.convert_to_spatialdata()
 
 
 @pytest.fixture(scope="session", name="ds_segmentation_spatialdata")
 def load_ds_segmentation_spatialdata(data_dic):
+    _skip_without_spatialdata()
     return data_dic["ds_segmentation"].tl.convert_to_spatialdata()
 
 
 @pytest.fixture(scope="session", name="ds_labels_spatialdata")
 def load_ds_labels_spatialdata(data_dic):
+    _skip_without_spatialdata()
     return data_dic["ds_labels"].tl.convert_to_spatialdata()
 
 
 @pytest.fixture(scope="session", name="ds_neighborhoods_spatialdata")
 def load_ds_neighborhoods_spatialdata(data_dic):
+    _skip_without_spatialdata()
     return data_dic["ds_neighborhoods"].tl.convert_to_spatialdata()
 
 

@@ -27,6 +27,9 @@ uv pip install -e ".[dev,all]"   # add ",docs" to build the documentation
 
 CI (`.github/workflows/branch.yaml`) runs pytest, `isort --check-only`, `black --check`, flake8 and bandit
 on `spatialproteomics/`, and builds the docs. Run `make all` before pushing.
+`.github/workflows/dependencies.yaml` runs the tests weekly against the lowest versions allowed by `pyproject.toml`
+(`uv pip install --resolution lowest-direct`) and against the newest releases, and opens an issue if that fails.
+When you change a lower bound in `pyproject.toml`, check it with `--resolution lowest-direct` on Python 3.11.
 
 ## Layout
 
