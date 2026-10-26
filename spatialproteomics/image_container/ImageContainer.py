@@ -160,7 +160,7 @@ class ImageContainer:
             self._compute_dataframes_from_existing_neighborhoods(neighborhood_col=neighborhood_col)
 
         # computing the composition of neighborhoods (grouping by the neighborhood labels and summing them up)
-        neighborhood_composition = self.neighborhood_df
+        neighborhood_composition = self.neighborhood_df.copy()
         neighborhood_composition[Features.NEIGHBORHOODS] = self.kmeans_df[Features.NEIGHBORHOODS].values
 
         neighborhood_composition = neighborhood_composition.groupby(Features.NEIGHBORHOODS).mean()
@@ -189,7 +189,12 @@ class ImageContainer:
             assert (
                 neighborhood_col in self.objects[id].pp.get_layer_as_df().columns
             ), f"Column {neighborhood_col} not found in the object. Please set the column with the parameter 'neighborhood_col'. Available columns are {self.objects[id].pp.get_layer_as_df().columns}"
-            kmeans_df.append(self.objects[id].pp.get_layer_as_df()[[neighborhood_col]])
+            # the column is renamed, so that the cluster annotations can be accessed in the same way as after compute_neighborhoods()
+            kmeans_df.append(
+                self.objects[id]
+                .pp.get_layer_as_df()[[neighborhood_col]]
+                .rename(columns={neighborhood_col: Features.NEIGHBORHOODS})
+            )
 
         # replacing nans with 0s (this means that the ct was never called in that specific sample)
         neighborhood_df = pd.concat(neighborhood_df).fillna(0)

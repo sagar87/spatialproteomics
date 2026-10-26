@@ -61,7 +61,13 @@ def cellpose(
     channels = _get_channels_spatialdata(channel)
 
     # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+    image = _process_image(
+        sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key, return_values=False
+    )
+    # if no channel is specified, all channels are segmented
+    if channels is None:
+        channels = image.coords["c"].values.tolist()
+    image = image.values
 
     # run cellpose
     segmentation_masks, _ = _cellpose(image, **kwargs)
@@ -120,7 +126,13 @@ def stardist(
     channels = _get_channels_spatialdata(channel)
 
     # assert that the format is correct and extract the image
-    image = _process_image(sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key)
+    image = _process_image(
+        sdata, channels=channels, image_key=image_key, key_added=key_added, data_key=data_key, return_values=False
+    )
+    # if no channel is specified, all channels are segmented
+    if channels is None:
+        channels = image.coords["c"].values.tolist()
+    image = image.values
 
     # run stardist
     segmentation_masks = _stardist(image, **kwargs)
@@ -334,7 +346,11 @@ def spotiflow(
         sdata = cp.deepcopy(sdata)
 
     channels = _get_channels_spatialdata(channel)
-    img = _process_image(sdata, channels=channel, image_key=image_key, key_added=None)
+    img = _process_image(sdata, channels=channel, image_key=image_key, key_added=None, return_values=False)
+    # if no channel is specified, spots are detected in all channels
+    if channels is None:
+        channels = img.coords["c"].values.tolist()
+    img = img.values
     adata = _process_adata(sdata, table_key=table_key)
 
     points_df = _spotiflow(
@@ -710,6 +726,8 @@ class ToolAccessor:
             Column name for cell IDs. Defaults to "cell_id".
         cell_type_col : str, optional
             Column name for cell types. Defaults to "cell_type".
+        **kwargs
+            Additional keyword arguments passed to astir's fit_type method.
 
         Raises
         ------
@@ -755,6 +773,7 @@ class ToolAccessor:
             max_epochs=max_epochs,
             cell_id_col=cell_id_col,
             cell_type_col=cell_type_col,
+            **kwargs,
         )
 
         # adding the labels to the xarray object

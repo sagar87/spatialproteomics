@@ -67,3 +67,19 @@ def test_add_channel_with_scaled_coordinates(ds_image):
     assert ds.sizes[Dims.Y] == ds_image.sizes[Dims.Y]
     assert not np.isnan(ds[Layers.IMAGE].values).any()
     assert np.array_equal(ds[Layers.IMAGE].sel(channels="new_channel").values, new_channel_array)
+
+
+def test_add_channel_keeps_dtype(ds_image):
+    # adding a channel of the same dtype must not turn the image into floats
+    image = ds_image[Layers.IMAGE]
+    new_channel_array = image.values[0].copy()
+
+    ds = ds_image.pp.add_channel(channels="new_channel", array=new_channel_array)
+
+    assert ds[Layers.IMAGE].dtype == image.dtype
+    assert np.array_equal(ds[Layers.IMAGE].sel({Dims.CHANNELS: "new_channel"}).values, new_channel_array)
+    assert np.array_equal(
+        ds[Layers.IMAGE].sel({Dims.CHANNELS: image.coords[Dims.CHANNELS].values}).values, image.values
+    )
+    # conversions that depend on the dtype still work afterwards
+    ds.pp.convert_to_8bit()

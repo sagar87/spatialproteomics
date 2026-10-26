@@ -81,3 +81,13 @@ def test_add_quantification_from_dataframe_wrong_dtype(ds_segmentation):
     quantification_array = np.zeros([ds_segmentation.sizes["cells"], ds_segmentation.sizes["channels"]])
     with pytest.raises(TypeError, match="The input must be a pandas DataFrame."):
         ds_segmentation.pp.add_quantification_from_dataframe(quantification_array)
+
+
+def test_add_quantification_does_not_modify_accessor(ds_segmentation):
+    # xarray caches the accessor of a dataset, so the method must not replace the accessor's object
+    ds = ds_segmentation.drop_dims(["cells", "features"])
+    quantified = ds.pp.add_quantification()
+
+    assert Layers.OBS in quantified
+    assert ds.pp._obj is ds
+    assert Layers.OBS not in ds.pp._obj

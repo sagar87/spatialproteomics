@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 from spatialproteomics.constants import Dims
@@ -57,3 +58,32 @@ def test_merge_channels_asymmetric_dimensions(ds_image):
     assert result.coords[Dims.X].values.min() == ds.coords[Dims.X].values.min(), "min X coordinates should be preserved"
     assert result.coords[Dims.Y].values.max() == ds.coords[Dims.Y].values.max(), "max Y coordinates should be preserved"
     assert result.coords[Dims.X].values.max() == ds.coords[Dims.X].values.max(), "max X coordinates should be preserved"
+
+
+def test_merge_channels_layer_key(ds_image):
+    # the merged channel is computed from and added to the layer given by layer_key
+    ds = ds_image.pp.add_layer(ds_image["_image"].values // 2, key_added="_processed")
+    merged = ds.pp.merge_channels(["DAPI", "CD4"], key_added="DAPI_CD4", normalize=False, layer_key="_processed")
+
+    expected = np.maximum(ds["_processed"].sel(channels="DAPI").values, ds["_processed"].sel(channels="CD4").values)
+    assert np.array_equal(merged["_processed"].sel(channels="DAPI_CD4").values, expected)
+    # the image layer does not get the merged channel
+    assert np.all(np.isnan(merged["_image"].sel(channels="DAPI_CD4").values))
+
+
+@pytest.mark.parametrize("method", ["sum", "mean", "max"])
+@pytest.mark.parametrize("normalize", [True, False])
+def test_merge_channels_keeps_dtype(ds_image, method, normalize):
+    dtype = ds_image["_image"].dtype
+    ds = ds_image.pp.merge_channels(["DAPI", "CD4"], key_added="DAPI_CD4", normalize=normalize, method=method)
+    merged = ds["_image"].sel(channels="DAPI_CD4").values
+
+    if method == "sum" and normalize:
+        # normalized channels use the full uint8 range, so their sum overflows and a wider integer type is used
+        assert np.issubdtype(ds["_image"].dtype, np.integer)
+    else:
+        assert ds["_image"].dtype == dtype
+
+    if method == "sum" and not normalize:
+        expected = ds_image["_image"].sel(channels=["DAPI", "CD4"]).values.astype(np.int64).sum(0)
+        assert np.array_equal(merged, expected)

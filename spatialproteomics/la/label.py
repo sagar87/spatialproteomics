@@ -610,8 +610,37 @@ class LabelAccessor:
         # Replace the OBS layer in the copied object
         obj = obj.assign({Layers.OBS: new_obs})
 
-        # Exclude the specified cell types from the label dimension
-        obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS].values if i not in cell_type]})
+        remaining_labels = [i for i in obj.coords[Dims.LABELS].values if i not in cell_type]
+
+        # the cells of the removed types are now unlabeled (0)
+        # if there is no entry for label 0 yet, we add one, so that every label in obs has properties
+        if len(cells) > 0 and 0 not in obj.coords[Dims.LABELS].values:
+            removed = obj.sel({Dims.LABELS: cell_type})
+            obj[Layers.LA_PROPERTIES] = obj[Layers.LA_PROPERTIES].astype(object)
+            obj = obj.reindex({Dims.LABELS: [0, *remaining_labels]})
+
+            props = obj[Layers.LA_PROPERTIES]
+            props.loc[{Dims.LABELS: 0}] = ""
+            props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.NAME}] = Labels.UNLABELED
+            props.loc[{Dims.LABELS: 0, Dims.LA_PROPS: Props.COLOR}] = "black"
+            obj[Layers.LA_PROPERTIES] = props.astype(str)
+
+            # other layers with a labels dimension (e. g. neighborhood compositions) attribute the removed types to 0
+            for layer in obj.data_vars:
+                if layer != Layers.LA_PROPERTIES and Dims.LABELS in obj[layer].dims:
+                    obj[layer].loc[{Dims.LABELS: 0}] = removed[layer].sum(Dims.LABELS)
+        else:
+            removed = obj.sel({Dims.LABELS: cell_type})
+            # Exclude the specified cell types from the label dimension
+            obj = obj.sel({Dims.LABELS: remaining_labels})
+            # if there already is an entry for label 0, other layers with a labels dimension
+            # (e. g. neighborhood compositions) attribute the removed types to it as well
+            if 0 in remaining_labels:
+                for layer in obj.data_vars:
+                    if layer != Layers.LA_PROPERTIES and Dims.LABELS in obj[layer].dims:
+                        updated = obj[layer].copy()
+                        updated.loc[{Dims.LABELS: 0}] = updated.sel({Dims.LABELS: 0}) + removed[layer].sum(Dims.LABELS)
+                        obj[layer] = updated
 
         return obj
 
@@ -744,7 +773,7 @@ class LabelAccessor:
         - The function converts the 'label' from its name to the corresponding ID for internal processing.
         - It updates the color of the cell type label in the data object to the new 'color'.
         """
-        if isinstance(labels, str):
+        if isinstance(labels, (str, int)):
             labels = [labels]
         if isinstance(colors, str):
             colors = [colors]
@@ -771,8 +800,9 @@ class LabelAccessor:
                 logger.warning(f"Label {label} not found in the data object. Skipping.")
                 continue
 
-            # getting the id for the label
-            label = self._obj.la._label_name_to_id(label)
+            # getting the id for the label (if the input was not numeric already)
+            if isinstance(label, str):
+                label = self._obj.la._label_name_to_id(label)
 
             # setting the new color for the given label
             array[labels_layer.index(label), props_layer.index(Props.COLOR)] = color
