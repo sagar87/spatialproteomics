@@ -97,7 +97,7 @@ def add_quantification(
         # adding uns
         adata.uns = {
             "spatialdata_attrs": {
-                "region": SDLayers.SEGMENTATION,
+                "region": segmentation_key,
                 "region_key": SDFeatures.REGION,
                 "instance_key": SDFeatures.ID,
             }
