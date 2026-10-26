@@ -557,7 +557,7 @@ class LabelAccessor:
 
         return obj
 
-    def remove_label_type(self, cell_type: Union[int, List[int]]) -> xr.Dataset:
+    def remove_label_type(self, cell_type: Union[int, str, List[Union[int, str]]]) -> xr.Dataset:
         """
         Remove specific cell type label(s) from the data object.
 
@@ -566,8 +566,8 @@ class LabelAccessor:
 
         Parameters
         ----------
-        cell_type : int or list of int
-            The ID(s) of the cell type label(s) to be removed.
+        cell_type : int, str or list of int or str
+            The ID(s) or name(s) of the cell type label(s) to be removed.
 
         Returns
         -------
@@ -585,20 +585,19 @@ class LabelAccessor:
         - The function first checks for the existence of cell type labels in the data object.
         - It then removes the specified 'cell_type' from the cell type labels, setting their cells to the 'Unlabeled' category.
         """
-        if isinstance(cell_type, int):
+        if isinstance(cell_type, (int, str)):
             cell_type = [cell_type]
-
-        if isinstance(cell_type, str):
-            cell_type = [self._obj.la._label_name_to_id(cell_type)]
 
         if Layers.LA_PROPERTIES not in self._obj:
             raise ValueError("No cell type labels found.")
+
+        cell_type = [self._obj.la._label_name_to_id(i) if isinstance(i, str) else i for i in cell_type]
 
         for i in cell_type:
             if i not in self._obj.coords[Dims.LABELS].values:
                 raise ValueError(f"Cell type {i} not found.")
 
-        cells_bool = (self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}) == cell_type).values
+        cells_bool = np.isin(self._obj[Layers.OBS].sel({Dims.FEATURES: Features.LABELS}).values, cell_type)
         cells = self._obj.coords[Dims.CELLS][cells_bool].values
 
         # Make a copy of the object to avoid modifying self._obj
@@ -611,11 +610,8 @@ class LabelAccessor:
         # Replace the OBS layer in the copied object
         obj = obj.assign({Layers.OBS: new_obs})
 
-        # Exclude the specified cell type from the label dimension (robust to string input)
-        if isinstance(cell_type, str):
-            obj = obj.sel({Dims.LABELS: obj.coords[Dims.LABELS] != cell_type})
-        else:
-            obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS] if i not in cell_type]})
+        # Exclude the specified cell types from the label dimension
+        obj = obj.sel({Dims.LABELS: [i for i in obj.coords[Dims.LABELS].values if i not in cell_type]})
 
         return obj
 
