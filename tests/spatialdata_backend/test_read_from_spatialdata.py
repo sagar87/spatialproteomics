@@ -10,6 +10,7 @@ def test_read_from_spatialdata_unsorted_table(ds_segmentation):
     obs = obj.pp.get_layer_as_df()
     np.testing.assert_array_equal(obs["id"].values, obj.coords["cells"].values)
 
+
 def test_read_from_spatialdata_missing_table_key(ds_segmentation):
     # a table stored under another key is not used, the observations are computed from the segmentation instead
     sdata = ds_segmentation.pp.add_quantification().tl.convert_to_spatialdata()
