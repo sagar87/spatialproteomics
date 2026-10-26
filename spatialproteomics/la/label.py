@@ -338,7 +338,7 @@ class LabelAccessor:
         return obj
 
     def _relabel_dict(self, dictionary: dict):
-        _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values)
+        _, fw, _ = relabel_sequential(self._obj.coords[Dims.LABELS].values.copy())
         return {fw[k]: v for k, v in dictionary.items()}
 
     def _label_to_dict(
@@ -658,13 +658,17 @@ class LabelAccessor:
             name=Layers.LA_PROPERTIES,
         )
 
-        if Layers.LA_PROPERTIES in self._obj:
+        obj = self._obj
+        if Layers.LA_PROPERTIES in obj:
             da = xr.concat(
-                [self._obj[Layers.LA_PROPERTIES], da],
+                [obj[Layers.LA_PROPERTIES], da],
                 dim=Dims.LA_PROPS,
             )
+            # dropping the old layer, otherwise the outer join would reindex it and fill it with NaNs,
+            # which fails for numpy StringDType arrays (as returned by xarray>=2026 when reading zarr)
+            obj = obj.drop_vars([Layers.LA_PROPERTIES, Dims.LA_PROPS])
 
-        return xr.merge([da, self._obj], join="outer", compat="no_conflicts")
+        return xr.merge([da, obj], join="outer", compat="no_conflicts")
 
     def set_label_name(self, label, name):
         """
@@ -1135,13 +1139,17 @@ class LabelAccessor:
         if return_xarray:
             return da
 
-        if Layers.LA_PROPERTIES in self._obj:
+        obj = self._obj
+        if Layers.LA_PROPERTIES in obj:
             da = xr.concat(
-                [self._obj[Layers.LA_PROPERTIES], da],
+                [obj[Layers.LA_PROPERTIES], da],
                 dim=Dims.LA_PROPS,
             )
+            # dropping the old layer, otherwise the outer join would reindex it and fill it with NaNs,
+            # which fails for numpy StringDType arrays (as returned by xarray>=2026 when reading zarr)
+            obj = obj.drop_vars([Layers.LA_PROPERTIES, Dims.LA_PROPS])
 
-        return xr.merge([da, self._obj], join="outer", compat="no_conflicts")
+        return xr.merge([da, obj], join="outer", compat="no_conflicts")
 
     def predict_cell_subtypes(
         self, subtype_dict: Union[dict, str], overwrite_existing_labels: bool = True
