@@ -799,7 +799,7 @@ class LabelAccessor:
             if label not in self._obj.la:
                 logger.warning(f"Label {label} not found in the data object. Skipping.")
                 continue
-            
+
             # getting the id for the label (if the input was not numeric already)
             if isinstance(label, str):
                 label = self._obj.la._label_name_to_id(label)

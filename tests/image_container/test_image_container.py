@@ -1,7 +1,8 @@
+import numpy as np
 import pytest
 
 import spatialproteomics as sp
-from spatialproteomics.constants import Layers
+from spatialproteomics.constants import Dims, Features, Layers
 
 
 def test_image_container(ds_labels):
@@ -47,3 +48,24 @@ def test_image_container_get_neighborhood_composition(ds_labels):
     image_container = sp.ImageContainer(output_dict)
     neighborhood_composition = image_container.get_neighborhood_composition()
     assert neighborhood_composition.shape == (5, 4)  # 5 neighborhoods, 4 columns (id, neighborhood, cell_type, count)
+
+
+def test_image_container_get_neighborhood_composition_custom_column(ds_labels):
+    # neighborhoods stored in a custom obs column can be used when the container is created from existing objects
+    image_container = sp.ImageContainer({"id_1": ds_labels, "id_2": ds_labels})
+    output_dict = image_container.compute_neighborhoods()
+    renamed = {}
+    for key, obj in output_dict.items():
+        neighborhoods = obj[Layers.OBS].sel({Dims.FEATURES: Features.NEIGHBORHOODS}).values
+        renamed[key] = obj.pp.add_feature("my_neighborhoods", neighborhoods)
+
+    expected = sp.ImageContainer(output_dict).get_neighborhood_composition(standardize=False)
+    image_container = sp.ImageContainer(renamed)
+    neighborhood_composition = image_container.get_neighborhood_composition(
+        standardize=False, neighborhood_col="my_neighborhoods"
+    )
+
+    assert neighborhood_composition.shape == expected.shape
+    assert np.allclose(neighborhood_composition.values, expected.values)
+    # the stored neighborhood dataframe is not modified
+    assert Features.NEIGHBORHOODS not in image_container.neighborhood_df.columns

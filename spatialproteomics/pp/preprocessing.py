@@ -1386,10 +1386,10 @@ class PreprocessingAccessor:
             layers = [str(x) for x in self._obj.data_vars if str(x) not in keep]
 
             # if the user wants to keep obs but not segmentation or vice versa, we throw a warning that this is not possible
-            if Layers.SEGMENTATION in keep and Layers.OBS not in keep:
-                logger.warning("Cannot drop segmentation and keep observations. Removing both.")
-            if Layers.OBS in keep and Layers.SEGMENTATION not in keep:
-                logger.warning("Cannot drop observations and keep segmentation. Removing both.")
+            if Layers.SEGMENTATION in keep and Layers.OBS not in keep and Layers.OBS in self._obj:
+                logger.warning("Cannot keep segmentation and drop observations. Removing both.")
+            if Layers.OBS in keep and Layers.SEGMENTATION not in keep and Layers.SEGMENTATION in self._obj:
+                logger.warning("Cannot keep observations and drop segmentation. Removing both.")
 
         # if the segmentation layer is dropped, we also need to drop the obs and vice versa
         # this helps to ensure that the segmentation and obs always stay in sync
