@@ -5,7 +5,8 @@ import pandas as pd
 import xarray as xr
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Layers, Props
+from ..constants import Dims, Features, Layers, Props
+from ..pl.utils import _sample_colors
 from ..pp.utils import _ids_in_slice, _select_cells
 from .utils import (
     _compute_global_network_features,
@@ -357,7 +358,7 @@ class NeighborhoodAccessor:
                 unique_neighborhoods
             ), f"Colors does not have the same length as there are neighborhoods. Got {len(colors)} colors for {len(unique_neighborhoods)} neighborhoods."
         else:
-            colors = np.random.choice(COLORS, size=len(unique_neighborhoods), replace=False)
+            colors = _sample_colors(len(unique_neighborhoods))
 
         # adding a lookup table for the neighborhood colors
         obj = obj.nh.add_properties(colors, Props.COLOR)
