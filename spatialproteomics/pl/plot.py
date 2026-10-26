@@ -679,7 +679,6 @@ class PlotAccessor:
                 alpha_boundary=alpha_boundary,
                 mode=mode,
             )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
             rendered = _render_segmentation(
@@ -714,7 +713,9 @@ class PlotAccessor:
         da = da.sum(Dims.CHANNELS, keep_attrs=True)
         da.values[da.values > 1] = 1.0
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        # replacing the previous plot layer without modifying self._obj, since xarray caches accessors
+        obj = self._obj.drop_vars(Layers.PLOT, errors="ignore")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def render_labels(
         self,
@@ -768,7 +769,6 @@ class PlotAccessor:
                 alpha_boundary=alpha_boundary,
                 mode=mode,
             )
-            self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
             rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode=mode)
@@ -785,7 +785,9 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        # replacing the previous plot layer without modifying self._obj, since xarray caches accessors
+        obj = self._obj.drop_vars(Layers.PLOT, errors="ignore")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def render_neighborhoods(
         self,
@@ -858,7 +860,6 @@ class PlotAccessor:
                     alpha_boundary=alpha_boundary,
                     mode="inner",
                 )
-                self._obj = self._obj.drop_vars(Layers.PLOT)
             else:
                 attrs = {}
                 rendered = _render_labels(mask, cmap, alpha=alpha, alpha_boundary=alpha_boundary, mode="inner")
@@ -909,7 +910,9 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        # replacing the previous plot layer without modifying self._obj, since xarray caches accessors
+        obj = self._obj.drop_vars(Layers.PLOT, errors="ignore")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def render_obs(
         self,
@@ -1004,8 +1007,6 @@ class PlotAccessor:
                 vmin=vmin,
                 vmax=vmax,
             )
-
-            self._obj = self._obj.drop_vars(Layers.PLOT)
         else:
             attrs = {}
             rendered = _render_obs(
@@ -1041,7 +1042,9 @@ class PlotAccessor:
             attrs=attrs,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        # replacing the previous plot layer without modifying self._obj, since xarray caches accessors
+        obj = self._obj.drop_vars(Layers.PLOT, errors="ignore")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def imshow(
         self,
@@ -1097,25 +1100,27 @@ class PlotAccessor:
         - The function is used to plot images in conjunction with 'im.colorize' and 'la.render_label'.
         - The appearance of the plot and the inclusion of legends can be controlled using the respective parameters.
         """
-        if Layers.PLOT not in self._obj:
+        # using a local variable, since the accessor (and hence self._obj) is cached by xarray and reused
+        obj = self._obj
+        if Layers.PLOT not in obj:
             logger.warning("No plot defined yet. Plotting the first channel only. Please call pl.colorize() first.")
-            channel = str(self._obj.coords[Dims.CHANNELS].values[0])
-            self._obj = self._obj.pp[channel].pl.colorize(colors=["white"])
+            channel = str(obj.coords[Dims.CHANNELS].values[0])
+            obj = obj.pp[channel].pl.colorize(colors=["white"])
 
         if ax is None:
             ax = plt.gca()
 
-        bounds = self._obj.pl._get_bounds()
+        bounds = obj.pl._get_bounds()
 
         ax.imshow(
-            self._obj[Layers.PLOT].values[::downsample, ::downsample],
+            obj[Layers.PLOT].values[::downsample, ::downsample],
             origin="lower",
             interpolation="none",
             extent=bounds,
         )
 
         # draw any pending boxes added via add_box()
-        for box in self._obj.attrs.pop("_pending_boxes", []):
+        for box in obj.attrs.pop("_pending_boxes", []):
             rect = patches.Rectangle(
                 (box["xlim"][0], box["ylim"][0]),
                 box["xlim"][1] - box["xlim"][0],
@@ -1129,7 +1134,7 @@ class PlotAccessor:
         legend = []
 
         if legend_image:
-            legend += self._obj.pl._create_channel_legend()
+            legend += obj.pl._create_channel_legend()
 
         if legend_neighborhoods:
             # check that the neighborhood order is either a list of strings or a list of integers
@@ -1137,21 +1142,21 @@ class PlotAccessor:
                 assert all(
                     [isinstance(i, (str, int)) for i in neighborhood_order]
                 ), "The neighborhood order must be a list of strings or integers."
-            legend += self._obj.pl._create_neighborhood_legend(order=neighborhood_order)
+            legend += obj.pl._create_neighborhood_legend(order=neighborhood_order)
 
         if legend_segmentation:
-            legend += self._obj.pl._create_segmentation_legend()
+            legend += obj.pl._create_segmentation_legend()
 
         if legend_label:
-            legend += self._obj.pl._create_label_legend(order=label_order)
+            legend += obj.pl._create_label_legend(order=label_order)
 
         if legend_obs:
-            legend += self._obj.pl._create_obs_legend(ax=ax, **cbar_kwargs)
+            legend += obj.pl._create_obs_legend(ax=ax, **cbar_kwargs)
 
         if legend_image or legend_segmentation or legend_label or legend_neighborhoods:
             ax.legend(handles=legend, **legend_kwargs)
 
-        return self._obj
+        return obj
 
     def scatter_labels(
         self,

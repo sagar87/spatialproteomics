@@ -1198,11 +1198,13 @@ class PreprocessingAccessor:
         xr.Dataset
             The amended image container.
         """
-        if Dims.CELLS not in self._obj.coords:
-            self._obj = self._obj.pp.add_observations()
+        # using a local variable, since the accessor (and hence self._obj) is cached by xarray and reused
+        obj = self._obj
+        if Dims.CELLS not in obj.coords:
+            obj = obj.pp.add_observations()
 
         # pulls out the cell and feature coordinates from the image container
-        cells = self._obj.coords[Dims.CELLS].values
+        cells = obj.coords[Dims.CELLS].values
 
         # ensuring that the shape of the data frame fits the number of cells in the segmentation
         assert len(cells) == len(
@@ -1217,7 +1219,7 @@ class PreprocessingAccessor:
             name=Layers.OBS,
         )
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification(
         self,
@@ -1254,15 +1256,17 @@ class PreprocessingAccessor:
 
         assert layer_key in self._obj, f"Layer {layer_key} not found in image container."
 
-        if Dims.CELLS not in self._obj.coords:
+        # using a local variable, since the accessor (and hence self._obj) is cached by xarray and reused
+        obj = self._obj
+        if Dims.CELLS not in obj.coords:
             logger.warning("No cell coordinates found. Adding _obs table.")
-            self._obj = self._obj.pp.add_observations()
+            obj = obj.pp.add_observations()
 
         measurements = []
-        all_channels = self._obj.coords[Dims.CHANNELS].values.tolist()
+        all_channels = obj.coords[Dims.CHANNELS].values.tolist()
 
-        segmentation = self._obj[Layers.SEGMENTATION].values
-        image = self._obj[layer_key].values
+        segmentation = obj[Layers.SEGMENTATION].values
+        image = obj[layer_key].values
 
         measurements, cell_idx = _compute_quantification(image, segmentation, func)
 
@@ -1276,7 +1280,7 @@ class PreprocessingAccessor:
         if return_xarray:
             return da
 
-        return xr.merge([self._obj, da], join="outer", compat="no_conflicts")
+        return xr.merge([obj, da], join="outer", compat="no_conflicts")
 
     def add_quantification_from_dataframe(self, df: pd.DataFrame, key_added: str = Layers.INTENSITY) -> xr.Dataset:
         """
