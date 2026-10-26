@@ -1827,6 +1827,10 @@ class PreprocessingAccessor:
         obj = self._obj.drop_vars(Layers.SEGMENTATION)
         obj = xr.merge([obj, da], join="outer", compat="no_conflicts")
 
+        # if there are no observations, there is nothing to update
+        if Layers.OBS not in obj:
+            return obj
+
         # after segmentation masks were grown, the obs features (e. g. centroids and areas) need to be updated
         # if anything other than the default obs were present, a warning is shown, as they will be removed
 

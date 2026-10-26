@@ -1,12 +1,12 @@
 from typing import Dict
 
-import numpy as np
 import pandas as pd
 import xarray as xr
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from ..constants import COLORS, Features, Layers
+from ..constants import Features, Layers
+from ..pl.utils import _sample_colors
 
 
 class ImageContainer:
@@ -114,7 +114,7 @@ class ImageContainer:
         self.kmeans_df = kmeans_df
 
         # === ADDING CLUSTERS TO OBJECTS ===
-        colors = np.random.choice(COLORS, size=k, replace=False)
+        colors = _sample_colors(k)
         for id, sp_obj in self.objects.items():
             # obtaining the number of cells contained in the object we are currently looking at
             num_cells = sp_obj.sizes["cells"]

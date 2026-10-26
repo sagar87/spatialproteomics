@@ -9,7 +9,6 @@ from skimage.segmentation import relabel_sequential
 
 from ..base_logger import logger
 from ..constants import (
-    COLORS,
     Dims,
     Features,
     Labels,
@@ -24,6 +23,7 @@ from ..la.utils import (
     _predict_cell_subtypes,
     _predict_cell_types_argmax,
 )
+from ..pl.utils import _sample_colors
 from ..pp.utils import _ids_in_slice, _select_cells
 from ..sd.utils import _process_adata
 
@@ -1080,7 +1080,7 @@ class LabelAccessor:
                 unique_labels
             ), f"Got {len(colors)} colors for {len(unique_labels)} unique labels."
         else:
-            colors = np.random.choice(COLORS, size=len(unique_labels), replace=False)
+            colors = _sample_colors(len(unique_labels))
 
         obj = obj.la.add_properties(colors, Props.COLOR)
 

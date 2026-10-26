@@ -9,7 +9,41 @@ from skimage.morphology import closing, dilation, disk, erosion, footprint_recta
 from skimage.segmentation import find_boundaries
 
 from ..base_logger import logger
+from ..constants import COLORS
 from ..pp.utils import _normalize
+
+
+def _sample_colors(n: int) -> np.ndarray:
+    """
+    Randomly sample n distinct colors (hex strings) from the default color palette.
+
+    If more colors are requested than the palette contains, all palette colors are used and the remaining colors are
+    generated randomly.
+
+    Parameters
+    ----------
+    n : int
+        The number of colors.
+
+    Returns
+    -------
+    np.ndarray
+        An array of n distinct hex colors.
+    """
+    if n <= len(COLORS):
+        return np.random.choice(COLORS, size=n, replace=False)
+
+    logger.warning(
+        f"Requested {n} colors, but the default palette only contains {len(COLORS)} colors. The remaining colors are generated randomly, you can set them yourself with the colors argument."
+    )
+    colors = list(np.random.permutation(COLORS))
+    existing = {color.upper() for color in colors}
+    while len(colors) < n:
+        color = mcolors.to_hex(np.random.rand(3)).upper()
+        if color not in existing:
+            existing.add(color)
+            colors.append(color)
+    return np.array(colors)
 
 
 def _get_linear_colormap(palette: list, background: str = "black"):

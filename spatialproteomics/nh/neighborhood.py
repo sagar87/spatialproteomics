@@ -5,7 +5,8 @@ import pandas as pd
 import xarray as xr
 
 from ..base_logger import logger
-from ..constants import COLORS, Dims, Features, Layers, Props
+from ..constants import Dims, Features, Layers, Props
+from ..pl.utils import _sample_colors
 from ..pp.utils import _ids_in_slice, _select_cells
 from .utils import (
     _compute_global_network_features,
@@ -357,7 +358,7 @@ class NeighborhoodAccessor:
                 unique_neighborhoods
             ), f"Colors does not have the same length as there are neighborhoods. Got {len(colors)} colors for {len(unique_neighborhoods)} neighborhoods."
         else:
-            colors = np.random.choice(COLORS, size=len(unique_neighborhoods), replace=False)
+            colors = _sample_colors(len(unique_neighborhoods))
 
         # adding a lookup table for the neighborhood colors
         obj = obj.nh.add_properties(colors, Props.COLOR)
@@ -672,9 +673,9 @@ class NeighborhoodAccessor:
         Parameters
         ----------
         k : int, optional
-            The number of nearest neighbors to consider. Default is 10.
+            The number of nearest neighbors to consider, not counting the center cell. Default is 10.
         include_center : bool, optional
-            Whether to include the center cell in the neighborhood. Default is True.
+            Whether to add the center cell to its k nearest neighbors in the neighborhood. Default is True.
         key_added : str, optional
             The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
         key_adjacency_matrix : str, optional
@@ -845,6 +846,8 @@ class NeighborhoodAccessor:
 
             adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
             G = nx.from_numpy_array(adjacency_matrix)
+            # a cell is not its own neighbor (adjacency matrices computed with older versions contain self-loops)
+            G.remove_edges_from(list(nx.selfloop_edges(G)))
 
             # adding labels as node attributes
             spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
@@ -921,6 +924,8 @@ class NeighborhoodAccessor:
 
             adjacency_matrix = self._obj[Layers.ADJACENCY_MATRIX].values
             G = nx.from_numpy_array(adjacency_matrix)
+            # a cell is not its own neighbor (adjacency matrices computed with older versions contain self-loops)
+            G.remove_edges_from(list(nx.selfloop_edges(G)))
 
             # adding labels as node attributes
             spatial_df = self._obj.pp.get_layer_as_df(Layers.OBS)
