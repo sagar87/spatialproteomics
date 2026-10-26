@@ -110,3 +110,17 @@ def test_image_slicing_wrong_input(ds_segmentation):
 def test_image_slicing_inconsistent_type(ds_segmentation):
     with pytest.raises(TypeError, match="Invalid input. Found non-string elements in the list."):
         ds_segmentation.pp[["DAPI", 3]]
+
+
+@pytest.mark.parametrize("channels", [("CD4", "CD8"), ("DAPI", "PAX5", "CD3"), ("DAPI", "PAX5", "CD3", "CD4")])
+def test_image_slicing_channel_tuple(ds_segmentation, channels):
+    sub = ds_segmentation.pp[channels]
+
+    assert list(sub.coords[Dims.CHANNELS].values) == list(channels)
+    assert sub.sizes[Dims.X] == ds_segmentation.sizes[Dims.X]
+    assert sub.sizes[Dims.Y] == ds_segmentation.sizes[Dims.Y]
+
+
+def test_image_slicing_invalid_tuple(ds_segmentation):
+    with pytest.raises(AssertionError, match="Second and third index must be slices"):
+        ds_segmentation.pp["DAPI", :1650, 3]

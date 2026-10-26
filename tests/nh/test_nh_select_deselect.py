@@ -18,7 +18,8 @@ def test_neighborhood_get_item_correct_inputs(ds_neighborhoods):
     # indexing via slice
     assert np.all(ds_neighborhoods.nh[1:3].coords[Dims.NEIGHBORHOODS].values == np.array([1, 2]))
     assert np.all(ds_neighborhoods.nh[:4].coords[Dims.NEIGHBORHOODS].values == np.array([1, 2, 3]))
-    assert np.all(ds_neighborhoods.nh[3:].coords[Dims.NEIGHBORHOODS].values == np.array([3, 4]))
+    assert np.all(ds_neighborhoods.nh[3:].coords[Dims.NEIGHBORHOODS].values == np.array([3, 4, 5]))
+    assert np.all(ds_neighborhoods.nh[:].coords[Dims.NEIGHBORHOODS].values == np.array([1, 2, 3, 4, 5]))
     # indexing via string
     assert np.all(ds_neighborhoods.nh["Neighborhood 1"].coords[Dims.NEIGHBORHOODS].values == np.array([1]))
     assert np.all(ds_neighborhoods.nh["Neighborhood 4"].coords[Dims.NEIGHBORHOODS].values == np.array([4]))
@@ -60,6 +61,8 @@ def test_neighborhood_deselect(ds_neighborhoods):
     # indexing via slice
     ds = ds_neighborhoods.nh.deselect(slice(1, 4))
     assert np.all(ds.coords[Dims.NEIGHBORHOODS].values == np.array([4, 5]))
+    ds = ds_neighborhoods.nh.deselect(slice(3, None))
+    assert np.all(ds.coords[Dims.NEIGHBORHOODS].values == np.array([1, 2]))
 
 
 def test_neighborhood_deselect_wrong_input(ds_neighborhoods):
@@ -92,7 +95,9 @@ def test_neighborhood_numeric_get_item_correct_inputs(ds_labels):
     assert np.all(ds_neighborhoods_numeric.nh[[1, 3]].coords[Dims.NEIGHBORHOODS].values == np.array([1, 3]))
     # indexing via slice
     assert np.all(ds_neighborhoods_numeric.nh[1:3].coords[Dims.NEIGHBORHOODS].values == np.array([1, 2]))
-    assert np.all(ds_neighborhoods_numeric.nh[:4].coords[Dims.NEIGHBORHOODS].values == np.array([1, 2, 3]))
+    # the slice starts at the smallest neighborhood (0 here) if no start is given
+    assert np.all(ds_neighborhoods_numeric.nh[:4].coords[Dims.NEIGHBORHOODS].values == np.array([0, 1, 2, 3]))
+    assert np.all(ds_neighborhoods_numeric.nh[:].coords[Dims.NEIGHBORHOODS].values == np.arange(0, 5))
     assert np.all(ds_neighborhoods_numeric.nh[3:].coords[Dims.NEIGHBORHOODS].values == np.array([3, 4]))
     # indexing via string (if you provide integers, names are assigned as 'Neighborhood 0', 'Neighborhood 1', etc.)
     assert np.all(ds_neighborhoods_numeric.nh["Neighborhood 0"].coords[Dims.NEIGHBORHOODS].values == np.array([0]))

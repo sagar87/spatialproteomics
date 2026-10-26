@@ -6,7 +6,7 @@ import xarray as xr
 
 from ..base_logger import logger
 from ..constants import COLORS, Dims, Features, Layers, Props
-from ..pp.utils import _select_cells
+from ..pp.utils import _ids_in_slice, _select_cells
 from .utils import (
     _compute_global_network_features,
     _compute_network_features,
@@ -57,9 +57,7 @@ class NeighborhoodAccessor:
             sel = [neighborhood_dict[indices]]
 
         if isinstance(indices, slice):
-            l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.NEIGHBORHOODS]
-            sel = [i for i in range(l_start, l_stop)]
+            sel = _ids_in_slice(self._obj.coords[Dims.NEIGHBORHOODS].values, indices)
 
         if isinstance(indices, (list, tuple)):
             if not all([isinstance(i, (str, int)) for i in indices]):
@@ -125,9 +123,7 @@ class NeighborhoodAccessor:
         - The function then updates the data object to remove the deselected neighborhood indices.
         """
         if isinstance(indices, slice):
-            l_start = indices.start if indices.start is not None else 1
-            l_stop = indices.stop if indices.stop is not None else self._obj.sizes[Dims.NEIGHBORHOODS]
-            sel = [i for i in range(l_start, l_stop)]
+            sel = _ids_in_slice(self._obj.coords[Dims.NEIGHBORHOODS].values, indices)
         elif isinstance(indices, list):
             assert all(
                 [isinstance(i, (int, str)) for i in indices]

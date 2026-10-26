@@ -605,7 +605,7 @@ class PreprocessingAccessor:
                 x_slice = slice(None)
                 y_slice = slice(None)
 
-            if len(indices) == 2:
+            elif len(indices) == 2:
                 if (type(indices[0]) is slice) & (type(indices[1]) is slice):
                     c_slice = slice(None)
                     x_slice = indices[0]
@@ -633,6 +633,10 @@ class PreprocessingAccessor:
                 if (type(indices[1]) is slice) & (type(indices[2]) is slice):
                     x_slice = indices[1]
                     y_slice = indices[2]
+                else:
+                    raise AssertionError("Second and third index must be slices of the x and y coordinates.")
+            else:
+                raise AssertionError("Some error in handling the input arguments")
         else:
             raise TypeError(
                 f"Invalid input. To subselect, you can input a string, slice, list, or tuple. You provided {type(indices)}"

@@ -16,7 +16,8 @@ def test_label_get_item_correct_inputs(ds_labels):
     # indexing via slice
     assert np.all(ds_labels.la[1:3].coords[Dims.LABELS].values == np.array([1, 2]))
     assert np.all(ds_labels.la[:4].coords[Dims.LABELS].values == np.array([1, 2, 3]))
-    assert np.all(ds_labels.la[2:].coords[Dims.LABELS].values == np.array([2, 3]))
+    assert np.all(ds_labels.la[2:].coords[Dims.LABELS].values == np.array([2, 3, 4]))
+    assert np.all(ds_labels.la[:].coords[Dims.LABELS].values == np.array([1, 2, 3, 4]))
     # indexing via string
     assert np.all(ds_labels.la["B"].coords[Dims.LABELS].values == np.array([1]))
     assert np.all(ds_labels.la["T"].coords[Dims.LABELS].values == np.array([2]))
@@ -77,3 +78,18 @@ def test_label_deselect_wrong_input(ds_labels):
 
     with pytest.raises(ValueError, match="Label type"):
         ds_labels.la.deselect("Cell type 13")
+
+
+def test_label_deselect_slice(ds_labels):
+    ds = ds_labels.la.deselect(slice(2, None))
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([1]))
+    ds = ds_labels.la.deselect(slice(None, 3))
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([3, 4]))
+
+
+def test_label_slicing_non_contiguous_labels(ds_labels):
+    # after removing a label type, the label ids are no longer contiguous
+    ds = ds_labels.la.deselect(2)
+    assert np.all(ds.coords[Dims.LABELS].values == np.array([1, 3, 4]))
+    assert np.all(ds.la[:].coords[Dims.LABELS].values == np.array([1, 3, 4]))
+    assert np.all(ds.la[2:].coords[Dims.LABELS].values == np.array([3, 4]))
