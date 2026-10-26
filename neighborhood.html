@@ -539,8 +539,8 @@ the frequency of each cell type within these k neighbors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nearest neighbors to consider. Default is 10.</p></li>
-<li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include the center cell in the neighborhood. Default is True.</p></li>
+<li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nearest neighbors to consider, not counting the center cell. Default is 10.</p></li>
+<li><p><strong>include_center</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to add the center cell to its k nearest neighbors in the neighborhood. Default is True.</p></li>
 <li><p><strong>key_added</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is ‘_neighborhoods’.</p></li>
 <li><p><strong>key_adjacency_matrix</strong> (<em>str</em><em>, </em><em>optional</em>) – The key under which the computed adjacency matrix will be stored in the resulting DataArray. Default is ‘_adjacency_matrix’.</p></li>
 </ul>

@@ -5632,9 +5632,9 @@ the frequency of each cell type within these k neighbors.
 **Parameters**
 
 k : int, optional
-    The number of nearest neighbors to consider. Default is 10.
+    The number of nearest neighbors to consider, not counting the center cell. Default is 10.
 include_center : bool, optional
-    Whether to include the center cell in the neighborhood. Default is True.
+    Whether to add the center cell to its k nearest neighbors in the neighborhood. Default is True.
 key_added : str, optional
     The key under which the computed neighborhoods will be stored in the resulting DataArray. Default is '_neighborhoods'.
 key_adjacency_matrix : str, optional
