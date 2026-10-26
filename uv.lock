@@ -1065,14 +1065,14 @@ resolution-markers = [
     "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "click" },
-    { name = "cloudpickle" },
-    { name = "fsspec" },
+    { name = "click", marker = "python_full_version < '3.12'" },
+    { name = "cloudpickle", marker = "python_full_version < '3.12'" },
+    { name = "fsspec", marker = "python_full_version < '3.12'" },
     { name = "importlib-metadata", marker = "python_full_version < '3.12'" },
-    { name = "packaging" },
-    { name = "partd" },
-    { name = "pyyaml" },
-    { name = "toolz" },
+    { name = "packaging", marker = "python_full_version < '3.12'" },
+    { name = "partd", marker = "python_full_version < '3.12'" },
+    { name = "pyyaml", marker = "python_full_version < '3.12'" },
+    { name = "toolz", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1e/46/61ecde57bac647ca7eb6ffef8dcd90af6c1c649020874cd7fd8738003d62/dask-2026.1.1.tar.gz", hash = "sha256:12b1dbb0d6e92f287feb4076871600b2fba3a843d35ff214776ada5e9e7a1529", size = 10994732, upload-time = "2026-01-16T12:35:30.258Z" }
 wheels = [
@@ -1081,12 +1081,12 @@ wheels = [
 
 [package.optional-dependencies]
 array = [
-    { name = "numpy" },
+    { name = "numpy", marker = "python_full_version < '3.12'" },
 ]
 dataframe = [
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pyarrow" },
+    { name = "numpy", marker = "python_full_version < '3.12'" },
+    { name = "pandas", marker = "python_full_version < '3.12'" },
+    { name = "pyarrow", marker = "python_full_version < '3.12'" },
 ]
 
 [[package]]
@@ -1103,13 +1103,13 @@ resolution-markers = [
     "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "click" },
-    { name = "cloudpickle" },
-    { name = "fsspec" },
-    { name = "packaging" },
-    { name = "partd" },
-    { name = "pyyaml" },
-    { name = "toolz" },
+    { name = "click", marker = "python_full_version >= '3.12'" },
+    { name = "cloudpickle", marker = "python_full_version >= '3.12'" },
+    { name = "fsspec", marker = "python_full_version >= '3.12'" },
+    { name = "packaging", marker = "python_full_version >= '3.12'" },
+    { name = "partd", marker = "python_full_version >= '3.12'" },
+    { name = "pyyaml", marker = "python_full_version >= '3.12'" },
+    { name = "toolz", marker = "python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/33/a7/6b3c7ac32b642fbbe0821111654e0bd8cfbe88f68560bcf23cc78ab35c71/dask-2026.8.0.tar.gz", hash = "sha256:8a94c37b5de6d869343340dc26c3c3acca7ec48a3abdabe00ea3abb1125884d5", size = 11561752, upload-time = "2026-08-24T19:21:25.906Z" }
 wheels = [
@@ -1118,12 +1118,12 @@ wheels = [
 
 [package.optional-dependencies]
 array = [
-    { name = "numpy" },
+    { name = "numpy", marker = "python_full_version >= '3.12'" },
 ]
 dataframe = [
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pyarrow" },
+    { name = "numpy", marker = "python_full_version >= '3.12'" },
+    { name = "pandas", marker = "python_full_version >= '3.12'" },
+    { name = "pyarrow", marker = "python_full_version >= '3.12'" },
 ]
 
 [[package]]
@@ -1256,21 +1256,21 @@ resolution-markers = [
     "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "click" },
-    { name = "cloudpickle" },
-    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
-    { name = "jinja2" },
-    { name = "locket" },
-    { name = "msgpack" },
-    { name = "packaging" },
-    { name = "psutil" },
-    { name = "pyyaml" },
-    { name = "sortedcontainers" },
-    { name = "tblib" },
-    { name = "toolz" },
-    { name = "tornado" },
-    { name = "urllib3" },
-    { name = "zict" },
+    { name = "click", marker = "python_full_version < '3.12'" },
+    { name = "cloudpickle", marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "jinja2", marker = "python_full_version < '3.12'" },
+    { name = "locket", marker = "python_full_version < '3.12'" },
+    { name = "msgpack", marker = "python_full_version < '3.12'" },
+    { name = "packaging", marker = "python_full_version < '3.12'" },
+    { name = "psutil", marker = "python_full_version < '3.12'" },
+    { name = "pyyaml", marker = "python_full_version < '3.12'" },
+    { name = "sortedcontainers", marker = "python_full_version < '3.12'" },
+    { name = "tblib", marker = "python_full_version < '3.12'" },
+    { name = "toolz", marker = "python_full_version < '3.12'" },
+    { name = "tornado", marker = "python_full_version < '3.12'" },
+    { name = "urllib3", marker = "python_full_version < '3.12'" },
+    { name = "zict", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/45/19/0c13efdffc55cb311594f66c1c8d36a3c4711e427c820155fb9c59138b5e/distributed-2026.1.1.tar.gz", hash = "sha256:3d2709a43912797df3c345af3bb333bbf1a386ec1e9e6a134e5f050521373dbd", size = 2102870, upload-time = "2026-01-16T12:34:58.258Z" }
 wheels = [
@@ -1291,20 +1291,20 @@ resolution-markers = [
     "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "click" },
-    { name = "cloudpickle" },
-    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "jinja2" },
-    { name = "locket" },
-    { name = "msgpack" },
-    { name = "packaging" },
-    { name = "psutil" },
-    { name = "pyyaml" },
-    { name = "sortedcontainers" },
-    { name = "tblib" },
-    { name = "toolz" },
-    { name = "tornado" },
-    { name = "zict" },
+    { name = "click", marker = "python_full_version >= '3.12'" },
+    { name = "cloudpickle", marker = "python_full_version >= '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "jinja2", marker = "python_full_version >= '3.12'" },
+    { name = "locket", marker = "python_full_version >= '3.12'" },
+    { name = "msgpack", marker = "python_full_version >= '3.12'" },
+    { name = "packaging", marker = "python_full_version >= '3.12'" },
+    { name = "psutil", marker = "python_full_version >= '3.12'" },
+    { name = "pyyaml", marker = "python_full_version >= '3.12'" },
+    { name = "sortedcontainers", marker = "python_full_version >= '3.12'" },
+    { name = "tblib", marker = "python_full_version >= '3.12'" },
+    { name = "toolz", marker = "python_full_version >= '3.12'" },
+    { name = "tornado", marker = "python_full_version >= '3.12'" },
+    { name = "zict", marker = "python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ff/18/1c98f0a36eccfcce109f054456f38767ac5d4b3fac124dcd5a35b1cd6167/distributed-2026.8.0.tar.gz", hash = "sha256:6f55008ecacf96ba945309fc12e680544764995e27bd63cc5e109afb97d7044d", size = 2465942, upload-time = "2026-08-24T19:36:00.554Z" }
 wheels = [
@@ -3234,16 +3234,16 @@ resolution-markers = [
     "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "aiohttp" },
-    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
-    { name = "deprecated" },
-    { name = "fsspec", extra = ["s3"] },
-    { name = "numpy" },
-    { name = "rangehttpserver" },
-    { name = "requests" },
-    { name = "scikit-image" },
-    { name = "toolz" },
-    { name = "zarr" },
+    { name = "aiohttp", marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "deprecated", marker = "python_full_version < '3.12'" },
+    { name = "fsspec", extra = ["s3"], marker = "python_full_version < '3.12'" },
+    { name = "numpy", marker = "python_full_version < '3.12'" },
+    { name = "rangehttpserver", marker = "python_full_version < '3.12'" },
+    { name = "requests", marker = "python_full_version < '3.12'" },
+    { name = "scikit-image", marker = "python_full_version < '3.12'" },
+    { name = "toolz", marker = "python_full_version < '3.12'" },
+    { name = "zarr", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/8b/ee/0e99c62dd3d453c9fb84d8c8cc9f64e255c2d7638546836516282fae2be5/ome_zarr-0.15.0.tar.gz", hash = "sha256:e9479d3a9849c194a616355290f6ae574a7d4402559c5f7005be20cf81945435", size = 81497, upload-time = "2026-04-08T11:57:25.475Z" }
 wheels = [
@@ -3264,16 +3264,16 @@ resolution-markers = [
     "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "aiohttp" },
-    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "deprecated" },
-    { name = "fsspec", extra = ["s3"] },
-    { name = "numpy" },
-    { name = "rangehttpserver" },
-    { name = "requests" },
-    { name = "scikit-image" },
-    { name = "toolz" },
-    { name = "zarr" },
+    { name = "aiohttp", marker = "python_full_version >= '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "deprecated", marker = "python_full_version >= '3.12'" },
+    { name = "fsspec", extra = ["s3"], marker = "python_full_version >= '3.12'" },
+    { name = "numpy", marker = "python_full_version >= '3.12'" },
+    { name = "rangehttpserver", marker = "python_full_version >= '3.12'" },
+    { name = "requests", marker = "python_full_version >= '3.12'" },
+    { name = "scikit-image", marker = "python_full_version >= '3.12'" },
+    { name = "toolz", marker = "python_full_version >= '3.12'" },
+    { name = "zarr", marker = "python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/43/00/ff25c09eb6b31656d6e8da309f62cf0f493ffac3623ee300ff6cdc597c85/ome_zarr-0.17.0.tar.gz", hash = "sha256:39e79475bb94d8950161833fb4c7c344c0b24f3a6eb756ca5ebaa6740a5a7fc5", size = 88172, upload-time = "2026-06-09T11:50:59.136Z" }
 wheels = [
@@ -4962,34 +4962,34 @@ resolution-markers = [
     "(python_full_version <= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version <= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "anndata" },
-    { name = "annsel" },
-    { name = "click" },
-    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
-    { name = "dask-image" },
-    { name = "datashader" },
-    { name = "distributed", version = "2026.1.1", source = { registry = "https://pypi.org/simple" } },
-    { name = "fsspec", extra = ["http", "s3"] },
-    { name = "geopandas" },
-    { name = "multiscale-spatial-image" },
-    { name = "networkx" },
-    { name = "numba" },
-    { name = "numpy" },
-    { name = "ome-zarr", version = "0.15.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "pandas" },
-    { name = "pooch" },
-    { name = "pyarrow" },
-    { name = "rich" },
-    { name = "scikit-image" },
-    { name = "scipy" },
-    { name = "setuptools" },
-    { name = "shapely" },
-    { name = "spatial-image" },
-    { name = "typing-extensions" },
-    { name = "universal-pathlib" },
-    { name = "xarray" },
-    { name = "xarray-spatial" },
-    { name = "zarr" },
+    { name = "anndata", marker = "python_full_version < '3.12'" },
+    { name = "annsel", marker = "python_full_version < '3.12'" },
+    { name = "click", marker = "python_full_version < '3.12'" },
+    { name = "dask", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "dask-image", marker = "python_full_version < '3.12'" },
+    { name = "datashader", marker = "python_full_version < '3.12'" },
+    { name = "distributed", version = "2026.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "fsspec", extra = ["http", "s3"], marker = "python_full_version < '3.12'" },
+    { name = "geopandas", marker = "python_full_version < '3.12'" },
+    { name = "multiscale-spatial-image", marker = "python_full_version < '3.12'" },
+    { name = "networkx", marker = "python_full_version < '3.12'" },
+    { name = "numba", marker = "python_full_version < '3.12'" },
+    { name = "numpy", marker = "python_full_version < '3.12'" },
+    { name = "ome-zarr", version = "0.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "pandas", marker = "python_full_version < '3.12'" },
+    { name = "pooch", marker = "python_full_version < '3.12'" },
+    { name = "pyarrow", marker = "python_full_version < '3.12'" },
+    { name = "rich", marker = "python_full_version < '3.12'" },
+    { name = "scikit-image", marker = "python_full_version < '3.12'" },
+    { name = "scipy", marker = "python_full_version < '3.12'" },
+    { name = "setuptools", marker = "python_full_version < '3.12'" },
+    { name = "shapely", marker = "python_full_version < '3.12'" },
+    { name = "spatial-image", marker = "python_full_version < '3.12'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.12'" },
+    { name = "universal-pathlib", marker = "python_full_version < '3.12'" },
+    { name = "xarray", marker = "python_full_version < '3.12'" },
+    { name = "xarray-spatial", marker = "python_full_version < '3.12'" },
+    { name = "zarr", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/3c/50/248fae79a62f3d9dffbe70e9b66be6e3f8aaf77caa20a8c931a79256b689/spatialdata-0.7.3.tar.gz", hash = "sha256:6054d66d00e19af96368a897faa0b369f3a25dbf9e0371f091129f8522ee6986", size = 359317, upload-time = "2026-05-06T16:02:42.446Z" }
 wheels = [
@@ -5010,34 +5010,34 @@ resolution-markers = [
     "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 dependencies = [
-    { name = "anndata" },
-    { name = "annsel" },
-    { name = "click" },
-    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "dask-image" },
-    { name = "datashader" },
-    { name = "distributed", version = "2026.8.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "fsspec", extra = ["http", "s3"] },
-    { name = "geopandas" },
-    { name = "multiscale-spatial-image" },
-    { name = "networkx" },
-    { name = "numba" },
-    { name = "numpy" },
-    { name = "ome-zarr", version = "0.17.0", source = { registry = "https://pypi.org/simple" } },
-    { name = "pandas" },
-    { name = "pooch" },
-    { name = "pyarrow" },
-    { name = "rich" },
-    { name = "scikit-image" },
-    { name = "scipy" },
-    { name = "setuptools" },
-    { name = "shapely" },
-    { name = "spatial-image" },
-    { name = "typing-extensions" },
-    { name = "universal-pathlib" },
-    { name = "xarray" },
-    { name = "xarray-spatial" },
-    { name = "zarr" },
+    { name = "anndata", marker = "python_full_version >= '3.12'" },
+    { name = "annsel", marker = "python_full_version >= '3.12'" },
+    { name = "click", marker = "python_full_version >= '3.12'" },
+    { name = "dask", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "dask-image", marker = "python_full_version >= '3.12'" },
+    { name = "datashader", marker = "python_full_version >= '3.12'" },
+    { name = "distributed", version = "2026.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "fsspec", extra = ["http", "s3"], marker = "python_full_version >= '3.12'" },
+    { name = "geopandas", marker = "python_full_version >= '3.12'" },
+    { name = "multiscale-spatial-image", marker = "python_full_version >= '3.12'" },
+    { name = "networkx", marker = "python_full_version >= '3.12'" },
+    { name = "numba", marker = "python_full_version >= '3.12'" },
+    { name = "numpy", marker = "python_full_version >= '3.12'" },
+    { name = "ome-zarr", version = "0.17.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pandas", marker = "python_full_version >= '3.12'" },
+    { name = "pooch", marker = "python_full_version >= '3.12'" },
+    { name = "pyarrow", marker = "python_full_version >= '3.12'" },
+    { name = "rich", marker = "python_full_version >= '3.12'" },
+    { name = "scikit-image", marker = "python_full_version >= '3.12'" },
+    { name = "scipy", marker = "python_full_version >= '3.12'" },
+    { name = "setuptools", marker = "python_full_version >= '3.12'" },
+    { name = "shapely", marker = "python_full_version >= '3.12'" },
+    { name = "spatial-image", marker = "python_full_version >= '3.12'" },
+    { name = "typing-extensions", marker = "python_full_version >= '3.12'" },
+    { name = "universal-pathlib", marker = "python_full_version >= '3.12'" },
+    { name = "xarray", marker = "python_full_version >= '3.12'" },
+    { name = "xarray-spatial", marker = "python_full_version >= '3.12'" },
+    { name = "zarr", marker = "python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b7/70/e575bc26b0410cf1349f5115b55d8d119edd6b2cf18e32ab84e222ee17e3/spatialdata-0.8.0.tar.gz", hash = "sha256:14143788a1de83302f8e83a29dd723b2d4e82f5b130d840409822fbf3a778e25", size = 369880, upload-time = "2026-07-02T20:42:20.597Z" }
 wheels = [
@@ -5046,7 +5046,7 @@ wheels = [
 
 [[package]]
 name = "spatialproteomics"
-version = "0.8.6"
+version = "0.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "cffi" },
