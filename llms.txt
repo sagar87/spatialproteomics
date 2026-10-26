@@ -4,7 +4,7 @@
 
 Key facts for using the library:
 
-- Install with `pip install spatialproteomics`; optional extras: `[cellpose]`, `[stardist]`, `[astir]`, `[spotiflow]`, `[spatialdata]`, `[all]`.
+- Install with `pip install spatialproteomics`; optional extras: `[cellpose]`, `[stardist]`, `[instanseg]`, `[astir]`, `[spotiflow]`, `[spatialdata]`, `[all]`.
 - `import spatialproteomics as sp` registers five accessors on every `xarray.Dataset`: `ds.pp` (preprocessing, subsetting, quantification), `ds.tl` (segmentation and other external tools, export), `ds.la` (cell type labels), `ds.nh` (neighborhoods) and `ds.pl` (plotting).
 - Accessor methods return a new dataset and can be chained: `ds.pp.threshold(0.5).tl.cellpose(channel="DAPI").pp.add_quantification()`.
 - Create an object with `sp.load_image_data(image, channel_coords=[...])`, store it with `ds.drop_encoding().to_zarr(path)` and load it with `xr.open_zarr(path)`.

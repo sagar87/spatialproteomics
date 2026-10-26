@@ -87,6 +87,56 @@ obj : xr.Dataset
 ValueError
     If the object already contains a segmentation mask.
 
+### `ds.tl.instanseg(channel: Optional[str]=None, key_added: str='_segmentation', model_type: str='fluorescence_nuclei_and_cells', pixel_size: Optional[float]=None, target: str='cells', normalize: bool=True, method: str='auto', tile_size: int=512, batch_size: int=1, device: Optional[str]=None, verbosity: int=1, postprocess_func: Callable=<lambda>, **kwargs) -> xr.Dataset`
+
+Apply InstanSeg (https://github.com/instanseg/instanseg) to perform instance segmentation of nuclei and/or cells.
+
+InstanSeg is channel-invariant, so in contrast to cellpose and stardist, all selected channels are segmented jointly
+and a single segmentation mask is returned (e. g. a nuclear marker together with membrane markers).
+Requires `pip install instanseg-torch`.
+
+**Parameters**
+
+channel : str or list, optional
+    Channel(s) to use for segmentation. If None, all channels are used.
+key_added : str, optional
+    Key to write the segmentation results to. If target is "all_outputs", the cell mask is written to key_added
+    and the nuclear mask to f"{key_added}_nuclei".
+model_type : str, optional
+    Name of the pretrained InstanSeg model, e. g. "fluorescence_nuclei_and_cells" (default) or "brightfield_nuclei".
+pixel_size : float, optional
+    Pixel size of the image in microns. The image is rescaled to the pixel size the model was trained on (0.5 microns
+    for the default model). If None, the image is not rescaled, which may lead to inaccurate results.
+target : str, optional
+    Which segmentation to return: "cells" (default), "nuclei" or "all_outputs" (both). Models that only predict nuclei
+    always return the nuclear segmentation.
+normalize : bool, optional
+    Whether InstanSeg should percentile-normalize the image (default is True).
+method : str, optional
+    "small" processes the whole image at once, "medium" uses tiled inference. "auto" (default) picks "medium" for large images.
+tile_size : int, optional
+    Tile size for tiled inference (default is 512). Only used if method is "medium".
+batch_size : int, optional
+    Number of tiles processed simultaneously (default is 1). Only used if method is "medium".
+device : str, optional
+    Device to run the model on, e. g. "cpu" or "cuda". If None, the device is chosen automatically.
+verbosity : int, optional
+    Verbosity of InstanSeg: 0 is silent, 1 is normal, 2 is verbose (default is 1).
+postprocess_func : Callable, optional
+    Function to apply to each segmentation mask after prediction (default is lambda x: x).
+**kwargs : dict, optional
+    Additional keyword arguments passed to InstanSeg's eval_small_image or eval_medium_image.
+
+**Returns**
+
+xr.Dataset
+    Xarray dataset containing the segmentation mask(s).
+
+**Raises**
+
+KeyError
+    If the key the segmentation should be written to already exists.
+
 ### `ds.tl.mesmer(key_added: str='_segmentation', channel: Optional[List]=None, postprocess_func: Callable=<lambda>, **kwargs)`
 
 This function is deprecated.
@@ -241,6 +291,23 @@ Args:
     data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
     copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
+
+### `sp.tl.instanseg(sdata, channel: Optional[str]=None, image_key: str='image', key_added: str='segmentation', data_key: Optional[str]=None, copy: bool=False, **kwargs)`
+
+This function runs the InstanSeg segmentation algorithm on the provided image data.
+It extracts the image data from the spatialdata object, applies InstanSeg,
+and adds the segmentation masks to the labels attribute of the spatialdata object.
+In contrast to cellpose and stardist, InstanSeg is channel-invariant, i. e. all selected channels are segmented jointly
+and a single segmentation mask is returned.
+
+Args:
+    sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
+    channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
+    image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
+    key_added (str, optional): The key under which the segmentation mask will be stored in the labels attribute of the spatialdata object. If target="all_outputs", the cell mask is stored under key_added and the nuclear mask under f"{key_added}_nuclei". Defaults to segmentation.
+    data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
+    copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
+    **kwargs: Additional keyword arguments passed to the InstanSeg wrapper, e.g. model_type, pixel_size, target, method or device (see ToolAccessor.instanseg).
 
 ### `sp.tl.mesmer(sdata, channel: Optional[str]=None, image_key: str='image', key_added: str='segmentation', data_key: Optional[str]=None, copy: bool=False, **kwargs)`
 
