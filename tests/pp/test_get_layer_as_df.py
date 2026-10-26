@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 
@@ -5,7 +6,8 @@ def test_get_layer_as_df(ds_labels):
     df = ds_labels.pp.get_layer_as_df()
 
     # checking that the cell types are strings
-    assert df["_labels"].dtype == "object"
+    # pandas < 3 returns object dtype, pandas >= 3 its dedicated string dtype
+    assert pd.api.types.is_string_dtype(df["_labels"])
 
 
 def test_get_layer_as_df_nonexistent_layer(ds_labels):

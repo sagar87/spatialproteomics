@@ -36,5 +36,5 @@ def test_colorize_too_few_colors(ds_image):
 
 
 def test_colorize_corrupted_colors(ds_image):
-    with pytest.raises(ValueError, match="too many values to unpack"):
+    with pytest.raises(ValueError, match="Invalid color"):
         ds_image.pl.colorize(colors=["red", "green", "blue", "not_a_color", "yellow"])

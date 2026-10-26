@@ -1397,10 +1397,7 @@ class PreprocessingAccessor:
                     logger.info(
                         "Removing labels from observations. If you want to keep the labels in the obs layer, set drop_obs=False."
                     )
-                filtered_features = obj.coords[Dims.FEATURES].where(
-                    obj.coords[Dims.FEATURES] != Features.LABELS, drop=True
-                )
-                obj = obj.sel(features=filtered_features)
+                obj = obj.drop_sel({Dims.FEATURES: [Features.LABELS]})
 
         # if neighborhood props are dropped, we need to remove the neighborhoods from the obs as well
         if Layers.NH_PROPERTIES in layers and Dims.FEATURES in obj.coords:
@@ -1409,10 +1406,7 @@ class PreprocessingAccessor:
                     logger.info(
                         "Removing neighborhoods from observations. If you want to keep the neighborhoods in the obs layer, set drop_obs=False."
                     )
-                filtered_features = obj.coords[Dims.FEATURES].where(
-                    obj.coords[Dims.FEATURES] != Features.NEIGHBORHOODS, drop=True
-                )
-                obj = obj.sel(features=filtered_features)
+                obj = obj.drop_sel({Dims.FEATURES: [Features.NEIGHBORHOODS]})
 
         return obj
 

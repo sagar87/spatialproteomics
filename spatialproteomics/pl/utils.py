@@ -138,6 +138,10 @@ def _colorize(
         len(colors) >= num_channels
     ), "Length of colors must at least be greater or equal the number of channels of the image."
 
+    invalid_colors = [c for c in list(colors[:num_channels]) + [background] if not mcolors.is_color_like(c)]
+    if invalid_colors:
+        raise ValueError(f"Invalid color(s): {invalid_colors}. Please provide valid matplotlib colors.")
+
     cmaps = _get_linear_colormap(colors[:num_channels], background)
 
     if normalize:
