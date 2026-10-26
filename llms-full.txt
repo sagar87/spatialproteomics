@@ -38,7 +38,7 @@ Importing spatialproteomics registers five accessors on every `xarray.Dataset`:
 | Name | Class | Responsibility |
 |----|----|----|
 | `pp` | PreprocessingAccessor | Subsetting, image processing, segmentation handling, quantification, tables. |
-| `tl` | ToolAccessor | Wrappers around external tools (cellpose, stardist, instanseg, astir, spotiflow) and export. |
+| `tl` | ToolAccessor | Wrappers around external tools (cellpose, stardist, astir, spotiflow) and export. |
 | `la` | LabelAccessor | Cell type labels: prediction, naming, colors, subtype hierarchies. |
 | `nh` | NeighborhoodAccessor | Cellular neighborhoods and graph features. |
 | `pl` | PlotAccessor | Plotting of images, masks, labels, neighborhoods and observations. |
@@ -121,7 +121,7 @@ sdata = ds.tl.convert_to_spatialdata()            # requires spatialdata
 
 Other frequently used operations:
 
-- Segmentation from elsewhere: `ds.pp.add_segmentation(mask)`; alternatives to cellpose: `ds.tl.stardist()` and `ds.tl.instanseg()` (segments all selected channels jointly)
+- Segmentation from elsewhere: `ds.pp.add_segmentation(mask)`; alternatives to cellpose: `ds.tl.stardist()`
 - Labels from elsewhere: `ds.la.add_labels_from_dataframe(df, cell_col="cell", label_col="label")`.
 - Marker binarization and subtypes: `ds.la.threshold_labels({...})` then `ds.la.predict_cell_subtypes({...})`; switch levels with `ds.la.set_label_level(...)`.
 - Neighborhoods across samples: `sp.ImageContainer({"s1": ds1, "s2": ds2}).compute_neighborhoods(k=5)` computes compositions, clusters them with k-means and returns a dict of datasets with neighborhoods assigned (`ds.nh["Neighborhood 0"]`).
@@ -152,7 +152,7 @@ Convert between the two backends with `sp.read_from_spatialdata(sdata)` and `ds.
 - `la.predict_cell_types_argmax` and `la.predict_cell_subtypes` take **marker -\> cell type** mappings, e.g. `{"CD4": "T_h", "CD8": "T_tox", "FOXP3": "T_reg", "BCL6": "T_fh"}`, not the reverse.
 - `ds.pp[a:b, c:d]` slices **x first, then y**, while the image array is stored as `(channels, y, x)`. Slices select by coordinate value (like `xarray.Dataset.sel`), so the end point is included.
 - Call `drop_encoding()` before `to_zarr()` to avoid xarray encoding errors.
-- Optional tools must be installed separately: `cellpose`, `stardist`, `instanseg-torch`, `astir` and `spotiflow` (or all at once with `pip install "spatialproteomics[all]"`).
+- Optional tools must be installed separately: `cellpose`, `stardist`, `astir` and `spotiflow` (or all at once with `pip install "spatialproteomics[all]"`).
 - Many methods require earlier steps: e.g. `la.predict_cell_types_argmax` needs `_intensity`, which needs `_segmentation`. Inspect the object (`print(ds)`) to see which layers are present.
 
 ## Examples
@@ -1420,8 +1420,8 @@ Output:
 Dimensions:   (channels: 4, y: 301, x: 301)
 Coordinates:
   * channels  (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * y         (y) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
   * x         (x) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * y         (y) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
 Data variables:
     _image    (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
 ```
@@ -1443,8 +1443,8 @@ Output:
 Dimensions:        (channels: 4, y: 301, x: 301, cells: 281, features: 2)
 Coordinates:
   * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * cells          (cells) int64 2kB 1 2 3 4 5 6 7 ... 276 277 278 279 280 281
   * features       (features) <U10 80B 'centroid-0' 'centroid-1'
 Data variables:
@@ -1454,45 +1454,8 @@ Data variables:
 ```
 
 ```python
-# for plotting, we select the two markers from before, but you could also show the other markers
+# for plotting, we subselect the two markers from before, but you could also show the other markers
 _ = ds_cellpose.pp[["Na/K ATPase", "DAPI"]].pl.colorize(["deepskyblue", "gold"]).pl.show(render_segmentation=True)
-```
-
-## Whole-Cell Segmentation with InstanSeg
-InstanSeg can use multiple fluorescent markers to segment cells. In this example, we use DAPI and a couple of membrane markers to obtain a whole-cell segmentation. You can refer to the [InstanSeg documentation](https://instanseg.github.io/instanseg/index.html) for more details to tweak the model.
-
-```python
-# running the segmentation on the selected markers
-ds_instanseg = ds.tl.instanseg(channel=["DAPI", "CD68", "CD11c"])
-ds_instanseg
-```
-
-Output:
-
-```text
-Model fluorescence_nuclei_and_cells version 0.1.1 already downloaded in /g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/.venv/lib/python3.12/site-packages/instanseg/utils/../bioimageio_models/, loading
-Requesting default device: cpu
-<xarray.Dataset> Size: 1MB
-Dimensions:        (channels: 4, y: 301, x: 301, cells: 349, features: 2)
-Coordinates:
-  * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
-  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
-  * cells          (cells) int64 3kB 1 2 3 4 5 6 7 ... 350 351 352 353 354 355
-  * features       (features) <U10 80B 'centroid-0' 'centroid-1'
-Data variables:
-    _image         (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
-    _segmentation  (y, x) int64 725kB 0 0 0 0 0 13 13 ... 355 355 355 355 355 0
-    _obs           (cells, features) float64 6kB 1.002e+03 ... 1.288e+03
-```
-
-```python
-# for plotting, we select the three markers used in the segmentation, but you could also show other markers
-_ = (
-    ds_instanseg.pp[["DAPI", "CD68", "CD11c"]]
-    .pl.colorize(["gold", "purple", "deepskyblue"])
-    .pl.show(render_segmentation=True)
-)
 ```
 
 ## Whole-Cell Segmentation with Mesmer
@@ -1584,11 +1547,11 @@ Output:
 Dimensions:                 (channels: 3, y: 301, x: 301)
 Coordinates:
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
-  * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
+  * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
 Data variables:
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
 ```
 
 ```python
@@ -1611,12 +1574,12 @@ Output:
 Dimensions:                 (channels: 3, y: 301, x: 301)
 Coordinates:
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
-  * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
+  * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
 Data variables:
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
-    _merged_segmentation    (y, x) uint16 181kB 0 11 11 11 ... 310 310 310 310
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
+    _merged_segmentation    (y, x) uint16 181kB 0 11 11 11 ... 309 309 309 309
 ```
 
 ```python
@@ -1634,19 +1597,19 @@ Output:
 ```text
 <xarray.Dataset> Size: 1MB
 Dimensions:                 (labels: 3, la_props: 2, channels: 3, x: 301,
-                             y: 301, cells: 315, features: 3)
+                             y: 301, cells: 314, features: 3)
 Coordinates:
   * labels                  (labels) int64 24B 1 2 3
   * la_props                (la_props) <U6 48B '_color' '_name'
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
   * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
-  * cells                   (cells) int64 3kB 1 2 3 4 5 ... 311 312 313 314 315
+  * cells                   (cells) int64 3kB 1 2 3 4 5 ... 310 311 312 313 314
   * features                (features) <U10 120B '_labels' ... 'centroid-1'
 Data variables:
-    _la_properties          (labels, la_props) <U14 336B '#A079BF' ... 'Macro...
+    _la_properties          (labels, la_props) object 48B '#6A3A4C' ... 'Macr...
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
 ...
 ```
 
@@ -1675,31 +1638,31 @@ Cellpose often benefits from fine-tuning, which is detailed in their [documentat
 
 In the previous section, we looked at how to merge masks from a single layer. But what do we do if we have multiple segmentations in different layers?
 
-Let us consider an example. We can run cellpose on our membrane stain, and then independently on the macrophages and dendritic cells. However, now our segmentation masks are stored in different layers. The good thing is, we can combine them just as easily by using `pp.merge_segmentation()`.
+Let us consider an example. Mesmer always requires two channels to segment an image (a nuclear and a membrane stain). We can run mesmer on our membrane stain, and then run cellpose on the macrophages and dendritic cells. However, now our segmentation masks are stored in different layers. The good thing is, we can combine them just as easily by using `pp.merge_segmentation()`.
 
 ```python
-# running cellpose to obtain a bunch of different segmentation masks
+# running mesmer and cellpose to obtain a bunch of different segmentation masks
 # these are stored in the layers dapi_seg, macro_seg, and dendritic_seg
-ds_cellpose = (
-    ds.tl.cellpose(channel=["DAPI", "Na/K ATPase"], key_added="dapi_seg")
+ds_mesmer = (
+    ds.tl.mesmer(channel=["DAPI", "Na/K ATPase"], key_added="dapi_seg")
     .tl.cellpose(channel="CD68", key_added="macro_seg")
     .tl.cellpose(channel="CD11c", key_added="dendritic_seg")
 )
-ds_cellpose
+ds_mesmer
 ```
 
 Output:
 
 ```text
-<xarray.Dataset> Size: 911kB
+<xarray.Dataset> Size: 1MB
 Dimensions:        (channels: 4, y: 301, x: 301)
 Coordinates:
   * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
 Data variables:
     _image         (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
-    dapi_seg       (y, x) uint16 181kB 0 0 0 0 0 0 0 ... 281 281 281 281 281 0
+    dapi_seg       (y, x) int64 725kB 11 11 11 11 11 11 ... 344 344 344 344 344
     macro_seg      (y, x) uint16 181kB 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0
     dendritic_seg  (y, x) uint16 181kB 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0
 ```
@@ -1708,19 +1671,19 @@ Data variables:
 # plotting the individual masks
 fig, ax = plt.subplots(1, 3, figsize=(15, 5))
 _ = (
-    ds_cellpose.pp[["DAPI", "Na/K ATPase"]]
+    ds_mesmer.pp[["DAPI", "Na/K ATPase"]]
     .pl.colorize(["gold", "deepskyblue"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "dapi_seg"}, ax=ax[0])
 )
 
 _ = (
-    ds_cellpose.pp[["DAPI", "CD68"]]
+    ds_mesmer.pp[["DAPI", "CD68"]]
     .pl.colorize(["gold", "red"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "macro_seg"}, ax=ax[1])
 )
 
 _ = (
-    ds_cellpose.pp[["DAPI", "CD11c"]]
+    ds_mesmer.pp[["DAPI", "CD11c"]]
     .pl.colorize(["gold", "deepskyblue"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "dendritic_seg"}, ax=ax[2])
 )
@@ -1740,7 +1703,7 @@ Depending on what segmentation masks you have available, you might want to tweak
 
 ```python
 # merging the segmentation masks and making the merged segmentation the default one
-ds_cellpose = ds_cellpose.pp.merge_segmentation(
+ds_mesmer = ds_mesmer.pp.merge_segmentation(
     layer_key=["dendritic_seg", "macro_seg", "dapi_seg"],
     labels=["Dendritic Cell", "Macrophage", "Lymphocyte"],
     threshold1=0.6,
@@ -1753,11 +1716,11 @@ fig, ax = plt.subplots(1, 2, figsize=(16, 8))
 
 # adding colors to match the channel colors
 colors = ["orange", "deepskyblue", "darkred"]
-ds_cellpose = ds_cellpose.la.set_label_colors(["Lymphocyte", "Dendritic Cell", "Macrophage"], colors)
+ds_mesmer = ds_mesmer.la.set_label_colors(["Lymphocyte", "Dendritic Cell", "Macrophage"], colors)
 
 # merged masks
-_ = ds_cellpose.pp[["DAPI", "CD11c", "CD68"]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
-_ = ds_cellpose.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[1])
+_ = ds_mesmer.pp[["DAPI", "CD11c", "CD68"]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
+_ = ds_mesmer.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[1])
 ```
 
 
@@ -6246,56 +6209,6 @@ obj : xr.Dataset
 ValueError
     If the object already contains a segmentation mask.
 
-### `ds.tl.instanseg(channel: Optional[str]=None, key_added: str='_segmentation', model_type: str='fluorescence_nuclei_and_cells', pixel_size: Optional[float]=None, target: str='cells', normalize: bool=True, method: str='auto', tile_size: int=512, batch_size: int=1, device: Optional[str]=None, verbosity: int=1, postprocess_func: Callable=<lambda>, **kwargs) -> xr.Dataset`
-
-Apply InstanSeg (https://github.com/instanseg/instanseg) to perform instance segmentation of nuclei and/or cells.
-
-InstanSeg is channel-invariant, so in contrast to cellpose and stardist, all selected channels are segmented jointly
-and a single segmentation mask is returned (e. g. a nuclear marker together with membrane markers).
-Requires `pip install instanseg-torch`.
-
-**Parameters**
-
-channel : str or list, optional
-    Channel(s) to use for segmentation. If None, all channels are used.
-key_added : str, optional
-    Key to write the segmentation results to. If target is "all_outputs", the cell mask is written to key_added
-    and the nuclear mask to f"{key_added}_nuclei".
-model_type : str, optional
-    Name of the pretrained InstanSeg model, e. g. "fluorescence_nuclei_and_cells" (default) or "brightfield_nuclei".
-pixel_size : float, optional
-    Pixel size of the image in microns. The image is rescaled to the pixel size the model was trained on (0.5 microns
-    for the default model). If None, the image is not rescaled, which may lead to inaccurate results.
-target : str, optional
-    Which segmentation to return: "cells" (default), "nuclei" or "all_outputs" (both). Models that only predict nuclei
-    always return the nuclear segmentation.
-normalize : bool, optional
-    Whether InstanSeg should percentile-normalize the image (default is True).
-method : str, optional
-    "small" processes the whole image at once, "medium" uses tiled inference. "auto" (default) picks "medium" for large images.
-tile_size : int, optional
-    Tile size for tiled inference (default is 512). Only used if method is "medium".
-batch_size : int, optional
-    Number of tiles processed simultaneously (default is 1). Only used if method is "medium".
-device : str, optional
-    Device to run the model on, e. g. "cpu" or "cuda". If None, the device is chosen automatically.
-verbosity : int, optional
-    Verbosity of InstanSeg: 0 is silent, 1 is normal, 2 is verbose (default is 1).
-postprocess_func : Callable, optional
-    Function to apply to each segmentation mask after prediction (default is lambda x: x).
-**kwargs : dict, optional
-    Additional keyword arguments passed to InstanSeg's eval_small_image or eval_medium_image.
-
-**Returns**
-
-xr.Dataset
-    Xarray dataset containing the segmentation mask(s).
-
-**Raises**
-
-KeyError
-    If the key the segmentation should be written to already exists.
-
 ### `ds.tl.mesmer(key_added: str='_segmentation', channel: Optional[List]=None, postprocess_func: Callable=<lambda>, **kwargs)`
 
 This function is deprecated.
@@ -6450,23 +6363,6 @@ Args:
     data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
     copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
     **kwargs: Additional keyword arguments to be passed to the stardist algorithm.
-
-### `sp.tl.instanseg(sdata, channel: Optional[str]=None, image_key: str='image', key_added: str='segmentation', data_key: Optional[str]=None, copy: bool=False, **kwargs)`
-
-This function runs the InstanSeg segmentation algorithm on the provided image data.
-It extracts the image data from the spatialdata object, applies InstanSeg,
-and adds the segmentation masks to the labels attribute of the spatialdata object.
-In contrast to cellpose and stardist, InstanSeg is channel-invariant, i. e. all selected channels are segmented jointly
-and a single segmentation mask is returned.
-
-Args:
-    sdata (spatialdata.SpatialData): The spatialdata object containing the image data.
-    channel (Optional[str]): The channel(s) to be used for segmentation. If None, all channels will be used.
-    image_key (str, optional): The key for the image data in the spatialdata object. Defaults to image.
-    key_added (str, optional): The key under which the segmentation mask will be stored in the labels attribute of the spatialdata object. If target="all_outputs", the cell mask is stored under key_added and the nuclear mask under f"{key_added}_nuclei". Defaults to segmentation.
-    data_key (Optional[str], optional): The key for the image data in the spatialdata object. If None, the image_key will be used. Defaults to None.
-    copy (bool, optional): Whether to create a copy of the spatialdata object. Defaults to False.
-    **kwargs: Additional keyword arguments passed to the InstanSeg wrapper, e.g. model_type, pixel_size, target, method or device (see ToolAccessor.instanseg).
 
 ### `sp.tl.mesmer(sdata, channel: Optional[str]=None, image_key: str='image', key_added: str='segmentation', data_key: Optional[str]=None, copy: bool=False, **kwargs)`
 
