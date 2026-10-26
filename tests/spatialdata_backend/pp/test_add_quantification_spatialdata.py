@@ -1,8 +1,10 @@
+import copy as cp
+
 import numpy as np
 import pytest
 
 import spatialproteomics as sp
-from spatialproteomics.constants import SDLayers
+from spatialproteomics.constants import SDFeatures, SDLayers
 
 
 def test_add_quantification(ds_segmentation_spatialdata):
@@ -45,3 +47,19 @@ def test_add_quantification_spurious_regionprop(ds_segmentation_spatialdata):
         match="Invalid regionprop",
     ):
         sp.pp.add_quantification(ds_segmentation_spatialdata, func="dummy_str")
+
+
+def test_add_quantification_custom_segmentation_key(ds_segmentation_spatialdata):
+    from spatialdata.models import TableModel
+
+    sdata = cp.deepcopy(ds_segmentation_spatialdata)
+    sdata.labels["cells"] = sdata.labels.pop(SDLayers.SEGMENTATION)
+
+    sp.pp.add_quantification(sdata, segmentation_key="cells")
+
+    adata = sdata.tables[SDLayers.TABLE]
+    assert adata.uns["spatialdata_attrs"]["region"] == "cells"
+    assert list(adata.obs[SDFeatures.REGION].unique()) == ["cells"]
+    # the table annotates the custom segmentation and passes the spatialdata validation
+    TableModel().validate(adata)
+    assert "cells" in sdata.get_annotated_regions(adata)
