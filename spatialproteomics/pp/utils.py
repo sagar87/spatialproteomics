@@ -56,8 +56,10 @@ def merge(images: List[np.ndarray], proj: str = "sum", alpha: float = 0.5):
         im_combined[im_combined > 1] = 1
     elif proj == "blend":
         im_base = images[0].copy()
+        im_combined = im_base
         for i in range(1, len(images)):
-            alpha_a = images[i][:, :, 3][:, :, np.newaxis]
+            # copying the alpha channel, so that the input images are not modified
+            alpha_a = images[i][:, :, 3][:, :, np.newaxis].copy()
             alpha_a[alpha_a > 0] = alpha
             alpha_b = im_base[:, :, 3][:, :, np.newaxis]
             alpha_0 = alpha_a + alpha_b * (1 - alpha_a)
@@ -66,6 +68,8 @@ def merge(images: List[np.ndarray], proj: str = "sum", alpha: float = 0.5):
                 images[i][:, :, 0:3] * alpha_a + im_base[:, :, 0:3] * alpha_b * (1 - alpha_a)
             ) / alpha_0
             im_base = im_combined
+    else:
+        raise ValueError(f"Unknown projection method {proj}. Please use 'sum' or 'blend'.")
 
     return im_combined
 
