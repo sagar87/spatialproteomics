@@ -710,6 +710,8 @@ class ToolAccessor:
             Column name for cell IDs. Defaults to "cell_id".
         cell_type_col : str, optional
             Column name for cell types. Defaults to "cell_type".
+        **kwargs
+            Additional keyword arguments passed to astir's fit_type method.
 
         Raises
         ------
@@ -755,6 +757,7 @@ class ToolAccessor:
             max_epochs=max_epochs,
             cell_id_col=cell_id_col,
             cell_type_col=cell_type_col,
+            **kwargs,
         )
 
         # adding the labels to the xarray object
