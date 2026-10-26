@@ -467,7 +467,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">sp.Features.LA
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tl</span></code></p></td>
 <td><p>ToolAccessor</p></td>
-<td><p>Wrappers around external tools (cellpose, stardist, astir, spotiflow) and export.</p></td>
+<td><p>Wrappers around external tools (cellpose, stardist, instanseg, astir, spotiflow) and export.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">la</span></code></p></td>
 <td><p>LabelAccessor</p></td>
@@ -561,7 +561,7 @@ Always reassign (<code class="docutils literal notranslate"><span class="pre">ds
 </div>
 <p>Other frequently used operations:</p>
 <ul class="simple">
-<li><p>Segmentation from elsewhere: <code class="docutils literal notranslate"><span class="pre">ds.pp.add_segmentation(mask)</span></code>; alternatives to cellpose: <code class="docutils literal notranslate"><span class="pre">ds.tl.stardist()</span></code></p></li>
+<li><p>Segmentation from elsewhere: <code class="docutils literal notranslate"><span class="pre">ds.pp.add_segmentation(mask)</span></code>; alternatives to cellpose: <code class="docutils literal notranslate"><span class="pre">ds.tl.stardist()</span></code> and <code class="docutils literal notranslate"><span class="pre">ds.tl.instanseg()</span></code> (segments all selected channels jointly)</p></li>
 <li><p>Labels from elsewhere: <code class="docutils literal notranslate"><span class="pre">ds.la.add_labels_from_dataframe(df,</span> <span class="pre">cell_col=&quot;cell&quot;,</span> <span class="pre">label_col=&quot;label&quot;)</span></code>.</p></li>
 <li><p>Marker binarization and subtypes: <code class="docutils literal notranslate"><span class="pre">ds.la.threshold_labels({...})</span></code> then <code class="docutils literal notranslate"><span class="pre">ds.la.predict_cell_subtypes({...})</span></code>; switch levels with <code class="docutils literal notranslate"><span class="pre">ds.la.set_label_level(...)</span></code>.</p></li>
 <li><p>Neighborhoods across samples: <code class="docutils literal notranslate"><span class="pre">sp.ImageContainer({&quot;s1&quot;:</span> <span class="pre">ds1,</span> <span class="pre">&quot;s2&quot;:</span> <span class="pre">ds2}).compute_neighborhoods(k=5)</span></code> computes compositions,
@@ -598,7 +598,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;CD4&quo
 <li><p><code class="docutils literal notranslate"><span class="pre">ds.pp[a:b,</span> <span class="pre">c:d]</span></code> slices <strong>x first, then y</strong>, while the image array is stored as <code class="docutils literal notranslate"><span class="pre">(channels,</span> <span class="pre">y,</span> <span class="pre">x)</span></code>.
 Slices select by coordinate value (like <code class="docutils literal notranslate"><span class="pre">xarray.Dataset.sel</span></code>), so the end point is included.</p></li>
 <li><p>Call <code class="docutils literal notranslate"><span class="pre">drop_encoding()</span></code> before <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code> to avoid xarray encoding errors.</p></li>
-<li><p>Optional tools must be installed separately: <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, <code class="docutils literal notranslate"><span class="pre">stardist</span></code>, <code class="docutils literal notranslate"><span class="pre">astir</span></code> and <code class="docutils literal notranslate"><span class="pre">spotiflow</span></code>
+<li><p>Optional tools must be installed separately: <code class="docutils literal notranslate"><span class="pre">cellpose</span></code>, <code class="docutils literal notranslate"><span class="pre">stardist</span></code>, <code class="docutils literal notranslate"><span class="pre">instanseg-torch</span></code>, <code class="docutils literal notranslate"><span class="pre">astir</span></code> and <code class="docutils literal notranslate"><span class="pre">spotiflow</span></code>
 (or all at once with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;spatialproteomics[all]&quot;</span></code>).</p></li>
 <li><p>Many methods require earlier steps: e.g. <code class="docutils literal notranslate"><span class="pre">la.predict_cell_types_argmax</span></code> needs <code class="docutils literal notranslate"><span class="pre">_intensity</span></code>, which needs <code class="docutils literal notranslate"><span class="pre">_segmentation</span></code>.
 Inspect the object (<code class="docutils literal notranslate"><span class="pre">print(ds)</span></code>) to see which layers are present.</p></li>

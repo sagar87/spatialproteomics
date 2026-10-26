@@ -27,8 +27,8 @@ Output:
 Dimensions:   (channels: 4, y: 301, x: 301)
 Coordinates:
   * channels  (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * x         (x) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
   * y         (y) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
+  * x         (x) int64 2kB 1000 1001 1002 1003 1004 ... 1297 1298 1299 1300
 Data variables:
     _image    (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
 ```
@@ -50,8 +50,8 @@ Output:
 Dimensions:        (channels: 4, y: 301, x: 301, cells: 281, features: 2)
 Coordinates:
   * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * cells          (cells) int64 2kB 1 2 3 4 5 6 7 ... 276 277 278 279 280 281
   * features       (features) <U10 80B 'centroid-0' 'centroid-1'
 Data variables:
@@ -61,8 +61,45 @@ Data variables:
 ```
 
 ```python
-# for plotting, we subselect the two markers from before, but you could also show the other markers
+# for plotting, we select the two markers from before, but you could also show the other markers
 _ = ds_cellpose.pp[["Na/K ATPase", "DAPI"]].pl.colorize(["deepskyblue", "gold"]).pl.show(render_segmentation=True)
+```
+
+## Whole-Cell Segmentation with InstanSeg
+InstanSeg can use multiple fluorescent markers to segment cells. In this example, we use DAPI and a couple of membrane markers to obtain a whole-cell segmentation. You can refer to the [InstanSeg documentation](https://instanseg.github.io/instanseg/index.html) for more details to tweak the model.
+
+```python
+# running the segmentation on the selected markers
+ds_instanseg = ds.tl.instanseg(channel=["DAPI", "CD68", "CD11c"])
+ds_instanseg
+```
+
+Output:
+
+```text
+Model fluorescence_nuclei_and_cells version 0.1.1 already downloaded in /g/huber/users/meyerben/notebooks/codex_analysis/2024-03-18_spatialproteomics_package/spatialproteomics/.venv/lib/python3.12/site-packages/instanseg/utils/../bioimageio_models/, loading
+Requesting default device: cpu
+<xarray.Dataset> Size: 1MB
+Dimensions:        (channels: 4, y: 301, x: 301, cells: 349, features: 2)
+Coordinates:
+  * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
+  * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * cells          (cells) int64 3kB 1 2 3 4 5 6 7 ... 350 351 352 353 354 355
+  * features       (features) <U10 80B 'centroid-0' 'centroid-1'
+Data variables:
+    _image         (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
+    _segmentation  (y, x) int64 725kB 0 0 0 0 0 13 13 ... 355 355 355 355 355 0
+    _obs           (cells, features) float64 6kB 1.002e+03 ... 1.288e+03
+```
+
+```python
+# for plotting, we select the three markers used in the segmentation, but you could also show other markers
+_ = (
+    ds_instanseg.pp[["DAPI", "CD68", "CD11c"]]
+    .pl.colorize(["gold", "purple", "deepskyblue"])
+    .pl.show(render_segmentation=True)
+)
 ```
 
 ## Whole-Cell Segmentation with Mesmer
@@ -154,11 +191,11 @@ Output:
 Dimensions:                 (channels: 3, y: 301, x: 301)
 Coordinates:
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
-  * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
+  * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
 Data variables:
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
 ```
 
 ```python
@@ -181,12 +218,12 @@ Output:
 Dimensions:                 (channels: 3, y: 301, x: 301)
 Coordinates:
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
-  * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
+  * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
 Data variables:
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
-    _merged_segmentation    (y, x) uint16 181kB 0 11 11 11 ... 309 309 309 309
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
+    _merged_segmentation    (y, x) uint16 181kB 0 11 11 11 ... 310 310 310 310
 ```
 
 ```python
@@ -204,19 +241,19 @@ Output:
 ```text
 <xarray.Dataset> Size: 1MB
 Dimensions:                 (labels: 3, la_props: 2, channels: 3, x: 301,
-                             y: 301, cells: 314, features: 3)
+                             y: 301, cells: 315, features: 3)
 Coordinates:
   * labels                  (labels) int64 24B 1 2 3
   * la_props                (la_props) <U6 48B '_color' '_name'
   * channels                (channels) <U11 132B 'CD11c' 'CD68' 'DAPI'
   * x                       (x) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
   * y                       (y) int64 2kB 1000 1001 1002 1003 ... 1298 1299 1300
-  * cells                   (cells) int64 3kB 1 2 3 4 5 ... 310 311 312 313 314
+  * cells                   (cells) int64 3kB 1 2 3 4 5 ... 311 312 313 314 315
   * features                (features) <U10 120B '_labels' ... 'centroid-1'
 Data variables:
-    _la_properties          (labels, la_props) object 48B '#6A3A4C' ... 'Macr...
+    _la_properties          (labels, la_props) <U14 336B '#A079BF' ... 'Macro...
     _image                  (channels, y, x) uint8 272kB dask.array<chunksize=(3, 301, 301), meta=np.ndarray>
-    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 310 310 310
+    _cellpose_segmentation  (channels, y, x) uint16 544kB 0 0 0 ... 311 311 311
 ...
 ```
 
@@ -245,31 +282,31 @@ Cellpose often benefits from fine-tuning, which is detailed in their [documentat
 
 In the previous section, we looked at how to merge masks from a single layer. But what do we do if we have multiple segmentations in different layers?
 
-Let us consider an example. Mesmer always requires two channels to segment an image (a nuclear and a membrane stain). We can run mesmer on our membrane stain, and then run cellpose on the macrophages and dendritic cells. However, now our segmentation masks are stored in different layers. The good thing is, we can combine them just as easily by using `pp.merge_segmentation()`.
+Let us consider an example. We can run cellpose on our membrane stain, and then independently on the macrophages and dendritic cells. However, now our segmentation masks are stored in different layers. The good thing is, we can combine them just as easily by using `pp.merge_segmentation()`.
 
 ```python
-# running mesmer and cellpose to obtain a bunch of different segmentation masks
+# running cellpose to obtain a bunch of different segmentation masks
 # these are stored in the layers dapi_seg, macro_seg, and dendritic_seg
-ds_mesmer = (
-    ds.tl.mesmer(channel=["DAPI", "Na/K ATPase"], key_added="dapi_seg")
+ds_cellpose = (
+    ds.tl.cellpose(channel=["DAPI", "Na/K ATPase"], key_added="dapi_seg")
     .tl.cellpose(channel="CD68", key_added="macro_seg")
     .tl.cellpose(channel="CD11c", key_added="dendritic_seg")
 )
-ds_mesmer
+ds_cellpose
 ```
 
 Output:
 
 ```text
-<xarray.Dataset> Size: 1MB
+<xarray.Dataset> Size: 911kB
 Dimensions:        (channels: 4, y: 301, x: 301)
 Coordinates:
   * channels       (channels) <U11 176B 'DAPI' 'Na/K ATPase' 'CD68' 'CD11c'
-  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
   * y              (y) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
+  * x              (x) int64 2kB 1000 1001 1002 1003 ... 1297 1298 1299 1300
 Data variables:
     _image         (channels, y, x) uint8 362kB dask.array<chunksize=(4, 301, 301), meta=np.ndarray>
-    dapi_seg       (y, x) int64 725kB 11 11 11 11 11 11 ... 344 344 344 344 344
+    dapi_seg       (y, x) uint16 181kB 0 0 0 0 0 0 0 ... 281 281 281 281 281 0
     macro_seg      (y, x) uint16 181kB 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0
     dendritic_seg  (y, x) uint16 181kB 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0
 ```
@@ -278,19 +315,19 @@ Data variables:
 # plotting the individual masks
 fig, ax = plt.subplots(1, 3, figsize=(15, 5))
 _ = (
-    ds_mesmer.pp[["DAPI", "Na/K ATPase"]]
+    ds_cellpose.pp[["DAPI", "Na/K ATPase"]]
     .pl.colorize(["gold", "deepskyblue"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "dapi_seg"}, ax=ax[0])
 )
 
 _ = (
-    ds_mesmer.pp[["DAPI", "CD68"]]
+    ds_cellpose.pp[["DAPI", "CD68"]]
     .pl.colorize(["gold", "red"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "macro_seg"}, ax=ax[1])
 )
 
 _ = (
-    ds_mesmer.pp[["DAPI", "CD11c"]]
+    ds_cellpose.pp[["DAPI", "CD11c"]]
     .pl.colorize(["gold", "deepskyblue"])
     .pl.show(render_segmentation=True, segmentation_kwargs={"layer_key": "dendritic_seg"}, ax=ax[2])
 )
@@ -310,7 +347,7 @@ Depending on what segmentation masks you have available, you might want to tweak
 
 ```python
 # merging the segmentation masks and making the merged segmentation the default one
-ds_mesmer = ds_mesmer.pp.merge_segmentation(
+ds_cellpose = ds_cellpose.pp.merge_segmentation(
     layer_key=["dendritic_seg", "macro_seg", "dapi_seg"],
     labels=["Dendritic Cell", "Macrophage", "Lymphocyte"],
     threshold1=0.6,
@@ -323,9 +360,9 @@ fig, ax = plt.subplots(1, 2, figsize=(16, 8))
 
 # adding colors to match the channel colors
 colors = ["orange", "deepskyblue", "darkred"]
-ds_mesmer = ds_mesmer.la.set_label_colors(["Lymphocyte", "Dendritic Cell", "Macrophage"], colors)
+ds_cellpose = ds_cellpose.la.set_label_colors(["Lymphocyte", "Dendritic Cell", "Macrophage"], colors)
 
 # merged masks
-_ = ds_mesmer.pp[["DAPI", "CD11c", "CD68"]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
-_ = ds_mesmer.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[1])
+_ = ds_cellpose.pp[["DAPI", "CD11c", "CD68"]].pl.colorize(colors=colors).pl.show(render_segmentation=True, ax=ax[0])
+_ = ds_cellpose.pl.show(render_image=False, render_segmentation=True, render_labels=True, legend_label=True, ax=ax[1])
 ```
