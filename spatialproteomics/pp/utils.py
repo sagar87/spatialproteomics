@@ -107,14 +107,16 @@ def _relabel_cells(segmentation: np.ndarray) -> Tuple[np.ndarray, dict]:
     Tuple[np.ndarray, dict]
         A tuple containing the relabeled segmentation array and a mapping dictionary.
     """
-    # find unique cell IDs
+    # find unique cell IDs (0 is the background and always stays 0, even if the mask does not contain any background)
     unique_values = np.unique(segmentation)
+    cell_ids = unique_values[unique_values != 0]
 
     # create a mapping from original values to new values
-    value_map = {value: i for i, value in enumerate(unique_values)}
+    value_map = {0: 0, **{value: i for i, value in enumerate(cell_ids, start=1)}}
 
-    # map the original array to the new values using the mapping
-    segmentation_relabeled = np.vectorize(lambda x: value_map[x], otypes=[segmentation.dtype.char])(segmentation)
+    # map the original array to the new values
+    segmentation_relabeled, _, _ = relabel_sequential(segmentation)
+    segmentation_relabeled = segmentation_relabeled.astype(segmentation.dtype)
 
     return segmentation_relabeled, value_map
 
