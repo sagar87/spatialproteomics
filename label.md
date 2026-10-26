@@ -62,7 +62,7 @@ ValueError
 - It ensures that the 'name' of the new label type does not already exist in the label types.
 - The function then adds the new label type with the given 'name' and 'color' to the data object.
 
-### `ds.la.remove_label_type(cell_type: Union[int, List[int]]) -> xr.Dataset`
+### `ds.la.remove_label_type(cell_type: Union[int, str, List[Union[int, str]]]) -> xr.Dataset`
 
 Remove specific cell type label(s) from the data object.
 
@@ -71,8 +71,8 @@ The cell type label(s) are effectively removed, and their associated cells are a
 
 **Parameters**
 
-cell_type : int or list of int
-    The ID(s) of the cell type label(s) to be removed.
+cell_type : int, str or list of int or str
+    The ID(s) or name(s) of the cell type label(s) to be removed.
 
 **Returns**
 
