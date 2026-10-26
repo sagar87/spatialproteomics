@@ -15,15 +15,15 @@ This page summarizes how spatialproteomics is organized and how its API is meant
 
 A spatialproteomics object is a plain `xarray.Dataset`. All data belonging to one sample lives in this single object as named data variables ("layers") that share dimensions:
 
-| Layer (`sp.Layers.*`) | Dimensions                  | Content                                                           |
-|-----------------------|-----------------------------|-------------------------------------------------------------------|
-| `_image`              | `(channels, y, x)`          | Multiplexed image; one channel per marker.                        |
-| `_segmentation`       | `(y, x)`                    | Integer cell mask; `0` is background, `n` is cell `n`.            |
-| `_obs`                | `(cells, features)`         | Per-cell observations (centroids, area, cell type, neighborhood). |
-| `_intensity`          | `(cells, channels)`         | Expression matrix produced by `pp.add_quantification`.            |
-| `_la_properties`      | `(labels, la_props)`        | Cell type names and colors.                                       |
-| `_neighborhoods`      | `(cells, labels)`           | Cell type composition of each cell's neighborhood.                |
-| `_nh_properties`      | `(neighborhoods, nh_props)` | Neighborhood names and colors.                                    |
+| Layer (`sp.Layers.*`) | Dimensions | Content |
+|----|----|----|
+| `_image` | `(channels, y, x)` | Multiplexed image; one channel per marker. |
+| `_segmentation` | `(y, x)` | Integer cell mask; `0` is background, `n` is cell `n`. |
+| `_obs` | `(cells, features)` | Per-cell observations (centroids, area, cell type, neighborhood). |
+| `_intensity` | `(cells, channels)` | Expression matrix produced by `pp.add_quantification`. |
+| `_la_properties` | `(labels, la_props)` | Cell type names and colors. |
+| `_neighborhoods` | `(cells, labels)` | Cell type composition of each cell's neighborhood. |
+| `_nh_properties` | `(neighborhoods, nh_props)` | Neighborhood names and colors. |
 
 You can add layers of your own with `ds.pp.add_layer(array, key_added="_name")`. A common one is `_raw_image`: an untouched copy of `_image` kept before thresholding, because `pp.threshold` overwrites `_image` (see the workflow and examples below).
 
@@ -35,13 +35,13 @@ Use the constants in `sp.Layers`, `sp.Dims`, `sp.Features` and `sp.Props` instea
 
 Importing spatialproteomics registers five accessors on every `xarray.Dataset`:
 
-| Name | Class                 | Responsibility                                                                    |
-|------|-----------------------|-----------------------------------------------------------------------------------|
-| `pp` | PreprocessingAccessor | Subsetting, image processing, segmentation handling, quantification, tables.      |
-| `tl` | ToolAccessor          | Wrappers around external tools (cellpose, stardist, astir, spotiflow) and export. |
-| `la` | LabelAccessor         | Cell type labels: prediction, naming, colors, subtype hierarchies.                |
-| `nh` | NeighborhoodAccessor  | Cellular neighborhoods and graph features.                                        |
-| `pl` | PlotAccessor          | Plotting of images, masks, labels, neighborhoods and observations.                |
+| Name | Class | Responsibility |
+|----|----|----|
+| `pp` | PreprocessingAccessor | Subsetting, image processing, segmentation handling, quantification, tables. |
+| `tl` | ToolAccessor | Wrappers around external tools (cellpose, stardist, astir, spotiflow) and export. |
+| `la` | LabelAccessor | Cell type labels: prediction, naming, colors, subtype hierarchies. |
+| `nh` | NeighborhoodAccessor | Cellular neighborhoods and graph features. |
+| `pl` | PlotAccessor | Plotting of images, masks, labels, neighborhoods and observations. |
 
 Every accessor method returns a **new** dataset; nothing is modified in place. Always reassign (`ds = ds.pp.threshold(...)`) or chain calls:
 
