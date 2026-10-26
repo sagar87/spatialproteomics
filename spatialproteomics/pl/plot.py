@@ -568,7 +568,7 @@ class PlotAccessor:
             cells = self._obj.coords[Dims.CELLS]
         else:
             assert len(bbox) == 4, "The bbox-argument must specify [xmin, xmax, ymin, ymax]."
-            sub = self._obj.im[bbox[0] : bbox[1], bbox[2] : bbox[3]]
+            sub = self._obj.pp[bbox[0] : bbox[1], bbox[2] : bbox[3]]
             cells = sub.coords[Dims.CELLS]
 
         for cell in cells:

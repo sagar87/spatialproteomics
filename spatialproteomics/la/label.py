@@ -630,8 +630,17 @@ class LabelAccessor:
                 if layer != Layers.LA_PROPERTIES and Dims.LABELS in obj[layer].dims:
                     obj[layer].loc[{Dims.LABELS: 0}] = removed[layer].sum(Dims.LABELS)
         else:
+            removed = obj.sel({Dims.LABELS: cell_type})
             # Exclude the specified cell types from the label dimension
             obj = obj.sel({Dims.LABELS: remaining_labels})
+            # if there already is an entry for label 0, other layers with a labels dimension
+            # (e. g. neighborhood compositions) attribute the removed types to it as well
+            if 0 in remaining_labels:
+                for layer in obj.data_vars:
+                    if layer != Layers.LA_PROPERTIES and Dims.LABELS in obj[layer].dims:
+                        updated = obj[layer].copy()
+                        updated.loc[{Dims.LABELS: 0}] = updated.sel({Dims.LABELS: 0}) + removed[layer].sum(Dims.LABELS)
+                        obj[layer] = updated
 
         return obj
 
