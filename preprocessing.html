@@ -522,13 +522,14 @@ Useful to add things like string-based labels or other metadata.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_obs_from_dataframe">
 <span class="sig-name descname"><span class="pre">add_obs_from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#spatialproteomics.pp.preprocessing.PreprocessingAccessor.add_obs_from_dataframe" title="Link to this definition">#</a></dt>
-<dd><p>Adds an observation table to the image container. Columns of the
-dataframe have to match the feature coordinates of the image
-container, and the index of the dataframe has to match the cell coordinates
-of the image container.</p>
+<dd><p>Adds an observation table to the image container. Each column of the
+dataframe is added as a feature to the obs layer.</p>
+<p>If the index of the dataframe contains exactly the cell ids of the image container,
+the rows are matched to the cells by their id (in any order). Otherwise, the rows are
+assumed to be in the same order as the cell coordinates of the image container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>df</strong> (<em>pd.DataFrame</em>) – A dataframe with the observation values.</p>
+<dd class="field-odd"><p><strong>df</strong> (<em>pd.DataFrame</em>) – A dataframe with the observation values (one row per cell).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The amended image container.</p>
@@ -978,7 +979,8 @@ covers more than 80% of any S1 cell)
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>layer_key</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – The key(s) of the segmentation mask(s) to merge. Can be a single key (must be 3D) or a list of keys (each 2D).</p></li>
 <li><p><strong>key_added</strong> (<em>str</em>) – The name of the new segmentation mask to be added to the xarray object. Default is “_merged_segmentation”.</p></li>
-<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.</p></li>
+<li><p><strong>labels</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
+By default, the channel names are used for a single 3D mask, and the layer keys for a list of 2D masks.</p></li>
 <li><p><strong>threshold1</strong> (<em>float</em>) – Optional. Threshold for merging cells. Default is 0.7.</p></li>
 <li><p><strong>threshold2</strong> (<em>float</em>) – Optional. Threshold for merging cells. Default is 0.8.</p></li>
 </ul>

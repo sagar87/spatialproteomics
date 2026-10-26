@@ -4575,15 +4575,17 @@ xr.Dataset
 
 ### `ds.pp.add_obs_from_dataframe(df: pd.DataFrame) -> xr.Dataset`
 
-Adds an observation table to the image container. Columns of the
-dataframe have to match the feature coordinates of the image
-container, and the index of the dataframe has to match the cell coordinates
-of the image container.
+Adds an observation table to the image container. Each column of the
+dataframe is added as a feature to the obs layer.
+
+If the index of the dataframe contains exactly the cell ids of the image container,
+the rows are matched to the cells by their id (in any order). Otherwise, the rows are
+assumed to be in the same order as the cell coordinates of the image container.
 
 **Parameters**
 
 df : pd.DataFrame
-    A dataframe with the observation values.
+    A dataframe with the observation values (one row per cell).
 
 **Returns**
 
@@ -4832,6 +4834,7 @@ key_added : str
     The name of the new segmentation mask to be added to the xarray object. Default is "_merged_segmentation".
 labels : Optional[List[str]]
     Optional. Labels corresponding to each segmentation mask. If provided, must match number of arrays.
+    By default, the channel names are used for a single 3D mask, and the layer keys for a list of 2D masks.
 threshold1: float
     Optional. Threshold for merging cells. Default is 0.7.
 threshold2: float
