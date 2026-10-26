@@ -238,8 +238,9 @@ def _merge_segmentation(
 
     # i1: s1 regions that survived into the combined mask (should always be all of them)
     # i2: s2 regions that survived into the combined mask (may be partial if they overlapped with s1)
-    i1 = list(set(l1) & set(l3))
-    i2 = list(set(l2) & set(l3))
+    # both are sorted, so that they line up with the regionprops below (which are ordered by label)
+    i1 = sorted(set(l1) & set(l3))
+    i2 = sorted(set(l2) & set(l3))
 
     # threshold1 filter: only keep s2 regions where the surviving area (in s3) is at least
     # threshold1 fraction of the original s2 area. Regions heavily masked by s1 are dropped.
