@@ -151,6 +151,11 @@ def predict_cell_subtypes(
     # we need to do a copy here, because otherwise this returns a slice of a dataframe, which can have unintended consequences
     binarization_df = adata.obsm[layer_key].copy()
 
+    # if the subtype dict is a path to a yaml file, we load it
+    if isinstance(subtype_dict, str):
+        with open(subtype_dict, "r") as file:
+            subtype_dict = yaml.safe_load(file)
+
     # these markers have a sign at the end, which indicates positivity or negativity
     markers_with_sign = _get_markers_from_subtype_dict(subtype_dict)
     # here, we only store the markers without the sign
@@ -169,13 +174,12 @@ def predict_cell_subtypes(
     binarization_df["_labels"] = celltypes
     subtype_df = _predict_cell_subtypes(binarization_df, subtype_dict)
 
-    # adding the subtypes to the adata object
-    sdata.tables[table_key].obs = sdata.tables[table_key].obs.merge(
-        subtype_df, right_index=True, left_index=True, how="left"
-    )
-    # overwriting the celltype column
-    adata.obs["celltype"] = subtype_df.iloc[:, -1].values
-    adata.obs["celltype"] = adata.obs["celltype"].astype("category")
+    # adding the subtypes to the adata object, replacing the levels of previous predictions
+    obs = adata.obs.drop(columns=[col for col in subtype_df.columns if col in adata.obs.columns])
+    adata.obs = obs.merge(subtype_df, right_index=True, left_index=True, how="left")
+    # overwriting the label column with the most granular level
+    adata.obs[label_key] = subtype_df.iloc[:, -1].reindex(adata.obs_names).values
+    adata.obs[label_key] = adata.obs[label_key].astype("category")
 
     if copy:
         return sdata

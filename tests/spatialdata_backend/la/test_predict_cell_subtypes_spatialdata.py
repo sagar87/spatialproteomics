@@ -186,3 +186,47 @@ def test_invalid_markers(ds_labels_spatialdata):
     # these should not be in there, because those markers were not binarized
     assert "T_reg" not in df["labels_2"].values
     assert "T_bla" not in df["labels_2"].values
+
+
+def test_predict_cell_subtypes_custom_label_key(ds_labels_spatialdata):
+    ds = get_ds_without_subtype_predictions(ds_labels_spatialdata)
+    obs = ds.tables["table"].obs
+    obs["my_labels"] = obs["celltype"]
+    obs["celltype"] = "untouched"
+
+    sp.la.predict_cell_subtypes(ds, basic_subtype_dict, label_key="my_labels")
+
+    obs = ds.tables["table"].obs
+    assert (obs["celltype"] == "untouched").all()
+    assert "T_tox" in obs["my_labels"].values
+    assert "T_h" in obs["my_labels"].values
+    assert list(obs["my_labels"]) == list(obs["labels_1"])
+
+
+def test_predict_cell_subtypes_twice(ds_labels_spatialdata):
+    ds = get_ds_without_subtype_predictions(ds_labels_spatialdata)
+    obs_names = ds.tables["table"].obs_names.copy()
+
+    sp.la.predict_cell_subtypes(ds, basic_subtype_dict)
+    first = ds.tables["table"].obs.copy()
+    sp.la.predict_cell_subtypes(ds, basic_subtype_dict)
+    second = ds.tables["table"].obs
+
+    assert not any(col.endswith(("_x", "_y")) for col in second.columns)
+    assert list(second.columns) == list(first.columns)
+    assert np.array_equal(second.index, obs_names)
+    assert list(second["celltype"]) == list(first["celltype"])
+
+
+def test_predict_cell_subtypes_from_yaml(ds_labels_spatialdata, tmp_path):
+    yaml = pytest.importorskip("yaml")
+    path = tmp_path / "subtypes.yaml"
+    with open(path, "w") as f:
+        yaml.safe_dump(basic_subtype_dict, f)
+
+    ds_dict = get_ds_without_subtype_predictions(ds_labels_spatialdata)
+    ds_yaml = get_ds_without_subtype_predictions(ds_labels_spatialdata)
+    sp.la.predict_cell_subtypes(ds_dict, basic_subtype_dict)
+    sp.la.predict_cell_subtypes(ds_yaml, str(path))
+
+    assert list(ds_yaml.tables["table"].obs["celltype"]) == list(ds_dict.tables["table"].obs["celltype"])
