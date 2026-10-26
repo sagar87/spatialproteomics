@@ -177,7 +177,7 @@ ds_neighborhood = xr.open_zarr("../../data/LN_24_1.zarr")
 ```python
 # setting neighborhood colors
 ds_neighborhood = ds_neighborhood.nh.set_neighborhood_colors(
-    [f"Neighborhood {x+1}" for x in range(6)], ["lightgray", "gray", "darkgray", "gold", "deepskyblue", "purple"]
+    [f"Neighborhood {x+1}" for x in range(6)], ["lightgray", "deepskyblue", "purple", "gold", "gray", "darkgray"]
 )
 
 # plotting the neighborhoods
@@ -272,18 +272,6 @@ ds_multisegmentation = (
 )
 ```
 
-Output:
-
-```text
-Welcome to CellposeSAM, cellpose v
-cellpose version: 	4.0.4 
-platform:       	linux 
-python version: 	3.10.0 
-torch version:  	2.7.0+cu126! The neural network component of
-CPSAM is much larger than in previous versions and CPU excution is slow. 
-We encourage users to use GPU/MPS if available. 
-```
-
 ```python
 plt.figure(figsize=(16, 16))
 _ = ds_multisegmentation.pl.colorize(["gold", "deepskyblue"]).pl.show(
@@ -296,27 +284,6 @@ We can also plot histograms of any table, for example the observations (e. g. ce
 ```python
 # quick check what our object looks like
 ds_tmp
-```
-
-Output:
-
-```text
-<xarray.Dataset> Size: 7GB
-Dimensions:            (labels: 7, la_props: 2, cells: 18134, cells_2: 18134,
-                        channels: 56, features: 22, la_features: 4,
-                        neighborhoods: 6, nh_props: 2, x: 3000, y: 3000)
-Coordinates:
-  * labels             (labels) int64 56B 1 2 3 4 5 6 7
-  * la_props           (la_props) <U6 48B '_color' '_name'
-  * cells              (cells) int64 145kB 1 2 3 4 5 ... 18131 18132 18133 18134
-  * cells_2            (cells_2) int64 145kB 1 2 3 4 ... 18131 18132 18133 18134
-  * channels           (channels) <U11 2kB 'DAPI' 'Helios' ... 'CD79a' 'Ki-67'
-  * features           (features) object 176B 'BCL-2_binarized' ... 'inter_la...
-  * la_features        (la_features) object 32B 'labels_0' ... 'labels_3'
-  * neighborhoods      (neighborhoods) int64 48B 1 2 3 4 5 6
-  * nh_props           (nh_props) <U6 48B '_color' '_name'
-  * x                  (x) int64 24kB 0 1 2 3 4 5 ... 2995 2996 2997 2998 2999
-...
 ```
 
 ```python

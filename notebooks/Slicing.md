@@ -70,6 +70,6 @@ _ = ds.la.deselect(["B cell"]).pl.show(render_image=False, render_labels=True)
 We can also select by neighborhoods with the `nh` accessor. The syntax is identical to the one in the label subsetting.
 
 ```python
-# subsetting only neighborhood 0
+# subsetting only neighborhood 1
 _ = ds.nh[1].pl.render_neighborhoods().pl.imshow()
 ```
