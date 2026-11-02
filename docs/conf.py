@@ -1,5 +1,6 @@
 # Configuration file for the Sphinx documentation builder.
 
+import importlib.metadata
 import os
 import sys
 
@@ -12,8 +13,8 @@ project = "spatialproteomics"
 copyright = "2024, Matthias Meyer-Bender, Harald Vohringer"
 author = "Matthias Meyer-Bender, Harald Vohringer"
 
-# Dynamically set the release version for multi-version builds
-release = os.getenv("SPHINX_MULTIVERSION_NAME", "0.9.0")
+# the version of the installed package (set in pyproject.toml)
+release = importlib.metadata.version("spatialproteomics")
 
 # -- General configuration ---------------------------------------------------
 
@@ -21,7 +22,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "nbsphinx",
-    "sphinx_multiversion",
     "IPython.sphinxext.ipython_console_highlighting",
     "llms_txt",
 ]
@@ -90,11 +90,3 @@ llms_txt_descriptions = {
     "tool": "API of ds.tl and the sp.tl functions",
     "image_container": "API of sp.ImageContainer for multi-sample neighborhood analysis",
 }
-
-# -- sphinx-multiversion configuration ---------------------------------------
-
-smv_tag_whitelist = r"^v\d+\.\d+\.\d+$"  # Semantic versioning tags (e.g., v1.0.0)
-smv_branch_whitelist = r"^main$"  # Include only the main branch
-smv_released_pattern = r"^refs/tags/v.*$"
-smv_remote_whitelist = r"origin"
-smv_latest_version = "latest"
