@@ -33,6 +33,7 @@ exclude_patterns = ["_build", "_build/*", "Thumbs.db", ".DS_Store", "**.ipynb_ch
 
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
+html_js_files = ["sidebar-toggle.js"]
 html_title = project
 html_favicon = "_static/img/spatialproteomics_icon.png"
 html_theme_options = {
