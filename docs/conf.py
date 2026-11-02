@@ -36,7 +36,6 @@ html_static_path = ["_static"]
 html_title = project
 html_favicon = "_static/img/spatialproteomics_icon.png"
 html_theme_options = {
-    "logo_only": True,
     "home_page_in_toc": False,
     "navigation_with_keys": True,
     "logo": {
